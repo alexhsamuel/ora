@@ -36,8 +36,8 @@ public:
   {
   }
 
-  constexpr Calendar const& get_calendar() { return calendar_; }
-  constexpr ssize_t get_days() { return days_; }
+  constexpr Calendar const& get_calendar() const { return calendar_; }
+  constexpr ssize_t get_days() const { return days_; }
 
 private:
 
