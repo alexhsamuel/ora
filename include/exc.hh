@@ -64,7 +64,7 @@ public:
 
   Error(std::string const& what) : what_(what) {}
   virtual ~Error() throw () {}
-  virtual char const* what() throw () { return what_.c_str(); }
+  virtual char const* what() const throw () { return what_.c_str(); }
 
 protected:
 
@@ -120,20 +120,21 @@ class IndexError
 {
 public:
 
-  IndexError(size_t index, size_t size) : Error(what(index, size)) {}
+  IndexError(size_t index, size_t size) : Error(what_(index, size)) {}
   virtual ~IndexError() throw () {}
 
 protected:
 
-  std::string what(size_t index, size_t size);
+  std::string what_(size_t index, size_t size) const;
 
 };
 
 
 inline std::string
-IndexError::what(
+IndexError::what_(
   size_t index,
   size_t size)
+  const
 {
   std::ostringstream os;
   os << "IndexError: index " << index << " for size " << size;
