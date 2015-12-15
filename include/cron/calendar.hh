@@ -160,7 +160,7 @@ public:
 
   virtual ~AllCalendar() {}
 
-  virtual Date shift(Date date, ssize_t days) { return shift(date, days); }
+  virtual Date shift(Date date, ssize_t days) const { return shift(date, days); }
 
 protected:
 
