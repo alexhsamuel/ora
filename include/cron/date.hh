@@ -413,7 +413,7 @@ private:
 public:
 
   constexpr MonthLiteral(Month month) : month_(month) {}
-  constexpr YearMonthLiteral with_year(Year year) { return YearMonthLiteral(year, month_); }
+  constexpr YearMonthLiteral with_year(Year year) const { return YearMonthLiteral(year, month_); }
   
 private:
 
