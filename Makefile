@@ -16,7 +16,7 @@ LDLIBS          = -lpthread
 SOURCES         = $(wildcard src/*.cc) 
 DEPS            = $(SOURCES:%.cc=%.dd)
 OBJS            = $(SOURCES:%.cc=%.o)
-LIB	    	= cxx/libcron.a
+LIB	    	= lib/libcron.a
 BINS            = $(SOURCES:%.cc=%)
 
 TEST_SOURCES    = $(wildcard test/*.cc)
@@ -85,7 +85,7 @@ $(LIB):			$(OBJS)
 $(TEST_DEPS): \
 %.dd: 			%.cc
 	@echo "generating $@"; \
-	set -e; $(CXX) -MM $(TEST_CPPFLAGS) $< | sed -E 's#([^ ]+:)#test/\1#g' > $@
+	set -e; $(CXX) $(CPPFLAGS) -MM $(TEST_CPPFLAGS) $< | sed -E 's#([^ ]+:)#test/\1#g' > $@
 
 $(TEST_OBJS): \
 %.o: 	    	    	%.cc
