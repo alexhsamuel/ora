@@ -137,12 +137,14 @@ public:
 
   typedef typename TRAITS::Offset Offset;
 
-  static DateTemplate constexpr MIN         = TRAITS::min;
-  static DateTemplate constexpr LAST        = (Offset) (TRAITS::max - 1);
-  static DateTemplate constexpr MAX         = TRAITS::max;
-  static DateTemplate constexpr INVALID     = TRAITS::invalid;
-  static DateTemplate constexpr MISSING     = TRAITS::missing;
-  static bool constexpr         USE_INVALID = TRAITS::use_invalid;
+  // These are declared const here but defined constexpr to work around a clang bug.
+  // http://stackoverflow.com/questions/11928089/static-constexpr-member-of-same-type-as-class-being-defined
+  static DateTemplate const MIN;
+  static DateTemplate const LAST;
+  static DateTemplate const MAX;
+  static DateTemplate const INVALID;
+  static DateTemplate const MISSING;
+  static bool constexpr USE_INVALID = TRAITS::use_invalid;
 
   // Constructors.
 
@@ -269,23 +271,23 @@ private:
 
 template<class TRAITS>
 DateTemplate<TRAITS> constexpr
-DateTemplate<TRAITS>::MIN;
+DateTemplate<TRAITS>::MIN{TRAITS::min};
 
 template<class TRAITS>
 DateTemplate<TRAITS> constexpr
-DateTemplate<TRAITS>::LAST;
+DateTemplate<TRAITS>::LAST{(Offset) (TRAITS::max - 1)};
 
 template<class TRAITS>
 DateTemplate<TRAITS> constexpr
-DateTemplate<TRAITS>::MAX;
+DateTemplate<TRAITS>::MAX{TRAITS::max};
 
 template<class TRAITS>
 DateTemplate<TRAITS> constexpr
-DateTemplate<TRAITS>::INVALID;
+DateTemplate<TRAITS>::INVALID{TRAITS::invalid};
 
 template<class TRAITS>
 DateTemplate<TRAITS> constexpr
-DateTemplate<TRAITS>::MISSING;
+DateTemplate<TRAITS>::MISSING{TRAITS::missing};
 
 //------------------------------------------------------------------------------
 // Concrete date types
