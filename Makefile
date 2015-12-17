@@ -4,9 +4,11 @@ else
   UNAME	       := $(shell uname -s)
 endif
 
-# GTEST_DIR       = ./googletest/googletest
-# GTEST_INCDIR    = $(GTEST_DIR)/include
-# GTEST_LIB       = $(GTEST_DIR)/make/gtest_main.a
+TOP 	    	= $(shell pwd)
+
+GTEST_DIR       = ./test/gtest
+GTEST_INCDIR    = $(GTEST_DIR)/include
+GTEST_LIB       = $(GTEST_DIR)/gtest_main.a
 
 CXX            := $(CXX) -std=c++14
 CPPFLAGS        = -I./include
@@ -19,14 +21,15 @@ OBJS            = $(SOURCES:%.cc=%.o)
 LIB	    	= lib/libcron.a
 BINS            = $(SOURCES:%.cc=%)
 
-TEST_SOURCES    = $(wildcard test/*.cc)
+TEST_DIR    	= $(TOP)/test
+TEST_SOURCES    = $(wildcard $(TEST_DIR)/*.cc)
 TEST_DEPS       = $(TEST_SOURCES:%.cc=%.dd)
 TEST_OBJS       = $(TEST_SOURCES:%.cc=%.o)
 TEST_BINS       = $(TEST_SOURCES:%.cc=%.exe)
 TEST_OKS        = $(TEST_SOURCES:%.cc=%.ok)
 
-# TEST_CPPFLAGS   = $(CPPFLAGS) -I$(GTEST_INCDIR)
-# TEST_LIBS       = $(GTEST_LIB) $(LIB)
+TEST_CPPFLAGS   = $(CPPFLAGS) -I$(GTEST_INCDIR) -DGTEST_HAS_TR1_TUPLE=0
+TEST_LIBS       = $(GTEST_LIB) $(LIB)
 
 PYTHON	    	= python3
 PYTEST	    	= py.test
@@ -80,6 +83,7 @@ testclean-cxx:
 test-cxx: $(TEST_OKS)
 
 $(LIB):			$(OBJS)
+	mkdir -p $(shell dirname $@)
 	ar -r $@ $^
 
 $(TEST_DEPS): \
@@ -98,7 +102,7 @@ $(TEST_BINS): \
 $(TEST_OKS): \
 %.ok:    	    	%.exe
 	@rm -f $@
-	$< && touch $@
+	cd test && $< && touch $@
 
 #-------------------------------------------------------------------------------
 # Python
