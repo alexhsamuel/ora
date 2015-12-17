@@ -102,7 +102,8 @@ $(TEST_BINS): \
 $(TEST_OKS): \
 %.ok:    	    	%.exe
 	@rm -f $@
-	cd test && $< && touch $@
+	@echo testing $(shell basename $<) && \
+	  cd test && $< && touch $@
 
 #-------------------------------------------------------------------------------
 # Python
