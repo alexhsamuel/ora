@@ -201,6 +201,14 @@ UTC;
 namespace {
 
 fs::Filename const
+SYSTEM_TIME_ZONE_FILE
+  = "/etc/timezone";
+
+fs::Filename const
+SYSTEM_TIME_ZONE_LINK
+  = "/etc/localtime";
+
+fs::Filename const
 ZONEINFO_DIR 
   = "/usr/share/zoneinfo";
 
@@ -215,7 +223,8 @@ find_time_zone_file(
   std::string const& name)
 {
   // FIXME.
-  auto const filename = ZONEINFO_DIR / name;
+  // auto const filename = ZONEINFO_DIR / name;
+  auto const filename = fs::Filename("/Users/samuel/sw/zoneinfo") / name;
   if (check(filename, fs::READ, fs::FILE))
     return filename;
   else
@@ -244,9 +253,8 @@ string
 get_system_time_zone_name_()
 {
   // FIXME: Portability.
-  fs::Filename const filename = "/etc/timezone";
-  if (fs::check(filename, fs::READ, fs::FILE)) {
-    std::ifstream file(filename.operator string());
+  if (fs::check(SYSTEM_TIME_ZONE_FILE, fs::READ, fs::FILE)) {
+    std::ifstream file(SYSTEM_TIME_ZONE_FILE.operator string());
     char line[128];
     file.getline(line, sizeof(line));
     line[sizeof(line) - 1] = '\0';
@@ -254,10 +262,27 @@ get_system_time_zone_name_()
     if (time_zone.length() > 0)
       return time_zone;
     else
-      throw RuntimeError(string("no time zone name in ") + filename);
+      throw RuntimeError(
+        string("no time zone name in ") + SYSTEM_TIME_ZONE_FILE);
+  }
+  else if (fs::check(SYSTEM_TIME_ZONE_LINK, fs::EXISTS, fs::SYMBOLIC_LINK)) {
+    char buf[PATH_MAX];
+    int const result = 
+      readlink(SYSTEM_TIME_ZONE_LINK, buf, sizeof(buf));
+    if (result == -1) 
+      throw RuntimeError(string("can't read link: ") + SYSTEM_TIME_ZONE_LINK);
+    else {
+      fs::Filename const zone_filename = buf;
+      auto const parts = get_parts(zone_filename);
+      auto const zoneinfo_parts = fs::get_parts(ZONEINFO_DIR);
+      if (parts.size() == zoneinfo_parts.size() + 2)
+        return parts[1] + '/' + parts[0];
+      else
+        throw RuntimeError(string("not time zone link: ") + SYSTEM_TIME_ZONE_LINK);
+    }
   }
   else 
-    throw RuntimeError(string("can't read time zone file ") + filename);
+    throw RuntimeError("no system time zone found");
 }
 
 

@@ -120,6 +120,17 @@ inline off_t xlseek(int fd, off_t offset, int whence)
 }
 
 
+inline void xlstat(
+  char const* path,
+  struct stat* buf)
+{
+  int const rval = lstat(path, buf);
+  if (rval == -1)
+    throw alxs::SystemError("lstat");
+  assert(rval == 0);
+}
+
+
 inline int xmkstemp(char* name_template)
 {
   int const fd = mkstemp(name_template);

@@ -179,6 +179,16 @@ stat(
 }
 
 
+struct stat
+lstat(
+  Filename const& filename)
+{
+  struct stat stat;
+  xlstat(filename, &stat);
+  return stat;
+}
+
+
 bool
 check(
   Filename const& filename,
@@ -188,7 +198,9 @@ check(
   // Call stat() if we need to check the type.
   if (type != ANY_TYPE) {
     struct stat info;
-    int const rval = stat(filename, &info);
+    int const rval = 
+      type == SYMBOLIC_LINK ? lstat(filename, &info)
+      : stat(filename, &info);
     if (rval == -1)
       // Can't stat.
       return false;

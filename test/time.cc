@@ -157,6 +157,7 @@ TEST(Time, default_format) {
 TEST(Time, ostream) {
   TimeZone const& tz = get_time_zone("US/Eastern");
   Time const time(2013/JUL/29, Daytime(18, 27, 13.6316313), tz);
+  set_display_time_zone(tz);
 
   {
     std::stringstream ss;

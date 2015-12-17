@@ -38,8 +38,8 @@ TEST(TimeZone, get_parts_local) {
   EXPECT_EQ(-14400, parts2.offset);
 }
 
-TEST(TimeZone, get_system_time_zone) {
-  // FIXME: Not general.
+// FIXME: Not general.
+TEST(TimeZone, DISABLED_get_system_time_zone) {
   TimeZone const& tz = get_system_time_zone();
   EXPECT_EQ("America/New_York", tz.get_name());
 

@@ -286,7 +286,7 @@ private:
     intmax_t const offset = 
       cron::convert_offset(offset0, denominator0, base0, DENOMINATOR, BASE);
     return
-      in_interval(MIN.get_offset(), offset, MAX.get_offset())
+      in_interval((intmax_t) MIN.get_offset(), offset, (intmax_t) MAX.get_offset())
       ? offset
       : on_error<InvalidTimeError>();
   }

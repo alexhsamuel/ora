@@ -77,7 +77,6 @@ public:
 
   Filename dir() const;
   std::string base() const;
-  std::vector<std::string> parts() const;
 
   Filename operator/(std::string const& base) const;
   Filename const& operator/=(std::string const& base);
