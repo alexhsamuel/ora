@@ -55,13 +55,13 @@ PY_EXTMOD	= python/fixfmt/_ext.so
 all:			$(LIB) test
 
 .PHONY: test
-test:			test-cxx test-python
+test:			test-cxx 
 
 .PHONY: clean
-clean:			clean-cxx clean-python testclean
+clean:			clean-cxx testclean
 
 .PHONY: testclean
-testclean:		testclean-cxx testclean-python
+testclean:		testclean-cxx 
 
 #-------------------------------------------------------------------------------
 # C++
