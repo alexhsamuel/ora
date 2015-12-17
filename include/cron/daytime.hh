@@ -54,14 +54,14 @@ class DaytimeTemplate
 {
 public:
 
-  typedef typename TRAITS::Offset Offset;
+  using Offset = typename TRAITS::Offset;
 
-  static DaytimeTemplate constexpr MIN          = 0;
-  static DaytimeTemplate constexpr MAX          = TRAITS::denominator * SECS_PER_DAY;
-  static DaytimeTemplate constexpr LAST         = TRAITS::denominator * SECS_PER_DAY - 1;
-  static DaytimeTemplate constexpr INVALID      = TRAITS::denominator * SECS_PER_DAY;
-  static DaytimeTemplate constexpr MISSING      = TRAITS::denominator * SECS_PER_DAY + 1;
-  static bool constexpr            USE_INVALID  = TRAITS::use_invalid;
+  static DaytimeTemplate const MIN;
+  static DaytimeTemplate const LAST;
+  static DaytimeTemplate const MAX;
+  static DaytimeTemplate const INVALID;
+  static DaytimeTemplate const MISSING;
+  static bool constexpr USE_INVALID = TRAITS::use_invalid;
 
   // Constructors
 
@@ -213,23 +213,23 @@ private:
 
 template<class TRAITS>
 DaytimeTemplate<TRAITS> constexpr
-DaytimeTemplate<TRAITS>::MIN;
+DaytimeTemplate<TRAITS>::MIN{0};
 
 template<class TRAITS>
 DaytimeTemplate<TRAITS> constexpr
-DaytimeTemplate<TRAITS>::LAST;
+DaytimeTemplate<TRAITS>::LAST{TRAITS::denominator * SECS_PER_DAY - 1};
 
 template<class TRAITS>
 DaytimeTemplate<TRAITS> constexpr
-DaytimeTemplate<TRAITS>::MAX;
+DaytimeTemplate<TRAITS>::MAX{TRAITS::denominator * SECS_PER_DAY};
 
 template<class TRAITS>
 DaytimeTemplate<TRAITS> constexpr
-DaytimeTemplate<TRAITS>::INVALID;
+DaytimeTemplate<TRAITS>::INVALID{TRAITS::denominator * SECS_PER_DAY};
 
 template<class TRAITS>
 DaytimeTemplate<TRAITS> constexpr
-DaytimeTemplate<TRAITS>::MISSING;
+DaytimeTemplate<TRAITS>::MISSING{TRAITS::denominator * SECS_PER_DAY + 1};
 
 //------------------------------------------------------------------------------
 // Concrete Daytime types.

@@ -64,16 +64,16 @@ class TimeTemplate
 {
 public:
 
-  typedef typename TRAITS::Offset Offset;
+  using Offset = typename TRAITS::Offset;
 
   static bool         constexpr USE_INVALID = TRAITS::use_invalid;
   static Datenum      constexpr BASE        = TRAITS::base;
   static Offset       constexpr DENOMINATOR = TRAITS::denominator;
-  static TimeTemplate constexpr MIN         = TRAITS::min;
-  static TimeTemplate constexpr MAX         = TRAITS::max;
-  static TimeTemplate constexpr LAST        = TRAITS::max - 1;
-  static TimeTemplate constexpr INVALID     = TRAITS::invalid;
-  static TimeTemplate constexpr MISSING     = TRAITS::missing;
+  static TimeTemplate const     MIN;
+  static TimeTemplate const     LAST;
+  static TimeTemplate const     MAX;
+  static TimeTemplate const     INVALID;
+  static TimeTemplate const     MISSING;
   static double       constexpr RESOLUTION  = 1.0 / TRAITS::denominator;
 
   // Constructors
@@ -299,24 +299,36 @@ private:
 
 
 template<class TRAITS>
-TimeTemplate<TRAITS> constexpr
-TimeTemplate<TRAITS>::MIN;
+bool constexpr
+TimeTemplate<TRAITS>::USE_INVALID;
+
+template<class TRAITS>
+Datenum constexpr
+TimeTemplate<TRAITS>::BASE;
+
+template<class TRAITS>
+typename TimeTemplate<TRAITS>::Offset constexpr
+TimeTemplate<TRAITS>::DENOMINATOR;
 
 template<class TRAITS>
 TimeTemplate<TRAITS> constexpr
-TimeTemplate<TRAITS>::MAX;
+TimeTemplate<TRAITS>::MIN{TRAITS::min};
 
 template<class TRAITS>
 TimeTemplate<TRAITS> constexpr
-TimeTemplate<TRAITS>::LAST;
+TimeTemplate<TRAITS>::LAST{TRAITS::max - 1};
 
 template<class TRAITS>
 TimeTemplate<TRAITS> constexpr
-TimeTemplate<TRAITS>::INVALID;
+TimeTemplate<TRAITS>::MAX{TRAITS::max};
 
 template<class TRAITS>
 TimeTemplate<TRAITS> constexpr
-TimeTemplate<TRAITS>::MISSING;
+TimeTemplate<TRAITS>::INVALID{TRAITS::invalid};
+
+template<class TRAITS>
+TimeTemplate<TRAITS> constexpr
+TimeTemplate<TRAITS>::MISSING{TRAITS::missing};
 
 template<class TRAITS>
 double constexpr
