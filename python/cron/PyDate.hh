@@ -472,11 +472,12 @@ PyDate<TRAITS>::type_;
 
 
 // FIXME: API:
-//   parts
-//   is()
+//   from_datenum() or overload ctor
 //   copy ctor
-//   conversion from other dates
-//   from_datenum()
 //   ctor from ymd triplet
-//   sloppy ctor
+//   sloppy ctor / ensure()
+//   is()
+//   parts getset
+//   conversion from other dates
+//   comparison with other dates
 
