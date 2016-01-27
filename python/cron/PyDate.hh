@@ -2,6 +2,8 @@
 
 #include <cstring>
 #include <iostream>
+#include <memory>
+#include <string>
 
 #include <Python.h>
 
@@ -12,9 +14,15 @@
 using namespace alxs;
 using namespace py;
 
+using std::string;
+using std::make_unique;
+using std::unique_ptr;
+
 //------------------------------------------------------------------------------
 // Type class
 //------------------------------------------------------------------------------
+
+// FIXME: Should we cache parts?
 
 template<typename TRAITS>
 class PyDate
@@ -29,7 +37,7 @@ public:
    *
    * Should only be called once; this is not checked.
    */
-  static void add_to(Module& module, std::string const& name);
+  static void add_to(Module& module, string const& name);
 
   static ref<PyDate> create(Date date);
 
@@ -39,6 +47,7 @@ private:
 
   static int tp_init(PyDate* self, Tuple* args, Dict* kw_args);
   static void tp_dealloc(PyDate* self);
+  static Unicode* tp_repr(PyDate* self);
   static Unicode* tp_str(PyDate* self);
 
   // Singleton objects, constructed lazily.
@@ -61,7 +70,10 @@ private:
   static ref<Object> get_year       (PyDate* self, void*);
   static GetSets<PyDate> getsets_;
 
-  static Type build_type(std::string const& type_name);
+  static Type build_type(string const& type_name);
+
+  /** Date format used to generate the repr.  */
+  static unique_ptr<cron::DateFormat> repr_format_;
 
 public:
 
@@ -74,12 +86,18 @@ template<typename TRAITS>
 void
 PyDate<TRAITS>::add_to(
   Module& module,
-  std::string const& name)
+  string const& name)
 {
   // Construct the type struct.
-  type_ = build_type(std::string{module.GetName()} + "." + name);
+  type_ = build_type(string{module.GetName()} + "." + name);
   // Hand it to Python.
   type_.Ready();
+
+  // Build the repr format.
+  repr_format_ = make_unique<cron::DateFormat>(
+    name + "(%Y, %m, %d)",
+    name + ".INVALID",
+    name + ".MISSING");
 
   // Add in static data members.
   Dict* dict = (Dict*) type_.tp_dict;
@@ -156,6 +174,16 @@ PyDate<TRAITS>::tp_dealloc(PyDate* self)
 {
   self->date_.~DateTemplate();
   self->ob_type->tp_free(self);
+}
+
+
+// FIXME: Wrap tp_repr.
+template<typename TRAITS>
+Unicode*
+PyDate<TRAITS>::tp_repr(
+  PyDate* self)
+{
+  return Unicode::from((*repr_format_)(self->date_)).release();
 }
 
 
@@ -336,7 +364,7 @@ PyDate<TRAITS>::getsets_
 template<typename TRAITS>
 Type
 PyDate<TRAITS>::build_type(
-  std::string const& type_name)
+  string const& type_name)
 {
   return PyTypeObject{
     PyVarObject_HEAD_INIT(nullptr, 0)
@@ -348,7 +376,7 @@ PyDate<TRAITS>::build_type(
     (getattrfunc)         nullptr,                        // tp_getattr
     (setattrfunc)         nullptr,                        // tp_setattr
     (void*)               nullptr,                        // tp_reserved
-    (reprfunc)            nullptr,                        // tp_repr
+    (reprfunc)            tp_repr,                        // tp_repr
     (PyNumberMethods*)    nullptr,                        // tp_as_number
     (PySequenceMethods*)  nullptr,                        // tp_as_sequence
     (PyMappingMethods*)   nullptr,                        // tp_as_mapping
@@ -390,6 +418,11 @@ PyDate<TRAITS>::build_type(
     (destructor)          nullptr,                        // tp_finalize
   };
 }
+
+
+template<typename TRAITS>
+unique_ptr<cron::DateFormat>
+PyDate<TRAITS>::repr_format_;
 
 
 template<typename TRAITS>
