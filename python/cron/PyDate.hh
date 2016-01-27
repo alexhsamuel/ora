@@ -53,8 +53,6 @@ PyDate<TRAITS>::tp_init(
   py::Arg::ParseTupleAndKeywords(
     args, kw_args, "HHH", arg_names, &year, &month, &day);
 
-  std::cerr << "y=" << year << " m=" << month << " d=" << day << "\n";
-
   try {
     new(&self->date_) 
       Date{(cron::Year) year, (cron::Month) (month - 1), (cron::Day) (day - 1)};
@@ -63,7 +61,6 @@ PyDate<TRAITS>::tp_init(
     throw new ValueError(error.what());
   }
 
-  std::cerr << "offset=" << self->date_.get_offset() << "\n";
   return 0;
 }
 
