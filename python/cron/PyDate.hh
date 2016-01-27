@@ -22,6 +22,8 @@ using std::unique_ptr;
 // Type class
 //------------------------------------------------------------------------------
 
+// FIXME: Think carefully over when to return INVALID versus when to raise.
+
 // FIXME: Should we cache parts?
 
 template<typename TRAITS>
@@ -98,7 +100,7 @@ PyDate<TRAITS>::add_to(
 
   // Build the repr format.
   repr_format_ = make_unique<cron::DateFormat>(
-    name + "(%Y, %m, %d)",
+    name + "(%0Y, %0m, %0d)",
     name + ".INVALID",
     name + ".MISSING");
 
