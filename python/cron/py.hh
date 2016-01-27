@@ -224,11 +224,23 @@ public:
   ref(ref<U>&& ref)
     : baseref(ref.release()) {}
 
+  /**
+   * Returns a new (additional) reference.
+   */
+  ref inc() const
+    { return ref::of(obj_); }
+
   void operator=(ref<T>&& ref)
     { clear(); obj_ = ref.release(); }
 
+  bool operator==(T* const ptr) const
+    { return obj_ == ptr; }
+
+  bool operator!=(T* const ptr) const
+    { return obj_ != ptr; }
+
   operator T&() const
-  { return *(T*) obj_; }
+    { return *(T*) obj_; }
 
   operator T*() const
     { return (T*) obj_; }
@@ -295,6 +307,9 @@ public:
 
   static bool Check(PyObject* obj)
     { return PyDict_Check(obj); }
+
+  void SetItemString(char const* key, PyObject* value)
+    { check_zero(PyDict_SetItemString(this, key, value)); }
 
 };
 

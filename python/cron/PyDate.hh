@@ -10,6 +10,7 @@
 #include "py.hh"
 
 using namespace alxs;
+using namespace py;
 
 //------------------------------------------------------------------------------
 // Type class
@@ -17,40 +18,54 @@ using namespace alxs;
 
 template<typename TRAITS>
 class PyDate
-  : public py::ExtensionType
+  : public ExtensionType
 {
 public:
 
-  static void add_to(py::Module& module, std::string const& name);
-
   using Date = cron::DateTemplate<TRAITS>;
+
+  /** 
+   * Readies the Python type and adds it to `module` as `name`.  
+   *
+   * Should only be called once; this is not checked.
+   */
+  static void add_to(Module& module, std::string const& name);
+
+  static ref<PyDate> create(Date date);
 
   Date const date_;
 
 private:
 
-  static int tp_init(PyDate* self, py::Tuple* args, py::Dict* kw_args);
+  static int tp_init(PyDate* self, Tuple* args, Dict* kw_args);
   static void tp_dealloc(PyDate* self);
-  static py::Unicode* tp_str(PyDate* self);
+  static Unicode* tp_str(PyDate* self);
 
-  static py::ref<py::Object> get_datenum    (PyDate* self, void*);
-  static py::ref<py::Object> get_day        (PyDate* self, void*);
-  static py::ref<py::Object> get_invalid    (PyDate* self, void*);
-  static py::ref<py::Object> get_missing    (PyDate* self, void*);
-  static py::ref<py::Object> get_month      (PyDate* self, void*);
-  static py::ref<py::Object> get_ordinal    (PyDate* self, void*);
-  static py::ref<py::Object> get_valid      (PyDate* self, void*);
-  static py::ref<py::Object> get_week       (PyDate* self, void*);
-  static py::ref<py::Object> get_week_year  (PyDate* self, void*);
-  static py::ref<py::Object> get_weekday    (PyDate* self, void*);
-  static py::ref<py::Object> get_year       (PyDate* self, void*);
-  static py::GetSets<PyDate> getsets_;
+  // Singleton objects, constructed lazily.
+  static ref<PyDate> INVALID_;
+  static ref<PyDate> LAST_;
+  static ref<PyDate> MAX_;
+  static ref<PyDate> MIN_;
+  static ref<PyDate> MISSING_;
 
-  static py::Type build_type(std::string const& type_name);
+  static ref<Object> get_datenum    (PyDate* self, void*);
+  static ref<Object> get_day        (PyDate* self, void*);
+  static ref<Object> get_invalid    (PyDate* self, void*);
+  static ref<Object> get_missing    (PyDate* self, void*);
+  static ref<Object> get_month      (PyDate* self, void*);
+  static ref<Object> get_ordinal    (PyDate* self, void*);
+  static ref<Object> get_valid      (PyDate* self, void*);
+  static ref<Object> get_week       (PyDate* self, void*);
+  static ref<Object> get_week_year  (PyDate* self, void*);
+  static ref<Object> get_weekday    (PyDate* self, void*);
+  static ref<Object> get_year       (PyDate* self, void*);
+  static GetSets<PyDate> getsets_;
+
+  static Type build_type(std::string const& type_name);
 
 public:
 
-  static py::Type type_;
+  static Type type_;
 
 };
 
@@ -58,12 +73,45 @@ public:
 template<typename TRAITS>
 void
 PyDate<TRAITS>::add_to(
-  py::Module& module,
+  Module& module,
   std::string const& name)
 {
+  // Construct the type struct.
   type_ = build_type(std::string{module.GetName()} + "." + name);
+  // Hand it to Python.
   type_.Ready();
+
+  // Add in static data members.
+  Dict* dict = (Dict*) type_.tp_dict;
+  assert(dict != nullptr);
+  INVALID_  = create(Date::INVALID);
+  LAST_     = create(Date::LAST);
+  MAX_      = create(Date::MAX);
+  MIN_      = create(Date::MIN);
+  MISSING_  = create(Date::MISSING);
+  dict->SetItemString("INVALID",    INVALID_);
+  dict->SetItemString("LAST",       LAST_);
+  dict->SetItemString("MAX",        MAX_);
+  dict->SetItemString("MIN",        MIN_);
+  dict->SetItemString("MISSING",    MISSING_);
+
+  // Add the type to the module.
   module.add(&type_);
+}
+
+
+template<typename TRAITS>
+ref<PyDate<TRAITS>>
+PyDate<TRAITS>::create(
+  Date date)
+{
+  // FIXME: Check for nullptr?  Or wrap tp_alloc?
+  auto obj = ref<PyDate>::take(PyDate::type_.tp_alloc(&PyDate::type_, 0));
+
+  // date_ is const to indicate immutablity, but Python initialization is later
+  // than C++ initialization, so we have to cast off const here.
+  new(const_cast<Date*>(&obj->date_)) Date{date};
+  return obj;
 }
 
 
@@ -76,25 +124,25 @@ template<typename TRAITS>
 int
 PyDate<TRAITS>::tp_init(
   PyDate* self, 
-  py::Tuple* args, 
-  py::Dict* kw_args)
+  Tuple* args, 
+  Dict* kw_args)
 {
   static char const* arg_names[] = {"year", "month", "day", nullptr};
 
   unsigned short year;
   unsigned short month;
   unsigned short day;
-  py::Arg::ParseTupleAndKeywords(
+  Arg::ParseTupleAndKeywords(
     args, kw_args, "HHH", arg_names, &year, &month, &day);
 
   try {
-    // date_ is const to indicate immutable state, but Python initialization
-    // is later than C++ initialization, so we have to cast off const here.
+    // date_ is const to indicate immutablity, but Python initialization is
+    // later than C++ initialization, so we have to cast off const here.
     new(const_cast<Date*>(&self->date_))
       Date{(cron::Year) year, (cron::Month) (month - 1), (cron::Day) (day - 1)};
   }
   catch (cron::DateError error) {
-    throw new ValueError(error.what());
+    throw new py::ValueError(error.what());
   }
 
   return 0;
@@ -113,13 +161,13 @@ PyDate<TRAITS>::tp_dealloc(PyDate* self)
 
 // FIXME: Wrap tp_str.
 template<typename TRAITS>
-py::Unicode*
+Unicode*
 PyDate<TRAITS>::tp_str(
   PyDate* self)
 {
   // FIXME: Make the format configurable.
   auto& format = cron::DateFormat::get_default();
-  return py::Unicode::from(format(self->date_)).release();
+  return Unicode::from(format(self->date_)).release();
 }
 
 
@@ -128,120 +176,145 @@ PyDate<TRAITS>::tp_str(
 //------------------------------------------------------------------------------
 
 template<typename TRAITS>
-py::ref<py::Object>
+ref<PyDate<TRAITS>>
+PyDate<TRAITS>::INVALID_;
+
+
+template<typename TRAITS>
+ref<PyDate<TRAITS>>
+PyDate<TRAITS>::LAST_;
+
+
+template<typename TRAITS>
+ref<PyDate<TRAITS>>
+PyDate<TRAITS>::MAX_;
+
+
+template<typename TRAITS>
+ref<PyDate<TRAITS>>
+PyDate<TRAITS>::MIN_;
+
+
+template<typename TRAITS>
+ref<PyDate<TRAITS>>
+PyDate<TRAITS>::MISSING_;
+
+
+template<typename TRAITS>
+ref<Object>
 PyDate<TRAITS>::get_datenum(
   PyDate* self,
   void* /* closure */)
 {
-  return py::Long::FromLong(self->date_.get_datenum());
+  return Long::FromLong(self->date_.get_datenum());
 }
 
 
 template<typename TRAITS>
-py::ref<py::Object>
+ref<Object>
 PyDate<TRAITS>::get_day(
   PyDate* self,
   void* /* closure */)
 {
-  return py::Long::FromLong(self->date_.get_parts().day + 1);
+  return Long::FromLong(self->date_.get_parts().day + 1);
 }
 
 
 template<typename TRAITS>
-py::ref<py::Object>
+ref<Object>
 PyDate<TRAITS>::get_invalid(
   PyDate* self,
   void* /* closure */)
 {
-  return py::Bool::from(self->date_.is_invalid());
+  return Bool::from(self->date_.is_invalid());
 }
 
 
 template<typename TRAITS>
-py::ref<py::Object>
+ref<Object>
 PyDate<TRAITS>::get_missing(
   PyDate* self,
   void* /* closure */)
 {
-  return py::Bool::from(self->date_.is_missing());
+  return Bool::from(self->date_.is_missing());
 }
 
 
 template<typename TRAITS>
-py::ref<py::Object>
+ref<Object>
 PyDate<TRAITS>::get_month(
   PyDate* self,
   void* /* closure */)
 {
-  return py::Long::FromLong(self->date_.get_parts().month + 1);
+  return Long::FromLong(self->date_.get_parts().month + 1);
 }
 
 
 template<typename TRAITS>
-py::ref<py::Object>
+ref<Object>
 PyDate<TRAITS>::get_ordinal(
   PyDate* self,
   void* /* closure */)
 {
-  return py::Long::FromLong(self->date_.get_parts().ordinal);
+  return Long::FromLong(self->date_.get_parts().ordinal);
 }
 
 
 template<typename TRAITS>
-py::ref<py::Object>
+ref<Object>
 PyDate<TRAITS>::get_valid(
   PyDate* self,
   void* /* closure */)
 {
-  return py::Bool::from(self->date_.is_valid());
+  return Bool::from(self->date_.is_valid());
 }
 
 
 template<typename TRAITS>
-py::ref<py::Object>
+ref<Object>
 PyDate<TRAITS>::get_week(
   PyDate* self,
   void* /* closure */)
 {
-  return py::Long::FromLong(self->date_.get_parts().week);
+  return Long::FromLong(self->date_.get_parts().week);
 }
 
 
 template<typename TRAITS>
-py::ref<py::Object>
+ref<Object>
 PyDate<TRAITS>::get_week_year(
   PyDate* self,
   void* /* closure */)
 {
-  return py::Long::FromLong(self->date_.get_parts().week_year);
+  return Long::FromLong(self->date_.get_parts().week_year);
 }
 
 
 template<typename TRAITS>
-py::ref<py::Object>
+ref<Object>
 PyDate<TRAITS>::get_weekday(
   PyDate* self,
   void* /* closure */)
 {
   // FIXME: Use an enum.
-  return py::Long::FromLong(self->date_.get_parts().weekday);
+  return Long::FromLong(self->date_.get_parts().weekday);
 }
 
 
 template<typename TRAITS>
-py::ref<py::Object>
+ref<Object>
 PyDate<TRAITS>::get_year(
   PyDate* self,
   void* /* closure */)
 {
-  return py::Long::FromLong(self->date_.get_parts().year);
+  return Long::FromLong(self->date_.get_parts().year);
 }
 
 
 template<typename TRAITS>
-py::GetSets<PyDate<TRAITS>>
+GetSets<PyDate<TRAITS>>
 PyDate<TRAITS>::getsets_ 
-  = py::GetSets<PyDate>()
+  = GetSets<PyDate>()
     .template add_get<get_datenum>      ("datenum")
     .template add_get<get_day>          ("day")
     .template add_get<get_invalid>      ("invalid")
@@ -261,7 +334,7 @@ PyDate<TRAITS>::getsets_
 //------------------------------------------------------------------------------
 
 template<typename TRAITS>
-py::Type
+Type
 PyDate<TRAITS>::build_type(
   std::string const& type_name)
 {
@@ -320,7 +393,7 @@ PyDate<TRAITS>::build_type(
 
 
 template<typename TRAITS>
-py::Type
+Type
 PyDate<TRAITS>::type_;
 
 
@@ -332,9 +405,9 @@ PyDate<TRAITS>::type_;
 //   from_datenum()
 //   ctor from ymd triplet
 //   sloppy ctor
-//   MIN
+//   INVALID
 //   LAST
 //   MAX
-//   INVALID
+//   MIN
 //   MISSING
 
