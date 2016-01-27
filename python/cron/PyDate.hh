@@ -483,6 +483,7 @@ PyDate<TRAITS>::type_;
 //   ctor from ymd triplet
 //   sloppy ctor / ensure()
 //   is()
+//   use Month and Weekday enums
 //   parts getset
 //   conversion from other dates
 //   comparison with other dates
