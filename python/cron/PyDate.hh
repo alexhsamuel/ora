@@ -12,14 +12,14 @@
 using namespace alxs;
 
 //------------------------------------------------------------------------------
+// Type class
+//------------------------------------------------------------------------------
 
 template<typename TRAITS>
 class PyDate
   : public py::ExtensionType
 {
 public:
-
-  static py::Type type_;
 
   static void add_to(py::Module& module, std::string const& name);
 
@@ -29,16 +29,28 @@ public:
 
 private:
 
-  static py::Type build_type(std::string const& type_name);
-
   static int tp_init(PyDate* self, py::Tuple* args, py::Dict* kw_args);
   static void tp_dealloc(PyDate* self);
   static py::Unicode* tp_str(PyDate* self);
 
+  static py::ref<py::Object> get_datenum    (PyDate* self, void*);
+  static py::ref<py::Object> get_day        (PyDate* self, void*);
+  static py::ref<py::Object> get_month      (PyDate* self, void*);
+  static py::ref<py::Object> get_ordinal    (PyDate* self, void*);
+  static py::ref<py::Object> get_week       (PyDate* self, void*);
+  static py::ref<py::Object> get_week_year  (PyDate* self, void*);
+  static py::ref<py::Object> get_weekday    (PyDate* self, void*);
+  static py::ref<py::Object> get_year       (PyDate* self, void*);
+  static py::GetSets<PyDate> getsets_;
+
+  static py::Type build_type(std::string const& type_name);
+
+public:
+
+  static py::Type type_;
+
 };
 
-
-//------------------------------------------------------------------------------
 
 template<typename TRAITS>
 void
@@ -51,6 +63,10 @@ PyDate<TRAITS>::add_to(
   module.add(&type_);
 }
 
+
+//------------------------------------------------------------------------------
+// Standard type methods
+//------------------------------------------------------------------------------
 
 // FIXME: Wrap tp_init.
 template<typename TRAITS>
@@ -102,6 +118,110 @@ PyDate<TRAITS>::tp_str(
 }
 
 
+//------------------------------------------------------------------------------
+// Getsets
+//------------------------------------------------------------------------------
+
+template<typename TRAITS>
+py::ref<py::Object>
+PyDate<TRAITS>::get_datenum(
+  PyDate* self,
+  void* /* closure */)
+{
+  return py::Long::FromLong(self->date_.get_datenum());
+}
+
+
+template<typename TRAITS>
+py::ref<py::Object>
+PyDate<TRAITS>::get_day(
+  PyDate* self,
+  void* /* closure */)
+{
+  return py::Long::FromLong(self->date_.get_parts().day + 1);
+}
+
+
+template<typename TRAITS>
+py::ref<py::Object>
+PyDate<TRAITS>::get_month(
+  PyDate* self,
+  void* /* closure */)
+{
+  return py::Long::FromLong(self->date_.get_parts().month + 1);
+}
+
+
+template<typename TRAITS>
+py::ref<py::Object>
+PyDate<TRAITS>::get_ordinal(
+  PyDate* self,
+  void* /* closure */)
+{
+  return py::Long::FromLong(self->date_.get_parts().ordinal);
+}
+
+
+template<typename TRAITS>
+py::ref<py::Object>
+PyDate<TRAITS>::get_week(
+  PyDate* self,
+  void* /* closure */)
+{
+  return py::Long::FromLong(self->date_.get_parts().week);
+}
+
+
+template<typename TRAITS>
+py::ref<py::Object>
+PyDate<TRAITS>::get_week_year(
+  PyDate* self,
+  void* /* closure */)
+{
+  return py::Long::FromLong(self->date_.get_parts().week_year);
+}
+
+
+template<typename TRAITS>
+py::ref<py::Object>
+PyDate<TRAITS>::get_weekday(
+  PyDate* self,
+  void* /* closure */)
+{
+  // FIXME: Use an enum.
+  return py::Long::FromLong(self->date_.get_parts().weekday);
+}
+
+
+template<typename TRAITS>
+py::ref<py::Object>
+PyDate<TRAITS>::get_year(
+  PyDate* self,
+  void* /* closure */)
+{
+  return py::Long::FromLong(self->date_.get_parts().year);
+}
+
+
+template<typename TRAITS>
+py::GetSets<PyDate<TRAITS>>
+PyDate<TRAITS>::getsets_ 
+  = py::GetSets<PyDate>()
+    .template add_get<get_datenum>      ("datenum")
+    .template add_get<get_day>          ("day")
+    .template add_get<get_month>        ("month")
+    .template add_get<get_ordinal>      ("ordinal")
+    .template add_get<get_week>         ("week")
+    .template add_get<get_week_year>    ("week_year")
+    .template add_get<get_weekday>      ("weekday")
+    .template add_get<get_year>         ("year")
+  ;
+
+
+//------------------------------------------------------------------------------
+// Type object
+//------------------------------------------------------------------------------
+
 template<typename TRAITS>
 py::Type
 PyDate<TRAITS>::build_type(
@@ -138,7 +258,7 @@ PyDate<TRAITS>::build_type(
     (iternextfunc)        nullptr,                        // tp_iternext
     (PyMethodDef*)        nullptr,                        // tp_methods
     (PyMemberDef*)        nullptr,                        // tp_members
-    (PyGetSetDef*)        nullptr,                        // tp_getset
+    (PyGetSetDef*)        getsets_,                       // tp_getset
     (_typeobject*)        nullptr,                        // tp_base
     (PyObject*)           nullptr,                        // tp_dict
     (descrgetfunc)        nullptr,                        // tp_descr_get
