@@ -615,8 +615,6 @@ class ExtensionType
 {
 public:
 
-  PyObject_HEAD
-
 };
 
 

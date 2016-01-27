@@ -33,6 +33,7 @@ PyInit__ext(void)
 
   try {
     PyDate<cron::DateTraits>::add_to(module, "Date");
+    PyDate<cron::SmallDateTraits>::add_to(module, "SmallDate");
     return module.release();
   }
   catch (Exception) {
