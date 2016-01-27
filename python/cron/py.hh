@@ -266,6 +266,12 @@ inline ref<Object> none_ref()
 }
 
 
+inline ref<Object> not_implemented_ref()
+{
+  return ref<Object>::of(Py_NotImplemented);
+}
+
+
 //==============================================================================
 
 class Object
@@ -275,6 +281,11 @@ public:
 
   static bool Check(PyObject* obj)
     { return true; }
+
+  bool IsInstance(PyObject* type)
+    { return (bool) PyObject_IsInstance(this, type); }
+  bool IsInstance(PyTypeObject* type)
+    { return IsInstance((PyObject*) type); }
 
   auto Length()
     { return PyObject_Length(this); }
