@@ -20,13 +20,16 @@ class PyDate
 public:
 
   static py::Type type_;
-  static py::Type build_type(char const* name);
+
+  static void add_to(py::Module& module, std::string const& name);
 
   using Date = cron::DateTemplate<TRAITS>;
 
-  Date date_;
+  Date const date_;
 
 private:
+
+  static py::Type build_type(std::string const& type_name);
 
   static int tp_init(PyDate* self, py::Tuple* args, py::Dict* kw_args);
   static void tp_dealloc(PyDate* self);
@@ -36,6 +39,18 @@ private:
 
 
 //------------------------------------------------------------------------------
+
+template<typename TRAITS>
+void
+PyDate<TRAITS>::add_to(
+  py::Module& module,
+  std::string const& name)
+{
+  type_ = build_type(std::string{module.GetName()} + "." + name);
+  type_.Ready();
+  module.add(&type_);
+}
+
 
 // FIXME: Wrap tp_init.
 template<typename TRAITS>
@@ -54,7 +69,7 @@ PyDate<TRAITS>::tp_init(
     args, kw_args, "HHH", arg_names, &year, &month, &day);
 
   try {
-    new(&self->date_) 
+    new(const_cast<Date*>(&self->date_))
       Date{(cron::Year) year, (cron::Month) (month - 1), (cron::Day) (day - 1)};
   }
   catch (cron::DateError error) {
@@ -89,11 +104,12 @@ PyDate<TRAITS>::tp_str(
 
 template<typename TRAITS>
 py::Type
-PyDate<TRAITS>::build_type(char const* const name) 
+PyDate<TRAITS>::build_type(
+  std::string const& type_name)
 {
   return PyTypeObject{
     PyVarObject_HEAD_INIT(nullptr, 0)
-    (char const*)         strdup(name),                   // tp_name
+    (char const*)         strdup(type_name.c_str()),      // tp_name
     (Py_ssize_t)          sizeof(PyDate<TRAITS>),         // tp_basicsize
     (Py_ssize_t)          0,                              // tp_itemsize
     (destructor)          tp_dealloc,                     // tp_dealloc
@@ -147,7 +163,6 @@ PyDate<TRAITS>::build_type(char const* const name)
 
 template<typename TRAITS>
 py::Type
-PyDate<TRAITS>::type_
-  = PyDate::build_type("cron._ext.Date");  // FIXME
+PyDate<TRAITS>::type_;
 
 

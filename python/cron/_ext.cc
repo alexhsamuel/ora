@@ -32,12 +32,7 @@ PyInit__ext(void)
   auto module = Module::Create(&module_def);
 
   try {
-    {
-      auto& type = PyDate<cron::DateTraits>::type_;
-      type.Ready();
-      module->add(&type);
-    }
-
+    PyDate<cron::DateTraits>::add_to(module, "Date");
     return module.release();
   }
   catch (Exception) {

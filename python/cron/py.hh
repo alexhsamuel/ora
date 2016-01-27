@@ -227,6 +227,9 @@ public:
   void operator=(ref<T>&& ref)
     { clear(); obj_ = ref.release(); }
 
+  operator T&() const
+  { return *(T*) obj_; }
+
   operator T*() const
     { return (T*) obj_; }
 
@@ -368,6 +371,9 @@ public:
   void AddObject(char const* name, PyObject* val)
     { check_zero(PyModule_AddObject(this, name, incref(val))); }
 
+  char const* GetName()
+    { return PyModule_GetName(this); }
+
   void add(PyTypeObject* type)
   {
     // Make sure the qualified name of the type includes this module's name.
@@ -505,6 +511,7 @@ class Type
 {
 public:
 
+  Type() {}
   Type(PyTypeObject o) : PyTypeObject(o) {}
 
   void Ready()
