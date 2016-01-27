@@ -431,7 +431,6 @@ PyDate<TRAITS>::type_;
 
 
 // FIXME: API:
-//   __repr__
 //   parts
 //   __eq__ & co.
 //   copy ctor
