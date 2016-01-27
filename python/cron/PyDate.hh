@@ -85,6 +85,8 @@ PyDate<TRAITS>::tp_init(
     args, kw_args, "HHH", arg_names, &year, &month, &day);
 
   try {
+    // date_ is const to indicate immutable state, but Python initialization
+    // is later than C++ initialization, so we have to cast off const here.
     new(const_cast<Date*>(&self->date_))
       Date{(cron::Year) year, (cron::Month) (month - 1), (cron::Day) (day - 1)};
   }
@@ -285,4 +287,21 @@ template<typename TRAITS>
 py::Type
 PyDate<TRAITS>::type_;
 
+
+// API:
+//   valid
+//   invalid
+//   missing
+//   parts
+//   __eq__ & co.
+//   copy ctor
+//   conversion from other dates
+//   from_datenum()
+//   ctor from ymd triplet
+//   sloppy ctor
+//   MIN
+//   LAST
+//   MAX
+//   INVALID
+//   MISSING
 
