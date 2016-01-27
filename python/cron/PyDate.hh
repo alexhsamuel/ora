@@ -41,6 +41,8 @@ public:
 
   static ref<PyDate> create(Date date);
 
+  static bool Check(PyObject* object);
+
   Date const date_;
 
 private:
@@ -49,6 +51,7 @@ private:
   static void tp_dealloc(PyDate* self);
   static Unicode* tp_repr(PyDate* self);
   static Unicode* tp_str(PyDate* self);
+  static Object* tp_richcompare(PyDate* self, Object* other, int comparison);
 
   // Singleton objects, constructed lazily.
   static ref<PyDate> INVALID_;
@@ -133,6 +136,15 @@ PyDate<TRAITS>::create(
 }
 
 
+template<typename TRAITS>
+bool
+PyDate<TRAITS>::Check(
+  PyObject* other)
+{
+  return ((Object*) other)->IsInstance(&type_);
+}
+
+
 //------------------------------------------------------------------------------
 // Standard type methods
 //------------------------------------------------------------------------------
@@ -141,7 +153,7 @@ PyDate<TRAITS>::create(
 template<typename TRAITS>
 int
 PyDate<TRAITS>::tp_init(
-  PyDate* self, 
+  PyDate* const self, 
   Tuple* args, 
   Dict* kw_args)
 {
@@ -170,7 +182,7 @@ PyDate<TRAITS>::tp_init(
 // FIXME: Wrap tp_dealloc.
 template<typename TRAITS>
 void
-PyDate<TRAITS>::tp_dealloc(PyDate* self)
+PyDate<TRAITS>::tp_dealloc(PyDate* const self)
 {
   self->date_.~DateTemplate();
   self->ob_type->tp_free(self);
@@ -181,7 +193,7 @@ PyDate<TRAITS>::tp_dealloc(PyDate* self)
 template<typename TRAITS>
 Unicode*
 PyDate<TRAITS>::tp_repr(
-  PyDate* self)
+  PyDate* const self)
 {
   return Unicode::from((*repr_format_)(self->date_)).release();
 }
@@ -191,11 +203,40 @@ PyDate<TRAITS>::tp_repr(
 template<typename TRAITS>
 Unicode*
 PyDate<TRAITS>::tp_str(
-  PyDate* self)
+  PyDate* const self)
 {
   // FIXME: Make the format configurable.
   auto& format = cron::DateFormat::get_default();
   return Unicode::from(format(self->date_)).release();
+}
+
+
+// FIXME: Wrap tp_richcompare.
+template<typename TRAITS>
+Object*
+PyDate<TRAITS>::tp_richcompare(
+  PyDate* const self,
+  Object* const other,
+  int const comparison)
+{
+  // FIXME: Allow comparison to other date types.
+  if (! PyDate::Check(other))
+    return not_implemented_ref().release();
+
+  Date const& d0 = self->date_;
+  Date const& d1 = ((PyDate*) other)->date_;
+
+  bool result;
+  switch (comparison) {
+  case Py_EQ: result = d0 == d1; break;
+  case Py_GE: result = d0 >= d1; break;
+  case Py_GT: result = d0 >  d1; break;
+  case Py_LE: result = d0 <= d1; break;
+  case Py_LT: result = d0 <  d1; break;
+  case Py_NE: result = d0 != d1; break;
+  default:    result = false; assert(false);
+  }
+  return Bool::from(result).release();
 }
 
 
@@ -231,7 +272,7 @@ PyDate<TRAITS>::MISSING_;
 template<typename TRAITS>
 ref<Object>
 PyDate<TRAITS>::get_datenum(
-  PyDate* self,
+  PyDate* const self,
   void* /* closure */)
 {
   return Long::FromLong(self->date_.get_datenum());
@@ -241,7 +282,7 @@ PyDate<TRAITS>::get_datenum(
 template<typename TRAITS>
 ref<Object>
 PyDate<TRAITS>::get_day(
-  PyDate* self,
+  PyDate* const self,
   void* /* closure */)
 {
   return Long::FromLong(self->date_.get_parts().day + 1);
@@ -251,7 +292,7 @@ PyDate<TRAITS>::get_day(
 template<typename TRAITS>
 ref<Object>
 PyDate<TRAITS>::get_invalid(
-  PyDate* self,
+  PyDate* const self,
   void* /* closure */)
 {
   return Bool::from(self->date_.is_invalid());
@@ -261,7 +302,7 @@ PyDate<TRAITS>::get_invalid(
 template<typename TRAITS>
 ref<Object>
 PyDate<TRAITS>::get_missing(
-  PyDate* self,
+  PyDate* const self,
   void* /* closure */)
 {
   return Bool::from(self->date_.is_missing());
@@ -271,7 +312,7 @@ PyDate<TRAITS>::get_missing(
 template<typename TRAITS>
 ref<Object>
 PyDate<TRAITS>::get_month(
-  PyDate* self,
+  PyDate* const self,
   void* /* closure */)
 {
   return Long::FromLong(self->date_.get_parts().month + 1);
@@ -281,7 +322,7 @@ PyDate<TRAITS>::get_month(
 template<typename TRAITS>
 ref<Object>
 PyDate<TRAITS>::get_ordinal(
-  PyDate* self,
+  PyDate* const self,
   void* /* closure */)
 {
   return Long::FromLong(self->date_.get_parts().ordinal);
@@ -291,7 +332,7 @@ PyDate<TRAITS>::get_ordinal(
 template<typename TRAITS>
 ref<Object>
 PyDate<TRAITS>::get_valid(
-  PyDate* self,
+  PyDate* const self,
   void* /* closure */)
 {
   return Bool::from(self->date_.is_valid());
@@ -301,7 +342,7 @@ PyDate<TRAITS>::get_valid(
 template<typename TRAITS>
 ref<Object>
 PyDate<TRAITS>::get_week(
-  PyDate* self,
+  PyDate* const self,
   void* /* closure */)
 {
   return Long::FromLong(self->date_.get_parts().week);
@@ -311,7 +352,7 @@ PyDate<TRAITS>::get_week(
 template<typename TRAITS>
 ref<Object>
 PyDate<TRAITS>::get_week_year(
-  PyDate* self,
+  PyDate* const self,
   void* /* closure */)
 {
   return Long::FromLong(self->date_.get_parts().week_year);
@@ -321,7 +362,7 @@ PyDate<TRAITS>::get_week_year(
 template<typename TRAITS>
 ref<Object>
 PyDate<TRAITS>::get_weekday(
-  PyDate* self,
+  PyDate* const self,
   void* /* closure */)
 {
   // FIXME: Use an enum.
@@ -332,7 +373,7 @@ PyDate<TRAITS>::get_weekday(
 template<typename TRAITS>
 ref<Object>
 PyDate<TRAITS>::get_year(
-  PyDate* self,
+  PyDate* const self,
   void* /* closure */)
 {
   return Long::FromLong(self->date_.get_parts().year);
@@ -391,7 +432,7 @@ PyDate<TRAITS>::build_type(
     (char const*)         nullptr,                        // tp_doc
     (traverseproc)        nullptr,                        // tp_traverse
     (inquiry)             nullptr,                        // tp_clear
-    (richcmpfunc)         nullptr,                        // tp_richcompare
+    (richcmpfunc)         tp_richcompare,                 // tp_richcompare
     (Py_ssize_t)          0,                              // tp_weaklistoffset
     (getiterfunc)         nullptr,                        // tp_iter
     (iternextfunc)        nullptr,                        // tp_iternext
@@ -432,7 +473,7 @@ PyDate<TRAITS>::type_;
 
 // FIXME: API:
 //   parts
-//   __eq__ & co.
+//   is()
 //   copy ctor
 //   conversion from other dates
 //   from_datenum()
