@@ -35,8 +35,11 @@ private:
 
   static py::ref<py::Object> get_datenum    (PyDate* self, void*);
   static py::ref<py::Object> get_day        (PyDate* self, void*);
+  static py::ref<py::Object> get_invalid    (PyDate* self, void*);
+  static py::ref<py::Object> get_missing    (PyDate* self, void*);
   static py::ref<py::Object> get_month      (PyDate* self, void*);
   static py::ref<py::Object> get_ordinal    (PyDate* self, void*);
+  static py::ref<py::Object> get_valid      (PyDate* self, void*);
   static py::ref<py::Object> get_week       (PyDate* self, void*);
   static py::ref<py::Object> get_week_year  (PyDate* self, void*);
   static py::ref<py::Object> get_weekday    (PyDate* self, void*);
@@ -146,6 +149,26 @@ PyDate<TRAITS>::get_day(
 
 template<typename TRAITS>
 py::ref<py::Object>
+PyDate<TRAITS>::get_invalid(
+  PyDate* self,
+  void* /* closure */)
+{
+  return py::Bool::from(self->date_.is_invalid());
+}
+
+
+template<typename TRAITS>
+py::ref<py::Object>
+PyDate<TRAITS>::get_missing(
+  PyDate* self,
+  void* /* closure */)
+{
+  return py::Bool::from(self->date_.is_missing());
+}
+
+
+template<typename TRAITS>
+py::ref<py::Object>
 PyDate<TRAITS>::get_month(
   PyDate* self,
   void* /* closure */)
@@ -161,6 +184,16 @@ PyDate<TRAITS>::get_ordinal(
   void* /* closure */)
 {
   return py::Long::FromLong(self->date_.get_parts().ordinal);
+}
+
+
+template<typename TRAITS>
+py::ref<py::Object>
+PyDate<TRAITS>::get_valid(
+  PyDate* self,
+  void* /* closure */)
+{
+  return py::Bool::from(self->date_.is_valid());
 }
 
 
@@ -211,8 +244,11 @@ PyDate<TRAITS>::getsets_
   = py::GetSets<PyDate>()
     .template add_get<get_datenum>      ("datenum")
     .template add_get<get_day>          ("day")
+    .template add_get<get_invalid>      ("invalid")
+    .template add_get<get_missing>      ("missing")
     .template add_get<get_month>        ("month")
     .template add_get<get_ordinal>      ("ordinal")
+    .template add_get<get_valid>        ("valid")
     .template add_get<get_week>         ("week")
     .template add_get<get_week_year>    ("week_year")
     .template add_get<get_weekday>      ("weekday")
@@ -288,10 +324,7 @@ py::Type
 PyDate<TRAITS>::type_;
 
 
-// API:
-//   valid
-//   invalid
-//   missing
+// FIXME: API:
 //   parts
 //   __eq__ & co.
 //   copy ctor
