@@ -11,7 +11,8 @@
 #include "cron/format.hh"
 #include "py.hh"
 
-using namespace alxs;
+namespace alxs {
+
 using namespace py;
 
 using std::string;
@@ -471,6 +472,9 @@ PyDate<TRAITS>::repr_format_;
 template<typename TRAITS>
 Type
 PyDate<TRAITS>::type_;
+
+
+}  // namespace alxs
 
 
 // FIXME: API:

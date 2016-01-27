@@ -32,8 +32,8 @@ PyInit__ext(void)
   auto module = Module::Create(&module_def);
 
   try {
-    PyDate<cron::DateTraits>::add_to(module, "Date");
-    PyDate<cron::SmallDateTraits>::add_to(module, "SmallDate");
+    alxs::PyDate<cron::DateTraits>::add_to(module, "Date");
+    alxs::PyDate<cron::SmallDateTraits>::add_to(module, "SmallDate");
     return module.release();
   }
   catch (Exception) {
