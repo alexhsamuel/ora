@@ -398,6 +398,7 @@ PyDate<TRAITS>::type_;
 
 
 // FIXME: API:
+//   __repr__
 //   parts
 //   __eq__ & co.
 //   copy ctor
@@ -405,9 +406,4 @@ PyDate<TRAITS>::type_;
 //   from_datenum()
 //   ctor from ymd triplet
 //   sloppy ctor
-//   INVALID
-//   LAST
-//   MAX
-//   MIN
-//   MISSING
 
