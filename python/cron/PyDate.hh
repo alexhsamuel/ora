@@ -514,12 +514,15 @@ PyDate<TRAITS>::type_;
 
 
 // FIXME: API:
-//   from_datenum() or overload ctor
-//   copy ctor
-//   ctor from ymd triplet
-//   sloppy ctor / ensure()
-//   use Month and Weekday enums
+//   from_parts()
 //   parts getset
+//   a parts class
+//   from_datenum()
+//   copy ctor, default ctor
+//   from_ymdi()
+//   ymdi getset
+//   ensure()
+//   use Month and Weekday enums
 //   conversion from other dates
 //   comparison with other dates
 //   today() function, with timezone
