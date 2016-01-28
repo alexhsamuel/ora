@@ -63,6 +63,11 @@ private:
   static ref<PyDate> MIN_;
   static ref<PyDate> MISSING_;
 
+  // Methods.
+  static ref<Object> method_is_same(PyDate* self, Tuple* args, Dict* kw_args);
+  static Methods<PyDate> tp_methods_;
+
+  // Getsets.
   static ref<Object> get_datenum    (PyDate* self, void*);
   static ref<Object> get_day        (PyDate* self, void*);
   static ref<Object> get_invalid    (PyDate* self, void*);
@@ -74,7 +79,7 @@ private:
   static ref<Object> get_week_year  (PyDate* self, void*);
   static ref<Object> get_weekday    (PyDate* self, void*);
   static ref<Object> get_year       (PyDate* self, void*);
-  static GetSets<PyDate> getsets_;
+  static GetSets<PyDate> tp_getsets_;
 
   static Type build_type(string const& type_name);
 
@@ -161,7 +166,6 @@ PyDate<TRAITS>::tp_init(
   Dict* kw_args)
 {
   static char const* arg_names[] = {"year", "month", "day", nullptr};
-
   unsigned short year;
   unsigned short month;
   unsigned short day;
@@ -241,6 +245,38 @@ PyDate<TRAITS>::tp_richcompare(
   }
   return Bool::from(result).release();
 }
+
+
+//------------------------------------------------------------------------------
+// Methods
+//------------------------------------------------------------------------------
+
+// We call this method "is_same" because "is" is a keyword in Python.
+
+template<typename TRAITS>
+ref<Object>
+PyDate<TRAITS>::method_is_same(
+  PyDate* const self,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] = {"object", nullptr};
+  Object* object;
+  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &object);
+
+  // FIXME: Comparison with other date types.
+  return Bool::from(
+       PyDate::Check(object) 
+    && self->date_.is(reinterpret_cast<PyDate const*>(object)->date_));
+}
+
+
+template<typename TRAITS>
+Methods<PyDate<TRAITS>>
+PyDate<TRAITS>::tp_methods_
+  = Methods<PyDate>()
+    .template add<method_is_same>        ("is_same")
+  ;
 
 
 //------------------------------------------------------------------------------
@@ -385,7 +421,7 @@ PyDate<TRAITS>::get_year(
 
 template<typename TRAITS>
 GetSets<PyDate<TRAITS>>
-PyDate<TRAITS>::getsets_ 
+PyDate<TRAITS>::tp_getsets_ 
   = GetSets<PyDate>()
     .template add_get<get_datenum>      ("datenum")
     .template add_get<get_day>          ("day")
@@ -439,9 +475,9 @@ PyDate<TRAITS>::build_type(
     (Py_ssize_t)          0,                              // tp_weaklistoffset
     (getiterfunc)         nullptr,                        // tp_iter
     (iternextfunc)        nullptr,                        // tp_iternext
-    (PyMethodDef*)        nullptr,                        // tp_methods
+    (PyMethodDef*)        tp_methods_,                    // tp_methods
     (PyMemberDef*)        nullptr,                        // tp_members
-    (PyGetSetDef*)        getsets_,                       // tp_getset
+    (PyGetSetDef*)        tp_getsets_,                    // tp_getset
     (_typeobject*)        nullptr,                        // tp_base
     (PyObject*)           nullptr,                        // tp_dict
     (descrgetfunc)        nullptr,                        // tp_descr_get
@@ -482,9 +518,9 @@ PyDate<TRAITS>::type_;
 //   copy ctor
 //   ctor from ymd triplet
 //   sloppy ctor / ensure()
-//   is()
 //   use Month and Weekday enums
 //   parts getset
 //   conversion from other dates
 //   comparison with other dates
+//   today() function, with timezone
 
