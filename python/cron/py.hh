@@ -654,7 +654,7 @@ StructSequenceType::NewType(PyStructSequence_Desc* desc)
   auto type = 
     (StructSequenceType*) check_not_null(PyStructSequence_NewType(desc));
   // Bug workaround; see https://bugs.python.org/issue20066.
-  type->tp_flags |= Py_TPFLAGS_HEAPTYPE;
+  // type->tp_flags |= Py_TPFLAGS_HEAPTYPE;
   return type;
 }
 
