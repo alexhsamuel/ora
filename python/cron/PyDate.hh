@@ -27,6 +27,7 @@ using std::unique_ptr;
 
 // FIXME: Should we cache parts?
 
+// FIXME: Template argument should be DATE, not TRAITS.
 template<typename TRAITS>
 class PyDate
   : public ExtensionType
