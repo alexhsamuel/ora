@@ -43,7 +43,7 @@ public:
    */
   static void add_to(Module& module, string const& name);
 
-  static ref<PyDate> create(Date date);
+  static ref<PyDate> create(Date date, PyTypeObject* type=&type_);
 
   static bool Check(PyObject* object);
 
@@ -136,10 +136,11 @@ PyDate<TRAITS>::add_to(
 template<typename TRAITS>
 ref<PyDate<TRAITS>>
 PyDate<TRAITS>::create(
-  Date date)
+  Date date,
+  PyTypeObject* type)
 {
   // FIXME: Check for nullptr?  Or wrap tp_alloc?
-  auto obj = ref<PyDate>::take(PyDate::type_.tp_alloc(&PyDate::type_, 0));
+  auto obj = ref<PyDate>::take(PyDate::type_.tp_alloc(type, 0));
 
   // date_ is const to indicate immutablity, but Python initialization is later
   // than C++ initialization, so we have to cast off const here.
@@ -269,7 +270,7 @@ PyDate<TRAITS>::method_from_datenum(
     "datenum is not an int");
   Arg::ParseTupleAndKeywords(args, kw_args, "i", arg_names, &datenum);
 
-  return create(Date::from_datenum(datenum));
+  return create(Date::from_datenum(datenum), type);
 }
 
 
@@ -284,7 +285,7 @@ PyDate<TRAITS>::method_from_ymdi(
   int ymdi;
   Arg::ParseTupleAndKeywords(args, kw_args, "i", arg_names, &ymdi);
 
-  return create(Date::from_ymdi(ymdi));
+  return create(Date::from_ymdi(ymdi), type);
 }
 
 

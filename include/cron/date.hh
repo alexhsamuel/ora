@@ -185,6 +185,7 @@ public:
 
   static DateTemplate from_datenum(Datenum datenum) { return DateTemplate(datenum_to_offset(datenum)); }
   static DateTemplate from_offset(Offset offset) { return DateTemplate(validate_offset(offset)); }
+  static DateTemplate from_ymdi(int const ymdi) { return DateTemplate(ymdi / 10000, (ymdi % 10000) / 100 - 1, ymdi % 100 - 1); }
 
   // Accessors.
 
