@@ -631,8 +631,6 @@ PyDate<TRAITS>::type_;
 
 
 // FIXME: API:
-//   parts getset
-//   a parts class
 //   copy ctor, default ctor
 //   from_ordinal(year, ordinal)
 //   from_week(year, week, weekday)
