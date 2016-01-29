@@ -182,7 +182,7 @@ bool
 PyDate<TRAITS>::Check(
   PyObject* other)
 {
-  return static_cast<Object*>(other)->IsInstance((Object*) &type_);
+  return static_cast<Object*>(other)->IsInstance((PyObject*) &type_);
 }
 
 
