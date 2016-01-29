@@ -309,13 +309,13 @@ public:
 
   bool IsInstance(PyObject* type)
     { return (bool) PyObject_IsInstance(this, type); }
-  bool IsInstance(PyTypeObject* type)
-    { return IsInstance((PyObject*) type); }
 
   auto Length()
     { return PyObject_Length(this); }
   auto Repr()
     { return ref<Unicode>::take(PyObject_Repr(this)); }
+  auto SetAttrString(char const* name, PyObject* obj)
+    { check_not_minus_one(PyObject_SetAttrString(this, name, obj)); }
   auto Str()
     { return ref<Unicode>::take(PyObject_Str(this)); }
 
@@ -583,7 +583,8 @@ public:
 //------------------------------------------------------------------------------
 
 class Type
-  : public PyTypeObject
+  : public PyTypeObject, 
+    public Object
 {
 public:
 
@@ -594,6 +595,49 @@ public:
     { check_zero(PyType_Ready(this)); }
 
 };
+
+
+//------------------------------------------------------------------------------
+
+class StructSequence
+  : public Object
+{
+public:
+
+  Object* GetItem(Py_ssize_t index)
+    { return check_not_null(PyStructSequence_GET_ITEM(this, index)); }
+
+  void initialize(Py_ssize_t index, baseref&& ref)
+    { PyStructSequence_SET_ITEM(this, index, ref.release()); }
+
+};
+
+
+//------------------------------------------------------------------------------
+
+class StructSequenceType
+  : public Type
+{
+public:
+
+  static ref<StructSequenceType> NewType(PyStructSequence_Desc* desc);
+
+  ref<StructSequence> New()
+    { return ref<StructSequence>::take(check_not_null(PyStructSequence_New(this))); }
+
+};
+
+
+inline ref<StructSequenceType>
+StructSequenceType::NewType(PyStructSequence_Desc* desc)
+{
+  auto type = ref<StructSequenceType>::take(
+    check_not_null((PyObject*) PyStructSequence_NewType(desc)));
+  // FIXME: ...?
+  // https://bugs.python.org/issue20066
+  type->tp_flags |= Py_TPFLAGS_HEAPTYPE;
+  return std::move(type);
+}
 
 
 //------------------------------------------------------------------------------

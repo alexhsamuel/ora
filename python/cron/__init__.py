@@ -1,4 +1,3 @@
-from   collections import namedtuple
 import enum
 
 import pln.py
@@ -7,7 +6,6 @@ from   ._ext import Date, SmallDate
 
 __all__ = (
     "Date",
-    "DateParts",
     "Month",
     "MonthOfYear",
     "SmallDate",
@@ -96,17 +94,5 @@ class Month(enum.IntEnum):
 
 # Add the months to the module namespace.
 globals().update(Month.__members__)
-
-
-DateParts = namedtuple(
-    "DateParts",
-    ["year",
-     "month",
-     "day",
-     "ordinal",
-     "week_year",
-     "week", 
-     "weekday",
-    ])
 
 

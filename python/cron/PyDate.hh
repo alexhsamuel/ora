@@ -78,6 +78,7 @@ private:
   static ref<Object> get_missing    (PyDate* self, void*);
   static ref<Object> get_month      (PyDate* self, void*);
   static ref<Object> get_ordinal    (PyDate* self, void*);
+  static ref<Object> get_parts      (PyDate* self, void*);
   static ref<Object> get_valid      (PyDate* self, void*);
   static ref<Object> get_week       (PyDate* self, void*);
   static ref<Object> get_week_year  (PyDate* self, void*);
@@ -86,10 +87,13 @@ private:
   static ref<Object> get_ymdi       (PyDate* self, void*);
   static GetSets<PyDate> tp_getsets_;
 
-  static Type build_type(string const& type_name);
+  /** Type for parts of a date representation.  */
+  static ref<StructSequenceType> parts_type_;
 
   /** Date format used to generate the repr.  */
   static unique_ptr<cron::DateFormat> repr_format_;
+
+  static Type build_type(string const& type_name);
 
 public:
 
@@ -128,6 +132,30 @@ PyDate<TRAITS>::add_to(
   dict->SetItemString("MAX",        MAX_);
   dict->SetItemString("MIN",        MIN_);
   dict->SetItemString("MISSING",    MISSING_);
+
+  // Build the parts type.
+  // FIXME: We don't need one of these per template instance.
+  if (parts_type_ == nullptr) {
+    static PyStructSequence_Field parts_fields[] = {
+      {(char*) "year", nullptr},
+      {(char*) "month", nullptr},
+      {(char*) "day", nullptr},
+      {(char*) "ordinal", nullptr},
+      {(char*) "week_year", nullptr},
+      {(char*) "week", nullptr},
+      {(char*) "weekday", nullptr},
+      {nullptr, nullptr}
+    };
+    static PyStructSequence_Desc parts_desc{
+      (char*) "DateParts",                                    // name
+      nullptr,                                                // doc
+      parts_fields,                                           // fields
+      7                                                       // n_in_sequence
+    };
+    parts_type_ = StructSequenceType::NewType(&parts_desc);
+    incref(parts_type_);
+  }
+  module.AddObject("DateParts", parts_type_);
 
   // Add the type to the module.
   module.add(&type_);
@@ -440,6 +468,29 @@ PyDate<TRAITS>::get_ordinal(
 
 template<typename TRAITS>
 ref<Object>
+PyDate<TRAITS>::get_parts(
+  PyDate* const self,
+  void* /* closure */)
+{
+  std::cerr << "get_parts\n";
+  auto parts = self->date_.get_parts();
+  std::cerr << "got parts\n";
+  auto parts_obj = parts_type_->New();
+  std::cerr << "got obj\n";
+  parts_obj->initialize(0, Long::FromLong(parts.year));
+  parts_obj->initialize(1, Long::FromLong(parts.month + 1));
+  parts_obj->initialize(2, Long::FromLong(parts.day + 1));
+  parts_obj->initialize(3, Long::FromLong(parts.ordinal));
+  parts_obj->initialize(4, Long::FromLong(parts.week_year));
+  parts_obj->initialize(5, Long::FromLong(parts.week));
+  parts_obj->initialize(6, Long::FromLong(parts.weekday));
+  std::cerr << "initialized\n";
+  return std::move(parts_obj);
+}
+
+
+template<typename TRAITS>
+ref<Object>
 PyDate<TRAITS>::get_valid(
   PyDate* const self,
   void* /* closure */)
@@ -511,6 +562,7 @@ PyDate<TRAITS>::tp_getsets_
     .template add_get<get_missing>      ("missing")
     .template add_get<get_month>        ("month")
     .template add_get<get_ordinal>      ("ordinal")
+    .template add_get<get_parts>        ("parts")
     .template add_get<get_valid>        ("valid")
     .template add_get<get_week>         ("week")
     .template add_get<get_week_year>    ("week_year")
@@ -518,6 +570,20 @@ PyDate<TRAITS>::tp_getsets_
     .template add_get<get_year>         ("year")
     .template add_get<get_ymdi>         ("ymdi")
   ;
+
+
+//------------------------------------------------------------------------------
+// Helpers
+//------------------------------------------------------------------------------
+
+template<typename TRAITS>
+ref<StructSequenceType> 
+PyDate<TRAITS>::parts_type_;
+
+
+template<typename TRAITS>
+unique_ptr<cron::DateFormat>
+PyDate<TRAITS>::repr_format_;
 
 
 //------------------------------------------------------------------------------
@@ -581,11 +647,6 @@ PyDate<TRAITS>::build_type(
     (destructor)          nullptr,                        // tp_finalize
   };
 }
-
-
-template<typename TRAITS>
-unique_ptr<cron::DateFormat>
-PyDate<TRAITS>::repr_format_;
 
 
 template<typename TRAITS>
