@@ -88,7 +88,7 @@ private:
   static GetSets<PyDate> tp_getsets_;
 
   /** Type for parts of a date representation.  */
-  static ref<StructSequenceType> parts_type_;
+  static StructSequenceType* parts_type_;
 
   /** Date format used to generate the repr.  */
   static unique_ptr<cron::DateFormat> repr_format_;
@@ -153,9 +153,8 @@ PyDate<TRAITS>::add_to(
       7                                                       // n_in_sequence
     };
     parts_type_ = StructSequenceType::NewType(&parts_desc);
-    incref(parts_type_);
   }
-  module.AddObject("DateParts", parts_type_);
+  module.AddObject("DateParts", (PyObject*) parts_type_);
 
   // Add the type to the module.
   module.add(&type_);
@@ -183,7 +182,7 @@ bool
 PyDate<TRAITS>::Check(
   PyObject* other)
 {
-  return ((Object*) other)->IsInstance(&type_);
+  return static_cast<Object*>(other)->IsInstance((Object*) &type_);
 }
 
 
@@ -472,19 +471,17 @@ PyDate<TRAITS>::get_parts(
   PyDate* const self,
   void* /* closure */)
 {
-  std::cerr << "get_parts\n";
   auto parts = self->date_.get_parts();
-  std::cerr << "got parts\n";
   auto parts_obj = parts_type_->New();
-  std::cerr << "got obj\n";
   parts_obj->initialize(0, Long::FromLong(parts.year));
+  // FIXME: Use enum.
   parts_obj->initialize(1, Long::FromLong(parts.month + 1));
   parts_obj->initialize(2, Long::FromLong(parts.day + 1));
   parts_obj->initialize(3, Long::FromLong(parts.ordinal));
   parts_obj->initialize(4, Long::FromLong(parts.week_year));
   parts_obj->initialize(5, Long::FromLong(parts.week));
+  // FIXME: Use enum.
   parts_obj->initialize(6, Long::FromLong(parts.weekday));
-  std::cerr << "initialized\n";
   return std::move(parts_obj);
 }
 
@@ -577,7 +574,7 @@ PyDate<TRAITS>::tp_getsets_
 //------------------------------------------------------------------------------
 
 template<typename TRAITS>
-ref<StructSequenceType> 
+StructSequenceType*
 PyDate<TRAITS>::parts_type_;
 
 

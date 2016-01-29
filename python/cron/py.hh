@@ -15,6 +15,7 @@ namespace py {
 class Long;
 class Object;
 class Tuple;
+class Type;
 class Unicode;
 
 // FIXME: Remove this.
@@ -137,6 +138,15 @@ inline Object* check_not_null(PyObject* obj)
 }
 
 
+inline Type* check_not_null(PyTypeObject* type)
+{
+  if (type == nullptr)
+    throw Exception();
+  else
+    return (Type*) type;
+}
+
+
 //------------------------------------------------------------------------------
 
 template<typename T>
@@ -197,6 +207,14 @@ protected:
 };
 
 
+// FIXME: ref<> does not work with Type and derived objects, since it's not
+// a subtype of Object.  This would be hard to do because Object derives from
+// PyObject, which declares data attributes, the same as PyTypeObject.
+//
+// One way around this would be to separate the mixin Object, like PyObject
+// with extra helpers, from a BaseObject type that derives from the concrete
+// PyObject.
+
 template<typename T>
 class ref
   : public baseref
@@ -209,6 +227,7 @@ public:
    * Call this method on an object pointer that comes with an assumed reference,
    * such as the return value of an API call that returns ownership.
    */
+  // FIXME: Maybe do an unchecked cast here, since C API functions do a check?
   static ref<T> take(PyObject* obj)
     { return ref(cast<T>(obj)); }
 
@@ -583,8 +602,7 @@ public:
 //------------------------------------------------------------------------------
 
 class Type
-  : public PyTypeObject, 
-    public Object
+  : public PyTypeObject
 {
 public:
 
@@ -620,23 +638,24 @@ class StructSequenceType
 {
 public:
 
-  static ref<StructSequenceType> NewType(PyStructSequence_Desc* desc);
+  static StructSequenceType* NewType(PyStructSequence_Desc* desc);
 
+  // FIXME: ref<> doesn't work with types, so we return a pointer with an
+  // implicit reference.  Fix this.
   ref<StructSequence> New()
-    { return ref<StructSequence>::take(check_not_null(PyStructSequence_New(this))); }
+    { return ref<StructSequence>::take(check_not_null((PyObject*) PyStructSequence_New((PyTypeObject*) this))); }
 
 };
 
 
-inline ref<StructSequenceType>
+inline StructSequenceType*
 StructSequenceType::NewType(PyStructSequence_Desc* desc)
 {
-  auto type = ref<StructSequenceType>::take(
-    check_not_null((PyObject*) PyStructSequence_NewType(desc)));
-  // FIXME: ...?
-  // https://bugs.python.org/issue20066
+  auto type = 
+    (StructSequenceType*) check_not_null(PyStructSequence_NewType(desc));
+  // Bug workaround; see https://bugs.python.org/issue20066.
   type->tp_flags |= Py_TPFLAGS_HEAPTYPE;
-  return std::move(type);
+  return type;
 }
 
 
