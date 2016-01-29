@@ -64,6 +64,7 @@ private:
   static ref<PyDate> MISSING_;
 
   // Methods.
+  static ref<Object> method_from_datenum(PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_is_same(PyDate* self, Tuple* args, Dict* kw_args);
   static Methods<PyDate> tp_methods_;
 
@@ -251,8 +252,25 @@ PyDate<TRAITS>::tp_richcompare(
 // Methods
 //------------------------------------------------------------------------------
 
-// We call this method "is_same" because "is" is a keyword in Python.
+template<typename TRAITS>
+ref<Object>
+PyDate<TRAITS>::method_from_datenum(
+  PyTypeObject* const type,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] = {"datenum", nullptr};
+  cron::Datenum datenum;
+  static_assert(
+    sizeof(cron::Datenum) == sizeof(int),
+    "datenum is not an int");
+  Arg::ParseTupleAndKeywords(args, kw_args, "i", arg_names, &datenum);
 
+  return create(Date::from_datenum(datenum));
+}
+
+
+// We call this method "is_same" because "is" is a keyword in Python.
 template<typename TRAITS>
 ref<Object>
 PyDate<TRAITS>::method_is_same(
@@ -275,7 +293,8 @@ template<typename TRAITS>
 Methods<PyDate<TRAITS>>
 PyDate<TRAITS>::tp_methods_
   = Methods<PyDate>()
-    .template add<method_is_same>        ("is_same")
+    .template add_class<method_from_datenum>        ("from_datenum")
+    .template add<method_is_same>                   ("is_same")
   ;
 
 
@@ -517,10 +536,11 @@ PyDate<TRAITS>::type_;
 //   from_parts()
 //   parts getset
 //   a parts class
-//   from_datenum()
 //   copy ctor, default ctor
 //   from_ymdi()
 //   ymdi getset
+//   from_ordinal(year, ordinal)
+//   from_week(year, week, weekday)
 //   ensure()
 //   use Month and Weekday enums
 //   conversion from other dates

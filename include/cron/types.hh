@@ -104,7 +104,7 @@ Daytick constexpr   DAYTICK_INVALID     = std::numeric_limits<Daytick>::max();
 /**
  * Internal representation of dates.
  *
- * We performe date computations on "datenums", the number of days elapsed since
+ * We perform date computations on "datenums", the number of days elapsed since
  * 1200 March 1.  (This is before the Gregorian calendar was adopted, but we
  * extrapolate backwards.)  We choose March 1 for convenience of computation: a
  * leap day, if any, is always the last day of the year since March 1.  That
@@ -113,7 +113,7 @@ Daytick constexpr   DAYTICK_INVALID     = std::numeric_limits<Daytick>::max();
  *
  * The minimum year is the year C.E. 1; B.C.E. years are not supported.  The
  * maximum year is 9999.  Too much code exists that assumes four-digit years to
- * make larger years worth the trouble.  Besides, if we are still using the same
+ * make larger years worth the trouble.  Also, if we are still using the same
  * f***ed up calendar system in 8,000 years, I will kill myself.
  */
 typedef int32_t Datenum;

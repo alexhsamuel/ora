@@ -703,6 +703,10 @@ private:
 template<typename CLASS>
 using MethodPtr = ref<Object> (*)(CLASS* self, Tuple* args, Dict* kw_args);
 
+using StaticMethodPtr = ref<Object> (*)(Tuple* args, Dict* kw_args);
+
+using ClassMethodPtr = ref<Object> (*)(PyTypeObject* class_, Tuple* args, Dict* kw_args);
+
 
 /**
  * Wraps a method that takes args and kw_args and returns an object.
@@ -714,6 +718,49 @@ PyObject* wrap(PyObject* self, PyObject* args, PyObject* kw_args)
   try {
     result = METHOD(
       reinterpret_cast<CLASS*>(self),
+      reinterpret_cast<Tuple*>(args),
+      reinterpret_cast<Dict*>(kw_args));
+  }
+  catch (Exception) {
+    return nullptr;
+  }
+  assert(result != nullptr);
+  return result.release();
+}
+
+
+template<StaticMethodPtr METHOD>
+PyObject* 
+wrap_static_method(
+  PyObject* /* unused */, 
+  PyObject* args, 
+  PyObject* kw_args)
+{
+  ref<Object> result;
+  try {
+    result = METHOD(
+      reinterpret_cast<Tuple*>(args),
+      reinterpret_cast<Dict*>(kw_args));
+  }
+  catch (Exception) {
+    return nullptr;
+  }
+  assert(result != nullptr);
+  return result.release();
+}
+
+
+template<ClassMethodPtr METHOD>
+PyObject* 
+wrap_class_method(
+  PyObject* class_,
+  PyObject* args, 
+  PyObject* kw_args)
+{
+  ref<Object> result;
+  try {
+    result = METHOD(
+      reinterpret_cast<PyTypeObject*>(class_),
       reinterpret_cast<Tuple*>(args),
       reinterpret_cast<Dict*>(kw_args));
   }
@@ -741,6 +788,34 @@ public:
       name,
       (PyCFunction) wrap<CLASS, METHOD>,
       METH_VARARGS | METH_KEYWORDS,
+      doc
+    });
+    return *this;
+  }
+
+  template<StaticMethodPtr METHOD>
+  Methods& add_static(char const* const name, char const* const doc=nullptr)
+  {
+    assert(name != nullptr);
+    assert(!done_);
+    methods_.push_back({
+      name,
+      (PyCFunction) wrap_static_method<METHOD>,
+      METH_VARARGS | METH_KEYWORDS | METH_STATIC,
+      doc
+    });
+    return *this;
+  }
+
+  template<ClassMethodPtr METHOD>
+  Methods& add_class(char const* const name, char const* const doc=nullptr)
+  {
+    assert(name != nullptr);
+    assert(!done_);
+    methods_.push_back({
+      name,
+      (PyCFunction) wrap_class_method<METHOD>,
+      METH_VARARGS | METH_KEYWORDS | METH_CLASS,
       doc
     });
     return *this;
