@@ -153,8 +153,8 @@ PyDate<TRAITS>::add_to(
       7                                                       // n_in_sequence
     };
     parts_type_ = StructSequenceType::NewType(&parts_desc);
+    module.AddObject("DateParts", (PyObject*) parts_type_);
   }
-  module.AddObject("DateParts", (PyObject*) parts_type_);
 
   // Add the type to the module.
   module.add(&type_);
