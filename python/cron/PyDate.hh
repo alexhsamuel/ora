@@ -66,6 +66,7 @@ private:
 
   // Methods.
   static ref<Object> method_from_datenum(PyTypeObject* type, Tuple* args, Dict* kw_args);
+  static ref<Object> method_from_parts(PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_ymdi(PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_is_same(PyDate* self, Tuple* args, Dict* kw_args);
   static Methods<PyDate> tp_methods_;
@@ -276,6 +277,35 @@ PyDate<TRAITS>::method_from_datenum(
 
 template<typename TRAITS>
 ref<Object>
+PyDate<TRAITS>::method_from_parts(
+  PyTypeObject* const type,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  if (kw_args != nullptr)
+    throw TypeError("from_parts() takes no keyword arguments");
+
+  Sequence* parts;
+  // Accept either a single three-element sequence, or three args.
+  if (args->Length() == 1) {
+    parts = cast<Sequence>(args->GetItem(0));
+    if (parts->Length() < 3)
+      throw TypeError("parts must be a 3-element or longer sequence");
+  }
+  else if (args->Length() == 3)
+    parts = args;
+  else
+    throw TypeError("from_parts() takes one or three arguments");
+
+  long const year   = parts->GetItem(0)->long_value();
+  long const month  = parts->GetItem(1)->long_value();
+  long const day    = parts->GetItem(2)->long_value();
+  return create(Date(year, month - 1, day - 1), type);
+}
+
+
+template<typename TRAITS>
+ref<Object>
 PyDate<TRAITS>::method_from_ymdi(
   PyTypeObject* const type,
   Tuple* const args,
@@ -313,6 +343,7 @@ Methods<PyDate<TRAITS>>
 PyDate<TRAITS>::tp_methods_
   = Methods<PyDate>()
     .template add_class<method_from_datenum>        ("from_datenum")
+    .template add_class<method_from_parts>          ("from_parts")
     .template add_class<method_from_ymdi>           ("from_ymdi")
     .template add<method_is_same>                   ("is_same")
   ;
@@ -566,7 +597,6 @@ PyDate<TRAITS>::type_;
 
 
 // FIXME: API:
-//   from_parts()
 //   parts getset
 //   a parts class
 //   copy ctor, default ctor

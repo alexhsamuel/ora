@@ -103,12 +103,37 @@ inline void check_zero(int value)
 
 
 /**
+ * Raises 'Exception' if 'value' is -1; returns it otherwise.
+ */
+template<typename TYPE>
+inline TYPE check_not_minus_one(TYPE value)
+{
+  if (value == -1)
+    throw Exception();
+  else
+    return value;
+}
+
+
+/**
  * Raises 'Exception' if value is not true.
  */
 inline void check_true(int value)
 {
   if (value == 0)
     throw Exception();
+}
+
+
+/**
+ * Raises 'Exception' if 'value' is null; otherwise, returns it.
+ */
+inline Object* check_not_null(PyObject* obj)
+{
+  if (obj == nullptr)
+    throw Exception();
+  else
+    return (Object*) obj;
 }
 
 
@@ -295,7 +320,6 @@ public:
     { return ref<Unicode>::take(PyObject_Str(this)); }
 
   ref<py::Long> Long();
-
   long long_value();
 
 };
@@ -321,6 +345,9 @@ public:
 
   void SetItemString(char const* key, PyObject* value)
     { check_zero(PyDict_SetItemString(this, key, value)); }
+
+  Py_ssize_t Size()
+    { return check_not_minus_one(PyDict_Size(this)); }
 
 };
 
@@ -417,8 +444,27 @@ public:
 
 //------------------------------------------------------------------------------
 
-class Tuple
+class Sequence
   : public Object
+{
+public:
+
+  static bool Check(PyObject* obj)
+    { return PySequence_Check(obj); }
+
+  Object* GetItem(Py_ssize_t index)
+    { return check_not_null(PySequence_GetItem(this, index)); }
+
+  Py_ssize_t Length()
+    { return PySequence_Length(this); }
+
+};
+
+
+//------------------------------------------------------------------------------
+
+class Tuple
+  : public Sequence
 {
 public:
 
@@ -429,9 +475,13 @@ public:
     { return ref<Tuple>::take(PyTuple_New(len)); }
 
   void initialize(Py_ssize_t index, baseref&& ref)
-  {
-    PyTuple_SET_ITEM(this, index, ref.release());
-  }
+    { PyTuple_SET_ITEM(this, index, ref.release()); }
+
+  Object* GetItem(Py_ssize_t index) 
+    { return check_not_null(PyTuple_GET_ITEM(this, index)); }
+
+  Py_ssize_t GetLength() 
+    { return PyTuple_GET_SIZE(this); }
 
   // FIXME: Remove?
   static auto from(std::initializer_list<PyObject*> items) 
@@ -603,8 +653,7 @@ inline void baseref::clear()
 inline ref<Long>
 Object::Long()
 {
-  // FIXME: Check errors.
-  return ref<py::Long>::take(PyNumber_Long(this));
+  return ref<py::Long>::take(check_not_null(PyNumber_Long(this)));
 }
 
 
