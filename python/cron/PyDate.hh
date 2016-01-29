@@ -20,6 +20,13 @@ using std::make_unique;
 using std::unique_ptr;
 
 //------------------------------------------------------------------------------
+// Parts type
+//------------------------------------------------------------------------------
+
+StructSequenceType*
+get_date_parts_type();
+
+//------------------------------------------------------------------------------
 // Type class
 //------------------------------------------------------------------------------
 
@@ -87,9 +94,6 @@ private:
   static ref<Object> get_ymdi       (PyDate* self, void*);
   static GetSets<PyDate> tp_getsets_;
 
-  /** Type for parts of a date representation.  */
-  static StructSequenceType* parts_type_;
-
   /** Date format used to generate the repr.  */
   static unique_ptr<cron::DateFormat> repr_format_;
 
@@ -132,29 +136,6 @@ PyDate<TRAITS>::add_to(
   dict->SetItemString("MAX",        MAX_);
   dict->SetItemString("MIN",        MIN_);
   dict->SetItemString("MISSING",    MISSING_);
-
-  // Build the parts type.
-  // FIXME: We don't need one of these per template instance.
-  if (parts_type_ == nullptr) {
-    static PyStructSequence_Field parts_fields[] = {
-      {(char*) "year", nullptr},
-      {(char*) "month", nullptr},
-      {(char*) "day", nullptr},
-      {(char*) "ordinal", nullptr},
-      {(char*) "week_year", nullptr},
-      {(char*) "week", nullptr},
-      {(char*) "weekday", nullptr},
-      {nullptr, nullptr}
-    };
-    static PyStructSequence_Desc parts_desc{
-      (char*) "DateParts",                                    // name
-      nullptr,                                                // doc
-      parts_fields,                                           // fields
-      7                                                       // n_in_sequence
-    };
-    parts_type_ = StructSequenceType::NewType(&parts_desc);
-    module.AddObject("DateParts", (PyObject*) parts_type_);
-  }
 
   // Add the type to the module.
   module.add(&type_);
@@ -472,7 +453,7 @@ PyDate<TRAITS>::get_parts(
   void* /* closure */)
 {
   auto parts = self->date_.get_parts();
-  auto parts_obj = parts_type_->New();
+  auto parts_obj = get_date_parts_type()->New();
   parts_obj->initialize(0, Long::FromLong(parts.year));
   // FIXME: Use enum.
   parts_obj->initialize(1, Long::FromLong(parts.month + 1));
@@ -572,11 +553,6 @@ PyDate<TRAITS>::tp_getsets_
 //------------------------------------------------------------------------------
 // Helpers
 //------------------------------------------------------------------------------
-
-template<typename TRAITS>
-StructSequenceType*
-PyDate<TRAITS>::parts_type_;
-
 
 template<typename TRAITS>
 unique_ptr<cron::DateFormat>

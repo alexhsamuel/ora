@@ -638,25 +638,21 @@ class StructSequenceType
 {
 public:
 
-  static StructSequenceType* NewType(PyStructSequence_Desc* desc);
+  static void InitType(StructSequenceType* type, PyStructSequence_Desc* desc)
+    { check_zero(PyStructSequence_InitType2(type, desc)); }
 
-  // FIXME: ref<> doesn't work with types, so we return a pointer with an
-  // implicit reference.  Fix this.
+#if 0
+  static StructSequenceType* NewType(PyStructSequence_Desc* desc)
+    { return (StructSequenceType*) check_not_null(PyStructSequence_NewType(desc)); }
+#endif
+
+  // FIXME: Doesn't work; see https://bugs.python.org/issue20066.  We can't
+  // just set TPFLAGS_HEAPTYPE, as the returned type object doesn't have the
+  // layout that implies.
   ref<StructSequence> New()
     { return ref<StructSequence>::take(check_not_null((PyObject*) PyStructSequence_New((PyTypeObject*) this))); }
 
 };
-
-
-inline StructSequenceType*
-StructSequenceType::NewType(PyStructSequence_Desc* desc)
-{
-  auto type = 
-    (StructSequenceType*) check_not_null(PyStructSequence_NewType(desc));
-  // Bug workaround; see https://bugs.python.org/issue20066.
-  // type->tp_flags |= Py_TPFLAGS_HEAPTYPE;
-  return type;
-}
 
 
 //------------------------------------------------------------------------------

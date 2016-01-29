@@ -2,10 +2,11 @@ import enum
 
 import pln.py
 
-from   ._ext import Date, SmallDate
+from   ._ext import Date, DateParts, SmallDate
 
 __all__ = (
     "Date",
+    "DateParts",
     "Month",
     "MonthOfYear",
     "SmallDate",
