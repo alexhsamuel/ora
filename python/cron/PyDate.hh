@@ -65,6 +65,7 @@ private:
 
   // Methods.
   static ref<Object> method_from_datenum(PyTypeObject* type, Tuple* args, Dict* kw_args);
+  static ref<Object> method_from_ymdi(PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_is_same(PyDate* self, Tuple* args, Dict* kw_args);
   static Methods<PyDate> tp_methods_;
 
@@ -80,6 +81,7 @@ private:
   static ref<Object> get_week_year  (PyDate* self, void*);
   static ref<Object> get_weekday    (PyDate* self, void*);
   static ref<Object> get_year       (PyDate* self, void*);
+  static ref<Object> get_ymdi       (PyDate* self, void*);
   static GetSets<PyDate> tp_getsets_;
 
   static Type build_type(string const& type_name);
@@ -270,6 +272,21 @@ PyDate<TRAITS>::method_from_datenum(
 }
 
 
+template<typename TRAITS>
+ref<Object>
+PyDate<TRAITS>::method_from_ymdi(
+  PyTypeObject* const type,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] = {"ymdi", nullptr};
+  int ymdi;
+  Arg::ParseTupleAndKeywords(args, kw_args, "i", arg_names, &ymdi);
+
+  return create(Date::from_ymdi(ymdi));
+}
+
+
 // We call this method "is_same" because "is" is a keyword in Python.
 template<typename TRAITS>
 ref<Object>
@@ -294,6 +311,7 @@ Methods<PyDate<TRAITS>>
 PyDate<TRAITS>::tp_methods_
   = Methods<PyDate>()
     .template add_class<method_from_datenum>        ("from_datenum")
+    .template add_class<method_from_ymdi>           ("from_ymdi")
     .template add<method_is_same>                   ("is_same")
   ;
 
@@ -439,6 +457,18 @@ PyDate<TRAITS>::get_year(
 
 
 template<typename TRAITS>
+ref<Object>
+PyDate<TRAITS>::get_ymdi(
+  PyDate* const self,
+  void* /* closure */)
+{
+  auto const parts = self->date_.get_parts();
+  int ymd = 10000 * parts.year + 100 * (parts.month + 1) + (parts.day + 1);
+  return Long::FromLong(ymd);
+}
+
+
+template<typename TRAITS>
 GetSets<PyDate<TRAITS>>
 PyDate<TRAITS>::tp_getsets_ 
   = GetSets<PyDate>()
@@ -453,6 +483,7 @@ PyDate<TRAITS>::tp_getsets_
     .template add_get<get_week_year>    ("week_year")
     .template add_get<get_weekday>      ("weekday")
     .template add_get<get_year>         ("year")
+    .template add_get<get_ymdi>         ("ymdi")
   ;
 
 
@@ -537,8 +568,6 @@ PyDate<TRAITS>::type_;
 //   parts getset
 //   a parts class
 //   copy ctor, default ctor
-//   from_ymdi()
-//   ymdi getset
 //   from_ordinal(year, ordinal)
 //   from_week(year, week, weekday)
 //   ensure()
