@@ -18,10 +18,6 @@ class Tuple;
 class Type;
 class Unicode;
 
-// FIXME: Remove this.
-constexpr PyGetSetDef GETSETDEF_END
-    {nullptr, nullptr, nullptr, nullptr, nullptr};
-
 //------------------------------------------------------------------------------
 
 class Exception
