@@ -632,14 +632,3 @@ PyDate<TRAITS>::type_;
 }  // namespace alxs
 
 
-// FIXME: API:
-//   copy ctor, default ctor
-//   from_ordinal(year, ordinal)
-//   from_week(week_year, week, weekday)
-//   ensure()
-//   conversion from other dates
-//   comparison with other dates
-//   today() function, with timezone
-//   docstrings
-//   tests
-
