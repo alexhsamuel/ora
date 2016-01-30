@@ -11,12 +11,13 @@
 
 ## PyDate
 
-- `from_ordinal(year, ordinal)`
-- `from_week(week_year, week, weekday)`
-- `ensure()`
+- API
+  - `from_ordinal(year, ordinal)`
+  - `from_week(week_year, week, weekday)`
+  - `ensure()`
+  - `today(tz)`
 - conversion from other date representations
 - comparison with other date representations
-- `today(tz)`
 - docstrings
 - unit tests
 
