@@ -904,6 +904,11 @@ InitprocPtr
   = void (*)(CLASS* self, Tuple* args, Dict* kw_args);
 
 template<typename CLASS>
+using
+ReprfuncPtr
+  = ref<Unicode> (*)(CLASS* self);
+
+template<typename CLASS>
 using MethodPtr = ref<Object> (*)(CLASS* self, Tuple* args, Dict* kw_args);
 
 using StaticMethodPtr = ref<Object> (*)(Tuple* args, Dict* kw_args);
@@ -931,6 +936,26 @@ wrap(
     return -1;
   }
   return 0;
+}
+
+
+/**
+ * Wraps a reprfunc.
+ */
+template<typename CLASS, ReprfuncPtr<CLASS> FUNCTION>
+PyObject*
+wrap(
+  PyObject* self)
+{
+  ref<Unicode> result;
+  try {
+    result = FUNCTION(static_cast<CLASS*>(self));
+  }
+  catch (Exception) {
+    return nullptr;
+  }
+  assert(result != nullptr);
+  return result.release();
 }
 
 

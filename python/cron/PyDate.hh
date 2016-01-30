@@ -68,8 +68,8 @@ private:
 
   static void tp_init(PyDate* self, Tuple* args, Dict* kw_args);
   static void tp_dealloc(PyDate* self);
-  static Unicode* tp_repr(PyDate* self);
-  static Unicode* tp_str(PyDate* self);
+  static ref<Unicode> tp_repr(PyDate* self);
+  static ref<Unicode> tp_str(PyDate* self);
   static Object* tp_richcompare(PyDate* self, Object* other, int comparison);
 
   // Singleton objects, constructed lazily.
@@ -233,25 +233,24 @@ PyDate<TRAITS>::tp_dealloc(PyDate* const self)
 }
 
 
-// FIXME: Wrap tp_repr.
 template<typename TRAITS>
-Unicode*
+ref<Unicode>
 PyDate<TRAITS>::tp_repr(
   PyDate* const self)
 {
-  return Unicode::from((*repr_format_)(self->date_)).release();
+  return Unicode::from((*repr_format_)(self->date_));
 }
 
 
 // FIXME: Wrap tp_str.
 template<typename TRAITS>
-Unicode*
+ref<Unicode>
 PyDate<TRAITS>::tp_str(
   PyDate* const self)
 {
   // FIXME: Make the format configurable.
   auto& format = cron::DateFormat::get_default();
-  return Unicode::from(format(self->date_)).release();
+  return Unicode::from(format(self->date_));
 }
 
 
@@ -597,13 +596,13 @@ PyDate<TRAITS>::build_type(
     (getattrfunc)         nullptr,                        // tp_getattr
     (setattrfunc)         nullptr,                        // tp_setattr
     (void*)               nullptr,                        // tp_reserved
-    (reprfunc)            tp_repr,                        // tp_repr
+    (reprfunc)            wrap<PyDate, tp_repr>,          // tp_repr
     (PyNumberMethods*)    nullptr,                        // tp_as_number
     (PySequenceMethods*)  nullptr,                        // tp_as_sequence
     (PyMappingMethods*)   nullptr,                        // tp_as_mapping
     (hashfunc)            nullptr,                        // tp_hash
     (ternaryfunc)         nullptr,                        // tp_call
-    (reprfunc)            tp_str,                         // tp_str
+    (reprfunc)            wrap<PyDate, tp_str>,           // tp_str
     (getattrofunc)        nullptr,                        // tp_getattro
     (setattrofunc)        nullptr,                        // tp_setattro
     (PyBufferProcs*)      nullptr,                        // tp_as_buffer
