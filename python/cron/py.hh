@@ -319,6 +319,10 @@ class Object
 {
 public:
 
+  ref<Object> CallMethodObjArgs(char const* name, bool check=false);
+  // FIXME: Hacky.
+  ref<Object> CallMethodObjArgs(char const* name, PyObject* arg0, bool check=false);
+  ref<Object> CallMethodObjArgs(char const* name, PyObject* arg0, PyObject* arg1, bool check=false);
   ref<Object> CallObject(Tuple* args);
   static bool Check(PyObject* obj)
     { return true; }
@@ -344,6 +348,57 @@ public:
   long long_value();
 
 };
+
+
+inline
+ref<Object>
+Object::CallMethodObjArgs(
+  char const* name,
+  bool check)
+{
+  ref<Object> method = GetAttrString(name, false);
+  if (check)
+    check_not_null(method);
+  auto result = PyObject_CallFunctionObjArgs(method, nullptr);
+  if (check)
+    check_not_null(result);
+  return ref<Object>::take(result);
+}
+
+
+inline
+ref<Object>
+Object::CallMethodObjArgs(
+  char const* name,
+  PyObject* arg0,
+  bool check)
+{
+  ref<Object> method = GetAttrString(name, false);
+  if (check)
+    check_not_null(method);
+  auto result = PyObject_CallFunctionObjArgs(method, arg0, nullptr);
+  if (check)
+    check_not_null(result);
+  return ref<Object>::take(result);
+}
+
+
+inline
+ref<Object>
+Object::CallMethodObjArgs(
+  char const* name,
+  PyObject* arg0,
+  PyObject* arg1,
+  bool check)
+{
+  ref<Object> method = GetAttrString(name, false);
+  if (check)
+    check_not_null(method);
+  auto result = PyObject_CallFunctionObjArgs(method, arg0, arg1, nullptr);
+  if (check)
+    check_not_null(result);
+  return ref<Object>::take(result);
+}
 
 
 template<typename T>

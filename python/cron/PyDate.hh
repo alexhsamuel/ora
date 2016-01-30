@@ -203,20 +203,16 @@ PyDate<TRAITS>::tp_init(
   // FIXME: Check for other PyDate types?
 
   else {
+    // Try for a date type that has a 'datenum' attribute.
     auto datenum = obj->GetAttrString("datenum", false);
     if (datenum != nullptr) 
       date = Date::from_datenum(datenum->long_value());
 
     else {
-      auto year     = obj->GetAttrString("year", false);
-      auto month    = obj->GetAttrString("month", false);
-      auto day      = obj->GetAttrString("day", false);
-
-      if (year != nullptr && month != nullptr && day != nullptr) 
-        date = Date(
-          year->long_value(), 
-          month->long_value() - 1, 
-          day->long_value() - 1);
+      // Try for a date type that as a 'toordinal()' method.
+      auto ordinal = obj->CallMethodObjArgs("toordinal", false);
+      if (ordinal != nullptr)
+        date = Date::from_datenum(ordinal->long_value() - 437986);
 
       else {
         // No type match.
