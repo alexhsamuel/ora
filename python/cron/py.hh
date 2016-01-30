@@ -319,12 +319,13 @@ class Object
 {
 public:
 
+  ref<Object> CallObject(Tuple* args);
   static bool Check(PyObject* obj)
     { return true; }
-
+  auto GetAttrString(char const* const name)
+    { return ref<Object>::take(check_not_null(PyObject_GetAttrString(this, name))); }
   bool IsInstance(PyObject* type)
     { return (bool) PyObject_IsInstance(this, type); }
-
   auto Length()
     { return PyObject_Length(this); }
   auto Repr()
@@ -355,10 +356,19 @@ class Dict
 {
 public:
 
-  static bool Check(PyObject* obj)
+  static bool Check(PyObject* const obj)
     { return PyDict_Check(obj); }
 
-  void SetItemString(char const* key, PyObject* value)
+  Object* GetItemString(char const* const key)
+  { 
+    Object* const value = (Object*) PyDict_GetItemString(this, key);
+    if (value == nullptr)
+      throw KeyError(key);
+    else
+      return value;
+  }
+
+  void SetItemString(char const* const key, PyObject* const value)
     { check_zero(PyDict_SetItemString(this, key, value)); }
 
   Py_ssize_t Size()
@@ -435,12 +445,12 @@ public:
     { return PyModule_Check(obj); }
   static auto Create(PyModuleDef* def)
     { return ref<Module>::take(PyModule_Create(def)); }
-
   void AddObject(char const* name, PyObject* val)
     { check_zero(PyModule_AddObject(this, name, incref(val))); }
-
   char const* GetName()
     { return PyModule_GetName(this); }
+  static ref<Module> ImportModule(char const* const name)
+    { return ref<Module>::take(check_not_null(PyImport_ImportModule(name))); }
 
   void add(PyTypeObject* type)
   {
@@ -803,6 +813,16 @@ private:
 
 
 //==============================================================================
+// Inline methods
+
+inline ref<Object> 
+Object::CallObject(Tuple* args)
+{ 
+  return ref<Object>::take(check_not_null(PyObject_CallObject(this, args))); 
+}
+
+
+//==============================================================================
 
 template<typename CLASS>
 using MethodPtr = ref<Object> (*)(CLASS* self, Tuple* args, Dict* kw_args);
@@ -1003,6 +1023,15 @@ private:
   std::vector<PyGetSetDef> getsets_;
 
 };
+
+
+//==============================================================================
+
+inline ref<Object>
+import(const char* module_name, const char* name)
+{
+  return Module::ImportModule(module_name)->GetAttrString(name);
+}
 
 
 //------------------------------------------------------------------------------

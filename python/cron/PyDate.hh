@@ -26,6 +26,12 @@ using std::unique_ptr;
 StructSequenceType*
 get_date_parts_type();
 
+ref<Object>
+get_month_obj(int month);
+
+ref<Object>
+get_weekday_obj(int weekday);
+
 //------------------------------------------------------------------------------
 // Type class
 //------------------------------------------------------------------------------
@@ -432,7 +438,7 @@ PyDate<TRAITS>::get_month(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(self->date_.get_parts().month + 1);
+  return get_month_obj(self->date_.get_parts().month + 1);
 }
 
 
@@ -455,14 +461,12 @@ PyDate<TRAITS>::get_parts(
   auto parts = self->date_.get_parts();
   auto parts_obj = get_date_parts_type()->New();
   parts_obj->initialize(0, Long::FromLong(parts.year));
-  // FIXME: Use enum.
-  parts_obj->initialize(1, Long::FromLong(parts.month + 1));
+  parts_obj->initialize(1, get_month_obj(parts.month + 1));
   parts_obj->initialize(2, Long::FromLong(parts.day + 1));
   parts_obj->initialize(3, Long::FromLong(parts.ordinal));
   parts_obj->initialize(4, Long::FromLong(parts.week_year));
   parts_obj->initialize(5, Long::FromLong(parts.week));
-  // FIXME: Use enum.
-  parts_obj->initialize(6, Long::FromLong(parts.weekday));
+  parts_obj->initialize(6, get_weekday_obj(parts.weekday));
   return std::move(parts_obj);
 }
 
@@ -503,8 +507,7 @@ PyDate<TRAITS>::get_weekday(
   PyDate* const self,
   void* /* closure */)
 {
-  // FIXME: Use an enum.
-  return Long::FromLong(self->date_.get_parts().weekday);
+  return get_weekday_obj(self->date_.get_parts().weekday);
 }
 
 
@@ -557,7 +560,6 @@ PyDate<TRAITS>::tp_getsets_
 template<typename TRAITS>
 unique_ptr<cron::DateFormat>
 PyDate<TRAITS>::repr_format_;
-
 
 //------------------------------------------------------------------------------
 // Type object
@@ -633,10 +635,11 @@ PyDate<TRAITS>::type_;
 // FIXME: API:
 //   copy ctor, default ctor
 //   from_ordinal(year, ordinal)
-//   from_week(year, week, weekday)
+//   from_week(week_year, week, weekday)
 //   ensure()
-//   use Month and Weekday enums
 //   conversion from other dates
 //   comparison with other dates
 //   today() function, with timezone
+//   docstrings
+//   tests
 

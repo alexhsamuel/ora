@@ -41,6 +41,26 @@ get_date_parts_type()
 }
 
 
+ref<Object>
+get_month_obj(
+  int month)
+{
+  static auto month_type = import("cron", "Month");
+  ref<Tuple> args = Tuple::builder << Long::FromLong(month);
+  return month_type->CallObject(args);
+}
+
+
+ref<Object>
+get_weekday_obj(
+  int weekday)
+{
+  static auto weekday_type = import("cron", "Weekday");
+  ref<Tuple> args = Tuple::builder << Long::FromLong(weekday);
+  return weekday_type->CallObject(args);
+}
+
+
 //------------------------------------------------------------------------------
 
 }  // namespace alxs
