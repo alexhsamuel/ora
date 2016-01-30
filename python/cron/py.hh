@@ -899,11 +899,39 @@ Object::CallObject(Tuple* args)
 //==============================================================================
 
 template<typename CLASS>
+using 
+InitprocPtr
+  = void (*)(CLASS* self, Tuple* args, Dict* kw_args);
+
+template<typename CLASS>
 using MethodPtr = ref<Object> (*)(CLASS* self, Tuple* args, Dict* kw_args);
 
 using StaticMethodPtr = ref<Object> (*)(Tuple* args, Dict* kw_args);
 
 using ClassMethodPtr = ref<Object> (*)(PyTypeObject* class_, Tuple* args, Dict* kw_args);
+
+
+/**
+ * Wraps an initproc.
+ */
+template<typename CLASS, InitprocPtr<CLASS> FUNCTION>
+int
+wrap(
+  PyObject* self,
+  PyObject* args,
+  PyObject* kw_args)
+{
+  try {
+    FUNCTION(
+      static_cast<CLASS*>(self),
+      static_cast<Tuple*>(args),
+      static_cast<Dict*>(kw_args));
+  }
+  catch (Exception) {
+    return -1;
+  }
+  return 0;
+}
 
 
 /**

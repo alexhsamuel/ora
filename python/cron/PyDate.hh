@@ -66,7 +66,7 @@ public:
 
 private:
 
-  static int tp_init(PyDate* self, Tuple* args, Dict* kw_args);
+  static void tp_init(PyDate* self, Tuple* args, Dict* kw_args);
   static void tp_dealloc(PyDate* self);
   static Unicode* tp_repr(PyDate* self);
   static Unicode* tp_str(PyDate* self);
@@ -179,9 +179,8 @@ PyDate<TRAITS>::Check(
 // Standard type methods
 //------------------------------------------------------------------------------
 
-// FIXME: Wrap tp_init.
 template<typename TRAITS>
-int
+void
 PyDate<TRAITS>::tp_init(
   PyDate* const self, 
   Tuple* args, 
@@ -214,16 +213,13 @@ PyDate<TRAITS>::tp_init(
       if (ordinal != nullptr)
         date = Date::from_datenum(ordinal->long_value() - 437986);
 
-      else {
+      else 
         // No type match.
-        PyErr_SetString(PyExc_TypeError, "not a date");
-        return -1;
-      }
+        throw TypeError("not a date");
     }
   }
 
   new(self) PyDate{date};
-  return 0;
 }
 
 
@@ -628,7 +624,7 @@ PyDate<TRAITS>::build_type(
     (descrgetfunc)        nullptr,                        // tp_descr_get
     (descrsetfunc)        nullptr,                        // tp_descr_set
     (Py_ssize_t)          0,                              // tp_dictoffset
-    (initproc)            tp_init,                        // tp_init
+    (initproc)            wrap<PyDate, tp_init>,          // tp_init
     (allocfunc)           nullptr,                        // tp_alloc
     (newfunc)             PyType_GenericNew,              // tp_new
     (freefunc)            nullptr,                        // tp_free
