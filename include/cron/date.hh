@@ -183,6 +183,26 @@ public:
   {
   }
 
+  DateTemplate
+  operator=(
+    DateTemplate const& date)
+  {
+    offset_ = date.offset_;
+    return *this;
+  }
+
+  template<class OTHER_TRAITS>
+  DateTemplate
+  operator=(
+    DateTemplate<OTHER_TRAITS> date)
+  {
+    offset_ = 
+        USE_INVALID && date.is_invalid() ? INVALID.get_offset()
+      : USE_INVALID && date.is_missing() ? MISSING.get_offset()
+      : datenum_to_offset(date.get_datenum());
+    return *this;
+  }
+
   static DateTemplate from_datenum(Datenum datenum) { return DateTemplate(datenum_to_offset(datenum)); }
   static DateTemplate from_offset(Offset offset) { return DateTemplate(validate_offset(offset)); }
   static DateTemplate from_ymdi(int const ymdi) { return DateTemplate(ymdi / 10000, (ymdi % 10000) / 100 - 1, ymdi % 100 - 1); }

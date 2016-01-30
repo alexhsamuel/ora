@@ -62,6 +62,8 @@ public:
 
   Date const date_;
 
+  PyDate(Date date) : date_(date) {}
+
 private:
 
   static int tp_init(PyDate* self, Tuple* args, Dict* kw_args);
@@ -185,23 +187,46 @@ PyDate<TRAITS>::tp_init(
   Tuple* args, 
   Dict* kw_args)
 {
-  static char const* arg_names[] = {"year", "month", "day", nullptr};
-  unsigned short year;
-  unsigned short month;
-  unsigned short day;
-  Arg::ParseTupleAndKeywords(
-    args, kw_args, "HHH", arg_names, &year, &month, &day);
+  Object* obj = nullptr;
+  Arg::ParseTuple(args, "|O", &obj);
 
-  try {
-    // date_ is const to indicate immutablity, but Python initialization is
-    // later than C++ initialization, so we have to cast off const here.
-    new(const_cast<Date*>(&self->date_))
-      Date{(cron::Year) year, (cron::Month) (month - 1), (cron::Day) (day - 1)};
-  }
-  catch (cron::DateError error) {
-    throw new py::ValueError(error.what());
+  Date date;
+
+  if (obj == nullptr) 
+    // Use the default value.
+    ;
+
+  else if (PyDate::Check(obj)) 
+    // Same type.
+    date = static_cast<PyDate*>(obj)->date_;
+
+  // FIXME: Check for other PyDate types?
+
+  else {
+    auto datenum = obj->GetAttrString("datenum", false);
+    if (datenum != nullptr) 
+      date = Date::from_datenum(datenum->long_value());
+
+    else {
+      auto year     = obj->GetAttrString("year", false);
+      auto month    = obj->GetAttrString("month", false);
+      auto day      = obj->GetAttrString("day", false);
+
+      if (year != nullptr && month != nullptr && day != nullptr) 
+        date = Date(
+          year->long_value(), 
+          month->long_value() - 1, 
+          day->long_value() - 1);
+
+      else {
+        // No type match.
+        PyErr_SetString(PyExc_TypeError, "not a date");
+        return -1;
+      }
+    }
   }
 
+  new(self) PyDate{date};
   return 0;
 }
 

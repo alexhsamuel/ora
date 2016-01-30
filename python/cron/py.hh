@@ -322,8 +322,13 @@ public:
   ref<Object> CallObject(Tuple* args);
   static bool Check(PyObject* obj)
     { return true; }
-  auto GetAttrString(char const* const name)
-    { return ref<Object>::take(check_not_null(PyObject_GetAttrString(this, name))); }
+  ref<Object> GetAttrString(char const* const name, bool check=true)
+  { 
+    auto result = PyObject_GetAttrString(this, name);
+    if (check)
+      result = check_not_null(result);
+    return ref<Object>::take(result);
+  }
   bool IsInstance(PyObject* type)
     { return (bool) PyObject_IsInstance(this, type); }
   auto Length()
@@ -732,6 +737,20 @@ Object::long_value()
 //==============================================================================
 
 namespace Arg {
+
+inline void
+ParseTuple(
+  Tuple* const args,
+  char const* const format,
+  ...)
+{
+  va_list vargs;
+  va_start(vargs, format);
+  auto result = PyArg_VaParse(args, (char*) format, vargs);
+  va_end(vargs);
+  check_true(result);
+}
+
 
 inline void ParseTupleAndKeywords(
     Tuple* args, Dict* kw_args, 
