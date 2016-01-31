@@ -242,7 +242,6 @@ PyDate<TRAITS>::tp_repr(
 }
 
 
-// FIXME: Wrap tp_str.
 template<typename TRAITS>
 ref<Unicode>
 PyDate<TRAITS>::tp_str(
