@@ -12,7 +12,6 @@
 ## PyDate
 
 - API
-  - `from_ordinal(year, ordinal)`
   - `from_week(week_year, week, weekday)`
   - `ensure()`
   - `today(tz)`

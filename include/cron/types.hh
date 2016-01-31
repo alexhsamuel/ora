@@ -61,7 +61,7 @@ inline constexpr bool month_is_valid(Month month) { return in_interval(MONTH_MIN
 
 typedef int16_t     Year;
 Year constexpr      YEAR_MIN            = 1;
-Year constexpr      YEAR_MAX            = 9999;
+Year constexpr      YEAR_MAX            = 10000;
 Year constexpr      YEAR_INVALID        = std::numeric_limits<Year>::min();
 inline constexpr bool year_is_valid(Year year) { return in_interval(YEAR_MIN, year, YEAR_MAX); }
 

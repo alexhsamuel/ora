@@ -81,6 +81,7 @@ private:
 
   // Methods.
   static ref<Object> method_from_datenum(PyTypeObject* type, Tuple* args, Dict* kw_args);
+  static ref<Object> method_from_ordinal(PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_parts(PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_ymdi(PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_is_same(PyDate* self, Tuple* args, Dict* kw_args);
@@ -306,6 +307,24 @@ PyDate<TRAITS>::method_from_datenum(
 
 template<typename TRAITS>
 ref<Object>
+PyDate<TRAITS>::method_from_ordinal(
+  PyTypeObject* const type,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] = {"year", "ordinal", nullptr};
+  cron::Year year;
+  cron::Ordinal ordinal;
+  static_assert(sizeof(cron::Year) == sizeof(short), "year is not a short");
+  static_assert(sizeof(cron::Ordinal) == sizeof(short), "ordinal is not a short");
+  Arg::ParseTupleAndKeywords(args, kw_args, "HH", arg_names, &year, &ordinal);
+
+  return create(Date::from_ordinal(year, ordinal), type);
+}
+
+
+template<typename TRAITS>
+ref<Object>
 PyDate<TRAITS>::method_from_parts(
   PyTypeObject* const type,
   Tuple* const args,
@@ -371,6 +390,7 @@ Methods<PyDate<TRAITS>>
 PyDate<TRAITS>::tp_methods_
   = Methods<PyDate>()
     .template add_class<method_from_datenum>        ("from_datenum")
+    .template add_class<method_from_ordinal>        ("from_ordinal")
     .template add_class<method_from_parts>          ("from_parts")
     .template add_class<method_from_ymdi>           ("from_ymdi")
     .template add<method_is_same>                   ("is_same")
@@ -462,7 +482,7 @@ PyDate<TRAITS>::get_ordinal(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(self->date_.get_parts().ordinal);
+  return Long::FromLong(self->date_.get_parts().ordinal + 1);
 }
 
 
@@ -477,7 +497,7 @@ PyDate<TRAITS>::get_parts(
   parts_obj->initialize(0, Long::FromLong(parts.year));
   parts_obj->initialize(1, get_month_obj(parts.month + 1));
   parts_obj->initialize(2, Long::FromLong(parts.day + 1));
-  parts_obj->initialize(3, Long::FromLong(parts.ordinal));
+  parts_obj->initialize(3, Long::FromLong(parts.ordinal + 1));
   parts_obj->initialize(4, Long::FromLong(parts.week_year));
   parts_obj->initialize(5, Long::FromLong(parts.week));
   parts_obj->initialize(6, get_weekday_obj(parts.weekday));

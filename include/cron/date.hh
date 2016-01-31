@@ -22,6 +22,14 @@ is_leap_year(
 }
 
 
+extern inline Ordinal constexpr
+ordinals_per_year(
+  Year year)
+{
+  return is_leap_year(year) ? 366 : 365;
+}
+
+
 extern inline Day constexpr
 days_per_month(
   Year year,
@@ -35,13 +43,24 @@ days_per_month(
 
 
 extern inline bool constexpr
+ordinal_is_valid(
+  Year year,
+  Ordinal ordinal)
+{
+  return 
+       year_is_valid(year) 
+    && in_interval(ORDINAL_MIN, ordinal, ordinals_per_year(year));
+}
+
+
+extern inline bool constexpr
 ymd_is_valid(
   Year year,
   Month month,
   Day day)
 {
   return 
-    month_is_valid(month)
+       month_is_valid(month)
     && year_is_valid(year)
     && in_interval(DAY_MIN, day, days_per_month(year, month));
 }
@@ -87,6 +106,21 @@ get_month_datenum(
 }
 
 
+/**
+ * Returns the datenum for the first day of 'year'.
+ */
+inline Datenum constexpr
+year_to_datenum(
+  Year year)
+{
+  return
+      365 * year  // An ordinary year has 365 days.
+    + year /   4  // Add a leap day every four years, 
+    - year / 100  // ... but century years are not leap years,
+    + year / 400; // ... but multiples of 400 are.
+}
+
+
 inline Datenum constexpr
 ymd_to_datenum(
   Year year,
@@ -94,10 +128,7 @@ ymd_to_datenum(
   Day day)
 {
   return
-    365 * year    // An ordinary year has 365 days.
-    + year /   4  // Add a leap day every four years, 
-    - year / 100  // ... but century years are not leap years,
-    + year / 400  // ... but multiples of 400 are.
+      year_to_datenum(year)
     + get_month_datenum(month)
     + day;
 }
@@ -117,6 +148,15 @@ ymd_to_datenum(
     ymd_is_valid(year, month, day) 
     ? impl::ymd_to_datenum(year - 1200 - (month < 2 ? 1 : 0), month, day)
     : DATENUM_INVALID;
+}
+
+
+extern inline Datenum constexpr 
+ordinal_to_datenum(
+  Year year,
+  Ordinal ordinal)
+{
+  return ymd_to_datenum(year, 0, 0) + ordinal;
 }
 
 
@@ -203,9 +243,36 @@ public:
     return *this;
   }
 
-  static DateTemplate from_datenum(Datenum datenum) { return DateTemplate(datenum_to_offset(datenum)); }
-  static DateTemplate from_offset(Offset offset) { return DateTemplate(validate_offset(offset)); }
-  static DateTemplate from_ymdi(int const ymdi) { return DateTemplate(ymdi / 10000, (ymdi % 10000) / 100 - 1, ymdi % 100 - 1); }
+  // Factory methods.  
+
+  static DateTemplate 
+  from_datenum(
+    Datenum datenum) 
+  { 
+    return DateTemplate(datenum_to_offset(datenum)); 
+  }
+
+  static DateTemplate 
+  from_offset(
+    Offset offset) 
+  { 
+    return DateTemplate(validate_offset(offset)); 
+  }
+
+  static DateTemplate 
+  from_ordinal(
+    Year year, 
+    Ordinal ordinal) 
+  { 
+    return DateTemplate(ordinal_to_offset(year, ordinal)); 
+  }
+
+  static DateTemplate 
+  from_ymdi(
+    int const ymdi) 
+  { 
+    return DateTemplate(ymdi / 10000, (ymdi % 10000) / 100 - 1, ymdi % 100 - 1);
+  }
 
   // Accessors.
 
@@ -263,6 +330,17 @@ protected:
       in_interval<Datenum>(TRAITS::min, offset, TRAITS::max) 
       ? offset
       : on_error<DateRangeError>();
+  }
+
+  static Offset
+  ordinal_to_offset(
+    Year year,
+    Ordinal ordinal)
+  {
+    return
+      ordinal_is_valid(year, ordinal - 1)
+      ? datenum_to_offset(ordinal_to_datenum(year, ordinal - 1))
+      : on_error<InvalidDateError>();
   }
 
   static Offset 
