@@ -360,7 +360,6 @@ PyDate<TRAITS>::method_is_same(
   Object* object;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &object);
 
-  // FIXME: Comparison with other date types.
   return Bool::from(
        PyDate::Check(object) 
     && self->date_.is(reinterpret_cast<PyDate const*>(object)->date_));
