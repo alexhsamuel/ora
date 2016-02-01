@@ -589,6 +589,14 @@ PyDate<TRAITS>::interpret_date_object(
     // Same type.
     return static_cast<PyDate*>(obj)->date_;
 
+  else if (obj->ob_type->tp_print != nullptr) {
+    // Each PyDate instantiation places the pointer to a function that returns
+    // its datenum into the tp_print slot; see 'build_type()'.
+    auto const get_datenum 
+      = reinterpret_cast<cron::Datenum (*)(Object*)>(obj->ob_type->tp_print);
+    return Date::from_datenum(get_datenum(obj));
+  }
+
   // FIXME: Check for other PyDate types?
   else {
     // Try for a date type that has a 'datenum' attribute.
@@ -614,6 +622,25 @@ PyDate<TRAITS>::interpret_date_object(
 // Type object
 //------------------------------------------------------------------------------
 
+namespace {
+
+/**
+ * Assuming 'obj' is a PyDate<TRAITS>, returns its datenum.
+ *
+ * Used for the tp_print hack in 'build_type()' below.
+ */
+template<typename TRAITS>
+cron::Datenum
+_get_datenum(
+  PyObject* obj)
+{
+  return static_cast<PyDate<TRAITS>*>(obj)->date_.get_datenum();
+}
+
+
+}  // anonymous namespace
+
+
 template<typename TRAITS>
 Type
 PyDate<TRAITS>::build_type(
@@ -625,7 +652,12 @@ PyDate<TRAITS>::build_type(
     (Py_ssize_t)          sizeof(PyDate<TRAITS>),         // tp_basicsize
     (Py_ssize_t)          0,                              // tp_itemsize
     (destructor)          tp_dealloc,                     // tp_dealloc
-    (printfunc)           nullptr,                        // tp_print
+    // FIXME: Hack!  We'd like to provide a way for any PyDate instance to
+    // return its datenum, for efficient manipulation by other PyDate instances,
+    // without virtual methods.  PyTypeObject doesn't provide any slot for us to
+    // stash this, so we requisition the deprecated tp_print slot.  This may
+    // break in future Python versions, if that slot is reused.
+    (printfunc)           &_get_datenum<TRAITS>,          // tp_print
     (getattrfunc)         nullptr,                        // tp_getattr
     (setattrfunc)         nullptr,                        // tp_setattr
     (void*)               nullptr,                        // tp_reserved

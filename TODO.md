@@ -21,7 +21,6 @@
 - comparison with other date representations
 - docstrings
 - unit tests
-- direct conversion from other date representations without datenum getset
 
 # Infrastructure / tech debt
 
