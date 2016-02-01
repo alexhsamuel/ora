@@ -338,7 +338,7 @@ public:
   auto Str()
     { return ref<Unicode>::take(PyObject_Str(this)); }
 
-  ref<py::Long> Long();
+  ref<py::Long> Long(bool check=true);
   long long_value();
 
 };
@@ -791,9 +791,15 @@ inline void baseref::clear()
 
 
 inline ref<Long>
-Object::Long()
+Object::Long(bool const check)
 {
-  return ref<py::Long>::take(check_not_null(PyNumber_Long(this)));
+  auto long_obj = PyNumber_Long(this);
+  if (check)
+    long_obj = check_not_null(long_obj);
+  // FIXME: Clumsy.
+  else if (long_obj == nullptr)
+    Exception::Clear();
+  return ref<py::Long>::take(long_obj);
 }
 
 

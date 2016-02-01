@@ -23,17 +23,19 @@ using std::string;
 using std::unique_ptr;
 
 //------------------------------------------------------------------------------
-// Parts type
+// Parts type declarations
 //------------------------------------------------------------------------------
 
 StructSequenceType*
 get_date_parts_type();
 
 ref<Object>
-get_month_obj(int month);
+get_month_obj(
+  int month);
 
 ref<Object>
-get_weekday_obj(int weekday);
+get_weekday_obj(
+  int weekday);
 
 //------------------------------------------------------------------------------
 // Type class
@@ -83,6 +85,7 @@ private:
   static ref<PyDate> MISSING_;
 
   // Methods.
+  static ref<Object> method_convert(PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_datenum(PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_ordinal(PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_parts(PyTypeObject* type, Tuple* args, Dict* kw_args);
@@ -110,6 +113,7 @@ private:
   static unique_ptr<cron::DateFormat> repr_format_;
 
   static optional<Date> interpret_date_object(Object* obj);
+  static optional<Date> interpret_object(Object* obj);
 
   static Type build_type(string const& type_name);
 
@@ -268,6 +272,28 @@ PyDate<TRAITS>::tp_richcompare(
 
 template<typename TRAITS>
 ref<Object>
+PyDate<TRAITS>::method_convert(
+  PyTypeObject* const type,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  if (args->Length() != 1)
+    throw TypeError("from() takes one argument");
+  Object* const obj = args->GetItem(0);
+  if (kw_args != nullptr)
+    throw TypeError("from_parts() takes no keyword arguments");
+
+  auto date = interpret_object(obj);
+  if (date)
+    return create(*date, type);
+  else
+    // FIXME: Return INVALID instead?
+    throw TypeError("cannot convert to date");
+}
+
+
+template<typename TRAITS>
+ref<Object>
 PyDate<TRAITS>::method_from_datenum(
   PyTypeObject* const type,
   Tuple* const args,
@@ -298,7 +324,7 @@ PyDate<TRAITS>::method_from_ordinal(
   static_assert(sizeof(cron::Ordinal) == sizeof(short), "ordinal is not a short");
   Arg::ParseTupleAndKeywords(args, kw_args, "HH", arg_names, &year, &ordinal);
 
-  return create(Date::from_ordinal(year, ordinal), type);
+  return create(Date::from_ordinal(year, ordinal - 1), type);
 }
 
 
@@ -368,6 +394,7 @@ template<typename TRAITS>
 Methods<PyDate<TRAITS>>
 PyDate<TRAITS>::tp_methods_
   = Methods<PyDate>()
+    .template add_class<method_convert>             ("convert")
     .template add_class<method_from_datenum>        ("from_datenum")
     .template add_class<method_from_ordinal>        ("from_ordinal")
     .template add_class<method_from_parts>          ("from_parts")
@@ -585,11 +612,11 @@ PyDate<TRAITS>::interpret_date_object(
     // Use the default value.
     return Date{};
 
-  else if (PyDate::Check(obj)) 
+  if (PyDate::Check(obj)) 
     // Same type.
     return static_cast<PyDate*>(obj)->date_;
 
-  else if (obj->ob_type->tp_print != nullptr) {
+  if (obj->ob_type->tp_print != nullptr) {
     // Each PyDate instantiation places the pointer to a function that returns
     // its datenum into the tp_print slot; see 'build_type()'.
     auto const get_datenum 
@@ -597,24 +624,65 @@ PyDate<TRAITS>::interpret_date_object(
     return Date::from_datenum(get_datenum(obj));
   }
 
-  // FIXME: Check for other PyDate types?
-  else {
-    // Try for a date type that has a 'datenum' attribute.
-    auto datenum = obj->GetAttrString("datenum", false);
-    if (datenum != nullptr) 
-      return Date::from_datenum(datenum->long_value());
+  // Try for a date type that has a 'datenum' attribute.
+  auto datenum = obj->GetAttrString("datenum", false);
+  if (datenum != nullptr) 
+    return Date::from_datenum(datenum->long_value());
 
-    else {
-      // Try for a date type that as a 'toordinal()' method.
-      auto ordinal = obj->CallMethodObjArgs("toordinal", false);
-      if (ordinal != nullptr)
-        return Date::from_datenum(ordinal->long_value() - 437986);
+  // Try for a date type that as a 'toordinal()' method.
+  auto ordinal = obj->CallMethodObjArgs("toordinal", false);
+  if (ordinal != nullptr)
+    return Date::from_datenum(ordinal->long_value() - cron::DATENUM_OFFSET);
 
-      else 
-        // No type match.
-        return {};
+  // No type match.
+  return {};
+}
+
+
+template<typename TRAITS>
+inline optional<typename PyDate<TRAITS>::Date>
+PyDate<TRAITS>::interpret_object(
+  Object* const obj)
+{
+  // Try to convert various date objects.
+  auto opt = interpret_date_object(obj);
+  if (opt)
+    return opt;
+
+  if (Sequence::Check(obj)) {
+    auto seq = reinterpret_cast<Sequence*>(obj);
+    if (seq->Length() == 3) {
+      // Interpret a three-element sequence as date parts.
+      long const year   = seq->GetItem(0)->long_value();
+      long const month  = seq->GetItem(1)->long_value();
+      long const day    = seq->GetItem(2)->long_value();
+      return Date(year, month - 1, day - 1);
+    }
+    else if (seq->Length() == 2) {
+      // Interpret a two-element sequence as ordinal parts.
+      long const year       = seq->GetItem(0)->long_value();
+      long const ordinal    = seq->GetItem(1)->long_value();
+      return Date::from_ordinal(year, ordinal - 1);
     }
   }
+
+  auto const long_obj = obj->Long(false);
+  if (long_obj != nullptr) {
+    // Interpret 10000000 through 99991231 as ymdi.
+    long        const val   = (long) *long_obj;
+    cron::Year  const year  = val / 10000;
+    cron::Month const month = (val % 10000) / 100 - 1;
+    cron::Day   const day   = val % 100 - 1;
+    if (year >= 1000) {
+      cron::Datenum const datenum  = cron::ymd_to_datenum(year, month, day);
+      if (datenum != cron::DATENUM_INVALID)
+        return Date::from_datenum(datenum);
+    }
+  }
+
+  // FIXME: Parse strings.
+
+  return {};
 }
 
 

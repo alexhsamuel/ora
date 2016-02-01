@@ -123,6 +123,9 @@ Datenum constexpr   DATENUM_INVALID     = std::numeric_limits<Datenum>::max();
 Datenum constexpr   DATENUM_UNIX_EPOCH  = 281177;    // 1970-01-01
 inline constexpr bool datenum_is_valid(Datenum datenum) { return in_interval(DATENUM_MIN, datenum, DATENUM_MAX); }
 
+// Offset in days of 1200-03-01 from 0001-01-01.
+long constexpr      DATENUM_OFFSET      = 437986;
+
 /**
  * Seconds since midnight.
  *

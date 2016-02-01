@@ -338,8 +338,8 @@ protected:
     Ordinal ordinal)
   {
     return
-      ordinal_is_valid(year, ordinal - 1)
-      ? datenum_to_offset(ordinal_to_datenum(year, ordinal - 1))
+      ordinal_is_valid(year, ordinal)
+      ? datenum_to_offset(ordinal_to_datenum(year, ordinal))
       : on_error<InvalidDateError>();
   }
 

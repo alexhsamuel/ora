@@ -15,7 +15,6 @@
 
   - `from_week(week_year, week, weekday)`
   - `from_week()` and `from_ordinal()` should accept single sequences
-  - `convert()`
   - format method
 
 - Template `PyDate` on `Date` rather than its traits.
