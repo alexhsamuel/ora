@@ -755,7 +755,7 @@ convert_date_object(
 
 
 /**
- * Attempts to Convert various kinds of Python objects to Date.
+ * Attempts to convert various kinds of Python objects to Date.
  *
  * If 'obj' can be converted unambiguously to a date, returns it.  Otherwise,
  * returns a null option with no exception set.
