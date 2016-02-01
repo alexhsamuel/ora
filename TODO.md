@@ -14,7 +14,7 @@
 - API
   - `from_week(week_year, week, weekday)`
   - `from()`
-  - `today(tz)`
+  - `today(tz)` function
 - comparison with other date representations
 - docstrings
 - unit tests
