@@ -19,7 +19,6 @@
 
 - Consider and test invalid vs. exception date classes.
 - `today(tz)` function
-- comparison with other date representations
 - docstrings
 - unit tests
 

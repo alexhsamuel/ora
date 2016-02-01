@@ -92,7 +92,7 @@ private:
   static void tp_dealloc(PyDate* self);
   static ref<Unicode> tp_repr(PyDate* self);
   static ref<Unicode> tp_str(PyDate* self);
-  static Object* tp_richcompare(PyDate* self, Object* other, int comparison);
+  static ref<Object> tp_richcompare(PyDate* self, Object* other, int comparison);
 
   // Singleton objects, constructed lazily.
   static ref<PyDate> INVALID_;
@@ -254,20 +254,19 @@ PyDate<DATE>::tp_str(
 }
 
 
-// FIXME: Wrap tp_richcompare.
 template<typename DATE>
-Object*
+ref<Object>
 PyDate<DATE>::tp_richcompare(
   PyDate* const self,
   Object* const other,
   int const comparison)
 {
-  // FIXME: Allow comparison to other date types.
-  if (! PyDate::Check(other))
-    return not_implemented_ref().release();
-
-  Date const& d0 = self->date_;
-  Date const& d1 = ((PyDate*) other)->date_;
+  auto date_opt = interpret_date_object(other);
+  if (!date_opt)
+    return not_implemented_ref();
+  
+  Date const d0 = self->date_;
+  Date const d1 = *date_opt;
 
   bool result;
   switch (comparison) {
@@ -279,7 +278,7 @@ PyDate<DATE>::tp_richcompare(
   case Py_NE: result = d0 != d1; break;
   default:    result = false; assert(false);
   }
-  return Bool::from(result).release();
+  return Bool::from(result);
 }
 
 
@@ -401,9 +400,11 @@ PyDate<DATE>::method_is_same(
   Object* object;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &object);
 
-  return Bool::from(
-       PyDate::Check(object) 
-    && self->date_.is(reinterpret_cast<PyDate const*>(object)->date_));
+  auto date_opt = interpret_date_object(object);
+  if (date_opt)
+    return Bool::from(self->date_.is(*date_opt));
+  else
+    return Bool::FALSE.inc();
 }
 
 
@@ -761,7 +762,7 @@ PyDate<DATE>::build_type(
     (char const*)         nullptr,                        // tp_doc
     (traverseproc)        nullptr,                        // tp_traverse
     (inquiry)             nullptr,                        // tp_clear
-    (richcmpfunc)         tp_richcompare,                 // tp_richcompare
+    (richcmpfunc)         wrap<PyDate, tp_richcompare>,   // tp_richcompare
     (Py_ssize_t)          0,                              // tp_weaklistoffset
     (getiterfunc)         nullptr,                        // tp_iter
     (iternextfunc)        nullptr,                        // tp_iternext

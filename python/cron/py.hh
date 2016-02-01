@@ -930,6 +930,11 @@ ReprfuncPtr
   = ref<Unicode> (*)(CLASS* self);
 
 template<typename CLASS>
+using
+RichcmpfuncPtr
+  = ref<Object> (*)(CLASS* self, Object* other, int comparison);
+
+template<typename CLASS>
 using MethodPtr = ref<Object> (*)(CLASS* self, Tuple* args, Dict* kw_args);
 
 using StaticMethodPtr = ref<Object> (*)(Tuple* args, Dict* kw_args);
@@ -971,6 +976,31 @@ wrap(
   ref<Unicode> result;
   try {
     result = FUNCTION(static_cast<CLASS*>(self));
+  }
+  catch (Exception) {
+    return nullptr;
+  }
+  assert(result != nullptr);
+  return result.release();
+}
+
+
+/**
+ * Wraps a richcmpfunc.
+ */
+template<typename CLASS, RichcmpfuncPtr<CLASS> FUNCTION>
+PyObject*
+wrap(
+  PyObject* const self,
+  PyObject* const other,
+  int const comparison)
+{
+  ref<Object> result;
+  try {
+    result = FUNCTION(
+      static_cast<CLASS*>(self), 
+      static_cast<Object*>(other), 
+      comparison);
   }
   catch (Exception) {
     return nullptr;
