@@ -23,19 +23,16 @@ using std::string;
 using std::unique_ptr;
 
 //------------------------------------------------------------------------------
-// Parts type declarations
+// Declarations
 //------------------------------------------------------------------------------
 
-StructSequenceType*
-get_date_parts_type();
+StructSequenceType* get_date_parts_type();
 
-ref<Object>
-get_month_obj(
-  int month);
+ref<Object> get_month_obj(int month);
+ref<Object> get_weekday_obj(int weekday);
 
-ref<Object>
-get_weekday_obj(
-  int weekday);
+template<typename DATE> optional<DATE> convert_date_object(Object*);
+template<typename DATE> optional<DATE> convert_object(Object*);
 
 //------------------------------------------------------------------------------
 // Type class
@@ -129,9 +126,6 @@ private:
   /** Date format used to generate the repr.  */
   static unique_ptr<cron::DateFormat> repr_format_;
 
-  static optional<Date> interpret_date_object(Object* obj);
-  static optional<Date> interpret_object(Object* obj);
-
   static Type build_type(string const& type_name);
 
 public:
@@ -216,7 +210,7 @@ PyDate<DATE>::tp_init(
   Object* obj = nullptr;
   Arg::ParseTuple(args, "|O", &obj);
 
-  auto date = interpret_date_object(obj);
+  auto date = convert_date_object<Date>(obj);
   if (date)
     new(self) PyDate{*date};
   else
@@ -261,7 +255,7 @@ PyDate<DATE>::tp_richcompare(
   Object* const other,
   int const comparison)
 {
-  auto date_opt = interpret_date_object(other);
+  auto date_opt = convert_date_object<Date>(other);
   if (!date_opt)
     return not_implemented_ref();
   
@@ -299,7 +293,7 @@ PyDate<DATE>::method_convert(
   if (kw_args != nullptr)
     throw TypeError("from_parts() takes no keyword arguments");
 
-  auto date = interpret_object(obj);
+  auto date = convert_object<Date>(obj);
   if (date)
     return create(*date, type);
   else
@@ -400,7 +394,7 @@ PyDate<DATE>::method_is_same(
   Object* object;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &object);
 
-  auto date_opt = interpret_date_object(object);
+  auto date_opt = convert_date_object<Date>(object);
   if (date_opt)
     return Bool::from(self->date_.is(*date_opt));
   else
@@ -612,97 +606,12 @@ PyDate<DATE>::tp_getsets_
 
 
 //------------------------------------------------------------------------------
-// Helpers
+// Other members
 //------------------------------------------------------------------------------
 
 template<typename DATE>
 unique_ptr<cron::DateFormat>
 PyDate<DATE>::repr_format_;
-
-template<typename DATE>
-inline optional<typename PyDate<DATE>::Date>
-PyDate<DATE>::interpret_date_object(
-  Object* const obj)
-{
-  Date date;
-
-  if (obj == nullptr) 
-    // Use the default value.
-    return Date{};
-
-  if (PyDate::Check(obj)) 
-    // Same type.
-    return static_cast<PyDate*>(obj)->date_;
-
-  if (obj->ob_type->tp_print != nullptr) {
-    // Each PyDate instantiation places the pointer to a function that returns
-    // its datenum into the tp_print slot; see 'build_type()'.
-    auto const get_datenum 
-      = reinterpret_cast<cron::Datenum (*)(Object*)>(obj->ob_type->tp_print);
-    return Date::from_datenum(get_datenum(obj));
-  }
-
-  // Try for a date type that has a 'datenum' attribute.
-  auto datenum = obj->GetAttrString("datenum", false);
-  if (datenum != nullptr) 
-    return Date::from_datenum(datenum->long_value());
-
-  // Try for a date type that as a 'toordinal()' method.
-  auto ordinal = obj->CallMethodObjArgs("toordinal", false);
-  if (ordinal != nullptr)
-    return Date::from_datenum(ordinal->long_value() - cron::DATENUM_OFFSET);
-
-  // No type match.
-  return {};
-}
-
-
-template<typename DATE>
-inline optional<typename PyDate<DATE>::Date>
-PyDate<DATE>::interpret_object(
-  Object* const obj)
-{
-  // Try to convert various date objects.
-  auto opt = interpret_date_object(obj);
-  if (opt)
-    return opt;
-
-  if (Sequence::Check(obj)) {
-    auto seq = reinterpret_cast<Sequence*>(obj);
-    if (seq->Length() == 3) {
-      // Interpret a three-element sequence as date parts.
-      long const year   = seq->GetItem(0)->long_value();
-      long const month  = seq->GetItem(1)->long_value();
-      long const day    = seq->GetItem(2)->long_value();
-      return Date(year, month - 1, day - 1);
-    }
-    else if (seq->Length() == 2) {
-      // Interpret a two-element sequence as ordinal parts.
-      long const year       = seq->GetItem(0)->long_value();
-      long const ordinal    = seq->GetItem(1)->long_value();
-      return Date::from_ordinal(year, ordinal - 1);
-    }
-  }
-
-  auto const long_obj = obj->Long(false);
-  if (long_obj != nullptr) {
-    // Interpret 10000000 through 99991231 as ymdi.
-    long        const val   = (long) *long_obj;
-    cron::Year  const year  = val / 10000;
-    cron::Month const month = (val % 10000) / 100 - 1;
-    cron::Day   const day   = val % 100 - 1;
-    if (year >= 1000) {
-      cron::Datenum const datenum  = cron::ymd_to_datenum(year, month, day);
-      if (datenum != cron::DATENUM_INVALID)
-        return Date::from_datenum(datenum);
-    }
-  }
-
-  // FIXME: Parse strings.
-
-  return {};
-}
-
 
 //------------------------------------------------------------------------------
 // Type object
@@ -795,6 +704,110 @@ template<typename DATE>
 Type
 PyDate<DATE>::type_;
 
+
+//------------------------------------------------------------------------------
+// Helper functions
+//------------------------------------------------------------------------------
+
+/**
+ * Attempts to convert various kinds of Python date objects to Date.
+ *
+ * If 'obj' is a date object (a PyDate instance, datetime.date, or
+ * compatible), returns the equivalent date.  Otherwise, returns a null
+ * option with no exception set.
+ */
+template<typename DATE>
+inline optional<DATE>
+convert_date_object(
+  Object* const obj)
+{
+  DATE date;
+
+  if (obj == nullptr) 
+    // Use the default value.
+    return DATE{};
+
+  if (PyDate<DATE>::Check(obj)) 
+    // Exact wrapped type.
+    return static_cast<PyDate<DATE>*>(obj)->date_;
+
+  if (obj->ob_type->tp_print != nullptr) {
+    // Each PyDate instantiation places the pointer to a function that returns
+    // its datenum into the tp_print slot; see 'build_type()'.
+    auto const get_datenum 
+      = reinterpret_cast<cron::Datenum (*)(Object*)>(obj->ob_type->tp_print);
+    return DATE::from_datenum(get_datenum(obj));
+  }
+
+  // Try for a date type that has a 'datenum' attribute.
+  auto datenum = obj->GetAttrString("datenum", false);
+  if (datenum != nullptr) 
+    return DATE::from_datenum(datenum->long_value());
+
+  // Try for a date type that as a 'toordinal()' method.
+  auto ordinal = obj->CallMethodObjArgs("toordinal", false);
+  if (ordinal != nullptr)
+    return DATE::from_datenum(ordinal->long_value() - cron::DATENUM_OFFSET);
+
+  // No type match.
+  return {};
+}
+
+
+/**
+ * Attempts to Convert various kinds of Python objects to Date.
+ *
+ * If 'obj' can be converted unambiguously to a date, returns it.  Otherwise,
+ * returns a null option with no exception set.
+ */
+template<typename DATE>
+inline optional<DATE>
+convert_object(
+  Object* const obj)
+{
+  // Try to convert various date objects.
+  auto opt = convert_date_object<DATE>(obj);
+  if (opt)
+    return opt;
+
+  if (Sequence::Check(obj)) {
+    auto seq = static_cast<Sequence*>(obj);
+    if (seq->Length() == 3) {
+      // Interpret a three-element sequence as date parts.
+      long const year   = seq->GetItem(0)->long_value();
+      long const month  = seq->GetItem(1)->long_value();
+      long const day    = seq->GetItem(2)->long_value();
+      return DATE(year, month - 1, day - 1);
+    }
+    else if (seq->Length() == 2) {
+      // Interpret a two-element sequence as ordinal parts.
+      long const year       = seq->GetItem(0)->long_value();
+      long const ordinal    = seq->GetItem(1)->long_value();
+      return DATE::from_ordinal(year, ordinal - 1);
+    }
+  }
+
+  auto const long_obj = obj->Long(false);
+  if (long_obj != nullptr) {
+    // Interpret 10000000 through 99991231 as ymdi.
+    long        const val   = (long) *long_obj;
+    cron::Year  const year  = val / 10000;
+    cron::Month const month = (val % 10000) / 100 - 1;
+    cron::Day   const day   = val % 100 - 1;
+    if (year >= 1000) {
+      cron::Datenum const datenum  = cron::ymd_to_datenum(year, month, day);
+      if (datenum != cron::DATENUM_INVALID)
+        return DATE::from_datenum(datenum);
+    }
+  }
+
+  // FIXME: Parse strings.
+
+  return {};
+}
+
+
+//------------------------------------------------------------------------------
 
 }  // namespace alxs
 
