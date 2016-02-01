@@ -189,8 +189,8 @@ template<typename TRAITS>
 void
 PyDate<TRAITS>::tp_init(
   PyDate* const self, 
-  Tuple* args, 
-  Dict* kw_args)
+  Tuple* const args, 
+  Dict* const kw_args)
 {
   Object* obj = nullptr;
   Arg::ParseTuple(args, "|O", &obj);
