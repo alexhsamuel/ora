@@ -13,7 +13,7 @@
 
 - API
   - `from_week(week_year, week, weekday)`
-  - `ensure()`
+  - `from()`
   - `today(tz)`
 - comparison with other date representations
 - docstrings
