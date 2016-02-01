@@ -1,12 +1,14 @@
-# py.hh
+# C++ API
 
-- move `py.hh` to plynth and merge with other versions
-
-# Date
+## Date
 
 - Replace datenum with "proleptic Gregorian ordinal" per Python's
   `datetime.date`?
 - Maybe make Month, Day, Ordinal one-indexed?
+
+# Python API
+
+Rename `DayInterval` to `DayDuration`.
 
 ## PyDate
 
@@ -21,8 +23,28 @@
 - docstrings
 - unit tests
 
+## Formatting
+
+...?
+
+## PyTimeZone
+
+## PyDateDuration
+
+## PyTime
+
+## PyTimeDuration
+
+## PyDaytime
+
+## PyCalendar
+
 # Infrastructure / tech debt
 
 - make Object be an interface-only type; inherit concrete types from PyObject
 - include a recent tzlib in the distro
+
+## py.hh
+
+- move `py.hh` to plynth and merge with other versions
 
