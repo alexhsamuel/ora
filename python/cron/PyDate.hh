@@ -176,8 +176,7 @@ PyDate<DATE>::create(
   Date date,
   PyTypeObject* type)
 {
-  // FIXME: Check for nullptr?  Or wrap tp_alloc?
-  auto obj = ref<PyDate>::take(PyDate::type_.tp_alloc(type, 0));
+  auto obj = ref<PyDate>::take(check_not_null(PyDate::type_.tp_alloc(type, 0)));
 
   // date_ is const to indicate immutablity, but Python initialization is later
   // than C++ initialization, so we have to cast off const here.
@@ -217,7 +216,6 @@ PyDate<DATE>::tp_init(
 }
 
 
-// FIXME: Wrap tp_dealloc.
 template<typename DATE>
 void
 PyDate<DATE>::tp_dealloc(PyDate* const self)
@@ -643,15 +641,15 @@ PyDate<DATE>::build_type(
   return PyTypeObject{
     PyVarObject_HEAD_INIT(nullptr, 0)
     (char const*)         strdup(type_name.c_str()),      // tp_name
-    (Py_ssize_t)          sizeof(PyDate<DATE>),         // tp_basicsize
+    (Py_ssize_t)          sizeof(PyDate),                 // tp_basicsize
     (Py_ssize_t)          0,                              // tp_itemsize
-    (destructor)          tp_dealloc,                     // tp_dealloc
+    (destructor)          wrap<PyDate, tp_dealloc>,       // tp_dealloc
     // FIXME: Hack!  We'd like to provide a way for any PyDate instance to
     // return its datenum, for efficient manipulation by other PyDate instances,
     // without virtual methods.  PyTypeObject doesn't provide any slot for us to
     // stash this, so we requisition the deprecated tp_print slot.  This may
     // break in future Python versions, if that slot is reused.
-    (printfunc)           &_get_datenum<DATE>,          // tp_print
+    (printfunc)           &_get_datenum<DATE>,            // tp_print
     (getattrfunc)         nullptr,                        // tp_getattr
     (setattrfunc)         nullptr,                        // tp_setattr
     (void*)               nullptr,                        // tp_reserved

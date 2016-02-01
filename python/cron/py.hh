@@ -920,6 +920,11 @@ Object::CallObject(Tuple* args)
 //==============================================================================
 
 template<typename CLASS>
+using
+DestructorPtr
+  = void (*)(CLASS* self);
+
+template<typename CLASS>
 using 
 InitprocPtr
   = void (*)(CLASS* self, Tuple* args, Dict* kw_args);
@@ -940,6 +945,25 @@ using MethodPtr = ref<Object> (*)(CLASS* self, Tuple* args, Dict* kw_args);
 using StaticMethodPtr = ref<Object> (*)(Tuple* args, Dict* kw_args);
 
 using ClassMethodPtr = ref<Object> (*)(PyTypeObject* class_, Tuple* args, Dict* kw_args);
+
+
+/**
+ * Wraps a destructor.
+ */
+template<typename CLASS, DestructorPtr<CLASS> FUNCTION>
+void
+wrap(
+  PyObject* self)
+{
+  // tp_dealloc should preserve exception state; maybe wrap with PyErr_Fetch()
+  // and PyErr_restore()?
+  try {
+    FUNCTION(static_cast<CLASS*>(self));
+  }
+  catch (Exception exc) {
+    // Eat it.
+  }
+}
 
 
 /**
