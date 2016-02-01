@@ -25,6 +25,7 @@
 
 # Infrastructure / tech debt
 
+- make Object be an interface-only type; inherit concrete types from PyObject
 - move `py.hh` to plynth and merge with other versions
 - include a recent tzlib in the distro
 
