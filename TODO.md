@@ -16,8 +16,9 @@
   - `from_week(week_year, week, weekday)`
   - `from_week()` and `from_ordinal()` should accept single sequences
   - `from()`
-  - `today(tz)` function
+  - format method
 
+- `today(tz)` function
 - comparison with other date representations
 - docstrings
 - unit tests
