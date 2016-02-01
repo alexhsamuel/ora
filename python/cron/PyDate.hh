@@ -16,7 +16,6 @@ namespace alxs {
 
 using namespace py;
 
-using std::experimental::nullopt_t;
 using std::experimental::optional;
 using std::make_unique;
 using std::string;
