@@ -15,7 +15,7 @@
 
   - `from_week(week_year, week, weekday)`
   - `from_week()` and `from_ordinal()` should accept single sequences
-  - `from()`
+  - `convert()`
   - format method
 
 - `today(tz)` function
@@ -28,4 +28,5 @@
 - make Object be an interface-only type; inherit concrete types from PyObject
 - move `py.hh` to plynth and merge with other versions
 - include a recent tzlib in the distro
+- Maybe make C++ Month, Day, Ordinal one-indexed?
 
