@@ -326,13 +326,7 @@ public:
   ref<Object> CallObject(Tuple* args);
   static bool Check(PyObject* obj)
     { return true; }
-  ref<Object> GetAttrString(char const* const name, bool check=true)
-  { 
-    auto result = PyObject_GetAttrString(this, name);
-    if (check)
-      result = check_not_null(result);
-    return ref<Object>::take(result);
-  }
+  ref<Object> GetAttrString(char const* const name, bool check=true);
   bool IsInstance(PyObject* type)
     { return (bool) PyObject_IsInstance(this, type); }
   auto Length()
@@ -350,8 +344,7 @@ public:
 };
 
 
-inline
-ref<Object>
+inline ref<Object>
 Object::CallMethodObjArgs(
   char const* name,
   bool check)
@@ -362,12 +355,14 @@ Object::CallMethodObjArgs(
   auto result = PyObject_CallFunctionObjArgs(method, nullptr);
   if (check)
     check_not_null(result);
+  // FIXME: Clumsy.
+  else if (result == nullptr)
+    Exception::Clear();
   return ref<Object>::take(result);
 }
 
 
-inline
-ref<Object>
+inline ref<Object>
 Object::CallMethodObjArgs(
   char const* name,
   PyObject* arg0,
@@ -379,12 +374,14 @@ Object::CallMethodObjArgs(
   auto result = PyObject_CallFunctionObjArgs(method, arg0, nullptr);
   if (check)
     check_not_null(result);
+  // FIXME: Clumsy.
+  else if (result == nullptr)
+    Exception::Clear();
   return ref<Object>::take(result);
 }
 
 
-inline
-ref<Object>
+inline ref<Object>
 Object::CallMethodObjArgs(
   char const* name,
   PyObject* arg0,
@@ -397,6 +394,24 @@ Object::CallMethodObjArgs(
   auto result = PyObject_CallFunctionObjArgs(method, arg0, arg1, nullptr);
   if (check)
     check_not_null(result);
+  // FIXME: Clumsy.
+  else if (result == nullptr)
+    Exception::Clear();
+  return ref<Object>::take(result);
+}
+
+
+inline ref<Object>
+Object::GetAttrString(
+  char const* const name, 
+  bool const check)
+{ 
+  auto result = PyObject_GetAttrString(this, name);
+  if (check)
+    result = check_not_null(result);
+  // FIXME: Clumsy.
+  else if (result == nullptr)
+    Exception::Clear();
   return ref<Object>::take(result);
 }
 

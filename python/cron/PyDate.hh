@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstring>
+#include <experimental/optional>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -15,8 +16,10 @@ namespace alxs {
 
 using namespace py;
 
-using std::string;
+using std::experimental::nullopt_t;
+using std::experimental::optional;
 using std::make_unique;
+using std::string;
 using std::unique_ptr;
 
 //------------------------------------------------------------------------------
@@ -106,6 +109,8 @@ private:
   /** Date format used to generate the repr.  */
   static unique_ptr<cron::DateFormat> repr_format_;
 
+  static optional<Date> interpret_date_object(Object* obj);
+
   static Type build_type(string const& type_name);
 
 public:
@@ -190,37 +195,11 @@ PyDate<TRAITS>::tp_init(
   Object* obj = nullptr;
   Arg::ParseTuple(args, "|O", &obj);
 
-  Date date;
-
-  if (obj == nullptr) 
-    // Use the default value.
-    ;
-
-  else if (PyDate::Check(obj)) 
-    // Same type.
-    date = static_cast<PyDate*>(obj)->date_;
-
-  // FIXME: Check for other PyDate types?
-
-  else {
-    // Try for a date type that has a 'datenum' attribute.
-    auto datenum = obj->GetAttrString("datenum", false);
-    if (datenum != nullptr) 
-      date = Date::from_datenum(datenum->long_value());
-
-    else {
-      // Try for a date type that as a 'toordinal()' method.
-      auto ordinal = obj->CallMethodObjArgs("toordinal", false);
-      if (ordinal != nullptr)
-        date = Date::from_datenum(ordinal->long_value() - 437986);
-
-      else 
-        // No type match.
-        throw TypeError("not a date");
-    }
-  }
-
-  new(self) PyDate{date};
+  auto date = interpret_date_object(obj);
+  if (date)
+    new(self) PyDate{*date};
+  else
+    throw TypeError("not a date");
 }
 
 
@@ -594,6 +573,42 @@ PyDate<TRAITS>::tp_getsets_
 template<typename TRAITS>
 unique_ptr<cron::DateFormat>
 PyDate<TRAITS>::repr_format_;
+
+template<typename TRAITS>
+inline optional<typename PyDate<TRAITS>::Date>
+PyDate<TRAITS>::interpret_date_object(
+  Object* const obj)
+{
+  Date date;
+
+  if (obj == nullptr) 
+    // Use the default value.
+    return Date{};
+
+  else if (PyDate::Check(obj)) 
+    // Same type.
+    return static_cast<PyDate*>(obj)->date_;
+
+  // FIXME: Check for other PyDate types?
+  else {
+    // Try for a date type that has a 'datenum' attribute.
+    auto datenum = obj->GetAttrString("datenum", false);
+    if (datenum != nullptr) 
+      return Date::from_datenum(datenum->long_value());
+
+    else {
+      // Try for a date type that as a 'toordinal()' method.
+      auto ordinal = obj->CallMethodObjArgs("toordinal", false);
+      if (ordinal != nullptr)
+        return Date::from_datenum(ordinal->long_value() - 437986);
+
+      else 
+        // No type match.
+        return {};
+    }
+  }
+}
+
 
 //------------------------------------------------------------------------------
 // Type object
