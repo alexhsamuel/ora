@@ -45,14 +45,20 @@ get_weekday_obj(
 
 // FIXME: Should we cache parts?
 
-// FIXME: Template argument should be DATE, not TRAITS.
-template<typename TRAITS>
+/**
+ * Template for a Python extension type wrapping a date class.
+ *
+ * 'DATE' is the wrapped date class, an instance of DateTemplate.  Invoke
+ * add_to() to construct the type's PyTypeObject, ready it, and add it to a
+ * module.
+ */
+template<typename DATE>
 class PyDate
   : public ExtensionType
 {
 public:
 
-  using Date = cron::DateTemplate<TRAITS>;
+  using Date = DATE;
 
   /** 
    * Readies the Python type and adds it to `module` as `name`.  
@@ -61,13 +67,24 @@ public:
    */
   static void add_to(Module& module, string const& name);
 
+  /**
+   * Creates an instance of the Python type.
+   */
   static ref<PyDate> create(Date date, PyTypeObject* type=&type_);
 
+  /**
+   * Returns true if 'object' is an instance of this type.
+   */
   static bool Check(PyObject* object);
 
-  Date const date_;
-
   PyDate(Date date) : date_(date) {}
+
+  /**
+   * The wrapped date instance.
+   *
+   * This is the only non-static data member.
+   */
+  Date const date_;
 
 private:
 
@@ -124,9 +141,9 @@ public:
 };
 
 
-template<typename TRAITS>
+template<typename DATE>
 void
-PyDate<TRAITS>::add_to(
+PyDate<DATE>::add_to(
   Module& module,
   string const& name)
 {
@@ -160,9 +177,9 @@ PyDate<TRAITS>::add_to(
 }
 
 
-template<typename TRAITS>
-ref<PyDate<TRAITS>>
-PyDate<TRAITS>::create(
+template<typename DATE>
+ref<PyDate<DATE>>
+PyDate<DATE>::create(
   Date date,
   PyTypeObject* type)
 {
@@ -176,9 +193,9 @@ PyDate<TRAITS>::create(
 }
 
 
-template<typename TRAITS>
+template<typename DATE>
 bool
-PyDate<TRAITS>::Check(
+PyDate<DATE>::Check(
   PyObject* other)
 {
   return static_cast<Object*>(other)->IsInstance((PyObject*) &type_);
@@ -189,9 +206,9 @@ PyDate<TRAITS>::Check(
 // Standard type methods
 //------------------------------------------------------------------------------
 
-template<typename TRAITS>
+template<typename DATE>
 void
-PyDate<TRAITS>::tp_init(
+PyDate<DATE>::tp_init(
   PyDate* const self, 
   Tuple* const args, 
   Dict* const kw_args)
@@ -208,27 +225,27 @@ PyDate<TRAITS>::tp_init(
 
 
 // FIXME: Wrap tp_dealloc.
-template<typename TRAITS>
+template<typename DATE>
 void
-PyDate<TRAITS>::tp_dealloc(PyDate* const self)
+PyDate<DATE>::tp_dealloc(PyDate* const self)
 {
   self->date_.~DateTemplate();
   self->ob_type->tp_free(self);
 }
 
 
-template<typename TRAITS>
+template<typename DATE>
 ref<Unicode>
-PyDate<TRAITS>::tp_repr(
+PyDate<DATE>::tp_repr(
   PyDate* const self)
 {
   return Unicode::from((*repr_format_)(self->date_));
 }
 
 
-template<typename TRAITS>
+template<typename DATE>
 ref<Unicode>
-PyDate<TRAITS>::tp_str(
+PyDate<DATE>::tp_str(
   PyDate* const self)
 {
   // FIXME: Make the format configurable.
@@ -238,9 +255,9 @@ PyDate<TRAITS>::tp_str(
 
 
 // FIXME: Wrap tp_richcompare.
-template<typename TRAITS>
+template<typename DATE>
 Object*
-PyDate<TRAITS>::tp_richcompare(
+PyDate<DATE>::tp_richcompare(
   PyDate* const self,
   Object* const other,
   int const comparison)
@@ -270,9 +287,9 @@ PyDate<TRAITS>::tp_richcompare(
 // Methods
 //------------------------------------------------------------------------------
 
-template<typename TRAITS>
+template<typename DATE>
 ref<Object>
-PyDate<TRAITS>::method_convert(
+PyDate<DATE>::method_convert(
   PyTypeObject* const type,
   Tuple* const args,
   Dict* const kw_args)
@@ -292,9 +309,9 @@ PyDate<TRAITS>::method_convert(
 }
 
 
-template<typename TRAITS>
+template<typename DATE>
 ref<Object>
-PyDate<TRAITS>::method_from_datenum(
+PyDate<DATE>::method_from_datenum(
   PyTypeObject* const type,
   Tuple* const args,
   Dict* const kw_args)
@@ -310,9 +327,9 @@ PyDate<TRAITS>::method_from_datenum(
 }
 
 
-template<typename TRAITS>
+template<typename DATE>
 ref<Object>
-PyDate<TRAITS>::method_from_ordinal(
+PyDate<DATE>::method_from_ordinal(
   PyTypeObject* const type,
   Tuple* const args,
   Dict* const kw_args)
@@ -328,9 +345,9 @@ PyDate<TRAITS>::method_from_ordinal(
 }
 
 
-template<typename TRAITS>
+template<typename DATE>
 ref<Object>
-PyDate<TRAITS>::method_from_parts(
+PyDate<DATE>::method_from_parts(
   PyTypeObject* const type,
   Tuple* const args,
   Dict* const kw_args)
@@ -357,9 +374,9 @@ PyDate<TRAITS>::method_from_parts(
 }
 
 
-template<typename TRAITS>
+template<typename DATE>
 ref<Object>
-PyDate<TRAITS>::method_from_ymdi(
+PyDate<DATE>::method_from_ymdi(
   PyTypeObject* const type,
   Tuple* const args,
   Dict* const kw_args)
@@ -373,9 +390,9 @@ PyDate<TRAITS>::method_from_ymdi(
 
 
 // We call this method "is_same" because "is" is a keyword in Python.
-template<typename TRAITS>
+template<typename DATE>
 ref<Object>
-PyDate<TRAITS>::method_is_same(
+PyDate<DATE>::method_is_same(
   PyDate* const self,
   Tuple* const args,
   Dict* const kw_args)
@@ -390,9 +407,9 @@ PyDate<TRAITS>::method_is_same(
 }
 
 
-template<typename TRAITS>
-Methods<PyDate<TRAITS>>
-PyDate<TRAITS>::tp_methods_
+template<typename DATE>
+Methods<PyDate<DATE>>
+PyDate<DATE>::tp_methods_
   = Methods<PyDate>()
     .template add_class<method_convert>             ("convert")
     .template add_class<method_from_datenum>        ("from_datenum")
@@ -407,34 +424,34 @@ PyDate<TRAITS>::tp_methods_
 // Getsets
 //------------------------------------------------------------------------------
 
-template<typename TRAITS>
-ref<PyDate<TRAITS>>
-PyDate<TRAITS>::INVALID_;
+template<typename DATE>
+ref<PyDate<DATE>>
+PyDate<DATE>::INVALID_;
 
 
-template<typename TRAITS>
-ref<PyDate<TRAITS>>
-PyDate<TRAITS>::LAST_;
+template<typename DATE>
+ref<PyDate<DATE>>
+PyDate<DATE>::LAST_;
 
 
-template<typename TRAITS>
-ref<PyDate<TRAITS>>
-PyDate<TRAITS>::MAX_;
+template<typename DATE>
+ref<PyDate<DATE>>
+PyDate<DATE>::MAX_;
 
 
-template<typename TRAITS>
-ref<PyDate<TRAITS>>
-PyDate<TRAITS>::MIN_;
+template<typename DATE>
+ref<PyDate<DATE>>
+PyDate<DATE>::MIN_;
 
 
-template<typename TRAITS>
-ref<PyDate<TRAITS>>
-PyDate<TRAITS>::MISSING_;
+template<typename DATE>
+ref<PyDate<DATE>>
+PyDate<DATE>::MISSING_;
 
 
-template<typename TRAITS>
+template<typename DATE>
 ref<Object>
-PyDate<TRAITS>::get_datenum(
+PyDate<DATE>::get_datenum(
   PyDate* const self,
   void* /* closure */)
 {
@@ -442,9 +459,9 @@ PyDate<TRAITS>::get_datenum(
 }
 
 
-template<typename TRAITS>
+template<typename DATE>
 ref<Object>
-PyDate<TRAITS>::get_day(
+PyDate<DATE>::get_day(
   PyDate* const self,
   void* /* closure */)
 {
@@ -452,9 +469,9 @@ PyDate<TRAITS>::get_day(
 }
 
 
-template<typename TRAITS>
+template<typename DATE>
 ref<Object>
-PyDate<TRAITS>::get_invalid(
+PyDate<DATE>::get_invalid(
   PyDate* const self,
   void* /* closure */)
 {
@@ -462,9 +479,9 @@ PyDate<TRAITS>::get_invalid(
 }
 
 
-template<typename TRAITS>
+template<typename DATE>
 ref<Object>
-PyDate<TRAITS>::get_missing(
+PyDate<DATE>::get_missing(
   PyDate* const self,
   void* /* closure */)
 {
@@ -472,9 +489,9 @@ PyDate<TRAITS>::get_missing(
 }
 
 
-template<typename TRAITS>
+template<typename DATE>
 ref<Object>
-PyDate<TRAITS>::get_month(
+PyDate<DATE>::get_month(
   PyDate* const self,
   void* /* closure */)
 {
@@ -482,9 +499,9 @@ PyDate<TRAITS>::get_month(
 }
 
 
-template<typename TRAITS>
+template<typename DATE>
 ref<Object>
-PyDate<TRAITS>::get_ordinal(
+PyDate<DATE>::get_ordinal(
   PyDate* const self,
   void* /* closure */)
 {
@@ -492,9 +509,9 @@ PyDate<TRAITS>::get_ordinal(
 }
 
 
-template<typename TRAITS>
+template<typename DATE>
 ref<Object>
-PyDate<TRAITS>::get_parts(
+PyDate<DATE>::get_parts(
   PyDate* const self,
   void* /* closure */)
 {
@@ -511,9 +528,9 @@ PyDate<TRAITS>::get_parts(
 }
 
 
-template<typename TRAITS>
+template<typename DATE>
 ref<Object>
-PyDate<TRAITS>::get_valid(
+PyDate<DATE>::get_valid(
   PyDate* const self,
   void* /* closure */)
 {
@@ -521,9 +538,9 @@ PyDate<TRAITS>::get_valid(
 }
 
 
-template<typename TRAITS>
+template<typename DATE>
 ref<Object>
-PyDate<TRAITS>::get_week(
+PyDate<DATE>::get_week(
   PyDate* const self,
   void* /* closure */)
 {
@@ -531,9 +548,9 @@ PyDate<TRAITS>::get_week(
 }
 
 
-template<typename TRAITS>
+template<typename DATE>
 ref<Object>
-PyDate<TRAITS>::get_week_year(
+PyDate<DATE>::get_week_year(
   PyDate* const self,
   void* /* closure */)
 {
@@ -541,9 +558,9 @@ PyDate<TRAITS>::get_week_year(
 }
 
 
-template<typename TRAITS>
+template<typename DATE>
 ref<Object>
-PyDate<TRAITS>::get_weekday(
+PyDate<DATE>::get_weekday(
   PyDate* const self,
   void* /* closure */)
 {
@@ -551,9 +568,9 @@ PyDate<TRAITS>::get_weekday(
 }
 
 
-template<typename TRAITS>
+template<typename DATE>
 ref<Object>
-PyDate<TRAITS>::get_year(
+PyDate<DATE>::get_year(
   PyDate* const self,
   void* /* closure */)
 {
@@ -561,9 +578,9 @@ PyDate<TRAITS>::get_year(
 }
 
 
-template<typename TRAITS>
+template<typename DATE>
 ref<Object>
-PyDate<TRAITS>::get_ymdi(
+PyDate<DATE>::get_ymdi(
   PyDate* const self,
   void* /* closure */)
 {
@@ -573,9 +590,9 @@ PyDate<TRAITS>::get_ymdi(
 }
 
 
-template<typename TRAITS>
-GetSets<PyDate<TRAITS>>
-PyDate<TRAITS>::tp_getsets_ 
+template<typename DATE>
+GetSets<PyDate<DATE>>
+PyDate<DATE>::tp_getsets_ 
   = GetSets<PyDate>()
     .template add_get<get_datenum>      ("datenum")
     .template add_get<get_day>          ("day")
@@ -597,13 +614,13 @@ PyDate<TRAITS>::tp_getsets_
 // Helpers
 //------------------------------------------------------------------------------
 
-template<typename TRAITS>
+template<typename DATE>
 unique_ptr<cron::DateFormat>
-PyDate<TRAITS>::repr_format_;
+PyDate<DATE>::repr_format_;
 
-template<typename TRAITS>
-inline optional<typename PyDate<TRAITS>::Date>
-PyDate<TRAITS>::interpret_date_object(
+template<typename DATE>
+inline optional<typename PyDate<DATE>::Date>
+PyDate<DATE>::interpret_date_object(
   Object* const obj)
 {
   Date date;
@@ -639,9 +656,9 @@ PyDate<TRAITS>::interpret_date_object(
 }
 
 
-template<typename TRAITS>
-inline optional<typename PyDate<TRAITS>::Date>
-PyDate<TRAITS>::interpret_object(
+template<typename DATE>
+inline optional<typename PyDate<DATE>::Date>
+PyDate<DATE>::interpret_object(
   Object* const obj)
 {
   // Try to convert various date objects.
@@ -693,31 +710,31 @@ PyDate<TRAITS>::interpret_object(
 namespace {
 
 /**
- * Assuming 'obj' is a PyDate<TRAITS>, returns its datenum.
+ * Assuming 'obj' is a PyDate<DATE>, returns its datenum.
  *
  * Used for the tp_print hack in 'build_type()' below.
  */
-template<typename TRAITS>
+template<typename DATE>
 cron::Datenum
 _get_datenum(
   PyObject* obj)
 {
-  return static_cast<PyDate<TRAITS>*>(obj)->date_.get_datenum();
+  return static_cast<PyDate<DATE>*>(obj)->date_.get_datenum();
 }
 
 
 }  // anonymous namespace
 
 
-template<typename TRAITS>
+template<typename DATE>
 Type
-PyDate<TRAITS>::build_type(
+PyDate<DATE>::build_type(
   string const& type_name)
 {
   return PyTypeObject{
     PyVarObject_HEAD_INIT(nullptr, 0)
     (char const*)         strdup(type_name.c_str()),      // tp_name
-    (Py_ssize_t)          sizeof(PyDate<TRAITS>),         // tp_basicsize
+    (Py_ssize_t)          sizeof(PyDate<DATE>),         // tp_basicsize
     (Py_ssize_t)          0,                              // tp_itemsize
     (destructor)          tp_dealloc,                     // tp_dealloc
     // FIXME: Hack!  We'd like to provide a way for any PyDate instance to
@@ -725,7 +742,7 @@ PyDate<TRAITS>::build_type(
     // without virtual methods.  PyTypeObject doesn't provide any slot for us to
     // stash this, so we requisition the deprecated tp_print slot.  This may
     // break in future Python versions, if that slot is reused.
-    (printfunc)           &_get_datenum<TRAITS>,          // tp_print
+    (printfunc)           &_get_datenum<DATE>,          // tp_print
     (getattrfunc)         nullptr,                        // tp_getattr
     (setattrfunc)         nullptr,                        // tp_setattr
     (void*)               nullptr,                        // tp_reserved
@@ -773,9 +790,9 @@ PyDate<TRAITS>::build_type(
 }
 
 
-template<typename TRAITS>
+template<typename DATE>
 Type
-PyDate<TRAITS>::type_;
+PyDate<DATE>::type_;
 
 
 }  // namespace alxs

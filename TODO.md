@@ -17,7 +17,6 @@
   - `from_week()` and `from_ordinal()` should accept single sequences
   - format method
 
-- Template `PyDate` on `Date` rather than its traits.
 - Consider and test invalid vs. exception date classes.
 - `today(tz)` function
 - comparison with other date representations
