@@ -9,13 +9,13 @@
 # Python API
 
 Rename `DayInterval` to `DayDuration`.
-
+g
 ## PyDate
 
 - API
 
-  - `from_week(week_year, week, weekday)`
-  - `from_week()` and `from_ordinal()` should accept single sequences
+  - `from_week_date(week_year, week, weekday)`
+  - `from_week_date()` and `from_ordinal()` should accept single sequences
 
 - Consider and test invalid vs. exception date classes.
 - `__format__()` method and support
