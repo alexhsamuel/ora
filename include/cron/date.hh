@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>  // FIXME: Remove.
 #include <limits>
 #include <string>
 
@@ -70,23 +71,26 @@ extern inline Weekday constexpr
 get_weekday(
   Datenum datenum)
 {
-  return 
-    datenum_is_valid(datenum) 
+  if (datenum_is_valid(datenum)) {
     // 1200 March 1 is a Wednesday.
-    ? ((WEDNESDAY + datenum) % 7) 
-    : WEEKDAY_INVALID;
+    auto weekday = (WEDNESDAY + datenum) % 7;
+    return weekday >= 0 ? weekday : weekday + 7;
+  }
+  else
+    return WEEKDAY_INVALID;
 }
 
 
 namespace impl {
 
+/**
+ * Returns the offset of the first day of them month relative to the most recent
+ * March 1.  This is the same for ordinary and leap years.
+ */
 inline Datenum constexpr
-get_month_datenum(
+get_month_offset(
   Month month)
 {
-  // The offset of the first day of each month relative to the most recent 
-  // March 1 is the same for ordinary and leap years.  
-
   // The cumbersome construction is required for a constexpr function.
   // FIXME: It's probably not the most efficient at runtime.  Consider options.
   return 
@@ -107,17 +111,21 @@ get_month_datenum(
 
 
 /**
- * Returns the datenum for the first day of 'year'.
+ * Returns the datenum for March 1 of 'year'.
  */
 inline Datenum constexpr
-year_to_datenum(
-  Year year)
+mar1_datenum(
+  Year const year)
 {
+  // To keep divisions positive, we don't subtract 1200 when correcting for
+  // leap years, but we subtract off the excess number of leap years at the end.
+  // FIXME: Remove this if we use 0001-01-01 ordinals instead.
   return
-      365 * year  // An ordinary year has 365 days.
-    + year /   4  // Add a leap day every four years, 
-    - year / 100  // ... but century years are not leap years,
-    + year / 400; // ... but multiples of 400 are.
+      365 * (year - 1200)   // An ordinary year has 365 days.
+    + year /   4            // Add a leap day every four years, 
+    - year / 100            // ... but century years are not leap years,
+    + year / 400            // ... but multiples of 400 are.
+    - 291;                  // Excess.
 }
 
 
@@ -128,13 +136,39 @@ ymd_to_datenum(
   Day day)
 {
   return
-      year_to_datenum(year)
-    + get_month_datenum(month)
+      mar1_datenum(year - (month < 2 ? 1 : 0))
+    + get_month_offset(month)
     + day;
 }
 
 
 }  // namespace impl
+
+
+/**
+ * Returns the datenum of January 1 of 'year'.
+ */
+inline Datenum constexpr
+jan1_datenum(
+  Year year)
+{
+  return impl::mar1_datenum(year) - (is_leap_year(year) ? 60 : 59);
+}
+
+
+inline Datenum constexpr 
+week_date_to_datenum(
+  Year const week_year,
+  Week const week,
+  Weekday const weekday)
+{
+  Datenum const jan1 = jan1_datenum(week_year);
+  return 
+      jan1                              // Start with Jan 1.
+    + (10 - get_weekday(jan1)) % 7 - 3  // Adjust to start on the full week/
+    + week * 7                          // Add the week offset.
+    + weekday;                          // Add the weekday offset.
+}
 
 
 extern inline Datenum constexpr
@@ -143,10 +177,9 @@ ymd_to_datenum(
   Month month,
   Day day)
 {
-  // Count years from 1200-03-01.
   return
     ymd_is_valid(year, month, day) 
-    ? impl::ymd_to_datenum(year - 1200 - (month < 2 ? 1 : 0), month, day)
+    ? impl::ymd_to_datenum(year, month, day)
     : DATENUM_INVALID;
 }
 
@@ -156,7 +189,7 @@ ordinal_to_datenum(
   Year year,
   Ordinal ordinal)
 {
-  return ymd_to_datenum(year, 0, 0) + ordinal;
+  return jan1_datenum(year) + ordinal;
 }
 
 
@@ -265,6 +298,16 @@ public:
     Ordinal ordinal) 
   { 
     return DateTemplate(ordinal_to_offset(year, ordinal)); 
+  }
+
+  static DateTemplate
+  from_week_date(
+    Year const week_year,
+    Week const week,
+    Weekday const weekday)
+  {
+    return DateTemplate(
+      datenum_to_offset(week_date_to_datenum(week_year, week, weekday)));
   }
 
   static DateTemplate 

@@ -2,8 +2,8 @@
 
 ## Date
 
-- Replace datenum with "proleptic Gregorian ordinal" per Python's
-  `datetime.date`?
+- Replace 1200-03-01 datenum with 0001-01-01 "proleptic Gregorian ordinal" per
+  Python's `datetime.date`?
 - Maybe make Month, Day, Ordinal one-indexed?
 
 # Python API

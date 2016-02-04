@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <cctype>
 #include <iomanip>
+#include <iostream>
 #include <memory>
 #include <sstream>
 
@@ -16,16 +17,16 @@ namespace cron {
 
 DateParts
 datenum_to_parts(
-  Datenum datenum)
+  Datenum const datenum_)
 {
   DateParts parts;
 
-  if (! datenum_is_valid(datenum)) 
+  if (! datenum_is_valid(datenum_)) 
     return DateParts::get_invalid();
 
   // Shift forward to the basis year 1200.  We do this first to keep the
   // following divisions positive.
-  datenum += (1200 / 400) * 146097;
+  Datenum const datenum = datenum_ + (1200 / 400) * 146097;
   // Compute the 400-year cycle and remainder.
   parts.year = 400 * (datenum / 146097);
   uint32_t rem = datenum % 146097;
@@ -57,7 +58,7 @@ datenum_to_parts(
   // Compute month and date shifting from March 1.
   if (rem < 306) {
     // March - December.
-    parts.ordinal = rem + 59;
+    parts.ordinal = rem + (is_leap_year(parts.year) ? 60 : 59);
     if      (rem <  31) { 
       parts.month = 2;
       parts.day = rem -   0;
@@ -114,7 +115,7 @@ datenum_to_parts(
   }
 
   // 1200 March 1 is a Wednesday.
-  parts.weekday = get_weekday(datenum);
+  parts.weekday = get_weekday(datenum_);
 
   // The week number is the week number of the nearest Thursday.
   int16_t const thursday = parts.ordinal + THURSDAY - parts.weekday;

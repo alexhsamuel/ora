@@ -97,3 +97,19 @@ class Month(enum.IntEnum):
 globals().update(Month.__members__)
 
 
+#-------------------------------------------------------------------------------
+
+def random_date(Date=Date, min=None, max=None):
+    from random import randint
+
+    if min is None:
+        min = Date.MIN
+    else:
+        min = Date.convert(min)
+    if max is None:
+        max = Date.LAST
+    else:
+        max = Date.convert(max)
+    return Date.from_datenum(randint(min.datenum, max.datenum))
+
+

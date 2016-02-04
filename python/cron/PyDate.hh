@@ -102,6 +102,7 @@ private:
   static ref<Object> method_from_datenum(PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_ordinal(PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_parts(PyTypeObject* type, Tuple* args, Dict* kw_args);
+  static ref<Object> method_from_week_date(PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_ymdi(PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_is_same(PyDate* self, Tuple* args, Dict* kw_args);
   static Methods<PyDate> tp_methods_;
@@ -366,6 +367,28 @@ PyDate<DATE>::method_from_parts(
 
 template<typename DATE>
 ref<Object>
+PyDate<DATE>::method_from_week_date(
+  PyTypeObject* const type,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] 
+    = {"week_year", "week", "weekday", nullptr};
+  cron::Year week_year;
+  cron::Week week;
+  cron::Weekday weekday;
+  static_assert(sizeof(cron::Year) == sizeof(short), "year is not a short");
+  static_assert(sizeof(cron::Week) == sizeof(char), "week is not a char");
+  static_assert(sizeof(cron::Weekday) == sizeof(char), "week is not a char");
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "Hbb", arg_names, &week_year, &week, &weekday);
+
+  return create(Date::from_week_date(week_year, week - 1, weekday), type);
+}
+
+
+template<typename DATE>
+ref<Object>
 PyDate<DATE>::method_from_ymdi(
   PyTypeObject* const type,
   Tuple* const args,
@@ -407,6 +430,7 @@ PyDate<DATE>::tp_methods_
     .template add_class<method_from_datenum>        ("from_datenum")
     .template add_class<method_from_ordinal>        ("from_ordinal")
     .template add_class<method_from_parts>          ("from_parts")
+    .template add_class<method_from_week_date>      ("from_week_date")
     .template add_class<method_from_ymdi>           ("from_ymdi")
     .template add<method_is_same>                   ("is_same")
   ;
@@ -514,7 +538,7 @@ PyDate<DATE>::get_parts(
   parts_obj->initialize(2, Long::FromLong(parts.day + 1));
   parts_obj->initialize(3, Long::FromLong(parts.ordinal + 1));
   parts_obj->initialize(4, Long::FromLong(parts.week_year));
-  parts_obj->initialize(5, Long::FromLong(parts.week));
+  parts_obj->initialize(5, Long::FromLong(parts.week + 1));
   parts_obj->initialize(6, get_weekday_obj(parts.weekday));
   return std::move(parts_obj);
 }
