@@ -48,3 +48,7 @@ g
 
 - move `py.hh` to plynth and merge with other versions
 
+# Misc
+
+- investigate why `cal` doesn't agree for older dates
+
