@@ -16,7 +16,6 @@ Rename `DayInterval` to `DayDuration`.
 - API
 
   - Rationalize C++ and Python APIs.
-  - `from_week_date(week_year, week, weekday)`
   - `from_week_date()` and `from_ordinal()` should accept single sequences
 
 - Consider and test invalid vs. exception date classes.
