@@ -5,15 +5,17 @@
 - Replace 1200-03-01 datenum with 0001-01-01 "proleptic Gregorian ordinal" per
   Python's `datetime.date`?
 - Maybe make Month, Day, Ordinal one-indexed?
+- Split week date out of parts?
 
 # Python API
 
 Rename `DayInterval` to `DayDuration`.
-g
+
 ## PyDate
 
 - API
 
+  - Rationalize C++ and Python APIs.
   - `from_week_date(week_year, week, weekday)`
   - `from_week_date()` and `from_ordinal()` should accept single sequences
 
