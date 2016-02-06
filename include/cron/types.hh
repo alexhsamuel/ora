@@ -105,26 +105,20 @@ Daytick constexpr   DAYTICK_INVALID     = std::numeric_limits<Daytick>::max();
  * Internal representation of dates.
  *
  * We perform date computations on "datenums", the number of days elapsed since
- * 1200 March 1.  (This is before the Gregorian calendar was adopted, but we
- * extrapolate backwards.)  We choose March 1 for convenience of computation: a
- * leap day, if any, is always the last day of the year since March 1.  That
- * means that for any date of any year, the number of days since the previous
- * March 1 is fixed.
+ * 0001 January 1.  (This is before the Gregorian calendar was adopted, but we
+ * use the proleptic Gregorian calendar.)  
  *
  * The minimum year is the year C.E. 1; B.C.E. years are not supported.  The
  * maximum year is 9999.  Too much code exists that assumes four-digit years to
  * make larger years worth the trouble.  Also, if we are still using the same
  * f***ed up calendar system in 8,000 years, I will kill myself.
  */
-typedef int32_t Datenum;
-Datenum constexpr   DATENUM_MIN         = -437985;   // 0001-01-01
-Datenum constexpr   DATENUM_MAX         = 3214074;   // 10000-01-01
+typedef uint32_t Datenum;
+Datenum constexpr   DATENUM_MIN         =       0;   // 0001-01-01
+Datenum constexpr   DATENUM_MAX         = 3652059;   // 10000-01-01
 Datenum constexpr   DATENUM_INVALID     = std::numeric_limits<Datenum>::max();
-Datenum constexpr   DATENUM_UNIX_EPOCH  = 281177;    // 1970-01-01
-inline constexpr bool datenum_is_valid(Datenum datenum) { return in_interval(DATENUM_MIN, datenum, DATENUM_MAX); }
-
-// Offset in days of 1200-03-01 from 0001-01-01.
-long constexpr      DATENUM_OFFSET      = 437986;
+Datenum constexpr   DATENUM_UNIX_EPOCH  =  719162;   // 1970-01-01
+inline bool constexpr datenum_is_valid(Datenum datenum) { return in_interval(DATENUM_MIN, datenum, DATENUM_MAX); }
 
 /**
  * Seconds since midnight.
@@ -136,7 +130,7 @@ typedef double Ssm;
 Ssm constexpr       SSM_MIN             = 0;
 Ssm constexpr       SSM_MAX             = SECS_PER_DAY;
 Ssm constexpr       SSM_INVALID         = std::numeric_limits<Ssm>::quiet_NaN();
-inline constexpr bool ssm_is_valid(Ssm ssm) { return in_interval(SSM_MIN, ssm, SSM_MAX); }
+inline bool constexpr ssm_is_valid(Ssm ssm) { return in_interval(SSM_MIN, ssm, SSM_MAX); }
 
 /**
  * A time zone offset from UTC, in seconds.

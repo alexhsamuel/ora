@@ -1,6 +1,7 @@
 #include <string>
 
 #include "cron/date.hh"
+#include "cron/ez.hh"
 #include "cron/format.hh"
 #include "gtest/gtest.h"
 
@@ -35,12 +36,12 @@ TEST(Date, from_ymd) {
 
 TEST(Date, offsets) {
   Date const date0 = Date(1600, 2, 0);
-  EXPECT_EQ(146097, date0.get_datenum());
+  EXPECT_EQ(584083, date0.get_datenum());
   EXPECT_EQ(date0, Date::from_offset(date0.get_offset()));
   EXPECT_EQ(date0, Date::from_datenum(date0.get_datenum()));
 
   Date const date1 = Date(2000, 2, 0);
-  EXPECT_EQ(292194, date1.get_datenum());
+  EXPECT_EQ(730180, date1.get_datenum());
   EXPECT_EQ(date1, Date::from_offset(date1.get_offset()));
   EXPECT_EQ(date1, Date::from_datenum(date1.get_datenum()));
 }
@@ -215,7 +216,7 @@ TEST(SmallDate, default_ctor) {
 
 TEST(SmallDate, range) {
   EXPECT_EQ(     0, SmallDate::MIN.get_offset());
-  EXPECT_EQ(281177, SmallDate::MIN.get_datenum());
+  EXPECT_EQ(719162, SmallDate::MIN.get_datenum());
 
   EXPECT_EQ(SmallDate(1970, 0, 0), SmallDate::MIN);
   EXPECT_EQ("1970-01-01", (string) DateFormat::ISO_CALENDAR_EXTENDED(SmallDate::MIN));

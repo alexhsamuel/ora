@@ -17,18 +17,15 @@ namespace cron {
 
 DateParts
 datenum_to_parts(
-  Datenum const datenum_)
+  Datenum const datenum)
 {
   DateParts parts;
 
-  if (! datenum_is_valid(datenum_)) 
+  if (! datenum_is_valid(datenum)) 
     return DateParts::get_invalid();
 
-  // Shift forward to the basis year 1200.  We do this first to keep the
-  // following divisions positive.
-  Datenum const datenum = datenum_ + (1200 / 400) * 146097;
   // Compute the 400-year cycle and remainder.
-  parts.year = 400 * (datenum / 146097);
+  parts.year = 1 + 400 * (datenum / 146097);
   uint32_t rem = datenum % 146097;
 
   // Compute the 100-year cycle and remainder.
@@ -55,67 +52,63 @@ datenum_to_parts(
     rem %= 365;
   }
 
-  // Compute month and date shifting from March 1.
-  if (rem < 306) {
-    // March - December.
-    parts.ordinal = rem + (is_leap_year(parts.year) ? 60 : 59);
-    if      (rem <  31) { 
+  parts.ordinal = rem;
+  parts.weekday = get_weekday(datenum);
+
+  auto const leap = is_leap_year(parts.year);
+
+  if (rem < 31) {
+    parts.month = 0;
+    parts.day = rem;
+  } 
+  else if (rem < 59 || (leap && rem == 59)) {
+    parts.month = 1;
+    parts.day = rem - 31;
+  }
+  else {
+    if (leap)
+      --rem;
+    if (rem < 90) {
       parts.month = 2;
-      parts.day = rem -   0;
+      parts.day = rem - 59;
     }
-    else if (rem <  61) {
+    else if (rem < 120) {
       parts.month = 3;
-      parts.day = rem -  31;
+      parts.day = rem - 90;
     }
-    else if (rem <  92) {
+    else if (rem < 151) {
       parts.month = 4;
-      parts.day = rem -  61;
+      parts.day = rem - 120;
     }
-    else if (rem < 122) {
+    else if (rem < 181) {
       parts.month = 5;
-      parts.day = rem -  92;
+      parts.day = rem - 151;
     }
-    else if (rem < 153) {
+    else if (rem < 212) {
       parts.month = 6;
-      parts.day = rem - 122;
+      parts.day = rem - 181;
     }
-    else if (rem < 184) {
+    else if (rem < 243) {
       parts.month = 7;
-      parts.day = rem - 153;
+      parts.day = rem - 212;
     }
-    else if (rem < 214) {
+    else if (rem < 273) {
       parts.month = 8;
-      parts.day = rem - 184;
+      parts.day = rem - 243;
     }
-    else if (rem < 245) {
+    else if (rem < 304) {
       parts.month = 9;
-      parts.day = rem - 214;
+      parts.day = rem - 273;
     }
-    else if (rem < 275) {
+    else if (rem < 334) {
       parts.month = 10;
-      parts.day = rem - 245;
+      parts.day = rem - 304;
     }
     else {
       parts.month = 11;
-      parts.day = rem - 275;
+      parts.day = rem - 334;
     }
   }
-  else {
-    // January - February.
-    parts.year++;
-    parts.ordinal = rem - 306;
-    if (rem < 337) {
-      parts.month = 0;
-      parts.day = rem - 306;
-    }
-    else {
-      parts.month = 1;
-      parts.day = rem - 337;
-    }
-  }
-
-  // 1200 March 1 is a Wednesday.
-  parts.weekday = get_weekday(datenum_);
 
   // The week number is the week number of the nearest Thursday.
   int16_t const thursday = parts.ordinal + THURSDAY - parts.weekday;

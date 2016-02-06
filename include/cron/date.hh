@@ -37,7 +37,7 @@ days_per_month(
   Month month)
 {
   return 
-    month ==  3 || month ==  5 || month ==  8 || month == 10 ? 30
+      month ==  3 || month ==  5 || month ==  8 || month == 10 ? 30
     : month == 1 ? (is_leap_year(year) ? 29 : 28)
     : 31;
 }
@@ -71,13 +71,26 @@ extern inline Weekday constexpr
 get_weekday(
   Datenum datenum)
 {
-  if (datenum_is_valid(datenum)) {
-    // 1200 March 1 is a Wednesday.
-    auto weekday = (WEDNESDAY + datenum) % 7;
-    return weekday >= 0 ? weekday : weekday + 7;
-  }
+  if (datenum_is_valid(datenum)) 
+    // 0001-01-01 is a Monday.
+    return (MONDAY + datenum) % 7;
   else
     return WEEKDAY_INVALID;
+}
+
+
+/**
+ * Returns the datenum for Jan 1 of 'year'.
+ */
+inline Datenum constexpr
+jan1_datenum(
+  Year const year)
+{
+  return
+    + 365 * (year - 1)  // An ordinary year has 365 days.
+    + year /   4        // Add a leap day every four years, 
+    - year / 100        // ... but century years are not leap years,
+    + year / 400;       // ... but multiples of 400 are.
 }
 
 
@@ -89,43 +102,25 @@ namespace impl {
  */
 inline Datenum constexpr
 get_month_offset(
+  Year year, 
   Month month)
 {
   // The cumbersome construction is required for a constexpr function.
-  // FIXME: It's probably not the most efficient at runtime.  Consider options.
-  return 
-    (month ==  0) ? 306 :
-    (month ==  1) ? 337 :
-    (month ==  2) ?   0 :
-    (month ==  3) ?  31 :
-    (month ==  4) ?  61 :
-    (month ==  5) ?  92 :
-    (month ==  6) ? 122 :
-    (month ==  7) ? 153 :
-    (month ==  8) ? 184 :
-    (month ==  9) ? 214 :
-    (month == 10) ? 245 :
-    (month == 11) ? 275 :
-    DATENUM_INVALID;
-}
-
-
-/**
- * Returns the datenum for March 1 of 'year'.
- */
-inline Datenum constexpr
-mar1_datenum(
-  Year const year)
-{
-  // To keep divisions positive, we don't subtract 1200 when correcting for
-  // leap years, but we subtract off the excess number of leap years at the end.
-  // FIXME: Remove this if we use 0001-01-01 ordinals instead.
   return
-      365 * (year - 1200)   // An ordinary year has 365 days.
-    + year /   4            // Add a leap day every four years, 
-    - year / 100            // ... but century years are not leap years,
-    + year / 400            // ... but multiples of 400 are.
-    - 291;                  // Excess.
+      (month == 0) ?    0
+    : (month == 1) ?   31
+    : (
+         (month ==  2) ?  59
+       : (month ==  3) ?  90
+       : (month ==  4) ? 120
+       : (month ==  5) ? 151
+       : (month ==  6) ? 181
+       : (month ==  7) ? 212
+       : (month ==  8) ? 243
+       : (month ==  9) ? 273
+       : (month == 10) ? 304
+       :                 334
+      ) + (is_leap_year(year) ? 1 : 0);
 }
 
 
@@ -136,24 +131,13 @@ ymd_to_datenum(
   Day day)
 {
   return
-      mar1_datenum(year - (month < 2 ? 1 : 0))
-    + get_month_offset(month)
+      jan1_datenum(year)
+    + get_month_offset(year, month)
     + day;
 }
 
 
 }  // namespace impl
-
-
-/**
- * Returns the datenum of January 1 of 'year'.
- */
-inline Datenum constexpr
-jan1_datenum(
-  Year year)
-{
-  return impl::mar1_datenum(year) - (is_leap_year(year) ? 60 : 59);
-}
 
 
 inline Datenum constexpr 
@@ -162,10 +146,11 @@ week_date_to_datenum(
   Week const week,
   Weekday const weekday)
 {
+  // FIXME: Validate.
   Datenum const jan1 = jan1_datenum(week_year);
   return 
       jan1                              // Start with Jan 1.
-    + (10 - get_weekday(jan1)) % 7 - 3  // Adjust to start on the full week/
+    + (10 - get_weekday(jan1)) % 7 - 3  // Adjust to start on the full week.
     + week * 7                          // Add the week offset.
     + weekday;                          // Add the weekday offset.
 }
@@ -178,14 +163,14 @@ ymd_to_datenum(
   Day day)
 {
   return
-    ymd_is_valid(year, month, day) 
+      ymd_is_valid(year, month, day) 
     ? impl::ymd_to_datenum(year, month, day)
     : DATENUM_INVALID;
 }
 
 
 extern inline Datenum constexpr 
-ordinal_to_datenum(
+ordinal_date_to_datenum(
   Year year,
   Ordinal ordinal)
 {
@@ -297,7 +282,7 @@ public:
     Year year, 
     Ordinal ordinal) 
   { 
-    return DateTemplate(ordinal_to_offset(year, ordinal)); 
+    return DateTemplate(ordinal_date_to_offset(year, ordinal)); 
   }
 
   static DateTemplate
@@ -376,13 +361,13 @@ protected:
   }
 
   static Offset
-  ordinal_to_offset(
+  ordinal_date_to_offset(
     Year year,
     Ordinal ordinal)
   {
     return
       ordinal_is_valid(year, ordinal)
-      ? datenum_to_offset(ordinal_to_datenum(year, ordinal))
+      ? datenum_to_offset(ordinal_date_to_datenum(year, ordinal))
       : on_error<InvalidDateError>();
   }
 
@@ -439,7 +424,7 @@ struct DateTraits
 {
   typedef uint32_t Offset;
 
-  static Datenum constexpr base     = -437985;
+  static Datenum constexpr base     =       0;
   static Offset  constexpr invalid  = 3652059;
   static Offset  constexpr missing  = 3652060;
   static Offset  constexpr min      =       0;   //  0001-01-01.
@@ -456,7 +441,7 @@ struct SafeDateTraits
 {
   typedef uint32_t Offset;
 
-  static Datenum constexpr base     = -437985;
+  static Datenum constexpr base     =       0;
   static Offset  constexpr invalid  = 3652059;
   static Offset  constexpr missing  = 3652060;
   static Offset  constexpr min      =       0;   //  0001-01-01.
@@ -470,7 +455,7 @@ struct SmallDateTraits
 {
   typedef uint16_t Offset;
 
-  static Datenum constexpr base     = 281177;
+  static Datenum constexpr base     = 719162;
   static Offset  constexpr invalid  = std::numeric_limits<Offset>::max() - 1;
   static Offset  constexpr missing  = invalid + 1;
   static Offset  constexpr min      = 0;         // 1970-01-01.
@@ -528,76 +513,8 @@ template<class TRAITS> DateTemplate<TRAITS> operator--(DateTemplate<TRAITS>& dat
 extern DateParts iso_parse(std::string const& text);  
 
 //------------------------------------------------------------------------------
-// Syntactic sugar for date literals.
-
-// FIXME: Is this even a good idea?
-
-namespace ez {
-
-namespace {
-
-class MonthLiteral
-{
-private:
-
-  class YearMonthLiteral
-  {
-  public:
-
-    constexpr YearMonthLiteral(Year year, Month month) : year_(year), month_(month) {}
-    Date operator/(Day day) const { return Date(year_, month_ - 1, day - 1); }
-
-  private:
-
-    Year year_;
-    Month month_;
-
-  };
-
-public:
-
-  constexpr MonthLiteral(Month month) : month_(month) {}
-  constexpr YearMonthLiteral with_year(Year year) const { return YearMonthLiteral(year, month_); }
-  
-private:
-
-  Month month_;
-
-  friend YearMonthLiteral operator/(Year year, MonthLiteral const&);
-
-};
-
-
-inline
-MonthLiteral::YearMonthLiteral
-operator/(
-  Year year,
-  MonthLiteral const& month)
-{
-  return month.with_year(year);
-}
-
-
-}  // anonymous namespace
-
-MonthLiteral constexpr JAN = MonthLiteral( 1);
-MonthLiteral constexpr FEB = MonthLiteral( 2);
-MonthLiteral constexpr MAR = MonthLiteral( 3);
-MonthLiteral constexpr APR = MonthLiteral( 4);
-MonthLiteral constexpr MAY = MonthLiteral( 5);
-MonthLiteral constexpr JUN = MonthLiteral( 6);
-MonthLiteral constexpr JUL = MonthLiteral( 7);
-MonthLiteral constexpr AUG = MonthLiteral( 8);
-MonthLiteral constexpr SEP = MonthLiteral( 9);
-MonthLiteral constexpr OCT = MonthLiteral(10);
-MonthLiteral constexpr NOV = MonthLiteral(11);
-MonthLiteral constexpr DEC = MonthLiteral(12);
-
-
-}  // namespace ez
-
-//------------------------------------------------------------------------------
 
 }  // namespace cron
 }  // namespace alxs
+
 
