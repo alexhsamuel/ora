@@ -35,15 +35,19 @@ TEST(Date, from_ymd) {
 }
 
 TEST(Date, offsets) {
-  Date const date0 = Date(1600, 2, 0);
-  EXPECT_EQ(584083, date0.get_datenum());
-  EXPECT_EQ(date0, Date::from_offset(date0.get_offset()));
-  EXPECT_EQ(date0, Date::from_datenum(date0.get_datenum()));
+  EXPECT_EQ(Date::MIN, Date::from_offset(Date::MIN.get_offset()));
+  EXPECT_EQ(Date::MIN, Date::from_datenum(Date::MIN.get_datenum()));
 
-  Date const date1 = Date(2000, 2, 0);
-  EXPECT_EQ(730180, date1.get_datenum());
+  EXPECT_EQ(Date::LAST, Date::from_offset(Date::LAST.get_offset()));
+  EXPECT_EQ(Date::LAST, Date::from_datenum(Date::LAST.get_datenum()));
+
+  Date const date1 = Date(1600, 2, 0);
   EXPECT_EQ(date1, Date::from_offset(date1.get_offset()));
   EXPECT_EQ(date1, Date::from_datenum(date1.get_datenum()));
+
+  Date const date2 = Date(2000, 2, 0);
+  EXPECT_EQ(date2, Date::from_offset(date2.get_offset()));
+  EXPECT_EQ(date2, Date::from_datenum(date2.get_datenum()));
 }
 
 TEST(Date, shift) {
