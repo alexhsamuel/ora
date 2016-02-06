@@ -21,19 +21,18 @@ def test_parts_attrs():
 def test_parts():
     for year, month, day in data.TEST_DATE_PARTS:
         parts = Date.from_parts(year, month, day).parts
-        assert parts.year == year
-        assert parts.month == month
-        assert parts.day == day
-        assert parts[: 3] == (year, month, day)
+        assert parts.year   == year
+        assert parts.month  == month
+        assert parts.day    == day
+        assert parts[: 3]   == (year, month, day)
 
 
 def test_vs_date():
     for parts in data.TEST_DATE_PARTS:
         date = Date.from_parts(*parts)
         ref = datetime.date(*parts)
-        assert date.year == ref.year
-        assert date.month == ref.month
-        assert date.day == ref.day
-
+        assert date.year    == ref.year
+        assert date.month   == ref.month
+        assert date.day     == ref.day
 
 
