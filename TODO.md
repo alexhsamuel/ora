@@ -8,7 +8,8 @@
 
 # Python API
 
-Rename `DayInterval` to `DayDuration`.
+- Stop using setuptools; port make rules from fixfmt.
+- Rename `DayInterval` to `DayDuration`.
 
 ## PyDate
 
