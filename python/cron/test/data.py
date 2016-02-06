@@ -35,3 +35,14 @@ TEST_DATE_PARTS = (
     (9999, Dec, 31),
     )
 
+
+#-------------------------------------------------------------------------------
+
+def sample_dates(interval=37, Date=Date):
+    yield Date.MIN
+    for datenum in range(Date.MIN.datenum + 1, Date.LAST.datenum, interval):
+        yield Date.from_datenum(datenum)
+    yield Date.LAST
+
+
+
