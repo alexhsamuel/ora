@@ -38,6 +38,10 @@ PyInit__ext(void)
     StructSequenceType* const parts_type = get_date_parts_type();
     module->AddObject(parts_type->tp_name, (PyObject*) parts_type);
 
+    module->AddObject("DATENUM_MIN" , Long::FromLong(cron::DATENUM_MIN));
+    module->AddObject("DATENUM_LAST", Long::FromLong(cron::DATENUM_LAST));
+    module->AddObject("DATENUM_MAX" , Long::FromLong(cron::DATENUM_MAX));
+
     return module.release();
   }
   catch (Exception) {

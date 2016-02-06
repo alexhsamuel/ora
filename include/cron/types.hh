@@ -115,7 +115,8 @@ Daytick constexpr   DAYTICK_INVALID     = std::numeric_limits<Daytick>::max();
  */
 typedef uint32_t Datenum;
 Datenum constexpr   DATENUM_MIN         =       0;   // 0001-01-01
-Datenum constexpr   DATENUM_MAX         = 3652059;   // 10000-01-01
+Datenum constexpr   DATENUM_LAST        = 3652058;   // 9999-12-31
+Datenum constexpr   DATENUM_MAX         = DATENUM_LAST + 1;
 Datenum constexpr   DATENUM_INVALID     = std::numeric_limits<Datenum>::max();
 Datenum constexpr   DATENUM_UNIX_EPOCH  =  719162;   // 1970-01-01
 inline bool constexpr datenum_is_valid(Datenum datenum) { return in_interval(DATENUM_MIN, datenum, DATENUM_MAX); }
