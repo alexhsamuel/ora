@@ -2,8 +2,7 @@
 
 ## Date
 
-- Replace 1200-03-01 datenum with 0001-01-01 "proleptic Gregorian ordinal" per
-  Python's `datetime.date`?
+- Make Date::MAX distinct from Date::INVALID.
 - Maybe make Month, Day, Ordinal one-indexed?
 - Split week date out of parts?
 
@@ -12,6 +11,8 @@
 Rename `DayInterval` to `DayDuration`.
 
 ## PyDate
+
+- Make Date::MAX distinct from Date::INVALID.
 
 - API
 
