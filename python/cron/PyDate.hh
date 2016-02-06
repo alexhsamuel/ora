@@ -768,7 +768,7 @@ convert_date_object(
   // Try for a date type that as a 'toordinal()' method.
   auto ordinal = obj->CallMethodObjArgs("toordinal", false);
   if (ordinal != nullptr)
-    return DATE::from_datenum(ordinal->long_value() - cron::DATENUM_OFFSET);
+    return DATE::from_datenum(ordinal->long_value() - 1);
 
   // No type match.
   return {};

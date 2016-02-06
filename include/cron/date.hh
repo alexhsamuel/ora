@@ -87,10 +87,14 @@ jan1_datenum(
   Year const year)
 {
   return
-    + 365 * (year - 1)  // An ordinary year has 365 days.
-    + year /   4        // Add a leap day every four years, 
-    - year / 100        // ... but century years are not leap years,
-    + year / 400;       // ... but multiples of 400 are.
+    // An ordinary year has 365 days; count from year 1.
+    365 * (year - 1)
+    // Add a leap day for multiples of four; century years are not leap years
+    // unless also a multiple of 400.  Subtract one from the year, since we
+    // are considering Jan 1 and therefore care about previous years only.
+    + (year - 1) /   4
+    - (year - 1) / 100
+    + (year - 1) / 400;
 }
 
 
@@ -105,7 +109,7 @@ get_month_offset(
   Year year, 
   Month month)
 {
-  // The cumbersome construction is required for a constexpr function.
+  // The cumbersome construction is required for constexpr.
   return
       (month == 0) ?    0
     : (month == 1) ?   31
@@ -124,7 +128,7 @@ get_month_offset(
 }
 
 
-inline Datenum constexpr
+inline Datenum constexpr 
 ymd_to_datenum(
   Year year,
   Month month,
