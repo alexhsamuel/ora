@@ -272,6 +272,10 @@ get_system_time_zone_name_()
     if (result == -1) 
       throw RuntimeError(string("can't read link: ") + SYSTEM_TIME_ZONE_LINK);
     else {
+      // Nul-terminate.
+      assert(result < PATH_MAX);
+      buf[result] = '\0';
+
       fs::Filename const zone_filename = buf;
       auto const parts = get_parts(zone_filename);
       auto const zoneinfo_parts = fs::get_parts(ZONEINFO_DIR);
