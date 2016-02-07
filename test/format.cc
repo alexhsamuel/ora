@@ -1,3 +1,4 @@
+#include "cron/ez.hh"
 #include "cron/format.hh"
 #include "gtest/gtest.h"
 

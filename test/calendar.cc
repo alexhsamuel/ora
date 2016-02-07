@@ -1,6 +1,7 @@
 #pragma GCC diagnostic ignored "-Wparentheses"
 
 #include "cron/calendar.hh"
+#include "cron/ez.hh"
 #include "gtest/gtest.h"
 #include "filename.hh"
 

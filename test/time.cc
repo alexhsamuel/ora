@@ -1,5 +1,6 @@
-#include "cron/time.hh"
+#include "cron/ez.hh"
 #include "cron/format.hh"
+#include "cron/time.hh"
 #include "gtest/gtest.h"
 
 using namespace alxs;
