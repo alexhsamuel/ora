@@ -124,7 +124,7 @@ TEST(Time, from_parts_invalid) {
 
 TEST(Time, get_parts) {
   // 2013 July 28 15:37:38.125 EDT [UTC-4].
-  Time const time = Time::from_offset(4262126704878682112l);
+  Time const time = Time::from_offset(4262126704887070720l);
   EXPECT_EQ(1375040258, Unix64Time(time).get_offset());
 
   TimeZone const time_zone = get_time_zone("US/Eastern");
