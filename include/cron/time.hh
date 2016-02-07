@@ -44,7 +44,9 @@ convert_offset(
  *  the total representable range in years, the range of representable years,
  *  and the approximate time resolution.
  *
- *  FIXME
+ *  FIXME: Maybe NsecTime should be Time.  Who measures ns before 1900?
+ *  - SmallTime -> Time32
+ *  - LongTime and LongTime32 to span 1-9999
  *
  *    Bits  Sgn  Denom  Base     Years  Yr. Range  Resolution    Class
  *    ----  ---  -----  ----     -----  ---------  ----------    ------------
@@ -55,7 +57,7 @@ convert_offset(
  *      64    u  1<<32  1970       136  1970-2106    230 psec 
  *      64    u  1<<30  1900       544  1900-2444    930 psec    NsecTime
  *      64    u  1<<28  1200      2179  1200-3379      4 nsec
- *      64    u  1<<26  1200      8716  1200-9916     15 nsec    Time
+ *      64    u  1<<26     1      8716     1-8717     15 nsec    Time
  *
  */
 

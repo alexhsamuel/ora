@@ -13,7 +13,7 @@ using std::string;
 //------------------------------------------------------------------------------
 
 TEST(TimeFormat, basic) {
-  Time const time = Time::from_offset(1722599515850014720l);
+  Time const time = Time::from_offset(4262126704878682112l);
   TimeZone const& tz = get_time_zone("US/Eastern");
   EXPECT_EQ("2013-07-28",       TimeFormat("%Y-%m-%d")(time, tz));
   EXPECT_EQ("15:37:38",         TimeFormat("%H:%M:%S")(time, tz));
