@@ -100,7 +100,7 @@ private:
   // Methods.
   static ref<Object> method_convert(PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_datenum(PyTypeObject* type, Tuple* args, Dict* kw_args);
-  static ref<Object> method_from_ordinal(PyTypeObject* type, Tuple* args, Dict* kw_args);
+  static ref<Object> method_from_ordinal_date(PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_parts(PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_week_date(PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_ymdi(PyTypeObject* type, Tuple* args, Dict* kw_args);
@@ -320,7 +320,7 @@ PyDate<DATE>::method_from_datenum(
 
 template<typename DATE>
 ref<Object>
-PyDate<DATE>::method_from_ordinal(
+PyDate<DATE>::method_from_ordinal_date(
   PyTypeObject* const type,
   Tuple* const args,
   Dict* const kw_args)
@@ -332,7 +332,7 @@ PyDate<DATE>::method_from_ordinal(
   static_assert(sizeof(cron::Ordinal) == sizeof(short), "ordinal is not a short");
   Arg::ParseTupleAndKeywords(args, kw_args, "HH", arg_names, &year, &ordinal);
 
-  return create(Date::from_ordinal(year, ordinal - 1), type);
+  return create(Date::from_ordinal_date(year, ordinal - 1), type);
 }
 
 
@@ -428,7 +428,7 @@ PyDate<DATE>::tp_methods_
   = Methods<PyDate>()
     .template add_class<method_convert>             ("convert")
     .template add_class<method_from_datenum>        ("from_datenum")
-    .template add_class<method_from_ordinal>        ("from_ordinal")
+    .template add_class<method_from_ordinal_date>   ("from_ordinal_date")
     .template add_class<method_from_parts>          ("from_parts")
     .template add_class<method_from_week_date>      ("from_week_date")
     .template add_class<method_from_ymdi>           ("from_ymdi")
@@ -804,7 +804,7 @@ convert_object(
       // Interpret a two-element sequence as ordinal parts.
       long const year       = seq->GetItem(0)->long_value();
       long const ordinal    = seq->GetItem(1)->long_value();
-      return DATE::from_ordinal(year, ordinal - 1);
+      return DATE::from_ordinal_date(year, ordinal - 1);
     }
   }
 

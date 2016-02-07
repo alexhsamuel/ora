@@ -282,7 +282,7 @@ public:
   }
 
   static DateTemplate 
-  from_ordinal(
+  from_ordinal_date(
     Year year, 
     Ordinal ordinal) 
   { 
