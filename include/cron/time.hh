@@ -26,9 +26,9 @@ convert_offset(
   intmax_t denominator1,
   Datenum base1)
 {
-  return 
+  return
     rescale_int(offset0, denominator0, denominator1)
-    + (intmax_t) (base0 - base1) * SECS_PER_DAY * denominator1;
+    + ((intmax_t) base0 - base1) * SECS_PER_DAY * denominator1;
 }
   
 
@@ -394,7 +394,7 @@ struct Unix32TimeTraits
 {
   typedef int32_t Offset;
 
-  static Datenum constexpr base         = 281177; 
+  static Datenum constexpr base         = DATENUM_UNIX_EPOCH;
   static Offset  constexpr denominator  = 1;
   static Offset  constexpr min          = std::numeric_limits<Offset>::min();
   static Offset  constexpr max          = std::numeric_limits<Offset>::max() - 1;
