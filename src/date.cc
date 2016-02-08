@@ -24,11 +24,11 @@ datenum_to_parts(
   if (! datenum_is_valid(datenum)) 
     return DateParts::get_invalid();
 
-  // Compute the 400-year cycle and remainder.
+  // Compute the 400-year leap cycle and remainder; count from year 1.
   parts.year = 1 + 400 * (datenum / 146097);
   uint32_t rem = datenum % 146097;
 
-  // Compute the 100-year cycle and remainder.
+  // Adjust for the 100-year leap cycle and remainder.
   if (rem == 146096) {
     parts.year += 300;
     rem = 36524;
@@ -38,11 +38,12 @@ datenum_to_parts(
     rem %= 36524;
   }
 
-  // Compute the 4-year cycle and remainder.
+  // Adjust for the 4-year leap cycle and remainder.
   parts.year += 4 * (rem / 1461);
   rem %= 1461;
 
   // Compute the one-year cycle and remainder.
+  // FIXME: Probably wrong.  Validate carefully.
   if (rem == 1460) {
     parts.year += 3;
     rem = 365;
