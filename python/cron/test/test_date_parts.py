@@ -43,6 +43,14 @@ def test_vs_date():
         assert date.day     == ref.day
 
 
+def test_vs_date_sampled():
+    for date in data.sample_dates():
+        ref = datetime.date.fromordinal(1 + date.datenum)
+        assert date.year    == ref.year
+        assert date.month   == ref.month
+        assert date.day     == date.day
+
+
 def test_weekday_vs_date():
     for parts in data.TEST_DATE_PARTS:
         date = Date.from_parts(*parts)
