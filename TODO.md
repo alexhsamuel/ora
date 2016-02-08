@@ -2,6 +2,8 @@
 
 ## Date
 
+- Split `DateParts` into {year, month, day, weekday}, `OrdinalDateParts`, and 
+  `WeekDateParts`
 - Make Date::MAX distinct from Date::INVALID.
 - Maybe make Month, Day, Ordinal one-indexed?
 - Split week date out of parts?
