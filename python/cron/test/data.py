@@ -45,4 +45,3 @@ def sample_dates(interval=137, Date=Date):
     yield Date.LAST
 
 
-
