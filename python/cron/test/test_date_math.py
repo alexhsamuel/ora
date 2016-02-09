@@ -11,9 +11,9 @@ import data
 
 def test_date_add():
     d = 1973/Dec/3
-    assert(d + -720495).is_invalid
+    assert(d + -720595).invalid
     assert d + -720594 ==    1/Jan/ 1
-    assert d + -100000 == 1700/Dev/17
+    assert d + -100000 == 1700/Feb/17
     assert d +  -10000 == 1946/Jul/18
     assert d +   -1000 == 1971/Mar/ 9
     assert d +    -100 == 1973/Aug/25
@@ -32,6 +32,8 @@ def test_date_add():
     assert d +  100000 == 2247/Sep/18
     assert d + 1000000 == 4711/Oct/31
     assert d + 2931464 == 9999/Dec/31
-    assert(d + 2931465).is_invalid
+    assert(d + 2931465).invalid
+
+    assert (d + 100) + -100 == d
 
 

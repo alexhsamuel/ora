@@ -921,6 +921,11 @@ Object::CallObject(Tuple* args)
 
 template<typename CLASS>
 using
+BinaryfuncPtr
+  = ref<Object> (*)(CLASS* self, Object* other);
+
+template<typename CLASS>
+using
 DestructorPtr
   = void (*)(CLASS* self);
 
@@ -945,6 +950,27 @@ using MethodPtr = ref<Object> (*)(CLASS* self, Tuple* args, Dict* kw_args);
 using StaticMethodPtr = ref<Object> (*)(Tuple* args, Dict* kw_args);
 
 using ClassMethodPtr = ref<Object> (*)(PyTypeObject* class_, Tuple* args, Dict* kw_args);
+
+
+/**
+ * Wraps a binaryfunc.
+ */
+template<typename CLASS, BinaryfuncPtr<CLASS> FUNCTION>
+PyObject*
+wrap(
+  PyObject* self,
+  PyObject* other)
+{
+  ref<Object> result;
+  try {
+    result = FUNCTION(static_cast<CLASS*>(self), static_cast<Object*>(other));
+  }
+  catch (Exception) {
+    return nullptr;
+  }
+  assert(result != nullptr);
+  return result.release();
+}
 
 
 /**
