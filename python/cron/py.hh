@@ -922,7 +922,7 @@ Object::CallObject(Tuple* args)
 template<typename CLASS>
 using
 BinaryfuncPtr
-  = ref<Object> (*)(CLASS* self, Object* other);
+  = ref<Object> (*)(CLASS* self, Object* other, bool right);
 
 template<typename CLASS>
 using
@@ -958,12 +958,19 @@ using ClassMethodPtr = ref<Object> (*)(PyTypeObject* class_, Tuple* args, Dict* 
 template<typename CLASS, BinaryfuncPtr<CLASS> FUNCTION>
 PyObject*
 wrap(
-  PyObject* self,
-  PyObject* other)
+  PyObject* lhs,
+  PyObject* rhs)
 {
   ref<Object> result;
   try {
-    result = FUNCTION(static_cast<CLASS*>(self), static_cast<Object*>(other));
+    if (CLASS::Check(lhs)) 
+      result 
+        = FUNCTION(static_cast<CLASS*>(lhs), static_cast<Object*>(rhs), false);
+    else if (CLASS::Check(rhs))
+      result 
+        = FUNCTION(static_cast<CLASS*>(rhs), static_cast<Object*>(lhs), true);
+    else
+      result = not_implemented_ref();
   }
   catch (Exception) {
     return nullptr;

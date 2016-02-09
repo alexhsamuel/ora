@@ -98,7 +98,7 @@ private:
   static ref<PyDate> MISSING_;
 
   // Number methods.
-  static ref<Object> nb_add(PyDate* self, Object* other);
+  static ref<Object> nb_add(PyDate* self, Object* other, bool right);
   static PyNumberMethods tp_as_number_;
 
   // Methods.
@@ -286,7 +286,8 @@ template<typename DATE>
 inline ref<Object>
 PyDate<DATE>::nb_add(
   PyDate* const self,
-  Object* const other)
+  Object* const other,
+  bool /* ignored */)
 {
   long const offset = other->long_value();
   if (offset == 0)
