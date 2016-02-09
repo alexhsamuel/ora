@@ -142,7 +142,8 @@ datenum_to_parts(
 }
 
 
-DateParts iso_parse(
+DateParts 
+iso_parse(
   std::string const& text)
 {
   if (text.length() == 10
