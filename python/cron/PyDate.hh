@@ -293,8 +293,7 @@ PyDate<DATE>::nb_add(
   if (offset == 0)
     return ref<PyDate>::of(self);
   else
-    return create(
-      Date::from_datenum(self->date_.get_datenum() + offset), self->ob_type);
+    return create(shift(self->date_, offset), self->ob_type);
 }
 
 
