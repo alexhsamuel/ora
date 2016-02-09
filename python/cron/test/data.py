@@ -38,7 +38,7 @@ TEST_DATE_PARTS = (
 
 #-------------------------------------------------------------------------------
 
-def sample_dates(interval=37, Date=Date):
+def sample_dates(interval=137, Date=Date):
     yield Date.MIN
     for datenum in range(Date.MIN.datenum + 1, Date.LAST.datenum, interval):
         yield Date.from_datenum(datenum)
