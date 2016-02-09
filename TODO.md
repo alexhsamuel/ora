@@ -19,7 +19,7 @@
 
 - API
 
-  - `__add__()` and other shifts (in days)
+  - `__add__()` and other shifts (in days).  Or use `__rshift__()`?
   - Rationalize C++ and Python APIs.
   - `from_week_date()` and `from_ordinal()` should accept single sequences
 
