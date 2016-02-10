@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <experimental/optional>
 #include <initializer_list>
 #include <iostream>
 #include <string>
@@ -11,6 +12,8 @@
 //------------------------------------------------------------------------------
 
 namespace py {
+
+using std::experimental::optional;
 
 class Long;
 class Object;
@@ -340,6 +343,9 @@ public:
 
   ref<py::Long> Long(bool check=true);
   long long_value();
+
+  /** If the object can be converted to a long, returns its value. */
+  optional<long> maybe_long_value();
 
 };
 
@@ -807,6 +813,12 @@ inline long
 Object::long_value()
 {
   return (long) *Long();
+}
+
+
+inline optional<long>
+Object::maybe_long_value()
+{
 }
 
 
