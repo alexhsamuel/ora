@@ -289,11 +289,13 @@ PyDate<DATE>::nb_add(
   Object* const other,
   bool /* ignored */)
 {
-  long const offset = other->long_value();
-  if (offset == 0)
-    return ref<PyDate>::of(self);
+  auto offset = other->maybe_long_value();
+  if (offset)
+    return 
+      *offset == 0 ? ref<PyDate>::of(self)
+      : create(shift(self->date_, *offset), self->ob_type);
   else
-    return create(shift(self->date_, offset), self->ob_type);
+    return not_implemented_ref();
 }
 
 

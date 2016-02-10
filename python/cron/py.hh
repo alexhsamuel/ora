@@ -819,6 +819,15 @@ Object::long_value()
 inline optional<long>
 Object::maybe_long_value()
 {
+  auto obj = PyNumber_Long(this);
+  if (obj == nullptr) {
+    Exception::Clear();
+    return {};
+  }
+  else {
+    auto long_obj = ref<py::Long>::take(obj);
+    return (long) *long_obj;
+  }
 }
 
 
