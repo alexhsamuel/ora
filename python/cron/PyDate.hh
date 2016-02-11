@@ -99,6 +99,7 @@ private:
 
   // Number methods.
   static ref<Object> nb_add(PyDate* self, Object* other, bool right);
+  static ref<Object> nb_subtract(PyDate* self, Object* other, bool right);
   static PyNumberMethods tp_as_number_;
 
   // Methods.
@@ -300,10 +301,31 @@ PyDate<DATE>::nb_add(
 
 
 template<typename DATE>
+inline ref<Object>
+PyDate<DATE>::nb_subtract(
+  PyDate* const self,
+  Object* const other,
+  bool right)
+{
+  if (!right) {
+    auto offset = other->maybe_long_value();
+    if (offset)
+      return 
+        *offset == 0 ? ref<PyDate>::of(self)
+        : create(shift(self->date_, -*offset), self->ob_type);
+    else
+      return not_implemented_ref();
+  }
+  else
+    return not_implemented_ref();
+}
+
+
+template<typename DATE>
 PyNumberMethods
 PyDate<DATE>::tp_as_number_ = {
   (binaryfunc)  wrap<PyDate, nb_add>,           // nb_add
-  (binaryfunc)  nullptr,                        // nb_subtract
+  (binaryfunc)  wrap<PyDate, nb_subtract>,      // nb_subtract
   (binaryfunc)  nullptr,                        // nb_multiply
   (binaryfunc)  nullptr,                        // nb_remainder
   (binaryfunc)  nullptr,                        // nb_divmod
