@@ -307,17 +307,26 @@ PyDate<DATE>::nb_subtract(
   Object* const other,
   bool right)
 {
-  if (!right) {
+  if (right) 
+    return not_implemented_ref();
+  else {
+    auto date = self->date_;
+    auto other_date = convert_date_object<DATE>(other);
+    if (other_date) 
+      if (date.is_valid() && other_date->is_valid())
+        return 
+          Long::FromLong((long) date.get_datenum() - other_date->get_datenum());
+      else
+        return none_ref();
+
     auto offset = other->maybe_long_value();
     if (offset)
       return 
         *offset == 0 ? ref<PyDate>::of(self)
-        : create(shift(self->date_, -*offset), self->ob_type);
-    else
-      return not_implemented_ref();
-  }
-  else
+        : create(shift(date, -*offset), self->ob_type);
+
     return not_implemented_ref();
+  }
 }
 
 

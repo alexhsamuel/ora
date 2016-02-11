@@ -78,3 +78,21 @@ def test_date_sub():
         100 - d
 
 
+def test_date_date_sub():
+    assert 1973/Dec/ 3 - 1973/Dec/ 3 ==        0
+    assert 1973/Dec/ 4 - 1973/Dec/ 3 ==        1
+    assert 1973/Dec/ 2 - 1973/Dec/ 3 ==       -1
+    assert 1973/Dec/ 3 - 1973/Nov/23 ==       10
+    assert 1973/Aug/25 - 1973/Dec/ 3 ==     -100
+    assert 1973/Dec/ 3 - 1976/Aug/29 ==    -1000
+    assert 2001/Apr/20 - 1973/Dec/ 3 ==    10000
+    assert 1973/Dec/ 3 -    1/Jan/ 1 == (1973/Dec/3).datenum
+    assert 9999/Dec/31 - 1973/Dec/ 3 ==  2931464
+    assert 9999/Dec/31 -    1/Jan/ 1 ==  3652058
+    assert    1/Jan/ 1 - 9999/Dec/31 == -3652058
+
+    assert Date.INVALID - 1973/Dec/3   is None
+    assert 1973/Dec/3   - Date.MISSING is None
+    assert Date.INVALID - Date.MISSING is None
+
+
