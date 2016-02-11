@@ -12,6 +12,8 @@ __all__ = (
     "SmallDate",
     "Weekday",
 
+    "is_leap_year",
+
     "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun",
 
     "Jan", "Feb", "Mar", "Apr", "May", "Jun", 

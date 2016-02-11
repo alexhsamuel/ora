@@ -7,6 +7,9 @@ using namespace py;
 
 //------------------------------------------------------------------------------
 
+/** Adds functions from functions.cc.  */
+extern Methods<Module>& add_functions(Methods<Module>&);
+
 namespace {
 
 Methods<Module> 
@@ -18,7 +21,7 @@ module_def{
   "cron._ext",
   nullptr,
   -1,
-  methods
+    add_functions(methods)
 };
 
 
