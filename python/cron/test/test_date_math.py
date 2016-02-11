@@ -91,8 +91,18 @@ def test_date_date_sub():
     assert 9999/Dec/31 -    1/Jan/ 1 ==  3652058
     assert    1/Jan/ 1 - 9999/Dec/31 == -3652058
 
+
+def test_date_math_invalid():
+    assert (Date.INVALID +        100).invalid
+    assert (Date.MISSING +        100).missing
+    assert (Date.INVALID -          1).invalid
+    assert (Date.MISSING -          1).missing
+    assert (Date.INVALID - 4294967294).invalid
+    assert (Date.MISSING - 4294967294).missing
+
     assert Date.INVALID - 1973/Dec/3   is None
     assert 1973/Dec/3   - Date.MISSING is None
     assert Date.INVALID - Date.MISSING is None
+
 
 

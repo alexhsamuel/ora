@@ -283,6 +283,8 @@ PyDate<DATE>::tp_richcompare(
 // Number methods
 //------------------------------------------------------------------------------
 
+// FIXME: Should (MISSING - 1) -> INVALID?
+
 template<typename DATE>
 inline ref<Object>
 PyDate<DATE>::nb_add(
