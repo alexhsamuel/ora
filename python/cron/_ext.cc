@@ -1,6 +1,7 @@
 #include <Python.h>
 
 #include "PyDate.hh"
+#include "PyDaytime.hh"
 #include "PyTime.hh"
 
 using namespace alxs;
@@ -36,14 +37,17 @@ PyInit__ext(void)
   auto module = Module::Create(&module_def);
 
   try {
-    alxs::PyDate<cron::Date>        ::add_to(module, "Date");
-    alxs::PyDate<cron::SmallDate>   ::add_to(module, "SmallDate");
+    alxs::PyDate<cron::Date>            ::add_to(module, "Date");
+    alxs::PyDate<cron::SmallDate>       ::add_to(module, "SmallDate");
 
-    alxs::PyTime<cron::Time>        ::add_to(module, "Time");
-    alxs::PyTime<cron::SmallTime>   ::add_to(module, "SmallTime");
-    alxs::PyTime<cron::NsecTime>    ::add_to(module, "NsecTime");
-    alxs::PyTime<cron::Unix32Time>  ::add_to(module, "Unix32Time");
-    alxs::PyTime<cron::Unix64Time>  ::add_to(module, "Unix64Time");
+    alxs::PyDaytime<cron::Daytime>      ::add_to(module, "Daytime");
+    alxs::PyDaytime<cron::SmallDaytime> ::add_to(module, "SmallDaytime");
+
+    alxs::PyTime<cron::Time>            ::add_to(module, "Time");
+    alxs::PyTime<cron::SmallTime>       ::add_to(module, "SmallTime");
+    alxs::PyTime<cron::NsecTime>        ::add_to(module, "NsecTime");
+    alxs::PyTime<cron::Unix32Time>      ::add_to(module, "Unix32Time");
+    alxs::PyTime<cron::Unix64Time>      ::add_to(module, "Unix64Time");
 
     StructSequenceType* const parts_type = get_date_parts_type();
     module->AddObject(parts_type->tp_name, (PyObject*) parts_type);

@@ -56,6 +56,8 @@ public:
 
   using Offset = typename TRAITS::Offset;
 
+  static Offset       constexpr DENOMINATOR = TRAITS::denominator;
+
   static DaytimeTemplate const MIN;
   static DaytimeTemplate const LAST;
   static DaytimeTemplate const MAX;

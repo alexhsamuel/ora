@@ -7,10 +7,12 @@ from   ._ext import *
 __all__ = (
     "Date",
     "DateParts",
+    "Daytime",
     "Month",
     "MonthOfYear",
     "NsecTime",
     "SmallDate",
+    "SmallDaytime",
     "SmallTime",
     "Time",
     "Unix32Time",
