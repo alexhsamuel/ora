@@ -12,7 +12,9 @@ __all__ = (
     "SmallDate",
     "Weekday",
 
+    "days_per_month",
     "is_leap_year",
+    "ordinals_per_year",
 
     "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun",
 

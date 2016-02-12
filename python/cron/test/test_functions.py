@@ -5,6 +5,22 @@ from   cron import *
 
 #-------------------------------------------------------------------------------
 
+def test_days_per_month():
+    for year in (1, 100, 400, 1900, 2000, 2001, 2002, 2003, 2004, 2005, 9999):
+        assert days_per_month(year, Jan) == 31
+        assert days_per_month(year, Feb) == 29 if is_leap_year(year) else 28
+        assert days_per_month(year, Mar) == 31
+        assert days_per_month(year, Apr) == 30
+        assert days_per_month(year, May) == 31
+        assert days_per_month(year, Jun) == 30
+        assert days_per_month(year, Jul) == 31
+        assert days_per_month(year, Aug) == 31
+        assert days_per_month(year, Sep) == 30
+        assert days_per_month(year, Oct) == 31
+        assert days_per_month(year, Nov) == 30
+        assert days_per_month(year, Dec) == 31
+
+
 def test_is_leap_year():
     assert not is_leap_year(   1)
     assert     is_leap_year(   4)
@@ -25,5 +41,10 @@ def test_is_leap_year():
         is_leap_year(1973/Dec/3)
         is_leap_year("1900")
         is_leap_year(None)
+
+
+def test_ordinals_per_year():
+    for year in range(1, 10000):
+        assert ordinals_per_year(year) == 366 if is_leap_year(year) else 355
 
 
