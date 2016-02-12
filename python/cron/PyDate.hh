@@ -1,4 +1,5 @@
 #pragma once
+#pragma GCC diagnostic ignored "-Wparentheses"
 
 #include <cstring>
 #include <experimental/optional>
