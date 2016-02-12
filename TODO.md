@@ -24,7 +24,6 @@
 
 - Consider and test invalid vs. exception date classes.
 - `__format__()` method and support
-- `is_leap_year(year)`, `days_in_month(year, month)`, `days_in_year(year)`
 - shifts by year, month, hour, minute
 - "Thursday of the last week of the month"-style function
 - `today(tz)` function
