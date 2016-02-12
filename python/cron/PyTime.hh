@@ -1,10 +1,12 @@
 #pragma once
 
+#include <cmath>
 #include <experimental/optional>
 #include <iostream>
 
 #include "cron/format.hh"
 #include "cron/time.hh"
+#include "cron/time_zone.hh"
 #include "py.hh"
 
 namespace alxs {
@@ -74,10 +76,17 @@ public:
   // Getsets.
   static GetSets<PyTime> tp_getsets_;
 
+  /** Date format used to generate the repr.  */
+  static unique_ptr<cron::TimeFormat> repr_format_;
+  /** Date format used to generate the str.  */
+  static unique_ptr<cron::TimeFormat> str_format_;
+
 private:
 
   static void tp_init(PyTime* self, Tuple* args, Dict* kw_args);
   static void tp_dealloc(PyTime* self);
+  static ref<Unicode> tp_repr(PyTime* self);
+  static ref<Unicode> tp_str(PyTime* self);
 
   static Type build_type(string const& type_name);
 
@@ -94,6 +103,23 @@ PyTime<TIME>::add_to(
   type_ = build_type(string{module.GetName()} + "." + name);
   // Hand it to Python.
   type_.Ready();
+
+  // Build the repr format.
+  repr_format_ = make_unique<cron::TimeFormat>(
+    name + "(%0Y, %0m, %0d, %H, %M, %S)",  // FIXME: Not a ctor.
+    name + ".INVALID",
+    name + ".MISSING");
+
+  // Build the str format.  Choose precision for seconds that captures actual
+  // precision of the time class.
+  std::string pattern = "%Y-%m-%dT%H:%M:%";
+  size_t const precision = (size_t) ceil(log10(Time::DENOMINATOR));
+  if (precision > 0) {
+    pattern += ".";
+    pattern += std::to_string(precision);
+  }
+  pattern += "SZ";
+  str_format_ = make_unique<cron::TimeFormat>(pattern);
 
   // Add the type to the module.
   module.add(&type_);
@@ -155,6 +181,25 @@ PyTime<TIME>::tp_dealloc(
 {
   self->time_.~TimeTemplate();
   self->ob_type->tp_free(self);
+}
+
+
+template<typename TIME>
+ref<Unicode>
+PyTime<TIME>::tp_repr(
+  PyTime* const self)
+{
+  return Unicode::from((*repr_format_)(self->time_, cron::UTC));
+}
+
+
+template<typename TIME>
+ref<Unicode>
+PyTime<TIME>::tp_str(
+  PyTime* const self)
+{
+  // FIXME: Not UTC?
+  return Unicode::from((*str_format_)(self->time_, cron::UTC));  
 }
 
 
@@ -229,6 +274,20 @@ PyTime<TIME>::tp_getsets_
 
 
 //------------------------------------------------------------------------------
+// Other members
+//------------------------------------------------------------------------------
+
+template<typename TIME>
+unique_ptr<cron::TimeFormat>
+PyTime<TIME>::repr_format_;
+
+
+template<typename TIME>
+unique_ptr<cron::TimeFormat>
+PyTime<TIME>::str_format_;
+
+
+//------------------------------------------------------------------------------
 // Type object
 //------------------------------------------------------------------------------
 
@@ -252,13 +311,13 @@ PyTime<TIME>::build_type(
     (getattrfunc)         nullptr,                        // tp_getattr
     (setattrfunc)         nullptr,                        // tp_setattr
     (void*)               nullptr,                        // tp_reserved
-    (reprfunc)            nullptr,                        // tp_repr
+    (reprfunc)            wrap<PyTime, tp_repr>,          // tp_repr
     (PyNumberMethods*)    &tp_as_number_,                 // tp_as_number
     (PySequenceMethods*)  nullptr,                        // tp_as_sequence
     (PyMappingMethods*)   nullptr,                        // tp_as_mapping
     (hashfunc)            nullptr,                        // tp_hash
     (ternaryfunc)         nullptr,                        // tp_call
-    (reprfunc)            nullptr,                        // tp_str
+    (reprfunc)            wrap<PyTime, tp_str>,           // tp_str
     (getattrofunc)        nullptr,                        // tp_getattro
     (setattrofunc)        nullptr,                        // tp_setattro
     (PyBufferProcs*)      nullptr,                        // tp_as_buffer
