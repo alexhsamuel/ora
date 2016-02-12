@@ -224,7 +224,8 @@ PyDate<DATE>::tp_init(
 
 template<typename DATE>
 void
-PyDate<DATE>::tp_dealloc(PyDate* const self)
+PyDate<DATE>::tp_dealloc(
+  PyDate* const self)
 {
   self->date_.~DateTemplate();
   self->ob_type->tp_free(self);
