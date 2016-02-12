@@ -48,6 +48,7 @@
 
 # Infrastructure / tech debt
 
+- clean up namespaces
 - make Object be an interface-only type; inherit concrete types from PyObject
 - include a recent tzlib in the distro
 
