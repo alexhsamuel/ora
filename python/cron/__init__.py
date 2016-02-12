@@ -9,7 +9,12 @@ __all__ = (
     "DateParts",
     "Month",
     "MonthOfYear",
+    "NsecTime",
     "SmallDate",
+    "SmallTime",
+    "Time",
+    "Unix32Time",
+    "Unix64Time",
     "Weekday",
 
     "days_per_month",
