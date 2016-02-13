@@ -393,7 +393,7 @@ PyDate<DATE>::method_convert(
     throw TypeError("from() takes one argument");
   Object* const obj = args->GetItem(0);
   if (kw_args != nullptr)
-    throw TypeError("from_parts() takes no keyword arguments");
+    throw TypeError("convert() takes no keyword arguments");
 
   auto date = convert_object<Date>(obj);
   if (date)
