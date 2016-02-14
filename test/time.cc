@@ -99,9 +99,9 @@ TEST(Time, from_parts_invalid) {
   TimeZone const tz = get_time_zone("US/Eastern");
 
   EXPECT_TRUE(Time(Date::INVALID, Daytime(0, 0, 0), tz).is_invalid());
-  EXPECT_TRUE(Time(Date(10000,  0,  0), Daytime(0, 0, 0), tz).is_invalid());
-  EXPECT_TRUE(Time(Date( 2013, 12,  0), Daytime(0, 0, 0), tz).is_invalid());
-  EXPECT_TRUE(Time(Date( 2013,  0, 31), Daytime(0, 0, 0), tz).is_invalid());
+  EXPECT_TRUE(Time(Date::from_parts(10000,  0,  0), Daytime(0, 0, 0), tz).is_invalid());
+  EXPECT_TRUE(Time(Date::from_parts( 2013, 12,  0), Daytime(0, 0, 0), tz).is_invalid());
+  EXPECT_TRUE(Time(Date::from_parts( 2013,  0, 31), Daytime(0, 0, 0), tz).is_invalid());
 
   EXPECT_TRUE(Time(2013/JUL/28, Daytime::INVALID, tz).is_invalid());
   EXPECT_TRUE(Time(2013/JUL/28, Daytime(24, 0, 0), tz).is_invalid());

@@ -15,7 +15,7 @@ TEST(StringBuilder, chars) {
   StringBuilder sb;
   sb << 'F' << 'o' << 'o';
   sb << '!';
-  EXPECT_EQ(4, sb.length());
+  EXPECT_EQ(4u, sb.length());
   EXPECT_EQ("Foo!", sb.str());
 }
 
@@ -23,7 +23,7 @@ TEST(StringBuilder, strings) {
   StringBuilder sb(1);
   sb << "Hello, world!" << ' ';
   sb << "This " << "is " << "a " << "test" << '.';
-  EXPECT_EQ(29, sb.length());
+  EXPECT_EQ(29u, sb.length());
   EXPECT_EQ("Hello, world! This is a test.", sb.str());
 }
 

@@ -221,20 +221,6 @@ public:
   {
   }
 
-  constexpr DateTemplate(
-    Year year, 
-    Month month, 
-    Day day) 
-    : DateTemplate(ymd_to_offset(year, month, day)) 
-  {
-  }
-
-  DateTemplate(
-    DateParts const& parts) 
-    : DateTemplate(parts.year, parts.month, parts.day) 
-  {
-  }
-
   template<class OTHER_TRAITS> 
   DateTemplate(
     DateTemplate<OTHER_TRAITS> date)
@@ -274,7 +260,7 @@ public:
     return DateTemplate(datenum_to_offset(datenum)); 
   }
 
-  static DateTemplate 
+  static constexpr DateTemplate 
   from_offset(
     Offset offset) 
   { 
@@ -287,6 +273,22 @@ public:
     Ordinal ordinal) 
   { 
     return DateTemplate(ordinal_date_to_offset(year, ordinal)); 
+  }
+
+  static constexpr DateTemplate
+  from_parts(
+    Year year, 
+    Month month, 
+    Day day) 
+  {
+    return DateTemplate(ymd_to_offset(year, month, day));
+  }
+
+  static DateTemplate
+  from_parts(
+    DateParts const& parts) 
+  {
+    return from_parts(parts.year, parts.month, parts.day);
   }
 
   static DateTemplate

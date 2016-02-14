@@ -224,7 +224,7 @@ find_time_zone_file(
 {
   // FIXME.
   // auto const filename = ZONEINFO_DIR / name;
-  auto const filename = fs::Filename("/Users/samuel/sw/zoneinfo") / name;
+  auto const filename = fs::Filename("/home/samuel/sw/tzdata2016a/etc/zoneinfo") / name;
   if (check(filename, fs::READ, fs::FILE))
     return filename;
   else

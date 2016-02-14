@@ -47,11 +47,11 @@ TEST(Daytime, get_parts) {
 
 TEST(Daytime, from_hms) {
   Daytime daytime = Daytime(0, 0, 0);
-  EXPECT_EQ(0, daytime.get_offset());
-  EXPECT_EQ(0, daytime.get_ssm());
+  EXPECT_EQ(0u, daytime.get_offset());
+  EXPECT_EQ(0u, daytime.get_ssm());
 
   daytime = Daytime(16, 40, 12.25);
-  EXPECT_EQ(8445973335552032768ll, daytime.get_offset());
+  EXPECT_EQ(8445973335552032768ull, daytime.get_offset());
   EXPECT_EQ(60012.25, daytime.get_ssm());
 
   EXPECT_TRUE(Daytime(-1, 10, 10).is_invalid());
@@ -136,11 +136,11 @@ TEST(SmallDaytime, get_parts) {
 
 TEST(SmallDaytime, from_hms) {
   SmallDaytime daytime = SmallDaytime(0, 0, 0);
-  EXPECT_EQ(0, daytime.get_offset());
+  EXPECT_EQ(0u, daytime.get_offset());
   EXPECT_EQ(0.0, daytime.get_ssm());
 
   daytime = SmallDaytime(16, 40, 12.25);
-  EXPECT_EQ(1966481408, daytime.get_offset());
+  EXPECT_EQ(1966481408u, daytime.get_offset());
   EXPECT_EQ(60012.25, daytime.get_ssm());
 
   EXPECT_TRUE(SmallDaytime(24, 10, 10).is_invalid());

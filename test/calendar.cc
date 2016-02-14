@@ -31,15 +31,15 @@ TEST(AllCalendar, contains0) {
 
 TEST(AllCalendar, contains1) {
   AllCalendar const cal;
-  EXPECT_TRUE (cal.contains(SmallDate(1970,  0, 0)));
-  EXPECT_TRUE (cal.contains(SmallDate(1973, 11, 2)));
-  EXPECT_TRUE (cal.contains(SmallDate(2013,  6, 10)));
-  EXPECT_TRUE (cal.contains(SmallDate(2013,  6, 11)));
-  EXPECT_TRUE (cal.contains(SmallDate(2013,  6, 12)));
-  EXPECT_TRUE (cal.contains(SmallDate(2013,  6, 13)));
-  EXPECT_TRUE (cal.contains(SmallDate(2013,  6, 14)));
-  EXPECT_TRUE (cal[SmallDate(2013,  6, 13)]);
-  EXPECT_TRUE (cal[SmallDate(2013,  6, 14)]);
+  EXPECT_TRUE (cal.contains(SmallDate::from_parts(1970,  0, 0)));
+  EXPECT_TRUE (cal.contains(SmallDate::from_parts(1973, 11, 2)));
+  EXPECT_TRUE (cal.contains(SmallDate::from_parts(2013,  6, 10)));
+  EXPECT_TRUE (cal.contains(SmallDate::from_parts(2013,  6, 11)));
+  EXPECT_TRUE (cal.contains(SmallDate::from_parts(2013,  6, 12)));
+  EXPECT_TRUE (cal.contains(SmallDate::from_parts(2013,  6, 13)));
+  EXPECT_TRUE (cal.contains(SmallDate::from_parts(2013,  6, 14)));
+  EXPECT_TRUE (cal[SmallDate::from_parts(2013,  6, 13)]);
+  EXPECT_TRUE (cal[SmallDate::from_parts(2013,  6, 14)]);
   EXPECT_TRUE (cal[SmallDate::MIN]);
   EXPECT_TRUE (cal[SmallDate::LAST]);
   EXPECT_FALSE(cal.contains(SmallDate::INVALID));

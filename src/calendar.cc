@@ -57,11 +57,11 @@ parse_holiday_calendar(
     StringPair parts = split1(line);
     // FIXME: Handle exceptions.
     if (parts.first == "MIN") 
-      min = Date(iso_parse(parts.second));
+      min = Date::from_parts(iso_parse(parts.second));
     else if (parts.first == "MAX")
-      max = Date(iso_parse(parts.second));
+      max = Date::from_parts(iso_parse(parts.second));
     else {
-      Date const date = Date(iso_parse(parts.first));
+      Date const date = Date::from_parts(iso_parse(parts.first));
       dates.push_back(date);
       // Keep track of the min and max dates we've seen.
       if (!(date_min <= date))
