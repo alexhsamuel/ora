@@ -19,32 +19,32 @@ these steps.
 
 1. Download the most recent code and data tarballs:
 
-```sh
+  ```sh
 wget --retr-symlinks 'ftp://ftp.iana.org/tz/tz*-latest.tar.gz'
 ```
 
 1. Also download these missing "solar" files:
 
-```sh
+  ```sh
 wget https://www.ietf.org/timezones/data/solar8{7,8,9}
 ```
 
 1. Unpack the sources and data.
 
-```sh
+  ```sh
 tar zxf tzcode-latest.tar.gz
 tar zxf tzdata-latest.tar.gz
 ```
 
 1. Build and install the code and data to a temporary location.
 
-```sh
+  ```sh
 make LOCALTIME=UTC TOPDIR=$(pwd)/install INSTALL
 ```
 
 1. Collect the zoneinfo outputs into a tarball.
 
-```sh
+  ```sh
 tar jcf zoneinfo.tar.bz2 -C install/etc zoneinfo
 ```
 
