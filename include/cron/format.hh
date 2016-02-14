@@ -38,10 +38,12 @@ public:
     char const* pattern) 
     : pattern_(pattern)
   {
-    static DateParts const date_parts{0, 0, 0, 0, 0, 0, 0};
+    // Find the width in characters by formatting a sample value.
     static DaytimeParts const daytime_parts{0, 0, 0};
     static TimeZoneParts const time_zone_parts{0, "", false};
-    size_t const width = format(&date_parts, &daytime_parts, &time_zone_parts).length();
+    auto const width 
+      = format(DATENUM_MIN, &daytime_parts, &time_zone_parts).length();
+
     invalid_ = std::string(width, ' ');
     invalid_.replace(0, 7, "INVALID");
     missing_ = std::string(width, ' ');
@@ -56,19 +58,19 @@ protected:
 
   std::string 
   format(
-    DateParts const*     date_parts, 
-    DaytimeParts const*  daytime_parts, 
-    TimeZoneParts const* time_zone_parts)
+    Datenum                 datenum,
+    DaytimeParts const*     daytime_parts,
+    TimeZoneParts const*    time_zone_parts)
     const
   {
     StringBuilder sb;
-    format(sb, date_parts, daytime_parts, time_zone_parts);
+    format(sb, datenum, daytime_parts, time_zone_parts);
     return sb.str();
   }
 
 private:
 
-  void format(StringBuilder&, DateParts const*, DaytimeParts const*, TimeZoneParts const*) const;
+  void format(StringBuilder&, Datenum, DaytimeParts const*, TimeZoneParts const*) const;
 
   std::string pattern_;
   std::string invalid_;
@@ -108,7 +110,7 @@ public:
     TimeParts const& parts) 
     const 
   { 
-    return format(&parts.date, &parts.daytime, &parts.time_zone); 
+    return format(parts.datenum, &parts.daytime, &parts.time_zone); 
   }
 
   template<class TRAITS> 
@@ -192,10 +194,10 @@ public:
 
   std::string
   operator()(
-    DateParts const& parts) 
+    datenum datenum) 
     const 
   { 
-    return format(&parts, nullptr, nullptr); 
+    return format(datenum, nullptr, nullptr); 
   }
 
   template<class TRAITS> 
@@ -264,7 +266,7 @@ public:
     DaytimeParts const& parts) 
     const 
   { 
-    return format(nullptr, &parts, nullptr); 
+    return format(DATENUM_INVALID, &parts, nullptr); 
   }
 
   template<class TRAITS> 

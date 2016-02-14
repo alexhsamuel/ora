@@ -138,7 +138,7 @@ format_date(
   size_t& pos,
   StringBuilder& sb,
   Modifiers const& mods,
-  DateParts const& date)
+  Datenum const datenum)
 {
   switch (pattern[pos]) {
   case 'b':
@@ -155,15 +155,15 @@ format_date(
     break;
 
   case 'g':
-    sb.format(date.week_year % 100, mods.get_width(2), mods.get_pad('0'));
+    sb.format(week_date.week_year % 100, mods.get_width(2), mods.get_pad('0'));
     break;
 
   case 'G':
-    sb.format(date.week_year, mods.get_width(4), mods.get_pad('0'));
+    sb.format(week_date.week_year, mods.get_width(4), mods.get_pad('0'));
     break;
 
   case 'j':
-    sb.format(date.ordinal + 1, mods.get_width(3), mods.get_pad('0'));
+    sb.format(ordinal_date.ordinal + 1, mods.get_width(3), mods.get_pad('0'));
     break;
 
   case 'm':
@@ -171,16 +171,16 @@ format_date(
     break;
 
   case 'V':
-    sb.format(date.week + 1, mods.get_width(2), mods.get_pad('0'));
+    sb.format(week_date.week + 1, mods.get_width(2), mods.get_pad('0'));
     break;
 
   case 'w':
     // FIXME: Generalize?
-    sb.format((date.weekday + (7 - SUNDAY)) % 7, mods.get_width(1), mods.get_pad('0'));
+    sb.format((weekday + (7 - SUNDAY)) % 7, mods.get_width(1), mods.get_pad('0'));
     break;
 
   case 'W':
-    format_string(sb, mods, mods.abbreviate ? get_weekday_abbr(date.weekday) : get_weekday_name(date.weekday));
+    format_string(sb, mods, mods.abbreviate ? get_weekday_abbr(weekday) : get_weekday_name(weekday));
     break;
 
   case 'y':
@@ -379,7 +379,7 @@ format_time(
 void 
 Format::format(
   StringBuilder& sb,
-  DateParts const* date_parts,
+  Datenum const datenum,
   DaytimeParts const* daytime_parts,
   TimeZoneParts const* time_zone_parts)
   const
@@ -420,7 +420,7 @@ Format::format(
 
       // Handle escape codes for date components.
       if (date_parts != nullptr
-          && format_date(pattern_, pos, sb, mods, *date_parts))
+          && format_date(pattern_, pos, sb, mods, datenum))
         break;
       if (daytime_parts != nullptr
           && format_daytime(pattern_, pos, sb, mods, *daytime_parts))

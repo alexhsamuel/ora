@@ -182,7 +182,28 @@ ordinal_date_to_datenum(
 }
 
 
-extern DateParts datenum_to_parts(Datenum datenum);
+extern OrdinalDateParts datenum_to_ordinal_date_parts(Datenum);
+extern DateParts datenum_to_parts(Datenum, OrdinalDateParts const&);
+extern WeekDateParts datenum_to_week_date_parts(Datenum, OrdinalDateParts const&, DateParts const&);
+
+extern inline DateParts
+datenum_to_parts(
+  Datenum const datenum)
+{
+  return datenum_to_parts(datenum, datenum_to_ordinal_date_parts(datenum));
+}
+
+
+extern inline WeekDateParts
+datenum_to_week_date_parts(
+  Datenum const datenum)
+{
+  return datenum_to_week_date_parts(
+    datenum,
+    datenum_to_ordinal_date_parts(datenum),
+    datenum_to_parts(datenum));
+}
+
 
 //------------------------------------------------------------------------------
 // Generic date type.

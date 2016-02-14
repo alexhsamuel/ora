@@ -156,23 +156,47 @@ TimeOffset constexpr TIME_OFFSET_INVALID = std::numeric_limits<TimeOffset>::max(
 
 //------------------------------------------------------------------------------
 
+/**
+ * Components of the standard year/month/day date representation.  
+ */
 struct DateParts
 {
   Year      year;
   Month     month;
   Day       day;
+
+  static DateParts constexpr get_invalid()
+    { return {YEAR_INVALID, MONTH_INVALID, DAY_INVALID}; }
+
+};
+
+
+/**
+ * Components of the ordinal date representation.  
+ */
+struct OrdinalDateParts
+{
+  Year      year;
   Ordinal   ordinal;
+
+  static OrdinalDateParts constexpr get_invalid()
+    { return {YEAR_INVALID, ORDINAL_INVALID}; }
+
+};
+
+
+/**
+ * Components of the ISO week date representation.
+ */
+struct WeekDateParts
+{
   Year      week_year;
   Week      week;
   Weekday   weekday;
 
-  static DateParts const& 
-  get_invalid()
-  {
-    static DateParts const parts{YEAR_INVALID, MONTH_INVALID, DAY_INVALID, ORDINAL_INVALID, YEAR_INVALID, WEEK_INVALID, WEEKDAY_INVALID}; 
-    return parts;
-  }
-
+  static WeekDateParts constexpr get_invalid()
+    { return {YEAR_INVALID, WEEK_INVALID, WEEKDAY_INVALID}; }
+  
 };
 
 
@@ -210,20 +234,19 @@ struct TimeZoneParts
 
 struct TimeParts
 {
-  DateParts date;
-  DaytimeParts daytime;
+  Datenum       datenum;
+  DaytimeParts  daytime;
   TimeZoneParts time_zone;
 
   static TimeParts const&
   get_invalid()
   {
-    static TimeParts parts;
-    // FIXME: Don't reinitialize every time!
-    parts.date      = DateParts::get_invalid();
-    parts.daytime   = DaytimeParts::get_invalid();
-    parts.time_zone = TimeZoneParts::get_invalid();
+    static TimeParts parts{
+      DATENUM_INVALID, DaytimeParts::get_invalid(), 
+      TimeZoneParts::get_invalid()};
     return parts;
   }
+
 };
 
 
