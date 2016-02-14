@@ -49,6 +49,10 @@ PY_DEPS	    	= $(PY_SOURCES:%.cc=%.dd)
 PY_OBJS	    	= $(PY_SOURCES:%.cc=%.o)
 PY_EXTMOD	= python/fixfmt/_ext.so
 
+TZCODE_DIST 	= $(TOP)/dist/tzcode2013c.tar.gz
+TZDATA_DIST	= $(TOP)/dist/tzdata2016a.tar.gz
+SOLAR_DIST  	= $(TOP)/dist/solar.tar.gz
+
 #-------------------------------------------------------------------------------
 
 .PHONY: all
@@ -137,6 +141,14 @@ testclean-python:
 .PHONY: python-setuptools
 python-setuptools:	$(LIB)
 	cd python; $(PYTHON) setup.py build_ext --inplace
+
+#-------------------------------------------------------------------------------
+# zoneinfo
+
+.PHONY: zoneinfo
+zoneinfo:
+	mkdir -p $(TOP)/share
+	tar jxf $(TOP)/dist/zoneinfo-2016a.tar.bz2 -C $(TOP)/share
 
 #-------------------------------------------------------------------------------
 
