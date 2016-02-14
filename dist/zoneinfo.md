@@ -2,11 +2,11 @@
 
 The `zoneinfo` directory contains time zone information.  It is compiled from
 information in the "Olsen"
-[tz database](http://web.cs.ucla.edu/~eggert/tz/tz-link.htm) and in the public
-domain.  The data are updated several times a year to reflect political changes
-in time zone policy.
+[tz database](http://web.cs.ucla.edu/~eggert/tz/tz-link.htm) and its contents 
+are in the public domain.  The data are updated several times a year to reflect 
+political changes in time zone policy.
 
-On Linux-like systems, a version is generally installed in
+On UNIX-like systems, a version is generally installed in
 `/usr/share/zoneinfo`.  We include another copy here as the system copy might
 not be up to date, and may also employ older formats for the data files (as is
 the case with Darwin/OSX).
