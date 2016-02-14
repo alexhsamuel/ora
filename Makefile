@@ -109,6 +109,9 @@ $(TEST_OKS): \
 	@echo testing $(shell basename $<) && \
 	  cd test && $< && touch $@
 
+# Use our zoneinfo directory for running tests.
+$(TEST_OKS): export ZONEINFO = $(TOP)/share/zoneinfo
+
 #-------------------------------------------------------------------------------
 # Python
 

@@ -50,7 +50,7 @@
 
 - clean up namespaces
 - make Object be an interface-only type; inherit concrete types from PyObject
-- include a recent tzlib in the distro
+- figure out how to point at our zoneinfo dir by default in C++ code
 
 ## py.hh
 

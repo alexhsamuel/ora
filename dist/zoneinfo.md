@@ -48,3 +48,14 @@ make LOCALTIME=UTC TOPDIR=$(pwd)/install INSTALL
 tar jcf zoneinfo.tar.bz2 -C install/etc zoneinfo
 ```
 
+
+## Using
+
+The C++ time zone code consults the `ZONEINFO` environment variable for the
+location of the zoneinfo files.  If this is not set, the default
+`/usr/share/zoneinfo` is used.
+
+You may also set globally the zoneinfo directory location in code with the
+`cron::set_zoneinfo_dir()` function.
+
+

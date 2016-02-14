@@ -208,9 +208,17 @@ fs::Filename const
 SYSTEM_TIME_ZONE_LINK
   = "/etc/localtime";
 
+char const* const
+ZONEINFO_ENVVAR
+  = "ZONEINFO";
+
 fs::Filename const
-ZONEINFO_DIR 
+ZONEINFO_DIR_DEFAULT
   = "/usr/share/zoneinfo";
+
+fs::Filename
+zoneinfo_dir 
+  {""};
 
 std::map<std::string, TimeZone>
 time_zones;
@@ -219,12 +227,32 @@ time_zones;
 
 
 extern fs::Filename
+get_zoneinfo_dir()
+{
+  if (zoneinfo_dir == fs::Filename{""}) {
+    // Not initialized.  Try from the environment.
+    char const* const env_val = getenv(ZONEINFO_ENVVAR);
+    zoneinfo_dir = 
+      env_val != nullptr ? fs::Filename(env_val) : ZONEINFO_DIR_DEFAULT;
+  }
+
+  return zoneinfo_dir;
+}
+
+
+extern void
+set_zoneinfo_dir(
+  fs::Filename const& dir)
+{
+  zoneinfo_dir = dir;
+}
+
+
+extern fs::Filename
 find_time_zone_file(
   std::string const& name)
 {
-  // FIXME.
-  // auto const filename = ZONEINFO_DIR / name;
-  auto const filename = fs::Filename("/home/samuel/sw/tzdata2016a/etc/zoneinfo") / name;
+  auto const filename = get_zoneinfo_dir() / name;
   if (check(filename, fs::READ, fs::FILE))
     return filename;
   else
@@ -278,7 +306,7 @@ get_system_time_zone_name_()
 
       fs::Filename const zone_filename = buf;
       auto const parts = get_parts(zone_filename);
-      auto const zoneinfo_parts = fs::get_parts(ZONEINFO_DIR);
+      auto const zoneinfo_parts = fs::get_parts(get_zoneinfo_dir());
       if (parts.size() == zoneinfo_parts.size() + 2)
         return parts[1] + '/' + parts[0];
       else

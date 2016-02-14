@@ -68,6 +68,8 @@ private:
 
 extern TimeZone const UTC;
 
+extern fs::Filename get_zoneinfo_dir();
+extern void set_zoneinfo_dir(fs::Filename const& dir);
 extern fs::Filename find_time_zone_file(std::string const& name);
 extern TimeZone const& get_time_zone(std::string const& name, bool reload=false);
 
