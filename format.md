@@ -48,7 +48,7 @@ The following format codes are supported for times only:
 The following modifiers are supported:
 
  * A numerical code can be preceded by the number of (integral) digits to show.
-   For example, `3h` uses three digits for the number of hours,
+   For example, `%3h` uses three digits for the number of hours,
 
  * For `S`, the number of digits may be followed by a decimal point and number
    of fractional digits.  For example, `%02.3S` shows seconds to ms precision.
@@ -57,11 +57,12 @@ The following modifiers are supported:
    `%#*3H` shows the number of hours with three digits, padded on the left with
    asterisks.
 
- * `^` specifies all capital letters.
+ * `^` specifies all capital letters, for example `%^W`.
 
- * `_` specifies all lower-case letters.
+ * `_` specifies all lower-case letters, for example `%_b`.
 
- * `~` specifies abbreviated names, for months, weekdays, and time zones.
+ * `~` specifies abbreviated names, for months, weekdays, and time zones, for
+   example `%~W`.
 
  * `E` (not implemented) specifies the locale's alternative representation.
 
