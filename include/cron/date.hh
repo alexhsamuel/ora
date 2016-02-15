@@ -305,7 +305,7 @@ public:
   from_ymdi(
     int const ymdi) 
   { 
-    return DateTemplate(ymdi / 10000, (ymdi % 10000) / 100 - 1, ymdi % 100 - 1);
+    return DateTemplate::from_parts(ymdi / 10000, (ymdi % 10000) / 100 - 1, ymdi % 100 - 1);
   }
 
   // Accessors.
