@@ -91,13 +91,6 @@ private:
   static ref<Unicode> tp_str(PyDate* self);
   static ref<Object> tp_richcompare(PyDate* self, Object* other, int comparison);
 
-  // Singleton objects, constructed lazily.
-  static ref<PyDate> INVALID_;
-  static ref<PyDate> LAST_;
-  static ref<PyDate> MAX_;
-  static ref<PyDate> MIN_;
-  static ref<PyDate> MISSING_;
-
   // Number methods.
   static ref<Object> nb_add(PyDate* self, Object* other, bool right);
   static ref<Object> nb_subtract(PyDate* self, Object* other, bool right);
@@ -538,31 +531,6 @@ PyDate<DATE>::tp_methods_
 //------------------------------------------------------------------------------
 // Getsets
 //------------------------------------------------------------------------------
-
-template<typename DATE>
-ref<PyDate<DATE>>
-PyDate<DATE>::INVALID_;
-
-
-template<typename DATE>
-ref<PyDate<DATE>>
-PyDate<DATE>::LAST_;
-
-
-template<typename DATE>
-ref<PyDate<DATE>>
-PyDate<DATE>::MAX_;
-
-
-template<typename DATE>
-ref<PyDate<DATE>>
-PyDate<DATE>::MIN_;
-
-
-template<typename DATE>
-ref<PyDate<DATE>>
-PyDate<DATE>::MISSING_;
-
 
 template<typename DATE>
 ref<Object>
