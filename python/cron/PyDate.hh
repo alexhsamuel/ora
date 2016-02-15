@@ -104,13 +104,13 @@ private:
   static PyNumberMethods tp_as_number_;
 
   // Methods.
-  static ref<Object> method_convert(PyTypeObject* type, Tuple* args, Dict* kw_args);
-  static ref<Object> method_from_datenum(PyTypeObject* type, Tuple* args, Dict* kw_args);
-  static ref<Object> method_from_ordinal_date(PyTypeObject* type, Tuple* args, Dict* kw_args);
-  static ref<Object> method_from_parts(PyTypeObject* type, Tuple* args, Dict* kw_args);
-  static ref<Object> method_from_week_date(PyTypeObject* type, Tuple* args, Dict* kw_args);
-  static ref<Object> method_from_ymdi(PyTypeObject* type, Tuple* args, Dict* kw_args);
-  static ref<Object> method_is_same(PyDate* self, Tuple* args, Dict* kw_args);
+  static ref<Object> method_convert             (PyTypeObject* type, Tuple* args, Dict* kw_args);
+  static ref<Object> method_from_datenum        (PyTypeObject* type, Tuple* args, Dict* kw_args);
+  static ref<Object> method_from_ordinal_date   (PyTypeObject* type, Tuple* args, Dict* kw_args);
+  static ref<Object> method_from_parts          (PyTypeObject* type, Tuple* args, Dict* kw_args);
+  static ref<Object> method_from_week_date      (PyTypeObject* type, Tuple* args, Dict* kw_args);
+  static ref<Object> method_from_ymdi           (PyTypeObject* type, Tuple* args, Dict* kw_args);
+  static ref<Object> method_is_same             (PyDate*       self, Tuple* args, Dict* kw_args);
   static Methods<PyDate> tp_methods_;
 
   // Getsets.
