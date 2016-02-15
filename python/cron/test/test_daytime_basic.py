@@ -104,3 +104,50 @@ def test_from_ssm2():
     assert not a.missing
 
 
+def test_invalid():
+    a = Daytime.INVALID
+    assert not (0 <= a.hour < 24)
+    assert not (0 <= a.minute < 60)
+    assert not (0 <= a.second < 60)
+    assert not a.valid
+    assert a.invalid
+    assert not a.missing
+
+
+def test_missing():
+    a = Daytime.MISSING
+    assert not (0 <= a.hour < 24)
+    assert not (0 <= a.minute < 60)
+    assert not (0 <= a.second < 60)
+    assert not a.valid
+    assert not a.invalid
+    assert a.missing
+
+
+def test_min():
+    a = Daytime.MIN
+    assert a.hour == 0
+    assert a.minute == 0
+    assert a.second == 0
+    assert a.ssm == 0
+    assert a.valid
+    assert not a.invalid
+    assert not a.missing
+
+
+def test_last():
+    a = Daytime.LAST
+    assert a.hour == 23
+    assert a.minute == 59
+    assert (60 - a.second) < 0.000001
+    assert (86400 - a.ssm) < 0.000001
+    assert a.valid
+    assert not a.invalid
+    assert not a.missing
+
+
+def test_max():
+    a = Daytime.MAX
+    assert not a.valid
+
+

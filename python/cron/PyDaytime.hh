@@ -139,6 +139,15 @@ PyDaytime<DAYTIME>::add_to(
   pattern += "SZ";
   str_format_ = make_unique<cron::DaytimeFormat>(pattern);
 
+  // Add in static data members.
+  auto const dict = (Dict*) type_.tp_dict;
+  assert(dict != nullptr);
+  dict->SetItemString("INVALID" , create(Daytime::INVALID));
+  dict->SetItemString("LAST"    , create(Daytime::LAST));
+  dict->SetItemString("MAX"     , create(Daytime::MAX));
+  dict->SetItemString("MIN"     , create(Daytime::MIN));
+  dict->SetItemString("MISSING" , create(Daytime::MISSING));
+
   // Add the type to the module.
   module.add(&type_);
 }
