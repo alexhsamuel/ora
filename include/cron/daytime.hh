@@ -67,6 +67,11 @@ public:
 
   // Constructors
 
+  DaytimeTemplate()
+    : DaytimeTemplate(INVALID)
+  {
+  }
+
   // FIXME: Get rid of this; use from_parts() instead.
   DaytimeTemplate(
     Hour hour, 
