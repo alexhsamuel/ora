@@ -27,6 +27,8 @@
 - docstrings
 - unit tests
 
+## PyDaytime
+
 ## Formatting
 
 ...?
@@ -38,8 +40,6 @@
 ## PyTime
 
 ## PyTimeDuration
-
-## PyDaytime
 
 ## PyCalendar
 
