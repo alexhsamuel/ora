@@ -340,6 +340,9 @@ public:
   DateParts get_parts()     const { return datenum_to_parts(get_datenum()); }
   Weekday   get_weekday()   const { return is_valid() ? alxs::cron::get_weekday(get_datenum()) : WEEKDAY_INVALID; }
 
+  OrdinalDateParts  get_ordinal_date_parts()    const { return datenum_to_ordinal_date_parts(get_datenum()); }
+  WeekDateParts     get_week_date_parts()       const { return datenum_to_week_date_parts(get_datenum()); }
+
   bool is(DateTemplate const& o) const { return offset_ == o.offset_; }
   bool operator==(DateTemplate const& o) const { return is_valid() && o.is_valid() && offset_ == o.offset_; }
   bool operator!=(DateTemplate const& o) const { return is_valid() && o.is_valid() && offset_ != o.offset_; }

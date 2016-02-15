@@ -110,23 +110,35 @@ TEST(Date, invalid) {
 }
 
 TEST(Date, invalid_parts) {
-  DateParts const parts = Date::INVALID.get_parts();
+  auto const ordinal_parts = Date::INVALID.get_ordinal_date_parts();
+  EXPECT_EQ(ORDINAL_INVALID,    ordinal_parts.ordinal);
+  EXPECT_EQ(YEAR_INVALID,       ordinal_parts.year);
+
+  auto const parts = Date::INVALID.get_parts();
   EXPECT_EQ(DAY_INVALID,        parts.day);
   EXPECT_EQ(MONTH_INVALID,      parts.month);
   EXPECT_EQ(YEAR_INVALID,       parts.year);
-  EXPECT_EQ(WEEKDAY_INVALID,    parts.weekday);
-  EXPECT_EQ(WEEK_INVALID,       parts.week);
-  EXPECT_EQ(YEAR_INVALID,       parts.week_year);
+
+  auto const week_parts = Date::INVALID.get_week_date_parts();
+  EXPECT_EQ(WEEKDAY_INVALID,    week_parts.weekday);
+  EXPECT_EQ(WEEK_INVALID,       week_parts.week);
+  EXPECT_EQ(YEAR_INVALID,       week_parts.week_year);
 }
 
 TEST(Date, missing_parts) {
-  DateParts const parts = Date::MISSING.get_parts();
+  auto const ordinal_parts = Date::MISSING.get_ordinal_date_parts();
+  EXPECT_EQ(ORDINAL_INVALID,    ordinal_parts.ordinal);
+  EXPECT_EQ(YEAR_INVALID,       ordinal_parts.year);
+
+  auto const parts = Date::MISSING.get_parts();
   EXPECT_EQ(DAY_INVALID,        parts.day);
   EXPECT_EQ(MONTH_INVALID,      parts.month);
   EXPECT_EQ(YEAR_INVALID,       parts.year);
-  EXPECT_EQ(WEEKDAY_INVALID,    parts.weekday);
-  EXPECT_EQ(WEEK_INVALID,       parts.week);
-  EXPECT_EQ(YEAR_INVALID,       parts.week_year);
+
+  auto const week_parts = Date::MISSING.get_week_date_parts();
+  EXPECT_EQ(WEEKDAY_INVALID,    week_parts.weekday);
+  EXPECT_EQ(WEEK_INVALID,       week_parts.week);
+  EXPECT_EQ(YEAR_INVALID,       week_parts.week_year);
 }
 
 TEST(Date, weekday) {

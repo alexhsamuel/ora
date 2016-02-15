@@ -20,6 +20,54 @@ namespace cron {
 
 //------------------------------------------------------------------------------
 
+// FIXME: Put this in a subnamespace, or similar.
+
+struct Parts
+{
+  Parts(Datenum, DaytimeParts const&, TimeZoneParts const&);
+  Parts(Datenum);
+  Parts(DaytimeParts const&);
+
+  OrdinalDateParts  ordinal_date_;
+  DateParts         date_;
+  WeekDateParts     week_date_;
+  DaytimeParts      daytime_;
+  TimeZoneParts     time_zone_;
+};
+
+
+inline
+Parts::Parts(
+  Datenum datenum,
+  DaytimeParts const& daytime,
+  TimeZoneParts const& time_zone)
+  : ordinal_date_(datenum_to_ordinal_date_parts(datenum)),
+    date_(datenum_to_parts(datenum, ordinal_date_)),
+    week_date_(datenum_to_week_date_parts(datenum, ordinal_date_, date_)),
+    daytime_(daytime),
+    time_zone_(time_zone)
+{
+}
+
+
+inline
+Parts::Parts(
+  Datenum datenum)
+  : Parts(datenum, DaytimeParts::get_invalid(), TimeZoneParts::get_invalid())
+{
+}
+
+
+inline
+Parts::Parts(
+  DaytimeParts const& daytime)
+  : Parts(DATENUM_INVALID, daytime, TimeZoneParts::get_invalid())
+{
+}
+
+
+//------------------------------------------------------------------------------
+
 class Format
 {
 public:
@@ -42,7 +90,7 @@ public:
     static DaytimeParts const daytime_parts{0, 0, 0};
     static TimeZoneParts const time_zone_parts{0, "", false};
     auto const width 
-      = format(DATENUM_MIN, &daytime_parts, &time_zone_parts).length();
+      = format(Parts(DATENUM_MIN, daytime_parts, time_zone_parts)).length();
 
     invalid_ = std::string(width, ' ');
     invalid_.replace(0, 7, "INVALID");
@@ -58,19 +106,19 @@ protected:
 
   std::string 
   format(
-    Datenum                 datenum,
-    DaytimeParts const*     daytime_parts,
-    TimeZoneParts const*    time_zone_parts)
+    Parts const& parts)
     const
   {
     StringBuilder sb;
-    format(sb, datenum, daytime_parts, time_zone_parts);
+    format(sb, parts);
     return sb.str();
   }
 
+  void format(StringBuilder&, Parts const&) const;
+
 private:
 
-  void format(StringBuilder&, Datenum, DaytimeParts const*, TimeZoneParts const*) const;
+  class Impl;
 
   std::string pattern_;
   std::string invalid_;
@@ -110,7 +158,7 @@ public:
     TimeParts const& parts) 
     const 
   { 
-    return format(parts.datenum, &parts.daytime, &parts.time_zone); 
+    return format(Parts(parts.datenum, parts.daytime, parts.time_zone));
   }
 
   template<class TRAITS> 
@@ -194,10 +242,10 @@ public:
 
   std::string
   operator()(
-    datenum datenum) 
+    Datenum datenum) 
     const 
   { 
-    return format(datenum, nullptr, nullptr); 
+    return format(Parts(datenum)); 
   }
 
   template<class TRAITS> 
@@ -207,7 +255,7 @@ public:
     const 
   { 
     return 
-      date.is_valid() ? operator()(date.get_parts())
+      date.is_valid() ? operator()(date.get_datenum())
       : date.is_missing() ? get_missing()
       : get_invalid();
   }
@@ -266,7 +314,7 @@ public:
     DaytimeParts const& parts) 
     const 
   { 
-    return format(DATENUM_INVALID, &parts, nullptr); 
+    return format(Parts(parts)); 
   }
 
   template<class TRAITS> 
@@ -300,50 +348,6 @@ operator<<(
   DaytimeTemplate<TRAITS> daytime)
 {
   os << to_string(daytime);
-  return os;
-}
-
-
-//------------------------------------------------------------------------------
-
-class TimeStrftimeFormat
-{
-public:
-
-  struct Formatted
-  {
-    TimeStrftimeFormat const& format;
-    TimeParts parts;
-
-    operator std::string() { return alxs::to_string(*this); }  // FIXME
-  };
-
-  TimeStrftimeFormat(std::string const& pattern, bool extended=true) : pattern_(pattern), extended_(extended) {}
-  TimeStrftimeFormat(char const* pattern, bool extended=true) : pattern_(pattern), extended_(extended) {}
-
-  Formatted operator()(TimeParts const& parts) const { return {*this, parts}; }
-  template<class TIME> Formatted operator()(TIME time) const { return {*this, time.get_parts(get_display_time_zone())}; }
-  template<class TIME> Formatted operator()(TIME time, TimeZone const& tz) const { return {*this, time.get_parts(tz)}; }
-
-  std::string get_pattern() const { return pattern_; }
-  bool is_extended() const { return extended_; }
-
-  void to_stream(std::ostream& os, TimeParts const& parts) const;
-
-private:
-
-  std::string pattern_;
-  bool extended_;
-
-};
-
-
-inline std::ostream&
-operator<<(
-  std::ostream& os,
-  TimeStrftimeFormat::Formatted const& formatted)
-{
-  formatted.format.to_stream(os, formatted.parts);
   return os;
 }
 

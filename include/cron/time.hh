@@ -201,7 +201,7 @@ public:
       = (int64_t) offset % (TRAITS::denominator * SECS_PER_DAY) 
         + (offset < 0 ? TRAITS::denominator * SECS_PER_DAY : 0);
 
-    parts.date            = datenum_to_parts(datenum);
+    parts.datenum         = datenum;
     parts.daytime.second  = (Second) (day_offset % (SECS_PER_MIN * TRAITS::denominator)) / TRAITS::denominator;
     Offset const minutes  = day_offset / (SECS_PER_MIN * TRAITS::denominator);
     parts.daytime.minute  = minutes % MINS_PER_HOUR;

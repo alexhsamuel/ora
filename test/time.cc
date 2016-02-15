@@ -62,9 +62,10 @@ TEST(Time, from_parts) {
   Time const time1 = Time::from_offset(offset);
   EXPECT_EQ(offset, time1.get_offset());
   TimeParts const parts1 = time1.get_parts("US/Eastern");
-  EXPECT_EQ(2013, parts1.date.year);
-  EXPECT_EQ(6, parts1.date.month);
-  EXPECT_EQ(27, parts1.date.day);
+  DateParts const date_parts1 = datenum_to_parts(parts1.datenum);
+  EXPECT_EQ(2013, date_parts1.year);
+  EXPECT_EQ(6, date_parts1.month);
+  EXPECT_EQ(27, date_parts1.day);
 
   Time const time2(2013/JUL/28, Daytime(15, 37, 38), tz);
   EXPECT_EQ(offset, time2.get_offset());
@@ -129,9 +130,10 @@ TEST(Time, get_parts) {
 
   TimeZone const time_zone = get_time_zone("US/Eastern");
   TimeParts const parts = time.get_parts(time_zone);
-  EXPECT_EQ(2013,       parts.date.year);
-  EXPECT_EQ(6,          parts.date.month);
-  EXPECT_EQ(27,         parts.date.day);
+  DateParts const date_parts = datenum_to_parts(parts.datenum);
+  EXPECT_EQ(2013,       date_parts.year);
+  EXPECT_EQ(6,          date_parts.month);
+  EXPECT_EQ(27,         date_parts.day);
   EXPECT_EQ(15,         parts.daytime.hour);
   EXPECT_EQ(37,         parts.daytime.minute);
   EXPECT_EQ(38.125,     parts.daytime.second);
@@ -142,9 +144,10 @@ TEST(Time, get_parts) {
 
 TEST(Time, get_parts_invalid) {
   TimeParts const parts = Time::INVALID.get_parts();
-  EXPECT_FALSE(year_is_valid(parts.date.year));
-  EXPECT_FALSE(month_is_valid(parts.date.month));
-  EXPECT_FALSE(day_is_valid(parts.date.day));
+  DateParts const date_parts = datenum_to_parts(parts.datenum);
+  EXPECT_FALSE(year_is_valid(date_parts.year));
+  EXPECT_FALSE(month_is_valid(date_parts.month));
+  EXPECT_FALSE(day_is_valid(date_parts.day));
   EXPECT_FALSE(hour_is_valid(parts.daytime.hour));
   EXPECT_FALSE(minute_is_valid(parts.daytime.minute));
   EXPECT_FALSE(second_is_valid(parts.daytime.second));

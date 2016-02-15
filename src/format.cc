@@ -44,7 +44,7 @@ struct Modifiers
 };
 
 
-bool
+inline bool
 parse_modifiers(
   string const& pattern,
   size_t& pos,
@@ -112,7 +112,7 @@ parse_modifiers(
 }
 
 
-void
+inline void
 format_string(
   StringBuilder& sb,
   Modifiers const& mods,
@@ -132,21 +132,21 @@ format_string(
 }
 
 
-bool
+inline bool
 format_date(
   string const& pattern,
   size_t& pos,
   StringBuilder& sb,
   Modifiers const& mods,
-  Datenum const datenum)
+  Parts const& parts)
 {
   switch (pattern[pos]) {
   case 'b':
-    format_string(sb, mods, mods.abbreviate ? get_month_abbr(date.month) : get_month_name(date.month));
+    format_string(sb, mods, mods.abbreviate ? get_month_abbr(parts.date_.month) : get_month_name(parts.date_.month));
     break;
 
   case 'd':
-    sb.format(date.day + 1, mods.get_width(2), mods.get_pad('0'));
+    sb.format(parts.date_.day + 1, mods.get_width(2), mods.get_pad('0'));
     break;
 
   case 'D':
@@ -155,40 +155,40 @@ format_date(
     break;
 
   case 'g':
-    sb.format(week_date.week_year % 100, mods.get_width(2), mods.get_pad('0'));
+    sb.format(parts.week_date_.week_year % 100, mods.get_width(2), mods.get_pad('0'));
     break;
 
   case 'G':
-    sb.format(week_date.week_year, mods.get_width(4), mods.get_pad('0'));
+    sb.format(parts.week_date_.week_year, mods.get_width(4), mods.get_pad('0'));
     break;
 
   case 'j':
-    sb.format(ordinal_date.ordinal + 1, mods.get_width(3), mods.get_pad('0'));
+    sb.format(parts.ordinal_date_.ordinal + 1, mods.get_width(3), mods.get_pad('0'));
     break;
 
   case 'm':
-    sb.format(date.month + 1, mods.get_width(2), mods.get_pad('0'));
+    sb.format(parts.date_.month + 1, mods.get_width(2), mods.get_pad('0'));
     break;
 
   case 'V':
-    sb.format(week_date.week + 1, mods.get_width(2), mods.get_pad('0'));
+    sb.format(parts.week_date_.week + 1, mods.get_width(2), mods.get_pad('0'));
     break;
 
   case 'w':
     // FIXME: Generalize?
-    sb.format((weekday + (7 - SUNDAY)) % 7, mods.get_width(1), mods.get_pad('0'));
+    sb.format((parts.week_date_.weekday + (7 - SUNDAY)) % 7, mods.get_width(1), mods.get_pad('0'));
     break;
 
   case 'W':
-    format_string(sb, mods, mods.abbreviate ? get_weekday_abbr(weekday) : get_weekday_name(weekday));
+    format_string(sb, mods, mods.abbreviate ? get_weekday_abbr(parts.week_date_.weekday) : get_weekday_name(parts.week_date_.weekday));
     break;
 
   case 'y':
-    sb.format(date.year % 100, mods.get_width(2), mods.get_pad('0'));
+    sb.format(parts.date_.year % 100, mods.get_width(2), mods.get_pad('0'));
     break;
 
   case 'Y':
-    sb.format(date.year, mods.get_width(4), mods.get_pad('0'));
+    sb.format(parts.date_.year, mods.get_width(4), mods.get_pad('0'));
     break;
 
   default:
@@ -203,66 +203,66 @@ format_date(
 }
 
 
-bool
+inline bool
 format_daytime(
   string const& pattern,
   size_t& pos,
   StringBuilder& sb,
   Modifiers const& mods,
-  DaytimeParts const& daytime)
+  DaytimeParts const& parts)
 {
   switch (pattern[pos]) {
   case 'h':
     {
-      unsigned const hour = daytime.hour % 12;
+      unsigned const hour = parts.hour % 12;
       sb.format(hour == 0 ? 12 : hour, mods.get_width(2), mods.get_pad('0'));
     }
     break;
 
   case 'H':
-    sb.format(daytime.hour, mods.get_width(2), mods.get_pad('0'));
+    sb.format(parts.hour, mods.get_width(2), mods.get_pad('0'));
     break;
 
   case 'k':
     {
-      unsigned const msec = (daytime.second - (unsigned) daytime.second) * 1e+3;
+      unsigned const msec = (parts.second - (unsigned) parts.second) * 1e+3;
       sb.format(msec, mods.get_width(3), mods.get_pad('0'));
     }
     break;
 
   case 'K':
     {
-      unsigned const usec = (unsigned) ((daytime.second - (unsigned) daytime.second) * 1e+6) % 1000;
+      unsigned const usec = (unsigned) ((parts.second - (unsigned) parts.second) * 1e+6) % 1000;
       sb.format(usec, mods.get_width(3), mods.get_pad('0'));
     }
     break;
 
   case 'l':
     {
-      unsigned const nsec = (unsigned) ((daytime.second - (unsigned) daytime.second) * 1e+9) % 1000;
+      unsigned const nsec = (unsigned) ((parts.second - (unsigned) parts.second) * 1e+9) % 1000;
       sb.format(nsec, mods.get_width(3), mods.get_pad('0'));
     }
     break;
 
   case 'L':
     {
-      unsigned const psec = (unsigned) ((daytime.second - (unsigned) daytime.second) * 1e+12) % 1000;
+      unsigned const psec = (unsigned) ((parts.second - (unsigned) parts.second) * 1e+12) % 1000;
       sb.format(psec, mods.get_width(3), mods.get_pad('0'));
     }
     break;
 
   case 'M':
-    sb.format(daytime.minute, mods.get_width(2), mods.get_pad('0'));
+    sb.format(parts.minute, mods.get_width(2), mods.get_pad('0'));
     break;
 
   case 'p':
-    format_string(sb, mods, daytime.hour < 12 ? "AM" : "PM");
+    format_string(sb, mods, parts.hour < 12 ? "AM" : "PM");
     break;
 
   case 'S':
     {
       unsigned long const prec = std::max(0, mods.precision);
-      unsigned long long const digits = daytime.second * pow10(prec) + 0.5;
+      unsigned long long const digits = parts.second * pow10(prec) + 0.5;
       // Integer part.
       sb.format(digits / pow10(prec), mods.get_width(2), mods.get_pad('0'));
       if (mods.precision >= 0) {
@@ -291,42 +291,42 @@ format_daytime(
 }
 
 
-bool
+inline bool
 format_time_zone(
   string const& pattern,
   size_t& pos,
   StringBuilder& sb,
   Modifiers const& mods,
-  TimeZoneParts const& time_zone)
+  TimeZoneParts const& parts)
 {
   switch (pattern[pos]) {
   case 'o':
-    sb << (time_zone.offset < 0 ? '-' : '+');
-    sb.format(std::abs(time_zone.offset), mods.get_width(5), mods.get_pad('0'));
+    sb << (parts.offset < 0 ? '-' : '+');
+    sb.format(std::abs(parts.offset), mods.get_width(5), mods.get_pad('0'));
     break;
 
   case 'q':
     {
-      unsigned const offset_min = std::abs(time_zone.offset) % SECS_PER_HOUR / SECS_PER_MIN;
+      unsigned const offset_min = std::abs(parts.offset) % SECS_PER_HOUR / SECS_PER_MIN;
       sb.format(offset_min, mods.get_width(2), mods.get_pad('0'));
     }
     break;
 
   case 'Q':
     {
-      unsigned const offset_hour = std::abs(time_zone.offset) / SECS_PER_HOUR;
+      unsigned const offset_hour = std::abs(parts.offset) / SECS_PER_HOUR;
       sb.format(offset_hour, mods.get_width(2),mods.get_pad('0'));
     }
     break;
 
   case 'U':
-    sb << (time_zone.offset < 0 ? '-' : '+');
+    sb << (parts.offset < 0 ? '-' : '+');
     break;
 
   case 'Z':
     // FIXME: Time zone full name.
     if (mods.abbreviate)
-      sb << time_zone.abbreviation;
+      sb << parts.abbreviation;
     else
       throw TimeFormatError("not implemented: time zone full name");
     break;
@@ -343,15 +343,13 @@ format_time_zone(
 }
 
 
-bool
+inline bool
 format_time(
   string const& pattern,
   size_t& pos,
-  StringBuilder& /*sb*/,
-  Modifiers     const& /*mods*/,
-  DateParts     const& /*date_parts*/,
-  DaytimeParts  const& /*daytime_parts*/,
-  TimeZoneParts const& /*time_zone_parts*/)
+  StringBuilder& /* sb */,
+  Modifiers const& /* mods */,
+  Parts const& /* parts */)
 {
   switch (pattern[pos]) {
   case 'c':
@@ -379,9 +377,7 @@ format_time(
 void 
 Format::format(
   StringBuilder& sb,
-  Datenum const datenum,
-  DaytimeParts const* daytime_parts,
-  TimeZoneParts const* time_zone_parts)
+  Parts const& parts)
   const
 {
   size_t pos = 0;
@@ -419,19 +415,10 @@ Format::format(
         continue;
 
       // Handle escape codes for date components.
-      if (date_parts != nullptr
-          && format_date(pattern_, pos, sb, mods, datenum))
-        break;
-      if (daytime_parts != nullptr
-          && format_daytime(pattern_, pos, sb, mods, *daytime_parts))
-        break;
-      if (time_zone_parts != nullptr
-          && format_time_zone(pattern_, pos, sb, mods, *time_zone_parts))
-        break;
-      if (   date_parts      != nullptr
-          && daytime_parts   != nullptr
-          && time_zone_parts != nullptr
-          && format_time(pattern_, pos, sb, mods, *date_parts, *daytime_parts, *time_zone_parts))
+      if (   format_date        (pattern_, pos, sb, mods, parts)
+          || format_daytime     (pattern_, pos, sb, mods, parts.daytime_)
+          || format_time_zone   (pattern_, pos, sb, mods, parts.time_zone_)
+          || format_time        (pattern_, pos, sb, mods, parts))
         break;
 
       // If we made it this far, it's not a valid character.
@@ -440,7 +427,6 @@ Format::format(
     }
   }
 }
-
 
 
 //------------------------------------------------------------------------------
@@ -479,260 +465,6 @@ DaytimeFormat const DaytimeFormat::ISO_BASIC_NSEC       = "%H%M%.9S";
 DaytimeFormat const DaytimeFormat::ISO_EXTENDED_NSEC    = "%H:%M:%.9S";
 
 //------------------------------------------------------------------------------
-// Class TimeStrftimeFormat
-//------------------------------------------------------------------------------
-
-namespace {
-
-inline bool
-format_code(
-  std::ostream& os,
-  char code,
-  TimeParts const& parts)
-{
-  // FIXME: Localize.
-
-  switch (code) {
-  case 'a':
-    os << get_weekday_abbr(parts.date.weekday);
-    break;
-
-  case 'A':
-    os << get_weekday_name(parts.date.weekday);
-    break;
-
-  case 'b':
-  case 'h':
-    os << get_month_abbr(parts.date.month);
-    break;
-
-  case 'B':
-    os << get_month_name(parts.date.month);
-    break;
-
-  case 'c':
-    os << get_weekday_abbr(parts.date.weekday) << ' '
-       << get_month_abbr(parts.date.month) << ' '
-       << std::setw(2) << std::setfill('0') << parts.date.day + 1 << ' '
-       << (unsigned) parts.daytime.hour << ':'
-       << (unsigned) parts.daytime.minute << ':'
-       << (unsigned) parts.daytime.second << ' '
-       << parts.date.year;
-    break;
-
-  case 'C':
-    os << std::setw(2) << std::setfill('0') 
-       << parts.date.year % 100;
-    break;
-
-  case 'd':
-    os << std::setw(2) << std::setfill('0') 
-       << parts.date.day + 1;
-    break;
-
-  case 'D':
-    os << std::setw(2) << std::setfill('0') 
-       << parts.date.month + 1 << '/'
-       << parts.date.day + 1 << '/'
-       << parts.date.year + 1;
-    break;
-
-  case 'e':
-    os << std::setw(2) << std::setfill(' ') 
-       << parts.date.day + 1;
-    break;
-
-  case 'F':
-    os << std::setw(4) << std::setfill('0') 
-       << parts.date.year << '-'
-       << std::setw(2) << parts.date.month + 1 << '-'
-       << parts.date.day + 1;
-    break;
-
-  case 'g':
-    os << std::setw(2) << std::setfill('0') 
-       << parts.date.week_year % 100;
-    break;
-
-  case 'G':
-    os << std::setw(4) << std::setfill('0') 
-       << parts.date.week_year;
-    break;
-
-  case 'H':
-    os << std::setw(2) << std::setfill('0') 
-       << (unsigned) parts.daytime.hour;
-    break;
-
-  case 'I':
-    os << std::setw(2) << std::setfill('0') 
-       << (unsigned) parts.daytime.hour % 12;
-    break;
-
-  case 'j':
-    os << std::setw(3) << std::setfill('0') 
-       << parts.date.ordinal + 1;
-    break;
-
-  case 'm':
-    os << std::setw(2) << std::setfill('0') 
-       << parts.date.month + 1;
-    break;
-
-  case 'M':
-    os << std::setw(2) << std::setfill('0') 
-       << (unsigned) parts.daytime.minute;
-    break;
-
-  case 'n':
-    os << '\n';
-    break;
-
-  case 'p':
-    os << (parts.daytime.hour < 12 ? 'A' : 'P') << 'M';
-    break;
-
-  case 'r':
-    // FIXME: Locale.
-    os << std::setw(2) << std::setfill('0') 
-       << (unsigned) parts.daytime.hour % 12 << ':'
-       << (unsigned) parts.daytime.minute << ':'
-       << (unsigned) parts.daytime.second << ' '
-       << (parts.daytime.hour < 12 ? 'A' : 'P') << 'M';
-    break;
-
-  case 'R':
-    os << std::setw(2) << std::setfill('0') 
-       << (unsigned) parts.daytime.hour << ':' 
-       << (unsigned) parts.daytime.minute;
-    break;
-
-  case 'S':
-    os << std::setw(2) << std::setfill('0') 
-       << (unsigned) parts.daytime.second;
-    break;
-
-  case 't':
-    os << '\t';
-    break;
-
-  case 'T':
-    os << std::setw(2) << std::setfill('0') 
-       << (unsigned) parts.daytime.hour << ':'
-       << (unsigned) parts.daytime.minute << ':'
-       << (unsigned) parts.daytime.second;
-    break;
-
-  case 'u':
-    os << parts.date.weekday + 1;
-    break;
-
-  case 'U':
-    // FIXME: IMPLEMENT
-    assert(false);
-    break;
-
-  case 'V':
-    os << std::setw(2) << std::setfill('0') << parts.date.week + 1;
-    break;
-
-  case 'w':
-    os << std::setw(1) << (parts.date.weekday - SUNDAY) % 7;
-    break;
-
-  case 'W':
-    // FIXME: IMPLEMENT
-    assert(false);
-    break;
-
-  case 'x':
-    os << std::setw(2) << std::setfill('0') 
-       << parts.date.month + 1 << '/'
-       << parts.date.day + 1 << '/'
-       << parts.date.year % 100;
-    break;
-
-  case 'X':
-    os << std::setw(2) << std::setfill('0') 
-       << (unsigned) parts.daytime.hour << ':'
-       << (unsigned) parts.daytime.minute << ':'
-       << (unsigned) parts.daytime.second;
-    break;
-
-  case 'y':
-    os << std::setw(2) << std::setfill('0') 
-       << parts.date.year % 100;
-    break;
-
-  case 'Y':
-    os << std::setw(4) << std::setfill('0') 
-       << parts.date.year;
-    break;
-
-  case 'K':  // FIXME
-    os << (parts.time_zone.offset > 0 ? '+' : '-')
-       << std::setw(2) << std::setfill('0') << std::abs(parts.time_zone.offset) / SECS_PER_HOUR << ':'
-       << std::setw(2) << (std::abs(parts.time_zone.offset) % SECS_PER_HOUR) / SECS_PER_MIN;
-    break;
-
-  case 'z':
-    os << (parts.time_zone.offset > 0 ? '+' : '-')
-       << std::setw(2) << std::abs(parts.time_zone.offset) / SECS_PER_HOUR
-       << std::setw(2) << std::setfill('0') << (std::abs(parts.time_zone.offset) % SECS_PER_HOUR) / SECS_PER_MIN;
-    break;
-
-  case 'Z':
-    os << parts.time_zone.abbreviation;
-    break;
-
-  case '%':
-    os << '%';
-    break;
-
-  default:
-    return false;
-  }
-
-  return true;
-}
-
-
-}  // anonymous namespace
-
-
-void
-TimeStrftimeFormat::to_stream(
-  std::ostream& os,
-  TimeParts const& parts)
-  const
-{
-  size_t pos = 0;
-  while (true) {
-    // Find the next escape character.
-    size_t const next = pattern_.find('%', pos);
-    if (next == string::npos) {
-      // No next escape.  Copy the rest of the pattern, and we're done.
-      os << pattern_.substr(pos);
-      break;
-    }
-    else if (next > pos)
-      // Copy from the pattern until the next escape.
-      os << pattern_.substr(pos, next - pos);
-
-    if (next == pattern_.length() - 1)
-      // Pattern ends with raw escape character.
-      throw ValueError("pattern ends with %");
-    else
-      // Handle the escape code.
-      if (! format_code(os, pattern_[next + 1], parts))
-        // Doesn't appear to be a date escape code; copy it over.
-        os << '%' << pattern_[next + 1];
-
-    // Advance past the escape sequence.
-    pos = next + 2;
-  }
-}
-
 
 //------------------------------------------------------------------------------
 
