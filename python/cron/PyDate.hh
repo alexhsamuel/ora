@@ -114,19 +114,19 @@ private:
   static Methods<PyDate> tp_methods_;
 
   // Getsets.
-  static ref<Object> get_datenum    (PyDate* self, void*);
-  static ref<Object> get_day        (PyDate* self, void*);
-  static ref<Object> get_invalid    (PyDate* self, void*);
-  static ref<Object> get_missing    (PyDate* self, void*);
-  static ref<Object> get_month      (PyDate* self, void*);
-  static ref<Object> get_ordinal    (PyDate* self, void*);
-  static ref<Object> get_parts      (PyDate* self, void*);
-  static ref<Object> get_valid      (PyDate* self, void*);
-  static ref<Object> get_week       (PyDate* self, void*);
-  static ref<Object> get_week_year  (PyDate* self, void*);
-  static ref<Object> get_weekday    (PyDate* self, void*);
-  static ref<Object> get_year       (PyDate* self, void*);
-  static ref<Object> get_ymdi       (PyDate* self, void*);
+  static ref<Object> get_datenum                (PyDate* self, void*);
+  static ref<Object> get_day                    (PyDate* self, void*);
+  static ref<Object> get_invalid                (PyDate* self, void*);
+  static ref<Object> get_missing                (PyDate* self, void*);
+  static ref<Object> get_month                  (PyDate* self, void*);
+  static ref<Object> get_ordinal                (PyDate* self, void*);
+  static ref<Object> get_parts                  (PyDate* self, void*);
+  static ref<Object> get_valid                  (PyDate* self, void*);
+  static ref<Object> get_week                   (PyDate* self, void*);
+  static ref<Object> get_week_year              (PyDate* self, void*);
+  static ref<Object> get_weekday                (PyDate* self, void*);
+  static ref<Object> get_year                   (PyDate* self, void*);
+  static ref<Object> get_ymdi                   (PyDate* self, void*);
   static GetSets<PyDate> tp_getsets_;
 
   /** Date format used to generate the repr.  */
