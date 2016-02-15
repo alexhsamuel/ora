@@ -74,6 +74,13 @@ public:
    */
   Daytime const daytime_;
 
+private:
+
+  static void tp_init(PyDaytime* self, Tuple* args, Dict* kw_args);
+  static void tp_dealloc(PyDaytime* self);
+  static ref<Unicode> tp_repr(PyDaytime* self);
+  static ref<Unicode> tp_str(PyDaytime* self);
+
   // Number methods.
   static PyNumberMethods tp_as_number_;
 
@@ -87,13 +94,6 @@ public:
   static unique_ptr<cron::DaytimeFormat> repr_format_;
   /** Date format used to generate the str.  */
   static unique_ptr<cron::DaytimeFormat> str_format_;
-
-private:
-
-  static void tp_init(PyDaytime* self, Tuple* args, Dict* kw_args);
-  static void tp_dealloc(PyDaytime* self);
-  static ref<Unicode> tp_repr(PyDaytime* self);
-  static ref<Unicode> tp_str(PyDaytime* self);
 
   static Type build_type(string const& type_name);
 
