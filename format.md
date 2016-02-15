@@ -42,7 +42,7 @@ The following format codes are supported for times only:
 | `o` | the total signed time zone offset in seconds |
 | `q` | the minutes part of the time zone offset |
 | `Q` | the hours part of the time zone offset |
-| `U` | the sign of teh time zone offset |
+| `U` | the sign of the time zone offset |
 | `Z` | the time zone name |
 
 The following modifiers are supported:
