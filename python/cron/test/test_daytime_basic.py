@@ -143,6 +143,21 @@ def test_from_ssm2():
     assert not a.missing
 
 
+def test_parts0():
+    assert Daytime.MIN.parts == (0, 0, 0)
+
+    p = Daytime.from_parts(12, 34, 56.5).parts
+    assert p.hour == 12
+    assert p.minute == 34
+    assert p.second == 56.5
+    assert p == (12, 34, 56.5)
+
+    p = Daytime.LAST.parts
+    assert p.hour == 23
+    assert p.minute == 59
+    assert (60 - p.second) < 2 * Daytime.EPSILON
+
+
 def test_invalid():
     a = Daytime.INVALID
     assert not (0 <= a.hour < 24)

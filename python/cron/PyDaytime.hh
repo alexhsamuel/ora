@@ -100,6 +100,7 @@ private:
   static ref<Object> get_invalid                (PyDaytime* self, void*);
   static ref<Object> get_minute                 (PyDaytime* self, void*);
   static ref<Object> get_missing                (PyDaytime* self, void*);
+  static ref<Object> get_parts                  (PyDaytime* self, void*);
   static ref<Object> get_second                 (PyDaytime* self, void*);
   static ref<Object> get_ssm                    (PyDaytime* self, void*);
   static ref<Object> get_valid                  (PyDaytime* self, void*);
@@ -486,6 +487,21 @@ PyDaytime<DAYTIME>::get_missing(
 
 template<typename DAYTIME>
 ref<Object>
+PyDaytime<DAYTIME>::get_parts(
+  PyDaytime* self,
+  void* /* closure */)
+{
+  auto parts = self->daytime_.get_parts();
+  auto parts_obj = get_daytime_parts_type()->New();
+  parts_obj->initialize(0, Long::FromLong(parts.hour));
+  parts_obj->initialize(1, Long::FromLong(parts.minute));
+  parts_obj->initialize(2, Float::FromDouble(parts.second));
+  return std::move(parts_obj);
+}
+
+
+template<typename DAYTIME>
+ref<Object>
 PyDaytime<DAYTIME>::get_second(
   PyDaytime* self,
   void* /* closure */)
@@ -523,6 +539,7 @@ PyDaytime<DAYTIME>::tp_getsets_
     .template add_get<get_invalid>              ("invalid")
     .template add_get<get_minute>               ("minute")
     .template add_get<get_missing>              ("missing")
+    .template add_get<get_parts>                ("parts")
     .template add_get<get_second>               ("second")
     .template add_get<get_ssm>                  ("ssm")
     .template add_get<get_valid>                ("valid")
