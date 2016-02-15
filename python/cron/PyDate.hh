@@ -465,7 +465,7 @@ PyDate<DATE>::method_from_parts(
   long const year   = parts->GetItem(0)->long_value();
   long const month  = parts->GetItem(1)->long_value();
   long const day    = parts->GetItem(2)->long_value();
-  return create(Date(year, month - 1, day - 1), type);
+  return create(Date::from_parts(year, month - 1, day - 1), type);
 }
 
 
@@ -903,7 +903,7 @@ convert_object(
       long const year   = seq->GetItem(0)->long_value();
       long const month  = seq->GetItem(1)->long_value();
       long const day    = seq->GetItem(2)->long_value();
-      return DATE(year, month - 1, day - 1);
+      return DATE::from_parts(year, month - 1, day - 1);
     }
     else if (seq->Length() == 2) {
       // Interpret a two-element sequence as ordinal parts.
