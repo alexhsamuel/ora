@@ -507,10 +507,7 @@ PyDate<DATE>::method_is_same(
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &object);
 
   auto date_opt = convert_date_object<Date>(object);
-  if (date_opt)
-    return Bool::from(self->date_.is(*date_opt));
-  else
-    return Bool::FALSE.inc();
+  return Bool::from(date_opt && self->date_.is(*date_opt));
 }
 
 
@@ -810,8 +807,6 @@ inline optional<DATE>
 convert_date_object(
   Object* const obj)
 {
-  DATE date;
-
   if (obj == nullptr) 
     // Use the default value.
     return DATE{};
