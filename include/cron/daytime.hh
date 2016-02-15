@@ -138,7 +138,7 @@ public:
   get_parts()  
     const
   {
-    if (! is_valid())
+    if (!is_valid())
       return DaytimeParts::get_invalid();
 
     Offset const minutes = offset_ / (SECS_PER_MIN * TRAITS::denominator);
