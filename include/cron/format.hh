@@ -303,50 +303,6 @@ operator<<(
 
 
 //------------------------------------------------------------------------------
-
-class TimeStrftimeFormat
-{
-public:
-
-  struct Formatted
-  {
-    TimeStrftimeFormat const& format;
-    TimeParts parts;
-
-    operator std::string() { return alxs::to_string(*this); }  // FIXME
-  };
-
-  TimeStrftimeFormat(std::string const& pattern, bool extended=true) : pattern_(pattern), extended_(extended) {}
-  TimeStrftimeFormat(char const* pattern, bool extended=true) : pattern_(pattern), extended_(extended) {}
-
-  Formatted operator()(TimeParts const& parts) const { return {*this, parts}; }
-  template<class TIME> Formatted operator()(TIME time) const { return {*this, time.get_parts(get_display_time_zone())}; }
-  template<class TIME> Formatted operator()(TIME time, TimeZone const& tz) const { return {*this, time.get_parts(tz)}; }
-
-  std::string get_pattern() const { return pattern_; }
-  bool is_extended() const { return extended_; }
-
-  void to_stream(std::ostream& os, TimeParts const& parts) const;
-
-private:
-
-  std::string pattern_;
-  bool extended_;
-
-};
-
-
-inline std::ostream&
-operator<<(
-  std::ostream& os,
-  TimeStrftimeFormat::Formatted const& formatted)
-{
-  formatted.format.to_stream(os, formatted.parts);
-  return os;
-}
-
-
-//------------------------------------------------------------------------------
 // Functions
 //------------------------------------------------------------------------------
 
