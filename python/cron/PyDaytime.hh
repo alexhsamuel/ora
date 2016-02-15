@@ -135,6 +135,7 @@ PyDaytime<DAYTIME>::add_to(
   // Add in static data members.
   auto const dict = (Dict*) type_.tp_dict;
   assert(dict != nullptr);
+  dict->SetItemString("EPSILON" , Float::FromDouble(1.0 / DAYTIME::DENOMINATOR));
   dict->SetItemString("INVALID" , create(Daytime::INVALID));
   dict->SetItemString("LAST"    , create(Daytime::LAST));
   dict->SetItemString("MAX"     , create(Daytime::MAX));
