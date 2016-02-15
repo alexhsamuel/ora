@@ -151,3 +151,92 @@ def test_max():
     assert not a.valid
 
 
+def test_is_same():
+    a = Daytime.from_parts(12, 34, 56.78)
+    assert     a.is_same(a)
+    assert not a.is_same(Daytime.MISSING)
+    assert not a.is_same(Daytime.INVALID)
+
+    assert     Daytime.INVALID.is_same(Daytime.INVALID)
+    assert not Daytime.INVALID.is_same(Daytime.MISSING)
+    assert not Daytime.INVALID.is_same(a)
+    assert not Daytime.MISSING.is_same(Daytime.INVALID)
+    assert not Daytime.MISSING.is_same(a)
+    assert     Daytime.MISSING.is_same(Daytime.MISSING)
+
+
+def test_comparison0():
+    assert     Daytime.MIN     == Daytime.MIN
+    assert     Daytime.LAST    != Daytime.MIN
+    assert     Daytime.MIN     != Daytime.LAST
+    assert     Daytime.LAST    == Daytime.LAST
+    assert     Daytime.MIN.is_same(Daytime.MIN)
+    assert     Daytime.LAST.is_same(Daytime.LAST)
+    assert     Daytime.MAX.is_same(Daytime.MAX)
+    assert not Daytime.MIN.is_same(Daytime.LAST)
+    assert not Daytime.LAST.is_same(Daytime.MAX)
+    assert not Daytime.MAX.is_same(Daytime.MIN)
+
+    assert     Daytime.INVALID.is_same(Daytime.INVALID)
+    assert not Daytime.INVALID == Daytime.INVALID
+    assert not Daytime.INVALID != Daytime.INVALID
+
+    assert     Daytime.MISSING.is_same(Daytime.MISSING)
+    assert not Daytime.MISSING == Daytime.MISSING
+    assert not Daytime.MISSING != Daytime.MISSING
+
+
+def test_comparison1():
+    a0 = Daytime.from_parts( 0,  0, 30)
+    a1 = Daytime.from_parts( 0, 30,  0)
+    a2 = Daytime.from_parts(12,  0,  0)
+
+    assert     a0.is_same(a0)
+    assert     a1.is_same(a1)
+    assert     a2.is_same(a2)
+
+    assert     Daytime.MIN  <  a0
+    assert     Daytime.MIN  <= a0
+    assert not Daytime.MIN  == a0
+    assert     Daytime.MIN  != a0
+    assert not Daytime.MIN  >  a0
+    assert not Daytime.MIN  >= a0
+    assert not Daytime.MIN.is_same(a0)
+    
+    assert     a0           <  a1
+    assert     a0           <= a1
+    assert not a0           == a1
+    assert     a0           != a1
+    assert not a0           >  a1
+    assert not a0           >= a1
+    assert not a0.is_same(a1)
+    
+    assert     a1           <  a2
+    assert     a1           <= a2
+    assert not a1           == a2
+    assert     a1           != a2
+    assert not a1           >  a2
+    assert not a1           >= a2
+    assert not a1.is_same(a2)
+    
+    assert     a2           <  Daytime.LAST
+    assert     a2           <= Daytime.LAST
+    assert not a2           == Daytime.LAST
+    assert     a2           != Daytime.LAST
+    assert not a2           >  Daytime.LAST
+    assert not a2           >= Daytime.LAST
+    assert not a2.is_same(Daytime.LAST)
+
+
+@pytest.mark.xfail
+def test_max():
+    a2 = Daytime.from_parts(12,  0,  0)
+    assert     a2           <  Daytime.MAX
+    assert     a2           <= Daytime.MAX
+    assert not a2           == Daytime.MAX
+    assert     a2           != Daytime.MAX
+    assert not a2           >  Daytime.MAX
+    assert not a2           >= Daytime.MAX
+    assert not a2.is_same(Daytime.MAX)
+
+

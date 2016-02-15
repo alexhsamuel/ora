@@ -26,7 +26,7 @@ using std::unique_ptr;
 StructSequenceType* get_daytime_parts_type();
 
 // template<typename DAYTIME> optional<DAYTIME> convert_object(Object*);
-// template<typename DAYTIME> optional<DAYTIME> convert_daytime_object(Object*);
+template<typename DAYTIME> optional<DAYTIME> convert_daytime_object(Object*);
 
 //------------------------------------------------------------------------------
 // Type class
@@ -81,6 +81,7 @@ private:
   static void tp_dealloc(PyDaytime* self);
   static ref<Unicode> tp_repr(PyDaytime* self);
   static ref<Unicode> tp_str(PyDaytime* self);
+  static ref<Object> tp_richcompare(PyDaytime* self, Object* other, int comparison);
 
   // Number methods.
   static PyNumberMethods tp_as_number_;
@@ -89,6 +90,7 @@ private:
   static ref<Object> method_from_daytick        (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_parts          (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_ssm            (PyTypeObject* type, Tuple* args, Dict* kw_args);
+  static ref<Object> method_is_same             (PyDaytime*    self, Tuple* args, Dict* kw_args);
   static Methods<PyDaytime> tp_methods_;
 
   // Getsets.
@@ -187,11 +189,14 @@ PyDaytime<DAYTIME>::tp_init(
   Tuple* const args,
   Dict* const kw_args)
 {
-  // FIXME
-  typename Daytime::Offset offset;
-  Arg::ParseTuple(args, "|k", &offset);
+  Object* obj = nullptr;
+  Arg::ParseTuple(args, "|O", &obj);
 
-  new(self) PyDaytime(Daytime::from_offset(offset));
+  auto daytime = convert_daytime_object<Daytime>(obj);
+  if (daytime)
+    new(self) PyDaytime{*daytime};
+  else
+    throw TypeError("not a daytime");
 }
 
 
@@ -229,6 +234,34 @@ PyDaytime<DAYTIME>::tp_str(
 {
   // FIXME: Not UTC?
   return Unicode::from((*str_format_)(self->daytime_));  
+}
+
+
+template<typename DAYTIME>
+ref<Object>
+PyDaytime<DAYTIME>::tp_richcompare(
+  PyDaytime* const self,
+  Object* const other,
+  int const comparison)
+{
+  auto opt = convert_daytime_object<Daytime>(other);
+  if (!opt)
+    return not_implemented_ref();
+  
+  Daytime const a0 = self->daytime_;
+  Daytime const a1 = *opt;
+
+  bool result;
+  switch (comparison) {
+  case Py_EQ: result = a0 == a1; break;
+  case Py_GE: result = a0 >= a1; break;
+  case Py_GT: result = a0 >  a1; break;
+  case Py_LE: result = a0 <= a1; break;
+  case Py_LT: result = a0 <  a1; break;
+  case Py_NE: result = a0 != a1; break;
+  default:    result = false; assert(false);
+  }
+  return Bool::from(result);
 }
 
 
@@ -345,6 +378,23 @@ PyDaytime<DAYTIME>::method_from_ssm(
 }
 
 
+// We call this method "is_same" because "is" is a keyword in Python.
+template<typename DAYTIME>
+ref<Object>
+PyDaytime<DAYTIME>::method_is_same(
+  PyDaytime* const self,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] = {"object", nullptr};
+  Object* object;
+  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &object);
+
+  auto daytime_opt = convert_daytime_object<Daytime>(object);
+  return Bool::from(daytime_opt && self->daytime_.is(*daytime_opt));
+}
+
+
 template<typename DAYTIME>
 Methods<PyDaytime<DAYTIME>>
 PyDaytime<DAYTIME>::tp_methods_
@@ -352,8 +402,8 @@ PyDaytime<DAYTIME>::tp_methods_
     .template add_class<method_from_daytick>        ("from_daytick")
     .template add_class<method_from_parts>          ("from_parts")
     .template add_class<method_from_ssm>            ("from_ssm")
+    .template add      <method_is_same>             ("is_same")
   ;
-
 
 //------------------------------------------------------------------------------
 // Getsets
@@ -503,7 +553,7 @@ PyDaytime<DAYTIME>::build_type(
     (char const*)         nullptr,                        // tp_doc
     (traverseproc)        nullptr,                        // tp_traverse
     (inquiry)             nullptr,                        // tp_clear
-    (richcmpfunc)         nullptr,                        // tp_richcompare
+    (richcmpfunc)         wrap<PyDaytime, tp_richcompare>,// tp_richcompare
     (Py_ssize_t)          0,                              // tp_weaklistoffset
     (getiterfunc)         nullptr,                        // tp_iter
     (iternextfunc)        nullptr,                        // tp_iternext
@@ -529,6 +579,53 @@ PyDaytime<DAYTIME>::build_type(
     (unsigned int)        0,                              // tp_version_tag
     (destructor)          nullptr,                        // tp_finalize
   };
+}
+
+
+//------------------------------------------------------------------------------
+// Helper functions
+//------------------------------------------------------------------------------
+
+/**
+ * Attempts to convert various kinds of Python daytime object to `DAYTIME`.
+ *
+ * If 'obj' is a daytime object (a PyDaytime instance, datetime.time, or
+ * compatible), returns the equivalent daytime.  Otherwise, returns a null
+ * option with no exception set.
+ */
+template<typename DAYTIME>
+inline optional<DAYTIME>
+convert_daytime_object(
+  Object* const obj)
+{
+  if (obj == nullptr)
+    // Use the default value.
+    return DAYTIME{};
+
+  if (PyDaytime<DAYTIME>::Check(obj))
+    // Exact wrapped type.
+    return static_cast<PyDaytime<DAYTIME>*>(obj)->daytime_;
+
+  // FIXME: Conversion.
+/*
+  if (obj->obj_type->tp_print != nullptr) {
+    // Each PyDaytime instantiation places the pointer to a function that 
+    // returns its daytick into the tp_print slot; see `build_type()`.
+    auto const get_daytick
+      = reinterpret_cast<cron::Daytick (*)(Object*)>(obj->ob_type->tp_print);
+    return DAYTIME::from_daytick(get_daytick(obj));
+  }
+*/
+
+  // Try for a daytime type that has a `daytick` attribute.
+  auto daytick = obj->GetAttrString("daytick", false);
+  if (daytick != nullptr)
+    return DAYTIME::from_daytick(daytick->long_value());
+
+  // FIXME: Convert from datetime.time, somehow.
+
+  // No type match.
+  return {};
 }
 
 
