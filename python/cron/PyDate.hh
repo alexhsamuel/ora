@@ -161,16 +161,11 @@ PyDate<DATE>::add_to(
   // Add in static data members.
   Dict* dict = (Dict*) type_.tp_dict;
   assert(dict != nullptr);
-  INVALID_  = create(Date::INVALID);
-  LAST_     = create(Date::LAST);
-  MAX_      = create(Date::MAX);
-  MIN_      = create(Date::MIN);
-  MISSING_  = create(Date::MISSING);
-  dict->SetItemString("INVALID",    INVALID_);
-  dict->SetItemString("LAST",       LAST_);
-  dict->SetItemString("MAX",        MAX_);
-  dict->SetItemString("MIN",        MIN_);
-  dict->SetItemString("MISSING",    MISSING_);
+  dict->SetItemString("INVALID" , create(Date::INVALID));
+  dict->SetItemString("LAST"    , create(Date::LAST));
+  dict->SetItemString("MAX"     , create(Date::MAX));
+  dict->SetItemString("MIN"     , create(Date::MIN));
+  dict->SetItemString("MISSING" , create(Date::MISSING));
 
   // Add the type to the module.
   module.add(&type_);
