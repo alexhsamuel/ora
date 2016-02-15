@@ -2,8 +2,6 @@
 
 ## Date
 
-- Split `DateParts` into {year, month, day, weekday}, `OrdinalDateParts`, and 
-  `WeekDateParts`
 - Make Date::MAX distinct from Date::INVALID.
 - Maybe make Month, Day, Ordinal one-indexed?
 - Split week date out of parts?
@@ -59,4 +57,11 @@
 # Misc
 
 - investigate why `cal` doesn't agree for older dates
+
+# Rejected
+
+- Split `DateParts` into {year, month, day, weekday}, `OrdinalDateParts`, and
+  `WeekDateParts`.  This doesn't work so well, because the date parts aren't so
+  big or expensive to compute, and separating them makes the formatting code
+  substantially more complicated.
 
