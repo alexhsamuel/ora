@@ -16,6 +16,7 @@ using namespace py;
 using std::experimental::optional;
 using std::make_unique;
 using std::string;
+using namespace std::literals;
 using std::unique_ptr;
 
 //------------------------------------------------------------------------------
@@ -208,10 +209,15 @@ ref<Unicode>
 PyDaytime<DAYTIME>::tp_repr(
   PyDaytime* const self)
 {
-  string type_name{self->ob_type->tp_name};
+  string full_name{self->ob_type->tp_name};
+  string type_name = full_name.substr(full_name.rfind('.') + 1);
+
+  auto const daytime = self->daytime_;
   return Unicode::from(
-    type_name.substr(type_name.rfind('.') + 1) 
-    + "(" + std::to_string(self->daytime_.get_daytick()) + ")");
+    type_name + (
+        daytime.is_invalid() ? ".INVALID"s
+      : daytime.is_missing() ? ".MISSING"s
+      : "("s + std::to_string(daytime.get_daytick()) + ")"));
 }
 
 
