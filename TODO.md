@@ -18,6 +18,7 @@
 
   - Rationalize C++ and Python APIs.
   - `from_week_date()` and `from_ordinal()` should accept single sequences
+  - `__repr__()` should return something reasonable
 
 - Consider and test invalid vs. exception date classes.
 - `__format__()` method and support
