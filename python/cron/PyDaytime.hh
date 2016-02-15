@@ -129,7 +129,7 @@ PyDaytime<DAYTIME>::add_to(
     pattern += ".";
     pattern += std::to_string(precision);
   }
-  pattern += "SZ";
+  pattern += "S";
   str_format_ = make_unique<cron::DaytimeFormat>(pattern);
 
   // Add in static data members.
