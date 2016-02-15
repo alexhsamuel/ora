@@ -31,6 +31,13 @@ StructSequenceType* get_daytime_parts_type();
 // Type class
 //------------------------------------------------------------------------------
 
+/**
+ * Template for a Python extension type wrapping a daytime class.
+ *
+ * 'DAYTIME' is the wrapped daytime class, an instance of DaytimeTemplate.
+ * Invoke add_to() to construct the type's PyTypeObject, ready it, and add it 
+ * to a module.
+ */
 template<typename DAYTIME>
 class PyDaytime
   : public ExtensionType
