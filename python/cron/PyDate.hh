@@ -455,7 +455,7 @@ PyDate<DATE>::method_from_parts(
   if (args->Length() == 1) {
     parts = cast<Sequence>(args->GetItem(0));
     if (parts->Length() < 3)
-      throw TypeError("parts must be a 3-element or longer sequence");
+      throw TypeError("parts must be a 3-element (or longer) sequence");
   }
   else if (args->Length() == 3)
     parts = args;

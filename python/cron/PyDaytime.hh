@@ -85,6 +85,9 @@ private:
   static PyNumberMethods tp_as_number_;
 
   // Methods.
+  static ref<Object> method_from_daytick        (PyTypeObject* type, Tuple* args, Dict* kw_args);
+  static ref<Object> method_from_parts          (PyTypeObject* type, Tuple* args, Dict* kw_args);
+  static ref<Object> method_from_ssm            (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static Methods<PyDaytime> tp_methods_;
 
   // Getsets.
@@ -263,9 +266,73 @@ PyDaytime<DAYTIME>::tp_as_number_ = {
 //------------------------------------------------------------------------------
 
 template<typename DAYTIME>
+ref<Object>
+PyDaytime<DAYTIME>::method_from_daytick(
+  PyTypeObject* const type,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] = {"daytick", nullptr};
+  cron::Daytick daytick;
+  static_assert(
+    sizeof(cron::Daytick) == sizeof(long), "daytick is not an long");
+  Arg::ParseTupleAndKeywords(args, kw_args, "k", arg_names, &daytick);
+
+  return create(Daytime::from_daytick(daytick), type);
+}
+
+
+template<typename DAYTIME>
+ref<Object>
+PyDaytime<DAYTIME>::method_from_parts(
+  PyTypeObject* const type,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  if (kw_args != nullptr)
+    throw TypeError("from_parts() takes no keyword arguments");
+
+  Sequence* parts;
+  // Accept either a single three-element sequence, or three args.
+  if (args->Length() == 1) {
+    parts = cast<Sequence>(args->GetItem(0));
+    if (parts->Length() < 3)
+      throw TypeError("parts must be a 3-element (or longer) sequence");
+  }
+  else if (args->Length() == 3)
+    parts = args;
+  else
+    throw TypeError("from_parts() takes one or three arguments");
+
+  long   const hour   = parts->GetItem(0)->long_value();
+  long   const minute = parts->GetItem(1)->long_value();
+  double const second = parts->GetItem(2)->double_value();
+  return create(Daytime::from_parts(hour, minute, second), type);
+}
+
+
+template<typename DAYTIME>
+ref<Object>
+PyDaytime<DAYTIME>::method_from_ssm(
+  PyTypeObject* const type,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] = {"ssm", nullptr};
+  cron::Ssm ssm;
+  Arg::ParseTupleAndKeywords(args, kw_args, "d", arg_names, &ssm);
+
+  return create(Daytime::from_ssm(ssm), type);
+}
+
+
+template<typename DAYTIME>
 Methods<PyDaytime<DAYTIME>>
 PyDaytime<DAYTIME>::tp_methods_
   = Methods<PyDaytime>()
+    .template add_class<method_from_daytick>        ("from_daytick")
+    .template add_class<method_from_parts>          ("from_parts")
+    .template add_class<method_from_ssm>            ("from_ssm")
   ;
 
 

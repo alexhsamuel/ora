@@ -15,6 +15,7 @@ namespace py {
 
 using std::experimental::optional;
 
+class Float;
 class Long;
 class Object;
 class Tuple;
@@ -343,9 +344,14 @@ public:
 
   ref<py::Long> Long(bool check=true);
   long long_value();
-
   /** If the object can be converted to a long, returns its value. */
   optional<long> maybe_long_value();
+
+  ref<py::Float> Float();
+  double double_value();
+  /** If the object can be converted to a long, returns its value. */
+  optional<double> maybe_double_value();
+
 
 };
 
@@ -827,6 +833,35 @@ Object::maybe_long_value()
   else {
     auto long_obj = ref<py::Long>::take(obj);
     return (long) *long_obj;
+  }
+}
+
+
+inline ref<Float>
+Object::Float()
+{
+  return ref<py::Float>::take(check_not_null(PyNumber_Float(this)));
+}
+
+
+inline double
+Object::double_value()
+{
+  return (double) *Float();
+}
+
+
+inline optional<double>
+Object::maybe_double_value()
+{
+  auto obj = PyNumber_Float(this);
+  if (obj == nullptr) {
+    Exception::Clear();
+    return {};
+  }
+  else {
+    auto float_obj = ref<py::Float>::take(obj);
+    return (double) *float_obj;
   }
 }
 

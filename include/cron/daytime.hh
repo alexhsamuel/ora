@@ -56,7 +56,7 @@ public:
 
   using Offset = typename TRAITS::Offset;
 
-  static Offset       constexpr DENOMINATOR = TRAITS::denominator;
+  static Offset      constexpr DENOMINATOR = TRAITS::denominator;
 
   static DaytimeTemplate const MIN;
   static DaytimeTemplate const LAST;
@@ -67,6 +67,7 @@ public:
 
   // Constructors
 
+  // FIXME: Get rid of this; use from_parts() instead.
   DaytimeTemplate(
     Hour hour, 
     Minute minute, 
@@ -89,6 +90,15 @@ public:
       in_interval(MIN.offset_, offset, MAX.offset_)
       ? offset
       : on_error<InvalidDaytimeError>());
+  }
+
+  static DaytimeTemplate
+  from_parts(
+    Hour const hour,
+    Minute const minute,
+    Second const second)
+  {
+    return DaytimeTemplate(hms_to_offset(hour, minute, second));
   }
 
   static DaytimeTemplate 
