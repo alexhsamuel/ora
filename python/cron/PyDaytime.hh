@@ -91,6 +91,14 @@ private:
   static Methods<PyDaytime> tp_methods_;
 
   // Getsets.
+  static ref<Object> get_daytick                (PyDaytime* self, void*);
+  static ref<Object> get_hour                   (PyDaytime* self, void*);
+  static ref<Object> get_invalid                (PyDaytime* self, void*);
+  static ref<Object> get_minute                 (PyDaytime* self, void*);
+  static ref<Object> get_missing                (PyDaytime* self, void*);
+  static ref<Object> get_second                 (PyDaytime* self, void*);
+  static ref<Object> get_ssm                    (PyDaytime* self, void*);
+  static ref<Object> get_valid                  (PyDaytime* self, void*);
   static GetSets<PyDaytime> tp_getsets_;
 
   /** Date format used to generate the repr.  */
@@ -307,6 +315,7 @@ PyDaytime<DAYTIME>::method_from_parts(
   long   const hour   = parts->GetItem(0)->long_value();
   long   const minute = parts->GetItem(1)->long_value();
   double const second = parts->GetItem(2)->double_value();
+  std::cerr << "second=" << second << "\n";
   return create(Daytime::from_parts(hour, minute, second), type);
 }
 
@@ -341,9 +350,98 @@ PyDaytime<DAYTIME>::tp_methods_
 //------------------------------------------------------------------------------
 
 template<typename DAYTIME>
+ref<Object>
+PyDaytime<DAYTIME>::get_daytick(
+  PyDaytime* self,
+  void* /* closure */)
+{
+  
+  return Long::FromUnsignedLong(self->daytime_.get_daytick());
+}
+
+
+template<typename DAYTIME>
+ref<Object>
+PyDaytime<DAYTIME>::get_hour(
+  PyDaytime* self,
+  void* /* closure */)
+{
+  return Long::FromLong(self->daytime_.get_parts().hour);
+}
+
+
+template<typename DAYTIME>
+ref<Object>
+PyDaytime<DAYTIME>::get_invalid(
+  PyDaytime* self,
+  void* /* closure */)
+{
+  return Bool::from(self->daytime_.is_invalid());
+}
+
+
+template<typename DAYTIME>
+ref<Object>
+PyDaytime<DAYTIME>::get_minute(
+  PyDaytime* self,
+  void* /* closure */)
+{
+  return Long::FromLong(self->daytime_.get_parts().minute);
+}
+
+
+template<typename DAYTIME>
+ref<Object>
+PyDaytime<DAYTIME>::get_missing(
+  PyDaytime* self,
+  void* /* closure */)
+{
+  return Bool::from(self->daytime_.is_missing());
+}
+
+
+template<typename DAYTIME>
+ref<Object>
+PyDaytime<DAYTIME>::get_second(
+  PyDaytime* self,
+  void* /* closure */)
+{
+  return Float::FromDouble(self->daytime_.get_parts().second);
+}
+
+
+template<typename DAYTIME>
+ref<Object>
+PyDaytime<DAYTIME>::get_ssm(
+  PyDaytime* self,
+  void* /* closure */)
+{
+  return Float::FromDouble(self->daytime_.get_ssm());
+}
+
+
+template<typename DAYTIME>
+ref<Object>
+PyDaytime<DAYTIME>::get_valid(
+  PyDaytime* self,
+  void* /* closure */)
+{
+  return Bool::from(self->daytime_.is_valid());
+}
+
+
+template<typename DAYTIME>
 GetSets<PyDaytime<DAYTIME>>
 PyDaytime<DAYTIME>::tp_getsets_ 
   = GetSets<PyDaytime>()
+    .template add_get<get_daytick>              ("daytick")
+    .template add_get<get_hour>                 ("hour")
+    .template add_get<get_invalid>              ("invalid")
+    .template add_get<get_minute>               ("minute")
+    .template add_get<get_missing>              ("missing")
+    .template add_get<get_second>               ("second")
+    .template add_get<get_ssm>                  ("ssm")
+    .template add_get<get_valid>                ("valid")
   ;
 
 

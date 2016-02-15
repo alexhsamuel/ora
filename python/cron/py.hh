@@ -496,6 +496,8 @@ public:
     { return PyLong_Check(obj); }
   static auto FromLong(long val)
     { return ref<Long>::take(PyLong_FromLong(val)); }
+  static auto FromUnsignedLong(unsigned long val)
+    { return ref<Long>::take(PyLong_FromUnsignedLong(val)); }
 
   operator long()
     { return PyLong_AsLong(this); }
