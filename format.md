@@ -6,7 +6,7 @@ the format of dates and times.
 The following format codes are supported for dates and times:
 
 | Code | Expansion |
-|:----:|:---------:|
+|:----:|:----------|
 | `b` | the month name |
 | `d` | the one-indexed day of the month |
 | `D` | (not implemented) |
@@ -23,7 +23,7 @@ The following format codes are supported for dates and times:
 The following format codes are supported for daytimes and times:
 
 | Code | Expansion |
-|:----:|:---------:|
+|:----:|:----------|
 | `h` | the 12-hour hour number |
 | `H` | the 24-hour hour number |
 | `k` | ms, i.e. the truncated first three fractional digits of seconds |
@@ -38,7 +38,7 @@ The following format codes are supported for daytimes and times:
 The following format codes are supported for times only:
 
 | Code | Expansion |
-|:----:|:---------:|
+|:----:|:----------|
 | `o` | the total signed time zone offset in seconds |
 | `q` | the minutes part of the time zone offset |
 | `Q` | the hours part of the time zone offset |
