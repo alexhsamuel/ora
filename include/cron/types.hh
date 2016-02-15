@@ -156,6 +156,9 @@ TimeOffset constexpr TIME_OFFSET_INVALID = std::numeric_limits<TimeOffset>::max(
 
 //------------------------------------------------------------------------------
 
+// FIXME: Pack fields better such that this fits in 64 bits.  For instance,
+// encode week_year as a delta from year, and stuff that into the week.
+
 struct DateParts
 {
   Year      year;
@@ -166,12 +169,8 @@ struct DateParts
   Week      week;
   Weekday   weekday;
 
-  static DateParts const& 
-  get_invalid()
-  {
-    static DateParts const parts{YEAR_INVALID, MONTH_INVALID, DAY_INVALID, ORDINAL_INVALID, YEAR_INVALID, WEEK_INVALID, WEEKDAY_INVALID}; 
-    return parts;
-  }
+  static DateParts get_invalid()
+    { return {YEAR_INVALID, MONTH_INVALID, DAY_INVALID, ORDINAL_INVALID, YEAR_INVALID, WEEK_INVALID, WEEKDAY_INVALID}; }
 
 };
 
@@ -182,12 +181,8 @@ struct DaytimeParts
   Minute    minute;
   Second    second;
 
-  static DaytimeParts const&
-  get_invalid()
-  {
-    static DaytimeParts const parts{HOUR_INVALID, MINUTE_INVALID, SECOND_INVALID};
-    return parts;
-  }
+  static DaytimeParts get_invalid()
+    { return {HOUR_INVALID, MINUTE_INVALID, SECOND_INVALID}; }
 
 };
 
@@ -198,12 +193,8 @@ struct TimeZoneParts
   char abbreviation[7];  // FIXME: ?!
   bool is_dst;
 
-  static TimeZoneParts const&
-  get_invalid()
-  {
-    static TimeZoneParts const parts{TIME_ZONE_OFFSET_INVALID, "?TZ", false};
-    return parts;
-  }
+  static TimeZoneParts get_invalid()
+    { return TimeZoneParts{TIME_ZONE_OFFSET_INVALID, "?TZ", false}; }
 
 };
 
@@ -214,16 +205,9 @@ struct TimeParts
   DaytimeParts daytime;
   TimeZoneParts time_zone;
 
-  static TimeParts const&
-  get_invalid()
-  {
-    static TimeParts parts;
-    // FIXME: Don't reinitialize every time!
-    parts.date      = DateParts::get_invalid();
-    parts.daytime   = DaytimeParts::get_invalid();
-    parts.time_zone = TimeZoneParts::get_invalid();
-    return parts;
-  }
+  static TimeParts get_invalid()
+    { return {DateParts::get_invalid(), DaytimeParts::get_invalid(), TimeZoneParts::get_invalid()}; }
+
 };
 
 
