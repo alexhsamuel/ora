@@ -10,6 +10,45 @@ from   util import *
 
 #-------------------------------------------------------------------------------
 
+def test_init0():
+    a = Daytime()
+    assert not a.valid
+
+
+def test_init1():
+    a0 = Daytime.from_daytick(0)
+    a1 = Daytime(a0)
+    assert a1.daytick    == 0
+
+    a0 = Daytime.from_daytick(1234567890)
+    a1 = Daytime(a0)
+    assert a1.daytick    == 1234567890
+
+
+@pytest.mark.xfail
+def test_init_from_time():
+    t = datetime.time(0)
+    a = Daytime(t)
+    assert a.hour       ==  0
+    assert a.minute     ==  0
+    assert a.second     ==  0
+    assert a.valid
+    
+    t = datetime.time(12, 34, 56, 789012)
+    a = Daytime(t)
+    assert a.hour       == 12
+    assert a.minute     == 34
+    assert a.second     == 56.7890123
+    assert a.valid
+    
+    t = datetime.time(23, 59, 59, 999999)
+    a = Daytime(t)
+    assert a.hour       == 23
+    assert a.minute     == 59
+    assert a.second     == 59.999999
+    assert a.valid
+    
+
 def test_from_daytick0():
     a = Daytime.from_daytick(0)
     assert a.hour       ==  0

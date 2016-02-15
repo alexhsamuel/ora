@@ -32,7 +32,7 @@ ref<Object> get_month_obj(int month);
 ref<Object> get_weekday_obj(int weekday);
 
 template<typename DATE> optional<DATE> convert_date_object(Object*);
-template<typename DATE> optional<DATE> convert_object(Object*);
+template<typename DATE> optional<DATE> convert_object_to_date(Object*);
 
 //------------------------------------------------------------------------------
 // Type class
@@ -383,7 +383,7 @@ PyDate<DATE>::method_convert(
   if (kw_args != nullptr)
     throw TypeError("convert() takes no keyword arguments");
 
-  auto date = convert_object<Date>(obj);
+  auto date = convert_object_to_date<Date>(obj);
   if (date)
     return create(*date, type);
   else
@@ -846,7 +846,7 @@ convert_date_object(
  */
 template<typename DATE>
 inline optional<DATE>
-convert_object(
+convert_object_to_date(
   Object* const obj)
 {
   // Try to convert various date objects.

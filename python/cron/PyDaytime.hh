@@ -25,8 +25,8 @@ using std::unique_ptr;
 
 StructSequenceType* get_daytime_parts_type();
 
-// template<typename DAYTIME> optional<DAYTIME> convert_object(Object*);
 template<typename DAYTIME> optional<DAYTIME> convert_daytime_object(Object*);
+template<typename DAYTIME> optional<DAYTIME> convert_object_to_daytime(Object*);
 
 //------------------------------------------------------------------------------
 // Type class
@@ -87,6 +87,7 @@ private:
   static PyNumberMethods tp_as_number_;
 
   // Methods.
+  static ref<Object> method_convert             (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_daytick        (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_parts          (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_ssm            (PyTypeObject* type, Tuple* args, Dict* kw_args);
@@ -319,6 +320,28 @@ PyDaytime<DAYTIME>::tp_as_number_ = {
 
 template<typename DAYTIME>
 ref<Object>
+PyDaytime<DAYTIME>::method_convert(
+  PyTypeObject* const type,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  if (args->Length() != 1)
+    throw TypeError("from() takes one argument");
+  Object* const obj = args->GetItem(0);
+  if (kw_args != nullptr)
+    throw TypeError("convert() takes no keyword arguments");
+
+  auto daytime = convert_object_to_daytime<Daytime>(obj);
+  if (daytime)
+    return create(*daytime, type);
+  else
+    // FIXME: Return INVALID instead?
+    throw TypeError("cannot convert to daytime");
+}
+
+
+template<typename DAYTIME>
+ref<Object>
 PyDaytime<DAYTIME>::method_from_daytick(
   PyTypeObject* const type,
   Tuple* const args,
@@ -399,6 +422,7 @@ template<typename DAYTIME>
 Methods<PyDaytime<DAYTIME>>
 PyDaytime<DAYTIME>::tp_methods_
   = Methods<PyDaytime>()
+    .template add_class<method_convert>             ("convert")
     .template add_class<method_from_daytick>        ("from_daytick")
     .template add_class<method_from_parts>          ("from_parts")
     .template add_class<method_from_ssm>            ("from_ssm")
@@ -625,6 +649,46 @@ convert_daytime_object(
   // FIXME: Convert from datetime.time, somehow.
 
   // No type match.
+  return {};
+}
+
+
+/**
+ * Attempts to convert various kinds of Python objects to Daytime.
+ *
+ * If 'obj' can be converted unambiguously to a daytime, returns it.  Otherwise,
+ * returns a null option with no exception set.
+ */
+template<typename DAYTIME>
+inline optional<DAYTIME>
+convert_object_to_daytime(
+  Object* const obj)
+{
+  // Try to convert various daytime objects.
+  auto opt = convert_daytime_object<DAYTIME>(obj);
+  if (opt)
+    return opt;
+
+  if (Sequence::Check(obj)) {
+    auto seq = static_cast<Sequence*>(obj);
+    if (seq->Length() == 2 || seq->Length() == 3) {
+      // Interpret a two- or three-element sequence as parts.
+      long   const hour     = seq->GetItem(0)->long_value();
+      long   const minute   = seq->GetItem(1)->long_value();
+      double const second   = seq->Length() > 2 ? seq->GetItem(2)->double_value() : 0;
+      return DAYTIME::from_parts(hour, minute, second);
+    }
+  }
+
+  auto const double_opt = obj->maybe_double_value();
+  if (double_opt) {
+    // Interpret as SSM.
+    return DAYTIME::from_ssm(*double_opt);
+  }
+      
+  // FIXME: Parse strings.
+
+  // Failed to convert.
   return {};
 }
 
