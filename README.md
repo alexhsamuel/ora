@@ -1,4 +1,19 @@
-## Comparison with `std::chrono`
+# Setup
+
+To run tests, build Google's gtest (one time only):
+
+```sh
+cd test/gtest
+make getst_main.a
+```
+
+To unpack the time zone data (one time only):
+
+```
+make zoneinfo
+```
+
+# Comparison with `std::chrono`
 
 - chrono splits out the duration from the epoch
 - chrono uses a nice `ratio` class.
