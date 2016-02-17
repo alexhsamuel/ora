@@ -224,6 +224,45 @@ private:
 };
 
 
+template<class TRAITS>
+inline DaytimeTemplate<TRAITS>
+operator+(
+  DaytimeTemplate<TRAITS> const daytime,
+  double const shift)
+{
+  return 
+      daytime.is_invalid() || daytime.is_missing() ? daytime
+    : DaytimeTemplate<TRAITS>::from_offset(
+        (daytime.get_offset() 
+         + (typename TRAITS::Offset) round(shift * TRAITS::denominator))
+        % (SECS_PER_DAY * TRAITS::denominator));
+}
+
+
+template<class TRAITS>
+inline DaytimeTemplate<TRAITS>
+operator-(
+  DaytimeTemplate<TRAITS> const daytime,
+  double shift)
+{
+  typedef typename DaytimeTemplate<TRAITS>::Offset Offset;
+  auto const denominator = DaytimeTemplate<TRAITS>::DENOMINATOR;
+
+  while (shift > SECS_PER_DAY)
+    shift = fmod(shift, SECS_PER_DAY);
+
+  if (daytime.is_invalid() || daytime.is_missing())
+    return daytime;
+  else {
+    auto shift_offset = (Offset) round(shift * denominator);
+    return DaytimeTemplate<TRAITS>::from_offset(
+        daytime.get_offset() > shift_offset
+      ? daytime.get_offset() - shift_offset
+      : SECS_PER_DAY * denominator + daytime.get_offset() - shift_offset);
+  }
+}
+
+
 //------------------------------------------------------------------------------
 // Static attributes
 //------------------------------------------------------------------------------

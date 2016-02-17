@@ -1,4 +1,5 @@
 #pragma once
+#pragma GCC diagnostic ignored "-Wparentheses"
 
 #include <cmath>
 #include <experimental/optional>
@@ -84,6 +85,8 @@ private:
   static ref<Object> tp_richcompare(PyDaytime* self, Object* other, int comparison);
 
   // Number methods.
+  static ref<Object> nb_add     (PyDaytime* self, Object* other, bool right);
+  static ref<Object> nb_subtract(PyDaytime* self, Object* other, bool right);
   static PyNumberMethods tp_as_number_;
 
   // Methods.
@@ -271,10 +274,56 @@ PyDaytime<DAYTIME>::tp_richcompare(
 //------------------------------------------------------------------------------
 
 template<typename DAYTIME>
+inline ref<Object>
+PyDaytime<DAYTIME>::nb_add(
+  PyDaytime* const self,
+  Object* const other,
+  bool /* ignored */)
+{
+  auto shift = other->maybe_double_value();
+  if (shift)
+    return 
+      *shift == 0 ? ref<PyDaytime>::of(self)
+      : create(self->daytime_ + *shift, self->ob_type);
+  else
+    return not_implemented_ref();
+}
+
+
+template<typename DAYTIME>
+inline ref<Object>
+PyDaytime<DAYTIME>::nb_subtract(
+  PyDaytime* const self,
+  Object* const other,
+  bool right)
+{
+  if (right) 
+    return not_implemented_ref();
+  else {
+    auto daytime = self->daytime_;
+    auto other_daytime = convert_daytime_object<DAYTIME>(other);
+    if (other_daytime) 
+      if (daytime.is_valid() && other_daytime->is_valid())
+        return Float::FromDouble(daytime.get_ssm() - other_daytime->get_ssm());
+      else
+        return none_ref();
+
+    auto shift = other->maybe_double_value();
+    if (shift)
+      return 
+        *shift == 0 ? ref<PyDaytime>::of(self)
+        : create(daytime - *shift, self->ob_type);
+
+    return not_implemented_ref();
+  }
+}
+
+
+template<typename DAYTIME>
 PyNumberMethods
 PyDaytime<DAYTIME>::tp_as_number_ = {
-  (binaryfunc)  nullptr,                        // nb_add
-  (binaryfunc)  nullptr,                        // nb_subtract
+  (binaryfunc)  wrap<PyDaytime, nb_add>,        // nb_add
+  (binaryfunc)  wrap<PyDaytime, nb_subtract>,   // nb_subtract
   (binaryfunc)  nullptr,                        // nb_multiply
   (binaryfunc)  nullptr,                        // nb_remainder
   (binaryfunc)  nullptr,                        // nb_divmod

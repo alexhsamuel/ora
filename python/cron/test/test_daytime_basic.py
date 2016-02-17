@@ -10,6 +10,14 @@ from   util import *
 
 #-------------------------------------------------------------------------------
 
+def near(a0, a1):
+    return (
+           a0.is_same(a1)
+        or (a0.valid and a1.valid and abs(a0.ssm - a1.ssm) % 86400 < 1e-6)
+    )
+
+#-------------------------------------------------------------------------------
+
 def test_init0():
     a = Daytime()
     assert not a.valid
@@ -294,3 +302,68 @@ def test_max():
     assert not a2.is_same(Daytime.MAX)
 
 
+def test_add0():
+    a = Daytime.from_parts( 0,  0,  0)
+    assert a +      1 == Daytime.from_parts( 0,  0,  1)
+    assert a +     10 == Daytime.from_parts( 0,  0, 10)
+    assert a +    100 == Daytime.from_parts( 0,  1, 40)
+    assert a +   1000 == Daytime.from_parts( 0, 16, 40)
+    assert a +  10000 == Daytime.from_parts( 2, 46, 40)
+    assert a + 100000 == Daytime.from_parts( 3, 46, 40)
+
+
+def test_add1():
+    a = Daytime.from_parts(23, 50, 30)
+    assert a +      1 == Daytime.from_parts(23, 50, 31)
+    assert a +    100 == Daytime.from_parts(23, 52, 10)
+    assert a +  10000 == Daytime.from_parts( 2, 37, 10)
+
+
+def test_add2():
+    a = Daytime.from_parts(23, 59, 59.999)
+    assert near(a + 0.0001, Daytime.from_parts(23, 59, 59.9991))
+    assert near(a + 0.0005, Daytime.from_parts(23, 59, 59.9995))
+    assert near(a + 0.0010, Daytime.from_parts( 0,  0,  0.0000))
+    assert near(a + 0.0100, Daytime.from_parts( 0,  0,  0.0090))
+    assert near(a + 1     , Daytime.from_parts( 0,  0,  0.9990))
+
+
+def test_subtract0():
+    a = Daytime.from_parts( 0,  0,  0)
+    assert a -      1 == Daytime.from_parts(23, 59, 59)
+    assert a -     10 == Daytime.from_parts(23, 59, 50)
+    assert a -    100 == Daytime.from_parts(23, 58, 20)
+    assert a -   1000 == Daytime.from_parts(23, 43, 20)
+    assert a -  10000 == Daytime.from_parts(21, 13, 20)
+    assert a - 100000 == Daytime.from_parts(20, 13, 20)
+
+
+def test_subtract1():
+    a = Daytime.from_parts(23, 50, 30)
+    assert a -      1 == Daytime.from_parts(23, 50, 29)
+    assert a -    100 == Daytime.from_parts(23, 48, 50)
+    assert a -  10000 == Daytime.from_parts(21,  3, 50)
+
+
+def test_subtract2():
+    a = Daytime.from_parts(23, 59, 59.999)
+    assert near(a - 0.0001, Daytime.from_parts(23, 59, 59.9989))
+    assert near(a - 0.0005, Daytime.from_parts(23, 59, 59.9985))
+    assert near(a - 0.0010, Daytime.from_parts(23, 59, 59.9980))
+    assert near(a - 0.0100, Daytime.from_parts(23, 59, 59.9890))
+    assert near(a - 1     , Daytime.from_parts(23, 59, 58.9990))
+    
+
+def test_difference():
+    assert Daytime.MIN - Daytime.MIN == 0
+    assert 84399.999999 < Daytime.LAST - Daytime.MIN <= 86400
+
+    a0 = Daytime.from_parts(3, 4, 5)
+    a1 = Daytime.from_parts(4, 5, 6)
+    assert a0 - Daytime.MIN == a0.ssm
+    assert a1 - Daytime.MIN == a1.ssm
+
+    assert a0 - a0 ==     0
+    assert a0 - a1 == -3661
+    assert a1 - a0 ==  3661
+    assert a1 - a1 ==     0
