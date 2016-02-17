@@ -478,6 +478,7 @@ typedef DateTemplate<SmallDateTraits> SmallDate;
 // Functions.
 //------------------------------------------------------------------------------
 
+// FIXME: Use operator+() and operator-() instead.
 template<class TRAITS> 
 extern inline DateTemplate<TRAITS> 
 shift(
