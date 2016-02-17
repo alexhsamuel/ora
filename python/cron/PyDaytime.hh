@@ -234,7 +234,6 @@ ref<Unicode>
 PyDaytime<DAYTIME>::tp_str(
   PyDaytime* const self)
 {
-  // FIXME: Not UTC?
   return Unicode::from((*str_format_)(self->daytime_));  
 }
 
