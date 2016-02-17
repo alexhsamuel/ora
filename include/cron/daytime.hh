@@ -230,12 +230,15 @@ operator+(
   DaytimeTemplate<TRAITS> const daytime,
   double const shift)
 {
-  return 
-      daytime.is_invalid() || daytime.is_missing() ? daytime
-    : DaytimeTemplate<TRAITS>::from_offset(
-        (daytime.get_offset() 
-         + (typename TRAITS::Offset) round(shift * TRAITS::denominator))
-        % (SECS_PER_DAY * TRAITS::denominator));
+  typedef DaytimeTemplate<TRAITS> Daytime;
+
+  if (daytime.is_invalid() || daytime.is_missing())
+    return daytime;
+  else {
+    auto offset = daytime.get_offset();
+    offset += round(shift * Daytime::DENOMINATOR);
+    return Daytime::from_offset(offset % (SECS_PER_DAY * Daytime::DENOMINATOR));
+  }
 }
 
 
@@ -245,20 +248,22 @@ operator-(
   DaytimeTemplate<TRAITS> const daytime,
   double shift)
 {
-  typedef typename DaytimeTemplate<TRAITS>::Offset Offset;
-  auto const denominator = DaytimeTemplate<TRAITS>::DENOMINATOR;
+  typedef DaytimeTemplate<TRAITS> Daytime;
 
-  while (shift > SECS_PER_DAY)
+  if (shift > SECS_PER_DAY)
     shift = fmod(shift, SECS_PER_DAY);
 
   if (daytime.is_invalid() || daytime.is_missing())
     return daytime;
   else {
-    auto shift_offset = (Offset) round(shift * denominator);
-    return DaytimeTemplate<TRAITS>::from_offset(
-        daytime.get_offset() > shift_offset
-      ? daytime.get_offset() - shift_offset
-      : SECS_PER_DAY * denominator + daytime.get_offset() - shift_offset);
+    auto shift_offset = 
+      (typename Daytime::Offset) round(shift * Daytime::DENOMINATOR);
+    auto offset = daytime.get_offset();
+    // Avoid a negative result.
+    if (offset < shift_offset)
+      offset += SECS_PER_DAY * Daytime::DENOMINATOR;
+    offset -= shift_offset;
+    return Daytime::from_offset(offset);
   }
 }
 
