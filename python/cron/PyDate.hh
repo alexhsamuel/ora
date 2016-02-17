@@ -92,7 +92,7 @@ private:
   static ref<Object> tp_richcompare(PyDate* self, Object* other, int comparison);
 
   // Number methods.
-  static ref<Object> nb_add(PyDate* self, Object* other, bool right);
+  static ref<Object> nb_add     (PyDate* self, Object* other, bool right);
   static ref<Object> nb_subtract(PyDate* self, Object* other, bool right);
   static PyNumberMethods tp_as_number_;
 
