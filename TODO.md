@@ -12,6 +12,8 @@
 
 ## PyDate
 
+- Parsing strings.
+
 - Make Date::MAX distinct from Date::INVALID.
 
 - API
