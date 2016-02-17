@@ -485,8 +485,7 @@ shift(
   ssize_t shift)
 {
   return 
-      date.is_invalid() ? DateTemplate<TRAITS>::INVALID
-    : date.is_missing() ? DateTemplate<TRAITS>::MISSING
+      date.is_invalid() || date.is_missing() ? date
     : DateTemplate<TRAITS>::from_offset(date.get_offset() + shift);
 }
 
