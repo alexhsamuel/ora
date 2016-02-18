@@ -4,3 +4,4 @@
 *.a
 tmp/
 share/
+cfg.sh
