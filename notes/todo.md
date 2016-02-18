@@ -12,7 +12,7 @@
 
 ## PyDate
 
-- Parsing strings.
+- parsing strings
 
 - Make Date::MAX distinct from Date::INVALID.
 
@@ -32,6 +32,13 @@
 
 ## PyDaytime
 
+- Core type:
+
+    - conversion from other `Daytime`, including the `tp_print` hack
+    - conversion from `datetime.time`
+
+- parsing strings
+
 ## Formatting
 
 ...?
@@ -48,6 +55,7 @@
 
 # Infrastructure / tech debt
 
+- remove `tp_print` hack and replace with a type registration scheme
 - clean up namespaces
 - make Object be an interface-only type; inherit concrete types from PyObject
 - figure out how to point at our zoneinfo dir by default in C++ code
@@ -58,6 +66,7 @@
 
 # Misc
 
+- put back `from_parts()` overloading in date, time, daytime ctors?
 - investigate why `cal` doesn't agree for older dates
 
 # Rejected
