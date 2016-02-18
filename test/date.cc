@@ -52,7 +52,7 @@ TEST(Date, offsets) {
 
 TEST(Date, shift) {
   Date const date0 = Date::from_parts(1973, 11, 2);
-  Date const date1 = shift(date0, 1);
+  Date const date1 = date0 + 1;
   DateParts const parts1 = date1.get_parts();
   EXPECT_EQ(parts1.year, 1973);
   EXPECT_EQ(parts1.month, 11);
@@ -103,10 +103,11 @@ TEST(Date, invalid) {
   EXPECT_FALSE(Date::from_parts(1000,  0,   1).is_invalid());
   EXPECT_TRUE (Date::from_parts(1970, 12,   1).is_invalid());
   EXPECT_TRUE (Date::from_parts(64000, 0,   1).is_invalid());
-  EXPECT_TRUE (shift(Date::MIN,       -1).is_invalid());
-  EXPECT_TRUE (shift(Date::LAST,       1).is_invalid());
-  EXPECT_TRUE (shift(Date::LAST,   10000).is_invalid());
-  EXPECT_TRUE (shift(Date::LAST, 1000000).is_invalid());
+  EXPECT_TRUE ((Date::MIN  -       1).is_invalid());
+  EXPECT_TRUE ((Date::MIN  +      -1).is_invalid());
+  EXPECT_TRUE ((Date::LAST +       1).is_invalid());
+  EXPECT_TRUE ((Date::LAST +   10000).is_invalid());
+  EXPECT_TRUE ((Date::LAST + 1000000).is_invalid());
 }
 
 TEST(Date, invalid_parts) {
@@ -203,10 +204,11 @@ TEST(SafeDate, invalid) {
   EXPECT_THROW   (SafeDate::from_parts(64000, 0,   1), ValueError);
   EXPECT_THROW   (SafeDate date(Date::INVALID), ValueError);
   EXPECT_THROW   (SafeDate date(Date::MISSING), ValueError);
-  EXPECT_THROW   (shift(SafeDate::MIN, -1),                ValueError);
-  EXPECT_THROW   (shift(SafeDate::LAST, 1),                ValueError);
-  EXPECT_THROW   (shift(SafeDate::LAST, 10000),            ValueError);
-  EXPECT_THROW   (shift(SafeDate::LAST, 1000000),          ValueError);
+  EXPECT_THROW   (SafeDate::MIN  -       1,            ValueError);
+  EXPECT_THROW   (SafeDate::MIN  +      -1,            ValueError);
+  EXPECT_THROW   (SafeDate::LAST +       1,            ValueError);
+  EXPECT_THROW   (SafeDate::LAST +   10000,            ValueError);
+  EXPECT_THROW   (SafeDate::LAST + 1000000,            ValueError);
 }
 
 //------------------------------------------------------------------------------

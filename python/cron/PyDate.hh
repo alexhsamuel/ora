@@ -286,7 +286,7 @@ PyDate<DATE>::nb_add(
   if (offset)
     return 
       *offset == 0 ? ref<PyDate>::of(self)
-      : create(shift(self->date_, *offset), self->ob_type);
+      : create(self->date_ + *offset, self->ob_type);
   else
     return not_implemented_ref();
 }
@@ -315,7 +315,7 @@ PyDate<DATE>::nb_subtract(
     if (offset)
       return 
         *offset == 0 ? ref<PyDate>::of(self)
-        : create(shift(date, -*offset), self->ob_type);
+        : create(date - *offset, self->ob_type);
 
     return not_implemented_ref();
   }

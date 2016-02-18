@@ -478,16 +478,27 @@ typedef DateTemplate<SmallDateTraits> SmallDate;
 // Functions.
 //------------------------------------------------------------------------------
 
-// FIXME: Use operator+() and operator-() instead.
 template<class TRAITS> 
 extern inline DateTemplate<TRAITS> 
-shift(
+operator+(
   DateTemplate<TRAITS> date, 
-  ssize_t shift)
+  signed int shift)
 {
   return 
       date.is_invalid() || date.is_missing() ? date
     : DateTemplate<TRAITS>::from_offset(date.get_offset() + shift);
+}
+
+
+template<class TRAITS> 
+extern inline DateTemplate<TRAITS> 
+operator-(
+  DateTemplate<TRAITS> date, 
+  signed int shift)
+{
+  return 
+      date.is_invalid() || date.is_missing() ? date
+    : DateTemplate<TRAITS>::from_offset(date.get_offset() - shift);
 }
 
 
@@ -507,14 +518,12 @@ operator-(
 }
 
 
-template<class TRAITS> DateTemplate<TRAITS> operator+ (DateTemplate<TRAITS> date, ssize_t days) { return shift(date,  days); }
-template<class TRAITS> DateTemplate<TRAITS> operator+=(DateTemplate<TRAITS>& date, ssize_t days) { return date = shift(date,  days); }
-template<class TRAITS> DateTemplate<TRAITS> operator++(DateTemplate<TRAITS>& date) { return date = shift(date, 1); }
-template<class TRAITS> DateTemplate<TRAITS> operator++(DateTemplate<TRAITS>& date, int) { auto old = date; date = shift(date, 1); return old; }
-template<class TRAITS> DateTemplate<TRAITS> operator- (DateTemplate<TRAITS> date, ssize_t days) { return shift(date, -days); }
-template<class TRAITS> DateTemplate<TRAITS> operator-=(DateTemplate<TRAITS>& date, ssize_t days) { return date = shift(date, -days); }
-template<class TRAITS> DateTemplate<TRAITS> operator--(DateTemplate<TRAITS>& date) { return date = shift(date, -1); }
-template<class TRAITS> DateTemplate<TRAITS> operator--(DateTemplate<TRAITS>& date, int) { auto old = date; date = shift(date, -1); return old; }
+template<class TRAITS> DateTemplate<TRAITS> operator+=(DateTemplate<TRAITS>& date, ssize_t days) { return date = date + days; }
+template<class TRAITS> DateTemplate<TRAITS> operator++(DateTemplate<TRAITS>& date) { return date = date + 1; }
+template<class TRAITS> DateTemplate<TRAITS> operator++(DateTemplate<TRAITS>& date, int) { auto old = date; date = date + 1; return old; }
+template<class TRAITS> DateTemplate<TRAITS> operator-=(DateTemplate<TRAITS>& date, ssize_t days) { return date = date -days; }
+template<class TRAITS> DateTemplate<TRAITS> operator--(DateTemplate<TRAITS>& date) { return date = date - 1; }
+template<class TRAITS> DateTemplate<TRAITS> operator--(DateTemplate<TRAITS>& date, int) { auto old = date; date = date  -1; return old; }
 
 // FIXME: Use DateFormat.
 extern DateParts iso_parse(std::string const& text);  
