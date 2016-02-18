@@ -1,0 +1,32 @@
+C++ Date:
+
+  Date(offset)                          // private
+  from_offset(Offset)                   // public but internal
+
+  Date()                                // default; invalid
+  Date(Date const&)                     // copy
+  Date(Date<> const&)                   // copy conversion
+
+  from_datenum(Datenum)
+  from_ordinal_date(Year, Ordinal)
+  from_parts(Year, Month, Day)
+  from_parts(DateParts const&)
+  from_week_date(Year, Week, Weekday)
+  from_ymdi(int)
+
+
+Python Date:
+
+  Date()                                # default; invalid
+  Date(date)                            # any date-like object
+
+  from_datenum(datenum)
+  from_ordinal_date(year, ordinal)
+  from_parts(year, month, day)
+  from_parts((year, month, day))
+  from_week_date(year, week, weekday)
+  from_ymdi(ymdi)
+
+  convert(obj)                          # sloppy conversion
+
+
