@@ -34,7 +34,6 @@
 
 - Core type:
 
-    - conversion from other `Daytime`, including the `tp_print` hack
     - conversion from `datetime.time`
 
 - parsing strings
@@ -55,7 +54,8 @@
 
 # Infrastructure / tech debt
 
-- remove `tp_print` hack and replace with a type registration scheme
+- remove `tp_print` hack from `PyDate` and replace with a type registration
+  scheme 
 - clean up namespaces
 - make Object be an interface-only type; inherit concrete types from PyObject
 - figure out how to point at our zoneinfo dir by default in C++ code
