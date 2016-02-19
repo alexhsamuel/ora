@@ -607,25 +607,6 @@ PyDaytime<DAYTIME>::str_format_;
 // Type object
 //------------------------------------------------------------------------------
 
-namespace {
-
-/**
- * Assuming 'obj' is a PyDaytime<DAYTIME>, return its dayticks.
- *
- * Used for the tp_print hack in 'build_type()' below.
- */
-template<typename DAYTIME>
-cron::Daytick
-_get_daytick(
-  PyObject* obj)
-{
-  return static_cast<PyDaytime<DAYTIME>*>(obj)->daytime_.get_daytick();
-}
-
-
-}  // anonymous namespace
-
-
 template<typename DAYTIME>
 Type
 PyDaytime<DAYTIME>::build_type(
@@ -637,15 +618,10 @@ PyDaytime<DAYTIME>::build_type(
     (Py_ssize_t)          sizeof(PyDaytime),              // tp_basicsize
     (Py_ssize_t)          0,                              // tp_itemsize
     (destructor)          wrap<PyDaytime, tp_dealloc>,    // tp_dealloc
-    // FIXME: Hack!  We'd like to provide a way for any PyDaytime instance to
-    // return its daytick, for efficient manipulation by other PyDaytime
-    // instances, without virtual methods.  PyTypeObject doesn't provide any
-    // slot for us to stash this, so we requisition the deprecated tp_print
-    // slot.  This may break in future Python versions, if that slot is reused.
-    (printfunc)           &_get_daytick<DAYTIME>,         // tp_print
+    (printfunc)           nullptr,                        // tp_print
     (getattrfunc)         nullptr,                        // tp_getattr
     (setattrfunc)         nullptr,                        // tp_setattr
-    (void*)               nullptr,                        // tp_reserved
+    (PyAsyncMethods*)     nullptr,                        // tp_reserved
     (reprfunc)            wrap<PyDaytime, tp_repr>,       // tp_repr
     (PyNumberMethods*)    &tp_as_number_,                 // tp_as_number
     (PySequenceMethods*)  nullptr,                        // tp_as_sequence
@@ -713,14 +689,6 @@ convert_daytime_object(
   if (PyDaytime<DAYTIME>::Check(obj))
     // Exact wrapped type.
     return static_cast<PyDaytime<DAYTIME>*>(obj)->daytime_;
-
-  if (obj->ob_type->tp_print != nullptr) {
-    // Each PyDaytime instantiation places the pointer to a function that
-    // returns its daytick into the tp_print slot; see `build_type()`.
-    auto const get_daytick
-      = reinterpret_cast<cron::Daytick (*)(Object*)>(obj->ob_type->tp_print);
-    return DAYTIME::from_daytick(get_daytick(obj));
-  }
 
   // Try for a daytime type that has a `daytick` attribute.
   auto daytick = obj->GetAttrString("daytick", false);

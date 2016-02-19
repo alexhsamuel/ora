@@ -741,7 +741,7 @@ PyDate<DATE>::build_type(
     (printfunc)           &_get_datenum<DATE>,            // tp_print
     (getattrfunc)         nullptr,                        // tp_getattr
     (setattrfunc)         nullptr,                        // tp_setattr
-    (void*)               nullptr,                        // tp_reserved
+    (PyAsyncMethods*)     nullptr,                        // tp_reserved
     (reprfunc)            wrap<PyDate, tp_repr>,          // tp_repr
     (PyNumberMethods*)    &tp_as_number_,                 // tp_as_number
     (PySequenceMethods*)  nullptr,                        // tp_as_sequence
