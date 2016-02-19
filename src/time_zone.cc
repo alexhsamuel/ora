@@ -304,8 +304,8 @@ get_system_time_zone_name_()
       assert(result < PATH_MAX);
       buf[result] = '\0';
 
-      // Look for a link target of the form .../zoneinfo/TIMEZONE, where
-      // TIMEZONE is either one or two path components.
+      // Look for a link target of the form .../zoneinfo/REGION/TIMEZONE or
+      // .../zoneinfo/TIMEZONE, where the prefix is arbitrary.
       fs::Filename const zone_filename = buf;
       auto const parts = get_parts(zone_filename);
       auto const zoneinfo_parts = fs::get_parts(get_zoneinfo_dir());
