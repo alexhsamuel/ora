@@ -226,8 +226,8 @@ TEST(SmallDate, range) {
 
   EXPECT_EQ(SmallDate::from_parts(1970, 0, 0), SmallDate::MIN);
   EXPECT_EQ("1970-01-01", (string) DateFormat::ISO_CALENDAR_EXTENDED(SmallDate::MIN));
-  EXPECT_EQ(SmallDate::from_parts(2149, 5, 3), SmallDate::LAST);
-  EXPECT_EQ("2149-06-04", (string) DateFormat::ISO_CALENDAR_EXTENDED(SmallDate::LAST));
+  EXPECT_EQ(SmallDate::from_parts(2149, 5, 2), SmallDate::LAST);
+  EXPECT_EQ("2149-06-03", (string) DateFormat::ISO_CALENDAR_EXTENDED(SmallDate::LAST));
 }
 
 TEST(SmallDate, is_valid) {

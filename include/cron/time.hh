@@ -347,10 +347,10 @@ struct TimeTraits
 
   static Datenum constexpr base         = 0; 
   static Offset  constexpr denominator  = (Offset) 1 << 26;
+  static Offset  constexpr invalid      = std::numeric_limits<Offset>::max();
+  static Offset  constexpr missing      = std::numeric_limits<Offset>::max() - 1;
   static Offset  constexpr min          = 0;
-  static Offset  constexpr max          = std::numeric_limits<Offset>::max() - 1;
-  static Offset  constexpr invalid      = max;
-  static Offset  constexpr missing      = max + 1;
+  static Offset  constexpr max          = std::numeric_limits<Offset>::max() - 2;
 
   static bool    constexpr use_invalid  = true;
 };
@@ -363,10 +363,10 @@ struct SmallTimeTraits
 
   static Datenum constexpr base         = DATENUM_UNIX_EPOCH; 
   static Offset  constexpr denominator  = 1;
+  static Offset  constexpr invalid      = std::numeric_limits<Offset>::max();
+  static Offset  constexpr missing      = std::numeric_limits<Offset>::max() - 1;
   static Offset  constexpr min          = 0;
-  static Offset  constexpr max          = std::numeric_limits<Offset>::max() - 1;
-  static Offset  constexpr invalid      = max;
-  static Offset  constexpr missing      = max + 1;
+  static Offset  constexpr max          = std::numeric_limits<Offset>::max() - 2;
 
   static bool    constexpr use_invalid  = true;
 };
@@ -379,10 +379,10 @@ struct NsecTimeTraits
 
   static Datenum constexpr base         = 255669;  // 1900-03-01
   static Offset  constexpr denominator  = (Offset) 1 << 30;
+  static Offset  constexpr invalid      = std::numeric_limits<Offset>::max();
+  static Offset  constexpr missing      = std::numeric_limits<Offset>::max() - 1;
   static Offset  constexpr min          = 0;
-  static Offset  constexpr max          = std::numeric_limits<Offset>::max() - 1;
-  static Offset  constexpr invalid      = max;
-  static Offset  constexpr missing      = max + 1;
+  static Offset  constexpr max          = std::numeric_limits<Offset>::max() - 2;
 
   static bool    constexpr use_invalid  = true;
 };
@@ -396,10 +396,10 @@ struct Unix32TimeTraits
 
   static Datenum constexpr base         = DATENUM_UNIX_EPOCH;
   static Offset  constexpr denominator  = 1;
+  static Offset  constexpr invalid      = std::numeric_limits<Offset>::max();
+  static Offset  constexpr missing      = std::numeric_limits<Offset>::max() - 1;
   static Offset  constexpr min          = std::numeric_limits<Offset>::min();
-  static Offset  constexpr max          = std::numeric_limits<Offset>::max() - 1;
-  static Offset  constexpr invalid      = max;
-  static Offset  constexpr missing      = max + 1;
+  static Offset  constexpr max          = std::numeric_limits<Offset>::max() - 2;
 
   static bool    constexpr use_invalid  = true;
 };
@@ -415,8 +415,8 @@ struct Unix64TimeTraits
   static Offset  constexpr denominator  = 1;
   static Offset  constexpr min          = -62135596800l;    // 0001-01-01
   static Offset  constexpr max          = 253402300800l;    // 9999-12-31
-  static Offset  constexpr invalid      = max;
-  static Offset  constexpr missing      = max + 1;
+  static Offset  constexpr invalid      = 253402300802l;
+  static Offset  constexpr missing      = 253402300801l;
 
   static bool    constexpr use_invalid  = true;
 };

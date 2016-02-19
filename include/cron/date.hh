@@ -431,8 +431,8 @@ struct DateTraits
   typedef uint32_t Offset;
 
   static Datenum constexpr base     =       0;
-  static Offset  constexpr invalid  = 3652060;
-  static Offset  constexpr missing  = 3652061;
+  static Offset  constexpr invalid  = std::numeric_limits<Offset>::max();
+  static Offset  constexpr missing  = std::numeric_limits<Offset>::max() - 1;
   static Offset  constexpr min      =       0;   //  0001-01-01.
   static Offset  constexpr max      = 3652059;   // 10000-01-01.
   static bool    constexpr use_invalid = true;
@@ -448,8 +448,8 @@ struct SafeDateTraits
   typedef uint32_t Offset;
 
   static Datenum constexpr base     =       0;
-  static Offset  constexpr invalid  = 3652060;
-  static Offset  constexpr missing  = 3652061;
+  static Offset  constexpr invalid  = std::numeric_limits<Offset>::max();
+  static Offset  constexpr missing  = std::numeric_limits<Offset>::max() - 1;
   static Offset  constexpr min      =       0;   //  0001-01-01.
   static Offset  constexpr max      = 3652059;   // 10000-01-01.
   static bool    constexpr use_invalid = false;
@@ -463,10 +463,11 @@ struct SmallDateTraits
 
   // FIXME: Would be better for max to be distinct from invalid.
   static Datenum constexpr base     = 719162;
-  static Offset  constexpr invalid  = std::numeric_limits<Offset>::max() - 1;
-  static Offset  constexpr missing  = invalid + 1;
+  static Offset  constexpr invalid  = std::numeric_limits<Offset>::max();
+  static Offset  constexpr missing  = std::numeric_limits<Offset>::max() - 1;
   static Offset  constexpr min      = 0;         // 1970-01-01.
-  static Offset  constexpr max      = invalid;   // 2149-05-05.
+  static Offset  constexpr max      = std::numeric_limits<Offset>::max() - 2;
+                                                 // 2149-06-04.
   static bool    constexpr use_invalid = true;
 };
 

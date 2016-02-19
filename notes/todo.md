@@ -2,7 +2,6 @@
 
 ## Date
 
-- Make Date::MAX distinct from Date::INVALID.
 - Maybe make Month, Day, Ordinal one-indexed?
 
 # Python API
