@@ -68,6 +68,9 @@
 
 - put back `from_parts()` overloading in date, time, daytime ctors?
 - investigate why `cal` doesn't agree for older dates
+- use some type registration system for more efficient conversion from one
+  Python type template to another, e.g. in `convert_date_object()` (to replace
+  the "tp_print hack").
 
 # Rejected
 
