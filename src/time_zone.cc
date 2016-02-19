@@ -304,10 +304,14 @@ get_system_time_zone_name_()
       assert(result < PATH_MAX);
       buf[result] = '\0';
 
+      // Look for a link target of the form .../zoneinfo/TIMEZONE, where
+      // TIMEZONE is either one or two path components.
       fs::Filename const zone_filename = buf;
       auto const parts = get_parts(zone_filename);
       auto const zoneinfo_parts = fs::get_parts(get_zoneinfo_dir());
-      if (parts.size() == zoneinfo_parts.size() + 2)
+      if (parts.size() > 1 && parts[1] == "zoneinfo")
+        return parts[0];
+      else if (parts.size() > 2 && parts[2] == "zoneinfo")
         return parts[1] + '/' + parts[0];
       else
         throw RuntimeError(string("not time zone link: ") + SYSTEM_TIME_ZONE_LINK);
