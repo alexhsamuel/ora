@@ -286,7 +286,7 @@ DaytimeTemplate<TRAITS>::MAX{TRAITS::denominator * SECS_PER_DAY};
 
 template<class TRAITS>
 DaytimeTemplate<TRAITS> constexpr
-DaytimeTemplate<TRAITS>::INVALID{TRAITS::denominator * SECS_PER_DAY};
+DaytimeTemplate<TRAITS>::INVALID{TRAITS::denominator * SECS_PER_DAY + 2};
 
 template<class TRAITS>
 DaytimeTemplate<TRAITS> constexpr
