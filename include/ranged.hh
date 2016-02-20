@@ -24,7 +24,7 @@ class Ranged
 {
 public:
 
-  typedef VAL Value;
+  using Value = VAL;
 
   static Value  constexpr MIN       = MIN_;
   static Value  constexpr MAX       = MAX_;

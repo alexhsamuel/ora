@@ -19,8 +19,8 @@ class LazyPointer
 {
 public:
 
-  typedef VAL Value;
-  typedef VAL* (*Allocator)();
+  using Value = VAL;
+  using Allocator = VAL* (*)();
   static Allocator constexpr allocate = ALLOCATE;
 
   void 

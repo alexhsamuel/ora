@@ -15,7 +15,7 @@ class TimeInterval
 {
 public:
 
-  typedef int64_t Dayticks;
+  using Dayticks = int64_t;
 
   constexpr 
   TimeInterval(

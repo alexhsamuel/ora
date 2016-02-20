@@ -30,28 +30,28 @@ size_t constexpr    SECS_PER_DAY_BITS   = 17;
 // Types
 //------------------------------------------------------------------------------
 
-typedef double      Second;
+using Second = double;
 Second constexpr    SECOND_MIN          = 0.0;
 Second constexpr    SECOND_BOUND        = 60.0;
 Second constexpr    SECOND_MAX          = 0x1.dffffffffffffp+5;  // = std::nextafter(SECOND_BOUND, SECOND_MIN)
 Second constexpr    SECOND_INVALID      = std::numeric_limits<Second>::quiet_NaN();
 inline constexpr bool second_is_valid(Second second) { return in_interval(SECOND_MIN, second, SECOND_BOUND); }
 
-typedef uint8_t     Minute;
+using Minute = uint8_t;
 Minute constexpr    MINUTE_MIN          = 0;
 Minute constexpr    MINUTE_BOUND        = 60;
 Minute constexpr    MINUTE_MAX          = MINUTE_BOUND - 1;
 Minute constexpr    MINUTE_INVALID      = std::numeric_limits<Minute>::max();
 inline constexpr bool minute_is_valid(Minute minute) { return in_interval(MINUTE_MIN, minute, MINUTE_BOUND); }
 
-typedef uint8_t     Hour;
+using Hour = uint8_t;
 Hour constexpr      HOUR_MIN            = 0;
 Hour constexpr      HOUR_BOUND          = 24;
 Hour constexpr      HOUR_MAX            = HOUR_BOUND - 1;
 Hour constexpr      HOUR_INVALID        = std::numeric_limits<Hour>::max();
 inline constexpr bool hour_is_valid(Hour hour) { return in_interval(HOUR_MIN, hour, HOUR_BOUND); }
 
-typedef uint8_t     Day;
+using Day = uint8_t;
 Day constexpr       DAY_MIN             = 0;
 Day constexpr       DAY_BOUND           = 31;
 Day constexpr       DAY_MAX             = DAY_BOUND - 1;
@@ -59,35 +59,35 @@ Day constexpr       DAY_INVALID         = std::numeric_limits<Day>::max();
 // FIXME: Maybe we shouldn't have this.
 inline constexpr bool day_is_valid(Day day) { return in_interval(DAY_MIN, day, DAY_BOUND); }
 
-typedef uint8_t     Month;
+using Month = uint8_t;
 Month constexpr     MONTH_MIN           = 0;
 Month constexpr     MONTH_BOUND         = 12;
 Month constexpr     MONTH_MAX           = MONTH_BOUND - 1;
 Month constexpr     MONTH_INVALID       = std::numeric_limits<Month>::max();
 inline constexpr bool month_is_valid(Month month) { return in_interval(MONTH_MIN, month, MONTH_BOUND); }
 
-typedef int16_t     Year;
+using Year = int16_t;
 Year constexpr      YEAR_MIN            = 1;
 Year constexpr      YEAR_BOUND          = 10000;
 Year constexpr      YEAR_MAX            = YEAR_BOUND - 1;
 Year constexpr      YEAR_INVALID        = std::numeric_limits<Year>::min();
 inline constexpr bool year_is_valid(Year year) { return in_interval(YEAR_MIN, year, YEAR_BOUND); }
 
-typedef uint16_t    Ordinal;
+using Ordinal = uint16_t;
 Ordinal constexpr   ORDINAL_MIN         = 0;
 Ordinal constexpr   ORDINAL_BOUND       = 366;
 Ordinal constexpr   ORDINAL_MAX         = ORDINAL_BOUND - 1;
 Ordinal constexpr   ORDINAL_INVALID     = std::numeric_limits<Ordinal>::max();
 inline constexpr bool ordinal_is_valid(Ordinal ordinal) { return in_interval(ORDINAL_MIN, ordinal, ORDINAL_BOUND); }
 
-typedef uint8_t     Week;
+using Week = uint8_t;
 Week constexpr      WEEK_MIN            = 0;
 Week constexpr      WEEK_BOUND          = 53;
 Week constexpr      WEEK_MAX            = WEEK_BOUND - 1;
 Week constexpr      WEEK_INVALID        = std::numeric_limits<Week>::max();
 inline constexpr bool week_is_valid(Week week) { return in_interval(WEEK_MIN, week, WEEK_BOUND); }
 
-typedef uint8_t     Weekday;
+using Weekday = uint8_t;
 Weekday constexpr   WEEKDAY_MIN         = 0;
 Weekday constexpr   WEEKDAY_BOUND       = 7;
 Weekday constexpr   WEEKDAY_MAX         = WEEKDAY_BOUND - 1;
@@ -105,7 +105,7 @@ Weekday constexpr   SUNDAY              = 6;
 
 // Internally, daytime computations are performed on "dayticks" per midnight.  A
 // daytick is defined by DAYTICKS_PER_SECOND.
-typedef uint64_t    Daytick;
+using Daytick = uint64_t;
 Daytick constexpr   DAYTICK_PER_SEC     = (Daytick) 1 << (8 * sizeof(Daytick) - SECS_PER_DAY_BITS);
 double constexpr    DAYTICK_SEC         = 1. / DAYTICK_PER_SEC;
 Daytick constexpr   DAYTICK_MIN         = 0;
@@ -125,7 +125,7 @@ Daytick constexpr   DAYTICK_INVALID     = std::numeric_limits<Daytick>::max();
  * make larger years worth the trouble.  Also, if we are still using the same
  * f***ed up calendar system in 8,000 years, I will kill myself.
  */
-typedef uint32_t Datenum;
+using Datenum = uint32_t;
 Datenum constexpr   DATENUM_MIN         =       0;   // 0001-01-01
 Datenum constexpr   DATENUM_MAX         = 3652058;   // 9999-12-31
 Datenum constexpr   DATENUM_BOUND       = DATENUM_MAX + 1;
@@ -139,7 +139,7 @@ inline bool constexpr datenum_is_valid(Datenum datenum) { return in_interval(DAT
  * Not aware of DST transitions.  Can represent elapsed time between 0 and 86400
  * seconds.
  */
-typedef double Ssm;
+using Ssm = double;
 Ssm constexpr       SSM_MIN             = 0;
 Ssm constexpr       SSM_BOUND           = SECS_PER_DAY;
 Ssm constexpr       SSM_MAX             = 0x1.517ffffffffffp+16;  // = std::nextafter(SSM_BOUND, SSM_MIN)
@@ -152,7 +152,7 @@ inline bool constexpr ssm_is_valid(Ssm ssm) { return in_interval(SSM_MIN, ssm, S
  * For example, U.S. Eastern Daylight Time (EDT) is four hours behind UTC, so
  * its offset is -14400.
  */
-typedef int32_t TimeZoneOffset;
+using TimeZoneOffset = int32_t;
 TimeZoneOffset constexpr TIME_ZONE_OFFSET_MIN       = -43200;
 TimeZoneOffset constexpr TIME_ZONE_OFFSET_MAX       =  43200;
 TimeZoneOffset constexpr TIME_ZONE_OFFSET_INVALID   = std::numeric_limits<TimeZoneOffset>::max();
@@ -162,7 +162,7 @@ inline constexpr bool time_zone_offset_is_valid(TimeZoneOffset offset) { return 
  * A time expressed in (positive or negative) seconds since the UNIX epoch,
  * midnight on 1970 January 1.
  */
-typedef int64_t TimeOffset;
+using TimeOffset = int64_t;
 TimeOffset constexpr TIME_OFFSET_MIN     = -62135596800;
 TimeOffset constexpr TIME_OFFSET_INVALID = std::numeric_limits<TimeOffset>::max();
 

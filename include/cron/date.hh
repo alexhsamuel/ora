@@ -197,7 +197,7 @@ class DateTemplate
 {
 public:
 
-  typedef typename TRAITS::Offset Offset;
+  using Offset = typename TRAITS::Offset;
 
   // These are declared const here but defined constexpr to work around a clang bug.
   // http://stackoverflow.com/questions/11928089/static-constexpr-member-of-same-type-as-class-being-defined
@@ -428,7 +428,7 @@ DateTemplate<TRAITS>::MISSING{TRAITS::missing};
 
 struct DateTraits
 {
-  typedef uint32_t Offset;
+  using Offset = uint32_t;
 
   static Datenum constexpr base     =       0;
   static Offset  constexpr invalid  = std::numeric_limits<Offset>::max();
@@ -438,14 +438,14 @@ struct DateTraits
   static bool    constexpr use_invalid = true;
 };
 
-typedef DateTemplate<DateTraits> Date;
+using Date = DateTemplate<DateTraits>;
 
 
 // FIXME: Use a better name.
 
 struct SafeDateTraits
 {
-  typedef uint32_t Offset;
+  using Offset = uint32_t;
 
   static Datenum constexpr base     =       0;
   static Offset  constexpr invalid  = std::numeric_limits<Offset>::max();
@@ -455,11 +455,11 @@ struct SafeDateTraits
   static bool    constexpr use_invalid = false;
 };
 
-typedef DateTemplate<SafeDateTraits> SafeDate;
+using SafeDate = DateTemplate<SafeDateTraits>;
 
 struct SmallDateTraits
 {
-  typedef uint16_t Offset;
+  using Offset = uint16_t;
 
   // FIXME: Would be better for max to be distinct from invalid.
   static Datenum constexpr base     = 719162;
@@ -471,7 +471,7 @@ struct SmallDateTraits
   static bool    constexpr use_invalid = true;
 };
 
-typedef DateTemplate<SmallDateTraits> SmallDate;
+using SmallDate = DateTemplate<SmallDateTraits>;
 
 //------------------------------------------------------------------------------
 

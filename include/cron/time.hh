@@ -343,7 +343,7 @@ TimeTemplate<TRAITS>::RESOLUTION;
 
 struct TimeTraits
 {
-  typedef uint64_t Offset;
+  using Offset = uint64_t;
 
   static Datenum constexpr base         = 0; 
   static Offset  constexpr denominator  = (Offset) 1 << 26;
@@ -355,11 +355,12 @@ struct TimeTraits
   static bool    constexpr use_invalid  = true;
 };
 
-typedef TimeTemplate<TimeTraits> Time;
+using Time =  TimeTemplate<TimeTraits>;
+
 
 struct SmallTimeTraits
 {
-  typedef uint32_t Offset;
+  using Offset = uint32_t;
 
   static Datenum constexpr base         = DATENUM_UNIX_EPOCH; 
   static Offset  constexpr denominator  = 1;
@@ -371,11 +372,12 @@ struct SmallTimeTraits
   static bool    constexpr use_invalid  = true;
 };
 
-typedef TimeTemplate<SmallTimeTraits> SmallTime;
+using SmallTime = TimeTemplate<SmallTimeTraits>;
+
 
 struct NsecTimeTraits
 {
-  typedef uint64_t Offset;
+  using Offset = uint64_t;
 
   static Datenum constexpr base         = 255669;  // 1900-03-01
   static Offset  constexpr denominator  = (Offset) 1 << 30;
@@ -387,12 +389,12 @@ struct NsecTimeTraits
   static bool    constexpr use_invalid  = true;
 };
 
-typedef TimeTemplate<NsecTimeTraits> NsecTime;
+using NsecTime = TimeTemplate<NsecTimeTraits>;
 
 
 struct Unix32TimeTraits
 {
-  typedef int32_t Offset;
+  using Offset = int32_t;
 
   static Datenum constexpr base         = DATENUM_UNIX_EPOCH;
   static Offset  constexpr denominator  = 1;
@@ -404,12 +406,12 @@ struct Unix32TimeTraits
   static bool    constexpr use_invalid  = true;
 };
 
-typedef TimeTemplate<Unix32TimeTraits> Unix32Time;
+using Unix32Time = TimeTemplate<Unix32TimeTraits>;
 
 
 struct Unix64TimeTraits
 {
-  typedef int64_t Offset;
+  using Offset = int64_t;
 
   static Datenum constexpr base         = DATENUM_UNIX_EPOCH;
   static Offset  constexpr denominator  = 1;
@@ -421,7 +423,7 @@ struct Unix64TimeTraits
   static bool    constexpr use_invalid  = true;
 };
 
-typedef TimeTemplate<Unix64TimeTraits> Unix64Time;
+using Unix64Time = TimeTemplate<Unix64TimeTraits>;
 
 
 //------------------------------------------------------------------------------

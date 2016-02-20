@@ -230,7 +230,7 @@ operator+(
   DaytimeTemplate<TRAITS> const daytime,
   double const shift)
 {
-  typedef DaytimeTemplate<TRAITS> Daytime;
+  using Daytime = DaytimeTemplate<TRAITS>;
 
   if (daytime.is_invalid() || daytime.is_missing())
     return daytime;
@@ -248,7 +248,7 @@ operator-(
   DaytimeTemplate<TRAITS> const daytime,
   double shift)
 {
-  typedef DaytimeTemplate<TRAITS> Daytime;
+  using Daytime = DaytimeTemplate<TRAITS>;
 
   if (shift > SECS_PER_DAY)
     shift = fmod(shift, SECS_PER_DAY);
@@ -301,35 +301,35 @@ DaytimeTemplate<TRAITS>::MISSING{TRAITS::denominator * SECS_PER_DAY + 1};
 
 struct DaytimeTraits
 {
-  typedef uint64_t Offset;
+  using Offset = uint64_t;
 
   static Offset constexpr denominator = (Offset) 1 << (8 * sizeof(Offset) - SECS_PER_DAY_BITS);
   static bool   constexpr use_invalid = true;
 };
 
-typedef DaytimeTemplate<DaytimeTraits> Daytime;
+using Daytime = DaytimeTemplate<DaytimeTraits>;
 
 
 struct SafeDaytimeTraits
 {
-  typedef uint64_t Offset;
+  using Offset = uint64_t;
 
   static Offset constexpr denominator = (Offset) 1 << (8 * sizeof(Offset) - SECS_PER_DAY_BITS);
   static bool   constexpr use_invalid = false;
 };
 
-typedef DaytimeTemplate<SafeDaytimeTraits> SafeDaytime;
+using DateDaytime = DaytimeTemplate<SafeDaytimeTraits>;
 
 
 struct SmallDaytimeTraits
 {
-  typedef uint32_t Offset;
+  using Offset = uint32_t;
 
   static Offset constexpr denominator = (Offset) 1 << (8 * sizeof(Offset) - SECS_PER_DAY_BITS);
   static bool   constexpr use_invalid = true;
 };
 
-typedef DaytimeTemplate<SmallDaytimeTraits> SmallDaytime;
+using SmallDaytime = DaytimeTemplate<SmallDaytimeTraits>;
 
 
 //------------------------------------------------------------------------------

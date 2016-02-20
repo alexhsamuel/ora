@@ -177,7 +177,7 @@ class WeekdaysCalendar
 {
 public:
 
-  typedef std::array<bool, 7> Mask;
+  using Mask = std::array<bool, 7>;
 
   WeekdaysCalendar(
     std::vector<Weekday> weekdays)

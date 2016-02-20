@@ -12,7 +12,7 @@ class DayInterval
 {
 public:
 
-  typedef ssize_t Days;
+  using Days = ssize_t;
 
   constexpr DayInterval(Days days) : days_(days) {}
   constexpr DayInterval operator-() const { return DayInterval(-days_); }
@@ -75,7 +75,7 @@ class MonthInterval
 {
 public:
 
-  typedef ssize_t Months;
+  using Months = ssize_t;
 
   constexpr MonthInterval(Months months) : months_(months) {}
   constexpr MonthInterval operator-() const { return MonthInterval(-months_); }
