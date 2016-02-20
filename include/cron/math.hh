@@ -39,15 +39,33 @@ pow10(
 }
 
 
+/**
+ * Returns true if 'val' is in the (closed) range ['min', 'max'].
+ */
+template<typename T>
+inline constexpr bool
+in_range(
+  T min,
+  T val,
+  T max)
+{
+  return min <= val && val <= max;
+}
+
+
+/**
+ * Returns true if 'val' is in the half-open range ['min', 'bound').
+ */
 template<typename T>
 inline constexpr bool
 in_interval(
   T min,
   T val,
-  T max)
+  T bound)
 {
-  return min <= val && val < max;
+  return min <= val && val < bound;
 }
+
 
 template<typename T>
 inline T
