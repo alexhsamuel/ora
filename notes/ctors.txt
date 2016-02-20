@@ -30,3 +30,22 @@ Python Date:
   convert(obj)                          # sloppy conversion
 
 
+
+--------------------------------------------------------------------------------
+
+C++ Time
+
+  Time()                                // default; invalid
+  Time(Time const&)
+  Time(Time<> const&)
+
+  Time(date, time, tz, first)
+  Time(datenum, dayticks, tz, first)
+
+  Time(y, m, d, h, m, s, tz, first)     // convenience (?)
+  
+Python Time
+
+  Time()                                # default; invalid
+  Time(time)                            # any UTC time-like object
+
