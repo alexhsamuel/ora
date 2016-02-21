@@ -25,7 +25,7 @@ class Format
 public:
 
   Format(
-    std::string const& pattern, 
+    std::string const& pattern,
     std::string const& invalid="INVALID", 
     std::string const& missing="MISSING") 
     : pattern_(pattern), 
@@ -186,7 +186,10 @@ public:
   get_default() 
   { 
     // Use representations for invalid and missing that are the same length.
-    static DateFormat const format("%Y-%m-%d", "INVALID   ", "MISSING   ");
+    static DateFormat const format(
+      "%Y-%m-%d", 
+      "INVALID   ", 
+      "MISSING   ");
     return format;
   }
 
@@ -255,7 +258,10 @@ public:
   get_default() 
   { 
     // Use representations for invalid and missing that are the same length.
-    static DaytimeFormat const format("%H:%M:%S", "INVALID ", "MISSING ");
+    static DaytimeFormat const format(
+      "%H:%M:%S", 
+      "INVALID ", 
+      "MISSING ");
     return format;
   }
 

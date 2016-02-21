@@ -24,7 +24,7 @@ TEST(AllCalendar, contains0) {
   EXPECT_TRUE (cal[2013/JUL/14]);
   EXPECT_TRUE (cal[2013/JUL/15]);
   EXPECT_TRUE (cal[Date::MIN]);
-  EXPECT_TRUE (cal[Date::LAST]);
+  EXPECT_TRUE (cal[Date::MAX]);
   EXPECT_FALSE(cal.contains(Date::INVALID));
   EXPECT_FALSE(cal.contains(Date::MISSING));
 }
@@ -41,7 +41,7 @@ TEST(AllCalendar, contains1) {
   EXPECT_TRUE (cal[SmallDate::from_parts(2013,  6, 13)]);
   EXPECT_TRUE (cal[SmallDate::from_parts(2013,  6, 14)]);
   EXPECT_TRUE (cal[SmallDate::MIN]);
-  EXPECT_TRUE (cal[SmallDate::LAST]);
+  EXPECT_TRUE (cal[SmallDate::MAX]);
   EXPECT_FALSE(cal.contains(SmallDate::INVALID));
   EXPECT_FALSE(cal.contains(SmallDate::MISSING));
 }

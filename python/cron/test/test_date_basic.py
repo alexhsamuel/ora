@@ -15,27 +15,20 @@ def test_min():
     assert not Date.MIN.missing
 
 
-def test_last():
-    assert Date.LAST.valid
-    assert not Date.LAST.invalid
-    assert not Date.LAST.missing
-
-
 def test_max():
-    assert not Date.MAX.valid
+    assert Date.MAX.valid
+    assert not Date.MAX.invalid
     assert not Date.MAX.missing
 
 
 def test_comparison():
     assert     Date.MIN     == Date.MIN
-    assert     Date.LAST    != Date.MIN
-    assert     Date.MIN     != Date.LAST
-    assert     Date.LAST    == Date.LAST
+    assert     Date.MAX     != Date.MIN
+    assert     Date.MIN     != Date.MAX
+    assert     Date.MAX     == Date.MAX
     assert     Date.MIN.is_same(Date.MIN)
-    assert     Date.LAST.is_same(Date.LAST)
     assert     Date.MAX.is_same(Date.MAX)
-    assert not Date.MIN.is_same(Date.LAST)
-    assert not Date.LAST.is_same(Date.MAX)
+    assert not Date.MIN.is_same(Date.MAX)
     assert not Date.MAX.is_same(Date.MIN)
 
     assert     Date.INVALID.is_same(Date.INVALID)
@@ -71,12 +64,10 @@ def test_comparison_sampled1():
 
 @pytest.mark.xfail
 def test_order():
-    assert     Date.LAST    >= Date.MIN
-    assert     Date.MIN     <= Date.LAST
-    assert     Date.MAX     >  Date.MIN
+    assert     Date.MAX     >= Date.MIN
+    assert     Date.MIN     <= Date.MAX
     assert     Date.MIN     <  Date.MAX
-    assert     Date.MAX     >  Date.LAST
-    assert     Date.LAST    >  Date.MIN
+    assert     Date.MAX     >  Date.MIN
 
     assert not Date.INVALID <= Date.INVALID
     assert not Date.INVALID <  Date.INVALID

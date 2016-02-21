@@ -155,7 +155,6 @@ PyDate<DATE>::add_to(
   Dict* dict = (Dict*) type_.tp_dict;
   assert(dict != nullptr);
   dict->SetItemString("INVALID" , create(Date::INVALID));
-  dict->SetItemString("LAST"    , create(Date::LAST));
   dict->SetItemString("MAX"     , create(Date::MAX));
   dict->SetItemString("MIN"     , create(Date::MIN));
   dict->SetItemString("MISSING" , create(Date::MISSING));
@@ -741,7 +740,7 @@ PyDate<DATE>::build_type(
     (printfunc)           &_get_datenum<DATE>,            // tp_print
     (getattrfunc)         nullptr,                        // tp_getattr
     (setattrfunc)         nullptr,                        // tp_setattr
-    (PyAsyncMethods*)     nullptr,                        // tp_reserved
+                          nullptr,                        // tp_reserved
     (reprfunc)            wrap<PyDate, tp_repr>,          // tp_repr
     (PyNumberMethods*)    &tp_as_number_,                 // tp_as_number
     (PySequenceMethods*)  nullptr,                        // tp_as_sequence

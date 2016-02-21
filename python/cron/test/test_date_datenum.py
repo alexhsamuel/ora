@@ -14,14 +14,14 @@ def test_datenum0():
     assert (1/Jan/2).datenum ==   1
     assert (1/Feb/1).datenum ==  31
     assert (2/Jan/1).datenum == 365
-    assert Date.LAST.datenum == cron.DATENUM_LAST
+    assert Date.MAX.datenum == cron.DATENUM_MAX
 
 
 def test_datenum_round_trip():
     """
     Samples datenums, making sure a round trip through date is idempotent.
     """
-    for datenum in range(cron.DATENUM_MIN, cron.DATENUM_MAX, 37):
+    for datenum in range(cron.DATENUM_MIN, cron.DATENUM_MAX + 1, 37):
         assert Date.from_datenum(datenum).datenum == datenum
 
 

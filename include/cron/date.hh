@@ -202,10 +202,9 @@ public:
   // These are declared const here but defined constexpr to work around a clang bug.
   // http://stackoverflow.com/questions/11928089/static-constexpr-member-of-same-type-as-class-being-defined
   static DateTemplate const MIN;
-  static DateTemplate const LAST;
   static DateTemplate const MAX;
-  static DateTemplate const INVALID;
   static DateTemplate const MISSING;
+  static DateTemplate const INVALID;
   static bool constexpr USE_INVALID = TRAITS::use_invalid;
 
   // Constructors.
@@ -310,7 +309,7 @@ public:
 
   // Accessors.
 
-  bool      is_valid()      const { return in_interval(MIN.offset_, offset_, MAX.offset_); }
+  bool      is_valid()      const { return in_range(MIN.offset_, offset_, MAX.offset_); }
   bool      is_invalid()    const { return offset_ == TRAITS::invalid; }
   bool      is_missing()    const { return offset_ == TRAITS::missing; }
 
@@ -345,7 +344,7 @@ protected:
     Offset offset)
   {
     return 
-      in_interval(TRAITS::min, offset, TRAITS::max) 
+      in_range(TRAITS::min, offset, TRAITS::max)
       ? offset 
       : on_error<DateRangeError>();
   }
@@ -361,7 +360,7 @@ protected:
       return on_error<InvalidDateError>();
     Datenum const offset = datenum - (Datenum) TRAITS::base;
     return 
-      in_interval<Datenum>(TRAITS::min, offset, TRAITS::max) 
+      in_range<Datenum>(TRAITS::min, offset, TRAITS::max) 
       ? offset
       : on_error<DateRangeError>();
   }
@@ -408,19 +407,15 @@ DateTemplate<TRAITS>::MIN{TRAITS::min};
 
 template<class TRAITS>
 DateTemplate<TRAITS> constexpr
-DateTemplate<TRAITS>::LAST{(Offset) (TRAITS::max - 1)};
-
-template<class TRAITS>
-DateTemplate<TRAITS> constexpr
 DateTemplate<TRAITS>::MAX{TRAITS::max};
 
 template<class TRAITS>
 DateTemplate<TRAITS> constexpr
-DateTemplate<TRAITS>::INVALID{TRAITS::invalid};
+DateTemplate<TRAITS>::MISSING{TRAITS::missing};
 
 template<class TRAITS>
 DateTemplate<TRAITS> constexpr
-DateTemplate<TRAITS>::MISSING{TRAITS::missing};
+DateTemplate<TRAITS>::INVALID{TRAITS::invalid};
 
 //------------------------------------------------------------------------------
 // Concrete date types
@@ -431,10 +426,10 @@ struct DateTraits
   using Offset = uint32_t;
 
   static Datenum constexpr base     =       0;
-  static Offset  constexpr invalid  = std::numeric_limits<Offset>::max();
+  static Offset  constexpr min      =       0;   // 0001-01-01.
+  static Offset  constexpr max      = 3652058;   // 9999-12-31.
   static Offset  constexpr missing  = std::numeric_limits<Offset>::max() - 1;
-  static Offset  constexpr min      =       0;   //  0001-01-01.
-  static Offset  constexpr max      = 3652059;   // 10000-01-01.
+  static Offset  constexpr invalid  = std::numeric_limits<Offset>::max();
   static bool    constexpr use_invalid = true;
 };
 
@@ -448,10 +443,10 @@ struct SafeDateTraits
   using Offset = uint32_t;
 
   static Datenum constexpr base     =       0;
-  static Offset  constexpr invalid  = std::numeric_limits<Offset>::max();
+  static Offset  constexpr min      =       0;   // 0001-01-01.
+  static Offset  constexpr max      = 3652058;   // 9999-12-31.
   static Offset  constexpr missing  = std::numeric_limits<Offset>::max() - 1;
-  static Offset  constexpr min      =       0;   //  0001-01-01.
-  static Offset  constexpr max      = 3652059;   // 10000-01-01.
+  static Offset  constexpr invalid  = std::numeric_limits<Offset>::max();
   static bool    constexpr use_invalid = false;
 };
 
@@ -461,13 +456,12 @@ struct SmallDateTraits
 {
   using Offset = uint16_t;
 
-  // FIXME: Would be better for max to be distinct from invalid.
   static Datenum constexpr base     = 719162;
-  static Offset  constexpr invalid  = std::numeric_limits<Offset>::max();
-  static Offset  constexpr missing  = std::numeric_limits<Offset>::max() - 1;
   static Offset  constexpr min      = 0;         // 1970-01-01.
   static Offset  constexpr max      = std::numeric_limits<Offset>::max() - 2;
                                                  // 2149-06-04.
+  static Offset  constexpr missing  = std::numeric_limits<Offset>::max() - 1;
+  static Offset  constexpr invalid  = std::numeric_limits<Offset>::max();
   static bool    constexpr use_invalid = true;
 };
 

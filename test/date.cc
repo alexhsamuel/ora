@@ -22,8 +22,7 @@ TEST(Date, default_ctor) {
 
 TEST(Date, range) {
   EXPECT_EQ("0001-01-01", to_string(Date::MIN));
-  EXPECT_EQ("9999-12-31", to_string(Date::LAST));
-  EXPECT_EQ("INVALID   ", to_string(Date::MAX));
+  EXPECT_EQ("9999-12-31", to_string(Date::MAX));
 }
 
 TEST(Date, from_ymd) {
@@ -38,8 +37,8 @@ TEST(Date, offsets) {
   EXPECT_EQ(Date::MIN, Date::from_offset(Date::MIN.get_offset()));
   EXPECT_EQ(Date::MIN, Date::from_datenum(Date::MIN.get_datenum()));
 
-  EXPECT_EQ(Date::LAST, Date::from_offset(Date::LAST.get_offset()));
-  EXPECT_EQ(Date::LAST, Date::from_datenum(Date::LAST.get_datenum()));
+  EXPECT_EQ(Date::MAX, Date::from_offset(Date::MAX.get_offset()));
+  EXPECT_EQ(Date::MAX, Date::from_datenum(Date::MAX.get_datenum()));
 
   Date const date1 = Date::from_parts(1600, 2, 0);
   EXPECT_EQ(date1, Date::from_offset(date1.get_offset()));
@@ -62,10 +61,9 @@ TEST(Date, shift) {
 TEST(Date, is_valid) {
   EXPECT_TRUE ((1973/DEC/ 3).is_valid());
   EXPECT_TRUE (Date::MIN.is_valid());
-  EXPECT_TRUE (Date::LAST.is_valid());
-  EXPECT_FALSE(Date::MAX.is_valid());
-  EXPECT_FALSE(Date::INVALID.is_valid());
+  EXPECT_TRUE (Date::MAX.is_valid());
   EXPECT_FALSE(Date::MISSING.is_valid());
+  EXPECT_FALSE(Date::INVALID.is_valid());
 }
 
 TEST(Date, is) {
@@ -105,9 +103,9 @@ TEST(Date, invalid) {
   EXPECT_TRUE (Date::from_parts(64000, 0,   1).is_invalid());
   EXPECT_TRUE ((Date::MIN  -       1).is_invalid());
   EXPECT_TRUE ((Date::MIN  +      -1).is_invalid());
-  EXPECT_TRUE ((Date::LAST +       1).is_invalid());
-  EXPECT_TRUE ((Date::LAST +   10000).is_invalid());
-  EXPECT_TRUE ((Date::LAST + 1000000).is_invalid());
+  EXPECT_TRUE ((Date::MAX  +       1).is_invalid());
+  EXPECT_TRUE ((Date::MAX  +   10000).is_invalid());
+  EXPECT_TRUE ((Date::MAX  + 1000000).is_invalid());
 }
 
 TEST(Date, invalid_parts) {
@@ -186,8 +184,7 @@ TEST(SafeDate, default_ctor) {
 
 TEST(SafeDate, range) {
   EXPECT_EQ("0001-01-01", to_string(SafeDate::MIN));
-  EXPECT_EQ("9999-12-31", to_string(SafeDate::LAST));
-  EXPECT_EQ("INVALID   ", to_string(SafeDate::MAX));
+  EXPECT_EQ("9999-12-31", to_string(SafeDate::MAX));
 }
 
 TEST(SafeDate, invalid) {
@@ -206,9 +203,9 @@ TEST(SafeDate, invalid) {
   EXPECT_THROW   (SafeDate date(Date::MISSING), ValueError);
   EXPECT_THROW   (SafeDate::MIN  -       1,            ValueError);
   EXPECT_THROW   (SafeDate::MIN  +      -1,            ValueError);
-  EXPECT_THROW   (SafeDate::LAST +       1,            ValueError);
-  EXPECT_THROW   (SafeDate::LAST +   10000,            ValueError);
-  EXPECT_THROW   (SafeDate::LAST + 1000000,            ValueError);
+  EXPECT_THROW   (SafeDate::MAX  +       1,            ValueError);
+  EXPECT_THROW   (SafeDate::MAX  +   10000,            ValueError);
+  EXPECT_THROW   (SafeDate::MAX  + 1000000,            ValueError);
 }
 
 //------------------------------------------------------------------------------
@@ -226,16 +223,15 @@ TEST(SmallDate, range) {
 
   EXPECT_EQ(SmallDate::from_parts(1970, 0, 0), SmallDate::MIN);
   EXPECT_EQ("1970-01-01", (string) DateFormat::ISO_CALENDAR_EXTENDED(SmallDate::MIN));
-  EXPECT_EQ(SmallDate::from_parts(2149, 5, 2), SmallDate::LAST);
-  EXPECT_EQ("2149-06-03", (string) DateFormat::ISO_CALENDAR_EXTENDED(SmallDate::LAST));
+  EXPECT_EQ(SmallDate::from_parts(2149, 5, 3), SmallDate::MAX);
+  EXPECT_EQ("2149-06-04", (string) DateFormat::ISO_CALENDAR_EXTENDED(SmallDate::MAX));
 }
 
 TEST(SmallDate, is_valid) {
   EXPECT_TRUE (SmallDate::MIN.is_valid());
-  EXPECT_TRUE (SmallDate::LAST.is_valid());
-  EXPECT_FALSE(SmallDate::MAX.is_valid());
-  EXPECT_FALSE(SmallDate::INVALID.is_valid());
+  EXPECT_TRUE (SmallDate::MAX.is_valid());
   EXPECT_FALSE(SmallDate::MISSING.is_valid());
+  EXPECT_FALSE(SmallDate::INVALID.is_valid());
   EXPECT_TRUE (SmallDate::from_parts(1970,  0, 0).is_valid());
   EXPECT_TRUE (SmallDate::from_parts(1970,  0, 1).is_valid());
   EXPECT_TRUE (SmallDate::from_parts(1973, 11, 2).is_valid());

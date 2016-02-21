@@ -621,7 +621,7 @@ PyDaytime<DAYTIME>::build_type(
     (printfunc)           nullptr,                        // tp_print
     (getattrfunc)         nullptr,                        // tp_getattr
     (setattrfunc)         nullptr,                        // tp_setattr
-    (PyAsyncMethods*)     nullptr,                        // tp_reserved
+                          nullptr,                        // tp_reserved
     (reprfunc)            wrap<PyDaytime, tp_repr>,       // tp_repr
     (PyNumberMethods*)    &tp_as_number_,                 // tp_as_number
     (PySequenceMethods*)  nullptr,                        // tp_as_sequence
