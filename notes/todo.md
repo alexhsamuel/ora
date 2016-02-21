@@ -13,8 +13,6 @@
 
 - parsing strings
 
-- Make Date::MAX distinct from Date::INVALID.
-
 - API
 
   - Rationalize C++ and Python APIs.
@@ -65,11 +63,20 @@
 
 # Misc
 
-- put back `from_parts()` overloading in date, time, daytime ctors?
-- investigate why `cal` doesn't agree for older dates
-- use some type registration system for more efficient conversion from one
+- Put back `from_parts()` overloading in date, time, daytime ctors?
+
+- Investigate why `cal` doesn't agree for older dates
+
+- Use some type registration system for more efficient conversion from one
   Python type template to another, e.g. in `convert_date_object()` (to replace
   the "tp_print hack").
+
+# Maybe / someday
+
+- Add an (upper) "bound" constant for time, date, daytime counts that is
+  distinct from invalid and missing, not itself valid, but compares strictly
+  greater than every other valid value.
+ 
 
 # Rejected
 
