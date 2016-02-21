@@ -72,7 +72,6 @@ public:
   static Datenum      constexpr BASE        = TRAITS::base;
   static Offset       constexpr DENOMINATOR = TRAITS::denominator;
   static TimeTemplate const     MIN;
-  static TimeTemplate const     LAST;
   static TimeTemplate const     MAX;
   static TimeTemplate const     INVALID;
   static TimeTemplate const     MISSING;
@@ -136,7 +135,7 @@ public:
 
   // Comparisons
 
-  bool is_valid()   const { return in_interval(MIN.offset_, offset_, MAX.offset_); }
+  bool is_valid()   const { return in_range(MIN.offset_, offset_, MAX.offset_); }
   bool is_invalid() const { return is(INVALID); }
   bool is_missing() const { return is(MISSING); }
 
@@ -288,7 +287,7 @@ private:
     intmax_t const offset = 
       cron::convert_offset(offset0, denominator0, base0, DENOMINATOR, BASE);
     return
-      in_interval((intmax_t) MIN.get_offset(), offset, (intmax_t) MAX.get_offset())
+      in_range((intmax_t) MIN.get_offset(), offset, (intmax_t) MAX.get_offset())
       ? offset
       : on_error<InvalidTimeError>();
   }
@@ -315,10 +314,6 @@ TimeTemplate<TRAITS>::DENOMINATOR;
 template<class TRAITS>
 TimeTemplate<TRAITS> constexpr
 TimeTemplate<TRAITS>::MIN{TRAITS::min};
-
-template<class TRAITS>
-TimeTemplate<TRAITS> constexpr
-TimeTemplate<TRAITS>::LAST{TRAITS::max - 1};
 
 template<class TRAITS>
 TimeTemplate<TRAITS> constexpr
