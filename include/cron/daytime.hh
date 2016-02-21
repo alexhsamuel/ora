@@ -17,7 +17,7 @@ extern inline bool
 daytick_is_valid(
   Daytick daytick)
 {
-  return in_interval(DAYTICK_MIN, daytick, DAYTICK_MAX);
+  return in_range(DAYTICK_MIN, daytick, DAYTICK_MAX);
 }
 
 
@@ -59,7 +59,6 @@ public:
   static Offset      constexpr DENOMINATOR = TRAITS::denominator;
 
   static DaytimeTemplate const MIN;
-  static DaytimeTemplate const LAST;
   static DaytimeTemplate const MAX;
   static DaytimeTemplate const INVALID;
   static DaytimeTemplate const MISSING;
@@ -92,7 +91,7 @@ public:
     Offset offset)
   {
     return DaytimeTemplate(
-      in_interval(MIN.offset_, offset, MAX.offset_)
+      in_range(MIN.offset_, offset, MAX.offset_)
       ? offset
       : on_error<InvalidDaytimeError>());
   }
@@ -164,7 +163,7 @@ public:
       (Second) seconds / TRAITS::denominator};
   }
 
-  bool is_valid()   const { return in_interval(MIN.offset_, offset_, MAX.offset_); }
+  bool is_valid()   const { return in_range(MIN.offset_, offset_, MAX.offset_); }
   bool is_invalid() const { return is(INVALID); }
   bool is_missing() const { return is(MISSING); }
 
@@ -278,19 +277,15 @@ DaytimeTemplate<TRAITS>::MIN{0};
 
 template<class TRAITS>
 DaytimeTemplate<TRAITS> constexpr
-DaytimeTemplate<TRAITS>::LAST{TRAITS::denominator * SECS_PER_DAY - 1};
+DaytimeTemplate<TRAITS>::MAX{TRAITS::denominator * SECS_PER_DAY - 1};
 
 template<class TRAITS>
 DaytimeTemplate<TRAITS> constexpr
-DaytimeTemplate<TRAITS>::MAX{TRAITS::denominator * SECS_PER_DAY};
+DaytimeTemplate<TRAITS>::INVALID{TRAITS::denominator * SECS_PER_DAY + 1};
 
 template<class TRAITS>
 DaytimeTemplate<TRAITS> constexpr
-DaytimeTemplate<TRAITS>::INVALID{TRAITS::denominator * SECS_PER_DAY + 2};
-
-template<class TRAITS>
-DaytimeTemplate<TRAITS> constexpr
-DaytimeTemplate<TRAITS>::MISSING{TRAITS::denominator * SECS_PER_DAY + 1};
+DaytimeTemplate<TRAITS>::MISSING{TRAITS::denominator * SECS_PER_DAY};
 
 //------------------------------------------------------------------------------
 // Concrete Daytime types.

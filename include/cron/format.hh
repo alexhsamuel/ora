@@ -280,7 +280,7 @@ public:
     const 
   { 
     return 
-      daytime.is_valid() ? operator()(daytime.get_parts())
+        daytime.is_valid() ? operator()(daytime.get_parts())
       : daytime.is_missing() ? get_missing()
       : get_invalid();
   }

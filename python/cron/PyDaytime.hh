@@ -144,7 +144,6 @@ PyDaytime<DAYTIME>::add_to(
   assert(dict != nullptr);
   dict->SetItemString("EPSILON" , Float::FromDouble(1.0 / DAYTIME::DENOMINATOR));
   dict->SetItemString("INVALID" , create(Daytime::INVALID));
-  dict->SetItemString("LAST"    , create(Daytime::LAST));
   dict->SetItemString("MAX"     , create(Daytime::MAX));
   dict->SetItemString("MIN"     , create(Daytime::MIN));
   dict->SetItemString("MISSING" , create(Daytime::MISSING));

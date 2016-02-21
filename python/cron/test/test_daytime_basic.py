@@ -160,7 +160,7 @@ def test_parts0():
     assert p.second == 56.5
     assert p == (12, 34, 56.5)
 
-    p = Daytime.LAST.parts
+    p = Daytime.MAX.parts
     assert p.hour == 23
     assert p.minute == 59
     assert (60 - p.second) < 2 * Daytime.EPSILON
@@ -197,8 +197,8 @@ def test_min():
     assert not a.missing
 
 
-def test_last():
-    a = Daytime.LAST
+def test_max():
+    a = Daytime.MAX
     assert a.hour == 23
     assert a.minute == 59
     assert (60 - a.second) < 0.000001
@@ -206,11 +206,6 @@ def test_last():
     assert a.valid
     assert not a.invalid
     assert not a.missing
-
-
-def test_max():
-    a = Daytime.MAX
-    assert not a.valid
 
 
 def test_is_same():
@@ -229,15 +224,12 @@ def test_is_same():
 
 def test_comparison0():
     assert     Daytime.MIN     == Daytime.MIN
-    assert     Daytime.LAST    != Daytime.MIN
-    assert     Daytime.MIN     != Daytime.LAST
-    assert     Daytime.LAST    == Daytime.LAST
+    assert     Daytime.MAX     != Daytime.MIN
+    assert     Daytime.MIN     != Daytime.MAX
+    assert     Daytime.MAX     == Daytime.MAX
     assert     Daytime.MIN.is_same(Daytime.MIN)
-    assert     Daytime.LAST.is_same(Daytime.LAST)
     assert     Daytime.MAX.is_same(Daytime.MAX)
-    assert not Daytime.MIN.is_same(Daytime.LAST)
-    assert not Daytime.LAST.is_same(Daytime.MAX)
-    assert not Daytime.MAX.is_same(Daytime.MIN)
+    assert not Daytime.MIN.is_same(Daytime.MAX)
 
     assert     Daytime.INVALID.is_same(Daytime.INVALID)
     assert not Daytime.INVALID == Daytime.INVALID
@@ -281,18 +273,6 @@ def test_comparison1():
     assert not a1           >= a2
     assert not a1.is_same(a2)
     
-    assert     a2           <  Daytime.LAST
-    assert     a2           <= Daytime.LAST
-    assert not a2           == Daytime.LAST
-    assert     a2           != Daytime.LAST
-    assert not a2           >  Daytime.LAST
-    assert not a2           >= Daytime.LAST
-    assert not a2.is_same(Daytime.LAST)
-
-
-@pytest.mark.xfail
-def test_max():
-    a2 = Daytime.from_parts(12,  0,  0)
     assert     a2           <  Daytime.MAX
     assert     a2           <= Daytime.MAX
     assert not a2           == Daytime.MAX
@@ -356,7 +336,7 @@ def test_subtract2():
 
 def test_difference():
     assert Daytime.MIN - Daytime.MIN == 0
-    assert 84399.999999 < Daytime.LAST - Daytime.MIN <= 86400
+    assert 84399.999999 < Daytime.MAX - Daytime.MIN <= 86400
 
     a0 = Daytime.from_parts(3, 4, 5)
     a1 = Daytime.from_parts(4, 5, 6)
