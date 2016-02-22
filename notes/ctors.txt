@@ -49,3 +49,6 @@ Python Time
   Time()                                # default; invalid
   Time(time)                            # any UTC time-like object
 
+  from_parts(parts, time_zone)
+  from_date_time(date, time, time_zone)
+
