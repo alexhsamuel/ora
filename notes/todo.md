@@ -4,6 +4,10 @@
 
 - Maybe make Month, Day, Ordinal one-indexed?
 
+## Time zone
+
+- Rethink memory management for loaded `TimeZone` objects
+
 # Python API
 
 - Stop using setuptools; port make rules from fixfmt.
