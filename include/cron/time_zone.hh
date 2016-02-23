@@ -97,6 +97,8 @@ find_time_zone_file(
 
 /**
  * Returns a time zone named 'name' from the default zoneinfo directory.
+ *
+ * It is safe to hold a reference or pointer to the return value.
  */
 extern TimeZone const&  get_time_zone(std::string const& name);
 

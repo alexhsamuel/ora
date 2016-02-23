@@ -3,6 +3,7 @@
 #include "PyDate.hh"
 #include "PyDaytime.hh"
 #include "PyTime.hh"
+#include "PyTimeZone.hh"
 
 using namespace alxs;
 using namespace py;
@@ -48,6 +49,8 @@ PyInit__ext(void)
     alxs::PyTime<cron::NsecTime>        ::add_to(module, "NsecTime");
     alxs::PyTime<cron::Unix32Time>      ::add_to(module, "Unix32Time");
     alxs::PyTime<cron::Unix64Time>      ::add_to(module, "Unix64Time");
+
+    alxs::PyTimeZone                    ::add_to(module, "TimeZone");
 
     StructSequenceType* const parts_type = get_date_parts_type();
     module->AddObject(parts_type->tp_name, (PyObject*) parts_type);

@@ -15,6 +15,7 @@ __all__ = (
     "SmallDaytime",
     "SmallTime",
     "Time",
+    "TimeZone",
     "Unix32Time",
     "Unix64Time",
     "Weekday",
