@@ -268,6 +268,8 @@ get_time_zone(
     return *find->second;
   else {
     auto const filename = find_time_zone_file(name);
+    // We can safely return a reference because we never remove or replace
+    // time zone objects from the cache map.
     return *(
       time_zones[name] = make_unique<TimeZone>(TzFile::load(filename), name));
   }
