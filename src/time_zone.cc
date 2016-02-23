@@ -3,12 +3,14 @@
 #include <cstring>
 #include <fstream>
 #include <map>
+#include <memory>
 
 #include "cron/time_zone.hh"
 #include "cron/tzfile.hh"
 #include "file.hh"
 #include "filename.hh"
 
+using std::make_unique;
 using std::string;
 
 namespace alxs {
@@ -220,7 +222,10 @@ fs::Filename
 zoneinfo_dir 
   {""};
 
-std::map<std::string, TimeZone>
+// Cache of loaded time zone objects.  
+//
+// Pointers in this cache should not be 
+std::map<std::string, std::unique_ptr<TimeZone>>
 time_zones;
 
 }  // anonymous namespace
@@ -234,25 +239,19 @@ get_zoneinfo_dir()
     char const* const env_val = getenv(ZONEINFO_ENVVAR);
     zoneinfo_dir = 
       env_val != nullptr ? fs::Filename(env_val) : ZONEINFO_DIR_DEFAULT;
+    time_zones.clear();
   }
 
   return zoneinfo_dir;
 }
 
 
-extern void
-set_zoneinfo_dir(
-  fs::Filename const& dir)
-{
-  zoneinfo_dir = dir;
-}
-
-
 extern fs::Filename
 find_time_zone_file(
-  std::string const& name)
+  std::string const& name,
+  fs::Filename const& zoneinfo_dir)
 {
-  auto const filename = get_zoneinfo_dir() / name;
+  auto const filename = zoneinfo_dir / name;
   if (check(filename, fs::READ, fs::FILE))
     return filename;
   else
@@ -262,18 +261,26 @@ find_time_zone_file(
 
 extern TimeZone const&
 get_time_zone(
-  std::string const& name,
-  bool reload)
+  std::string const& name)
 {
   auto find = time_zones.find(name);
-  if (reload && find != end(time_zones))
-    time_zones.erase(find);
-  if (reload || find == end(time_zones)) {
-    auto filename = find_time_zone_file(name);
-    return time_zones[name] = TimeZone(TzFile::load(filename), name);
+  if (find != end(time_zones))
+    return *find->second;
+  else {
+    auto const filename = find_time_zone_file(name);
+    return *(
+      time_zones[name] = make_unique<TimeZone>(TzFile::load(filename), name));
   }
-  else
-    return find->second;
+}
+
+
+extern inline TimeZone
+get_time_zone(
+  std::string const& name,
+  fs::Filename const& zoneinfo_dir)
+{
+  auto filename = find_time_zone_file(name);
+  return TimeZone(TzFile::load(filename), name);
 }
 
 
@@ -323,10 +330,9 @@ get_system_time_zone_name_()
 
 
 extern string
-get_system_time_zone_name(
-  bool reload)
+get_system_time_zone_name()
 {
-  if (reload || ! system_time_zone_name_initialized) {
+  if (! system_time_zone_name_initialized) {
     system_time_zone_name = get_system_time_zone_name_();
     system_time_zone_name_initialized = true;
   }
@@ -335,12 +341,11 @@ get_system_time_zone_name(
 
 
 extern TimeZone const&
-get_system_time_zone(
-  bool reload)
+get_system_time_zone()
 {
   // FIXME: Portability.
-  string const name = get_system_time_zone_name(reload);
-  return get_time_zone(name, reload);
+  string const name = get_system_time_zone_name();
+  return get_time_zone(name);
 }
 
 

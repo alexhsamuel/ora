@@ -66,20 +66,52 @@ private:
 };
 
 
-extern TimeZone const UTC;
+//------------------------------------------------------------------------------
 
-extern fs::Filename get_zoneinfo_dir();
-extern void set_zoneinfo_dir(fs::Filename const& dir);
-extern fs::Filename find_time_zone_file(std::string const& name);
-extern TimeZone const& get_time_zone(std::string const& name, bool reload=false);
+/**
+ * UTC time zone singleton.
+ */
+extern TimeZone const   UTC;
 
-extern std::string get_system_time_zone_name(bool reload=false);
-extern TimeZone const& get_system_time_zone(bool reload=false);
+/**
+ * Returns the path to the current default zoneinfo directory.
+ */
+extern fs::Filename     get_zoneinfo_dir();
 
-extern TimeZone const& get_display_time_zone();
-extern void set_display_time_zone(TimeZone const& tz);
+/**
+ * Returns the path to the zoneinfo file for the time zone named 'name' in the
+ * given zoneinfo directory.  If the time zone is not found, raises ValueError.
+ */
+extern fs::Filename     find_time_zone_file(std::string const& name, fs::Filename const& zoneinfo_dir);
 
-inline void 
+/**
+ * Returns the path to the zoneinfo file for the time zone named 'name' in the
+ * default zoneinfo directory.
+ */
+extern inline fs::Filename
+find_time_zone_file(
+  std::string const& name)
+{
+  return find_time_zone_file(name, get_zoneinfo_dir());
+}
+
+/**
+ * Returns a time zone named 'name' from the default zoneinfo directory.
+ */
+extern TimeZone const&  get_time_zone(std::string const& name);
+
+/**
+ * Returns a time zone named 'name' from the given zoneinfo directory.
+ */
+extern TimeZone         get_time_zone(std::string const& name, fs::Filename const& zoneinfo_dir);
+
+extern std::string      get_system_time_zone_name();
+extern TimeZone const&  get_system_time_zone();
+
+extern TimeZone const&  get_display_time_zone();
+extern void             set_display_time_zone(TimeZone const& tz);
+
+extern inline void 
 set_display_time_zone(
   std::string const& name)
 {
