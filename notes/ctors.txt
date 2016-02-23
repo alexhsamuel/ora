@@ -51,5 +51,6 @@ Python Time
 
   from_parts((y, m, d, h, m, s), tz)
   from_parts(date_parts, time_parts, tz)
-  from_date_time(date, time, tz)
+  from_date_daytime(date, daytime, tz)
+  from_date_daytime(daynum, dayticks, tz)
 

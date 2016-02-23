@@ -342,6 +342,8 @@ public:
   auto Str()
     { return ref<Unicode>::take(PyObject_Str(this)); }
 
+  optional<ref<Object>> maybe_get_attr(std::string const& name);
+
   ref<py::Long> Long(bool check=true);
   long long_value();
   /** If the object can be converted to a long, returns its value. */
@@ -425,6 +427,21 @@ Object::GetAttrString(
   else if (result == nullptr)
     Exception::Clear();
   return ref<Object>::take(result);
+}
+
+
+inline optional<ref<Object>>
+Object::maybe_get_attr(
+  std::string const& name)
+{ 
+  auto result = PyObject_GetAttrString(this, name.c_str());
+  // FIXME: Encapsulate this pattern.
+  if (result == nullptr) {
+    Exception::Clear();
+    return {};
+  }
+  else
+    return ref<Object>::take(result);
 }
 
 

@@ -8,6 +8,7 @@
 #include "cron/time.hh"
 #include "cron/time_zone.hh"
 #include "py.hh"
+#include "PyTimeZone.hh"
 
 namespace alxs {
 
@@ -71,7 +72,7 @@ public:
   static PyNumberMethods tp_as_number_;
 
   // Methods.
-  static ref<Object> method_from_parts          (PyTypeObject* type, Tuple* args, Dict* kw_args);
+  static ref<Object> method_from_date_daytime   (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static Methods<PyTime> tp_methods_;
 
   // Getsets.
@@ -258,15 +259,57 @@ PyTime<TIME>::tp_as_number_ = {
 
 template<typename TIME>
 ref<Object>
-PyTime<TIME>::method_from_parts(
+PyTime<TIME>::method_from_date_daytime(
   PyTypeObject* const type,
   Tuple* const args,
   Dict* const kw_args)
 {
-  static char const* const arg_names[] = {"parts", "tz", nullptr};
-  Sequence* parts;
-  Object* time_zone;
-  return none_ref();
+  static char const* const arg_names[] 
+    = {"date", "time", "tz", "first", nullptr};
+  Object* date;
+  Object* time;
+  Object* tz_arg;
+  bool first = true;
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "OOO|p", arg_names, &date, &time, &tz_arg, &first); 
+  
+  // Interpret the date, to obtain a datenum.
+  cron::Datenum datenum;
+  // If the date looks like a long, interpret it as a datenum.
+  auto datenum_val = date->maybe_long_value();
+  if (datenum_val && cron::datenum_is_valid(*datenum_val))
+    datenum = *datenum_val;
+  else {
+    // Otherwise, look for a datenum attribute or property.
+    auto datenum_attr = date->maybe_get_attr("datenum");
+    if (datenum_attr) 
+      datenum = (*datenum_attr)->long_value();
+    else
+      throw Exception(PyExc_TypeError, "not a date or datneum");
+  }
+
+  // Interpret the time, to obtain a daytick.
+  cron::Daytick daytick;
+  // If the time looks like a long, interpret it as a daytick.
+  // FIXME: Use SSM instead?
+  auto daytick_val = time->maybe_long_value();
+  if (daytick_val && cron::daytick_is_valid(*daytick_val))
+    daytick = *daytick_val;
+  else {
+    // Otherwise, look for a daytick attribute or property.
+    auto daytick_attr = time->maybe_get_attr("daytick");
+    if (daytick_attr)
+      daytick = (*daytick_attr)->long_value();
+    else 
+      throw Exception(PyExc_TypeError, "not a time or daytick");
+  }
+
+  // Check the time zone.
+  if (!PyTimeZone::Check(tz_arg))
+    throw Exception(PyExc_TypeError, "tz not a TimeZone");
+  cron::TimeZone const* const tz = cast<PyTimeZone>(tz_arg)->tz_;
+  
+  return create(Time(datenum, daytick, *tz, first), type);
 }
 
 
@@ -274,6 +317,7 @@ template<typename TIME>
 Methods<PyTime<TIME>>
 PyTime<TIME>::tp_methods_
   = Methods<PyTime>()
+    .template add_class<method_from_date_daytime>   ("from_date_daytime")
   ;
 
 

@@ -32,8 +32,9 @@ ref<Unicode>
 PyTimeZone::tp_repr(
   PyTimeZone* const self)
 {
-  auto const repr 
-    = string(self->ob_type->tp_name) + "('" + self->tz_->get_name() + "')";
+  string full_name{self->ob_type->tp_name};
+  string type_name = full_name.substr(full_name.rfind('.') + 1);
+  auto const repr = type_name + "('" + self->tz_->get_name() + "')";
   return Unicode::from(repr);
 }
 
