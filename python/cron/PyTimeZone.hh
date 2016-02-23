@@ -35,6 +35,8 @@ class PyTimeZone
 {
 public:
 
+  using TimeZone = cron::TimeZone;
+
   /** 
    * Readies the Python type and adds it to `module` as `name`.  
    *
@@ -47,21 +49,21 @@ public:
   /**
    * Creates an instance of the Python type.
    */
-  static ref<PyTimeZone> create(cron::TimeZone const* tz, PyTypeObject* type=&type_);
+  static ref<PyTimeZone> create(TimeZone const* tz, PyTypeObject* type=&type_);
 
   /**
    * Returns true if 'object' is an instance of this type.
    */
   static bool Check(PyObject* object);
 
-  PyTimeZone(cron::TimeZone const* tz) : tz_(tz) {}
+  PyTimeZone(TimeZone const* tz) : tz_(tz) {}
 
   /**
    * The wrapped date instance.
    *
    * This is the only non-static data member.
    */
-  cron::TimeZone const* const tz_;
+  TimeZone const* const tz_;
 
   // Number methods.
   static PyNumberMethods tp_as_number_;
@@ -102,7 +104,7 @@ PyTimeZone::add_to(
 
 inline ref<PyTimeZone>
 PyTimeZone::create(
-  cron::TimeZone const* const tz,
+  TimeZone const* const tz,
   PyTypeObject* const type)
 {
   auto self = ref<PyTimeZone>::take(
@@ -110,7 +112,7 @@ PyTimeZone::create(
 
   // tz_ is const to indicate immutablity, but Python initialization is later
   // than C++ initialization, so we have to cast off const here.
-  *const_cast<cron::TimeZone const**>(&self->tz_) = tz;
+  *const_cast<TimeZone const**>(&self->tz_) = tz;
   return self;
 }
 

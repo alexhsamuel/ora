@@ -107,7 +107,7 @@ PyTimeZone::method_get(
   char const* name;
   Arg::ParseTupleAndKeywords(args, kw_args, "s", arg_names, &name);
 
-  cron::TimeZone const* tz;
+  TimeZone const* tz;
   try {
     tz = &cron::get_time_zone(name);
   }
