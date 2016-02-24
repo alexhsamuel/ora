@@ -23,7 +23,7 @@ get_time_zone_parts_type()
     // Lazy one-time initialization.
     static PyStructSequence_Field fields[] = {
       {(char*) "offset"         , nullptr},
-      {(char*) "abboreviation"  , nullptr},
+      {(char*) "abbreviation"   , nullptr},
       {(char*) "is_dst"         , nullptr},
       {nullptr, nullptr}
     };
