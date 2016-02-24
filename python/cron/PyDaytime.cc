@@ -16,9 +16,9 @@ get_daytime_parts_type()
   if (type.tp_name == nullptr) {
     // Lazy one-time initialization.
     static PyStructSequence_Field fields[] = {
-      {(char*) "hour"       , nullptr },
-      {(char*) "minute"     , nullptr },
-      {(char*) "second"     , nullptr },
+      {(char*) "hour"       , nullptr},
+      {(char*) "minute"     , nullptr},
+      {(char*) "second"     , nullptr},
       {nullptr, nullptr}
     };
     static PyStructSequence_Desc desc{
