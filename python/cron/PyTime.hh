@@ -8,6 +8,9 @@
 #include "cron/time.hh"
 #include "cron/time_zone.hh"
 #include "py.hh"
+#include "PyDate.hh"
+#include "PyDaytime.hh"
+#include "PyTime.hh"
 #include "PyTimeZone.hh"
 
 namespace alxs {
@@ -27,6 +30,24 @@ StructSequenceType* get_time_parts_type();
 
 // template<typename TIME> optional<TIME> convert_object(Object*);
 // template<typename TIME> optional<TIME> convert_time_object(Object*);
+
+//------------------------------------------------------------------------------
+// Helper functions
+//------------------------------------------------------------------------------
+
+namespace {
+
+inline cron::TimeZone const&
+check_time_zone_arg(
+  PyObject* const arg)
+{
+  if (!PyTimeZone::Check(arg))
+    throw Exception(PyExc_TypeError, "tz not a TimeZone");
+  return *cast<PyTimeZone>(arg)->tz_;
+}
+
+
+}  // anonymous namespace
 
 //------------------------------------------------------------------------------
 // Type class
@@ -72,7 +93,8 @@ public:
   static PyNumberMethods tp_as_number_;
 
   // Methods.
-  static ref<Object> method_from_date_daytime   (PyTypeObject* type, Tuple* args, Dict* kw_args);
+  static ref<Object> method_from_date_daytime   (PyTypeObject*, Tuple*, Dict*);
+  static ref<Object> method_get_parts           (PyTime*,       Tuple*, Dict*);
   static Methods<PyTime> tp_methods_;
 
   // Getsets.
@@ -304,12 +326,51 @@ PyTime<TIME>::method_from_date_daytime(
       throw Exception(PyExc_TypeError, "not a time or daytick");
   }
 
-  // Check the time zone.
-  if (!PyTimeZone::Check(tz_arg))
-    throw Exception(PyExc_TypeError, "tz not a TimeZone");
-  cron::TimeZone const* const tz = cast<PyTimeZone>(tz_arg)->tz_;
-  
-  return create(Time(datenum, daytick, *tz, first), type);
+  auto tz = check_time_zone_arg(tz_arg);
+                                        
+  return create(Time(datenum, daytick, tz, first), type);
+}
+
+
+template<typename TIME>
+ref<Object>
+PyTime<TIME>::method_get_parts(
+  PyTime* const self,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] = {"tz", nullptr};
+  Object* tz_arg;
+  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz_arg);
+
+  auto tz = check_time_zone_arg(tz_arg);
+  auto parts = self->time_.get_parts(tz);
+
+  auto date_parts = get_date_parts_type()->New();
+  date_parts->initialize(0, Long::FromLong(parts.date.year));
+  date_parts->initialize(1, get_month_obj(parts.date.month + 1));
+  date_parts->initialize(2, Long::FromLong(parts.date.day + 1));
+  date_parts->initialize(3, Long::FromLong(parts.date.ordinal + 1));
+  date_parts->initialize(4, Long::FromLong(parts.date.week_year));
+  date_parts->initialize(5, Long::FromLong(parts.date.week + 1));
+  date_parts->initialize(6, get_weekday_obj(parts.date.weekday));
+
+  auto daytime_parts = get_daytime_parts_type()->New();
+  daytime_parts->initialize(0, Long::FromLong(parts.daytime.hour));
+  daytime_parts->initialize(1, Long::FromLong(parts.daytime.minute));
+  daytime_parts->initialize(2, Float::FromDouble(parts.daytime.second));
+
+  auto time_zone_parts = get_time_zone_parts_type()->New();
+  time_zone_parts->initialize(0, Long::FromLong(parts.time_zone.offset));
+  time_zone_parts->initialize(1, Unicode::from(parts.time_zone.abbreviation));
+  time_zone_parts->initialize(2, Bool::from(parts.time_zone.is_dst));
+
+  auto time_parts = get_time_parts_type()->New();
+  time_parts->initialize(0, std::move(date_parts));
+  time_parts->initialize(1, std::move(daytime_parts));
+  time_parts->initialize(2, std::move(time_zone_parts));
+
+  return std::move(time_parts);
 }
 
 
@@ -318,6 +379,7 @@ Methods<PyTime<TIME>>
 PyTime<TIME>::tp_methods_
   = Methods<PyTime>()
     .template add_class<method_from_date_daytime>   ("from_date_daytime")
+    .template add<method_get_parts>                 ("get_parts")
   ;
 
 

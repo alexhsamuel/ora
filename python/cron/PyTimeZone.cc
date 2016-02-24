@@ -3,11 +3,43 @@
 #include "py.hh"
 #include "PyTimeZone.hh"
 
+namespace alxs {
+
 using std::string;
 using namespace std::literals;
 
-using namespace alxs;
 using namespace py;
+
+//------------------------------------------------------------------------------
+// Helper functions
+//------------------------------------------------------------------------------
+
+StructSequenceType*
+get_time_zone_parts_type()
+{
+  static StructSequenceType type;
+
+  if (type.tp_name == nullptr) {
+    // Lazy one-time initialization.
+    static PyStructSequence_Field fields[] = {
+      {(char*) "offset"         , nullptr},
+      {(char*) "abboreviation"  , nullptr},
+      {(char*) "is_dst"         , nullptr},
+      {nullptr, nullptr}
+    };
+    static PyStructSequence_Desc desc{
+      (char*) "TimeZoneParts",                              // name
+      nullptr,                                              // doc
+      fields,                                               // fields
+      3                                                     // n_in_sequence
+    };
+
+    StructSequenceType::InitType(&type, &desc);
+  }
+
+  return &type;
+}
+
 
 //------------------------------------------------------------------------------
 // Data members
@@ -196,5 +228,10 @@ PyTimeZone::build_type(
     (destructor)          nullptr,                        // tp_finalize
   };
 }
+
+
+//------------------------------------------------------------------------------
+
+}  // namespace alxs
 
 
