@@ -87,21 +87,6 @@ private:
 };
 
 
-inline void
-PyTimeZone::add_to(
-  Module& module,
-  string const& name)
-{
-  // Construct the type struct.
-  type_ = build_type(string{module.GetName()} + "." + name);
-  // Hand it to Python.
-  type_.Ready();
-
-  // Add the type to the module.
-  module.add(&type_);
-}
-
-
 inline ref<PyTimeZone>
 PyTimeZone::create(
   TimeZone const* const tz,

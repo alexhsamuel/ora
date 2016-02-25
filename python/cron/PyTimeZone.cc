@@ -41,6 +41,21 @@ get_time_zone_parts_type()
 }
 
 
+void
+PyTimeZone::add_to(
+  Module& module,
+  string const& name)
+{
+  // Construct the type struct.
+  type_ = build_type(string{module.GetName()} + "." + name);
+  // Hand it to Python.
+  type_.Ready();
+
+  // Add the type to the module.
+  module.add(&type_);
+}
+
+
 //------------------------------------------------------------------------------
 // Data members
 //------------------------------------------------------------------------------
