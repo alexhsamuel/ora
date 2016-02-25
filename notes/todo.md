@@ -75,6 +75,8 @@
   Python type template to another, e.g. in `convert_date_object()` (to replace
   the "tp_print hack").
 
+- Make a 'zoneinfo dir' abstraction; load time zones from there.
+
 # Maybe / someday
 
 - Add an (upper) "bound" constant for time, date, daytime counts that is
