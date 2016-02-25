@@ -17,7 +17,7 @@ get_time_parts_type()
     // Lazy one-time initialization.
     static PyStructSequence_Field fields[] = {
       {(char*) "date"       , nullptr},
-      {(char*) "time"       , nullptr},
+      {(char*) "daytime"    , nullptr},
       {(char*) "time_zone"  , nullptr},
       {nullptr, nullptr}
     };
