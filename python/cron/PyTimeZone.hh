@@ -73,6 +73,7 @@ public:
   static Methods<PyTimeZone> tp_methods_;
 
   // Getsets.
+  static ref<Object> get_name(PyTimeZone*, void*);
   static GetSets<PyTimeZone> tp_getsets_;
 
 private:

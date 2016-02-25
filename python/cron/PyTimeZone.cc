@@ -177,9 +177,19 @@ PyTimeZone::tp_methods_
 // Getsets
 //------------------------------------------------------------------------------
 
+ref<Object>
+PyTimeZone::get_name(
+  PyTimeZone* const self,
+  void* /* closure */)
+{
+  return Unicode::from(self->tz_->get_name());
+}
+
+
 GetSets<PyTimeZone>
 PyTimeZone::tp_getsets_ 
   = GetSets<PyTimeZone>()
+    .template add_get<get_name>         ("name")
   ;
 
 
