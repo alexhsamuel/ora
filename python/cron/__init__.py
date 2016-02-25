@@ -18,6 +18,7 @@ __all__ = (
     "TimeZone",
     "Unix32Time",
     "Unix64Time",
+    "UTC",
     "Weekday",
 
     "days_per_month",
