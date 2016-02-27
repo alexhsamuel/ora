@@ -236,6 +236,7 @@ PyTime<TIME>::tp_str(
 
 namespace {
 
+// FIXME: Use a LocalTime object instead of a pair.
 inline ref<Object>
 make_date_daytime(
   cron::Datenum const datenum,
