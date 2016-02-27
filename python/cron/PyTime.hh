@@ -90,10 +90,13 @@ public:
   Time const time_;
 
   // Number methods.
+  static ref<Object> nb_matrix_multiply         (PyTime*, Object*, bool);
   static PyNumberMethods tp_as_number_;
 
   // Methods.
   static ref<Object> method_from_date_daytime   (PyTypeObject*, Tuple*, Dict*);
+  static ref<Object> method_get_date_daytime    (PyTime*,       Tuple*, Dict*);
+  static ref<Object> method_get_datenum_daytick (PyTime*,       Tuple*, Dict*);
   static ref<Object> method_get_parts           (PyTime*,       Tuple*, Dict*);
   static Methods<PyTime> tp_methods_;
 
@@ -231,6 +234,41 @@ PyTime<TIME>::tp_str(
 // Number methods
 //------------------------------------------------------------------------------
 
+namespace {
+
+inline ref<Object>
+make_date_daytime(
+  cron::Datenum const datenum,
+  cron::Daytick const daytick)
+{
+  auto result = Tuple::New(2);
+  result->initialize(
+    0, PyDate<cron::Date>::create(cron::Date::from_datenum(datenum)));
+  result->initialize(
+    1, PyDaytime<cron::Daytime>::create(cron::Daytime::from_daytick(daytick)));
+  return std::move(result);
+}
+
+
+}  // anonymous namespace
+
+template<typename TIME>
+inline ref<Object>
+PyTime<TIME>::nb_matrix_multiply(
+  PyTime* const self,
+  Object* const other,
+  bool right)
+{
+  if (right || !PyTimeZone::Check(other))
+    return not_implemented_ref();
+  else {
+    auto tz = *cast<PyTimeZone>(other)->tz_;
+    auto dd = self->time_.get_datenum_daytick(tz);
+    return make_date_daytime(dd.first, dd.second);
+  }
+}
+
+
 template<typename TIME>
 PyNumberMethods
 PyTime<TIME>::tp_as_number_ = {
@@ -268,10 +306,10 @@ PyTime<TIME>::tp_as_number_ = {
   (binaryfunc)  nullptr,                        // nb_inplace_floor_divide
   (binaryfunc)  nullptr,                        // nb_inplace_true_divide
   (unaryfunc)   nullptr,                        // nb_index
-/* FIXME: Python 2.5
-  (binaryfunc)  nullptr,                        // nb_matrix_multiply
+#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 5
+  (binaryfunc)  wrap<PyTime, nb_matrix_multiply>, // nb_matrix_multiply
   (binaryfunc)  nullptr,                        // nb_inplace_matrix_multiply
-*/
+#endif
 };
 
 
@@ -334,6 +372,46 @@ PyTime<TIME>::method_from_date_daytime(
 
 template<typename TIME>
 ref<Object>
+PyTime<TIME>::method_get_date_daytime(
+  PyTime* const self,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  // FIXME: Pass in the Date and Daytime class to use as keyword arguments.
+  static char const* const arg_names[] = {"tz", nullptr};
+  Object* tz_arg;
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "O", arg_names, &tz_arg);
+
+  auto tz = check_time_zone_arg(tz_arg);
+  auto dd = self->time_.get_datenum_daytick(tz);
+  return make_date_daytime(dd.first, dd.second);
+}
+
+
+template<typename TIME>
+ref<Object>
+PyTime<TIME>::method_get_datenum_daytick(
+  PyTime* const self,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] = {"tz", nullptr};
+  Object* tz_arg;
+  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz_arg);
+
+  auto tz = check_time_zone_arg(tz_arg);
+  auto datenum_daytick = self->time_.get_datenum_daytick(tz);
+
+  auto result = Tuple::New(2);
+  result->initialize(0, Long::FromLong(datenum_daytick.first));
+  result->initialize(1, Long::FromLong(datenum_daytick.second));
+  return std::move(result);
+}
+
+
+template<typename TIME>
+ref<Object>
 PyTime<TIME>::method_get_parts(
   PyTime* const self,
   Tuple* const args,
@@ -379,6 +457,8 @@ Methods<PyTime<TIME>>
 PyTime<TIME>::tp_methods_
   = Methods<PyTime>()
     .template add_class<method_from_date_daytime>   ("from_date_daytime")
+    .template add<method_get_date_daytime>          ("get_date_daytime")
+    .template add<method_get_datenum_daytick>       ("get_datenum_daytick")
     .template add<method_get_parts>                 ("get_parts")
   ;
 

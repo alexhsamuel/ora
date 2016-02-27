@@ -176,6 +176,35 @@ public:
   template<class DATE> DATE get_utc_date() const { return DATE::from_datenum(get_utc_datenum()); }
   template<class DAYTIME> DAYTIME get_utc_daytime() const { return DAYTIME::from_daytick(get_utc_daytick()); }
 
+  // FIXME: Duplicate code with get_parts().
+  std::pair<Datenum, Daytick>
+  get_datenum_daytick(
+    TimeZone const& tz)
+    const
+  {
+    if (! is_valid())
+      return {DATENUM_INVALID, DAYTICK_INVALID};
+    
+    // Look up the time zone.
+    auto const time_zone = tz.get_parts(*this);
+    Offset const offset = offset_ + time_zone.offset * TRAITS::denominator;
+
+    // Establish the date and daytime parts, using division rounded toward -inf
+    // and a positive remainder.
+    Datenum const datenum   
+      = (int64_t) (offset / TRAITS::denominator) / SECS_PER_DAY 
+        + (offset < 0 ? -1 : 0)
+        + BASE;
+    Offset const day_offset 
+      = (int64_t) offset % (TRAITS::denominator * SECS_PER_DAY) 
+        + (offset < 0 ? TRAITS::denominator * SECS_PER_DAY : 0);
+    // FIXME: Not sure the types are right here.
+    Daytick const daytick = rescale_int(
+      (intmax_t) day_offset, 
+      (intmax_t) TRAITS::denominator, (intmax_t) DAYTICK_PER_SEC);
+    return {datenum, daytick};
+  }
+
   TimeParts 
   get_parts(
     TimeZone const& tz) 

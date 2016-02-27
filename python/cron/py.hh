@@ -670,6 +670,8 @@ public:
     return tuple;
   }
 
+  operator ref<Object>() { return (ref<Tuple>) *this; }
+
   void initialize(PyObject* tuple)
   {
     assert(obj_ != nullptr);
