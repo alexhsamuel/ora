@@ -56,6 +56,22 @@ Python Time
 
   get_parts(tz)
 
-  get_date_time(tz) -> (Date, Time)
-  time @ tz -> (Date, Time)             # synonym for get_date_time(), Py>=3.5
+  get_date_time(tz) -> (Date, Daytime)
+  time @ tz -> (Date, Daytime)          # synonym for get_date_time(), Py>=3.5
+
+
+
+local(date, daytime, tz) -> Time
+(date, daytime) @ tz -> Time
+
+date | daytime -> LocalTime
+local_time @ tz -> Time
+thus
+date | daytime @ tz -> Time
+
+1973/Dec/3 | MIDNIGHT @ UTC
+
+Should there be some syntactic sugar for time?
+
+MIDNIGHT = T/00/00/00
 
