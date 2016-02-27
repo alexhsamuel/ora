@@ -49,8 +49,13 @@ Python Time
   Time()                                # default; invalid
   Time(time)                            # any UTC time-like object
 
-  from_parts((y, m, d, h, m, s), tz)
-  from_parts(date_parts, time_parts, tz)
-  from_date_daytime(date, daytime, tz)
-  from_date_daytime(daynum, dayticks, tz)
+  from_parts((y, m, d, h, m, s), tz, first)
+  from_parts(date_parts, time_parts, tz, first)
+  from_date_daytime(date, daytime, tz, first)
+  from_date_daytime(daynum, dayticks, tz, first)
+
+  get_parts(tz)
+
+  get_date_time(tz) -> (Date, Time)
+  time @ tz -> (Date, Time)             # synonym for get_date_time(), Py>=3.5
 
