@@ -61,17 +61,34 @@ Python Time
 
 
 
-local(date, daytime, tz) -> Time
-(date, daytime) @ tz -> Time
+--------------------------------------------------------------------------------
 
-date | daytime -> LocalTime
-local_time @ tz -> Time
-thus
-date | daytime @ tz -> Time
+C++ conversion
 
-1973/Dec/3 | MIDNIGHT @ UTC
+  Time()
+  Time(offset)
 
-Should there be some syntactic sugar for time?
+  from_utc_datenum_daytick(datenum, daytick)
+  
+  from_local<Date, Daytime>(LocalTime<Date, Daytime>, TimeZone)
+  from_local(Datenum, Daytick, TimeZone)
+  from_local<Date, Daytime>(Date, Daytime, TimeZone)
 
-MIDNIGHT = T/00/00/00
+  to_local_datenum_dayticks<Time>(Time, TimeZone) :: LocalDatenumDaytick
+  to_local<Time, Date, Daytime>(Time, TimeZone) :: LocalTime<Date, Daytime>
+
+Python conversion
+
+  Time()
+  Time(offset)
+  Time(utc_datenum, utc_daytick)
+
+  Time._from_datenum_daytick(datenum, daytick, tz, first)
+
+  from_local(LocalTime, TimeZone) -> Time
+  from_local((Datenum, Daytick), TimeZone) -> Time
+  from_local(Date, Daytime, TimeZone) -> Time
+
+  LocalTime @ tz -> Time                # synonym for from_local()
+  (date, daytime) @ tz -> Time          # synonym for from_local()
 

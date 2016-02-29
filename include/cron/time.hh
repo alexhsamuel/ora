@@ -13,6 +13,45 @@ namespace alxs {
 namespace cron {
 
 //------------------------------------------------------------------------------
+// Local time structs
+//------------------------------------------------------------------------------
+
+// FIXME: In types.hh?
+
+struct LocalDatenumDaytick
+{
+  LocalDatenumDaytick(
+    Datenum const _datenum,
+    Daytick const _daytick)
+  : datenum(_datenum),
+    daytick(_daytick)
+  {
+  }
+
+  Datenum   datenum;
+  Daytick   daytick;
+
+};
+
+
+template<class DATE, class DAYTIME>
+struct LocalTime
+{
+  LocalTime(
+    DATE const _date, 
+    DAYTIME const _daytime)
+  : date(_date),
+    daytime(_daytime)
+  {
+  }
+
+  DATE      date;
+  DAYTIME   daytime;
+
+};
+
+
+//------------------------------------------------------------------------------
 // Helper functions
 //------------------------------------------------------------------------------
 
@@ -31,6 +70,38 @@ convert_offset(
     + ((intmax_t) base0 - base1) * SECS_PER_DAY * denominator1;
 }
   
+
+template<typename TIME>
+inline LocalDatenumDaytick
+to_local_datenum_daytick(
+  TIME const time,
+  TimeZone const& tz)
+{
+  using Offset = typename TIME::Offset;
+
+  // Look up the time zone offset for this time.
+  auto const tz_offset = tz.get_parts(time).offset;
+  // Compute the local offset.
+  auto const offset 
+    = (Offset) (time.get_offset() + tz_offset * TIME::DENOMINATOR);
+
+  // Establish the date and daytime parts, using division rounded toward -inf
+  // and a positive remainder.
+  Datenum const datenum   
+    =   (int64_t) (offset / TIME::DENOMINATOR) / SECS_PER_DAY 
+      + (offset < 0 ? -1 : 0)
+      + TIME::BASE;
+  Offset const day_offset 
+    =   (int64_t) offset % (TIME::DENOMINATOR * SECS_PER_DAY) 
+      + (offset < 0 ? TIME::DENOMINATOR * SECS_PER_DAY : 0);
+  // FIXME: Not sure the types are right here.
+  Daytick const daytick = rescale_int(
+    (intmax_t) day_offset, 
+    (intmax_t) TIME::DENOMINATOR, (intmax_t) DAYTICK_PER_SEC);
+
+  return {datenum, daytick};
+}
+
 
 }  // anonymous namespace
 
@@ -80,14 +151,14 @@ public:
   // Constructors
 
   TimeTemplate() 
-    : offset_(USE_INVALID ? INVALID.offset_ : MIN.offset_) 
+  : offset_(USE_INVALID ? INVALID.offset_ : MIN.offset_) 
   {
   }
 
   template<class TTRAITS> 
   TimeTemplate(
     TimeTemplate<TTRAITS> time)
-    : TimeTemplate(convert_offset(time.get_offset(), TTRAITS::denominator, TTRAITS::base))
+  : TimeTemplate(convert_offset(time.get_offset(), TTRAITS::denominator, TTRAITS::base))
   {
   }
 
@@ -96,7 +167,7 @@ public:
     Daytick daytick,
     TimeZone const& tz,
     bool first=true)
-    : offset_(parts_to_offset(datenum, daytick, tz, first))
+  : offset_(datenum_daytick_to_offset(datenum, daytick, tz, first))
   {
   }
 
@@ -106,7 +177,7 @@ public:
     DaytimeTemplate<YTRAITS> daytime,
     TimeZone const& tz,
     bool first=true)
-    : TimeTemplate(date.get_datenum(), daytime.get_daytick(), tz, first)
+  : TimeTemplate(date.get_datenum(), daytime.get_daytick(), tz, first)
   {
   }
 
@@ -119,7 +190,7 @@ public:
     Second second,
     TimeZone const& tz,
     bool first=true)
-    : TimeTemplate(parts_to_offset(year, month, day, hour, minute, second, tz, first))
+  : TimeTemplate(parts_to_offset(year, month, day, hour, minute, second, tz, first))
   {
   }
 
@@ -176,35 +247,6 @@ public:
   template<class DATE> DATE get_utc_date() const { return DATE::from_datenum(get_utc_datenum()); }
   template<class DAYTIME> DAYTIME get_utc_daytime() const { return DAYTIME::from_daytick(get_utc_daytick()); }
 
-  // FIXME: Duplicate code with get_parts().
-  std::pair<Datenum, Daytick>
-  get_datenum_daytick(
-    TimeZone const& tz)
-    const
-  {
-    if (! is_valid())
-      return {DATENUM_INVALID, DAYTICK_INVALID};
-    
-    // Look up the time zone.
-    auto const time_zone = tz.get_parts(*this);
-    Offset const offset = offset_ + time_zone.offset * TRAITS::denominator;
-
-    // Establish the date and daytime parts, using division rounded toward -inf
-    // and a positive remainder.
-    Datenum const datenum   
-      = (int64_t) (offset / TRAITS::denominator) / SECS_PER_DAY 
-        + (offset < 0 ? -1 : 0)
-        + BASE;
-    Offset const day_offset 
-      = (int64_t) offset % (TRAITS::denominator * SECS_PER_DAY) 
-        + (offset < 0 ? TRAITS::denominator * SECS_PER_DAY : 0);
-    // FIXME: Not sure the types are right here.
-    Daytick const daytick = rescale_int(
-      (intmax_t) day_offset, 
-      (intmax_t) TRAITS::denominator, (intmax_t) DAYTICK_PER_SEC);
-    return {datenum, daytick};
-  }
-
   TimeParts 
   get_parts(
     TimeZone const& tz) 
@@ -260,7 +302,7 @@ private:
   }
 
   static Offset 
-  parts_to_offset(
+  datenum_daytick_to_offset(
     Datenum datenum,
     Daytick daytick,
     TimeZone const& tz,
@@ -280,8 +322,9 @@ private:
       return on_error<NonexistentLocalTime>();
     }
 
+    std::cerr << datenum << " - " << BASE << "\n";
     return 
-      DENOMINATOR * SECS_PER_DAY * (datenum - BASE)
+        DENOMINATOR * SECS_PER_DAY * (datenum - BASE)
       + (Offset) rescale_int<Daytick, DAYTICK_PER_SEC, DENOMINATOR>(daytick)
       - DENOMINATOR * tz_offset;
   }
@@ -304,7 +347,7 @@ private:
 
     Datenum const datenum = ymd_to_datenum(year, month, day);
     Daytick const daytick = hms_to_daytick(hour, minute, second);
-    return parts_to_offset(datenum, daytick, tz, first);
+    return datenum_daytick_to_offset(datenum, daytick, tz, first);
   }
 
   static Offset
@@ -448,6 +491,52 @@ struct Unix64TimeTraits
 };
 
 using Unix64Time = TimeTemplate<Unix64TimeTraits>;
+
+
+//------------------------------------------------------------------------------
+// Functions
+//------------------------------------------------------------------------------
+
+template<typename TIME>
+inline TIME
+from_local(
+  Datenum const datenum,
+  Daytick const daytick,
+  TimeZone const& time_zone,
+  bool const first=true)
+{
+  // FIXME: Move the logic here, instead of delegating.
+  return {datenum, daytick, time_zone, first};
+}
+
+
+template<typename TIME>
+inline LocalDatenumDaytick
+to_local_datenum_dayticks(
+  TIME const time,
+  TimeZone const& tz)
+{
+  if (time.is_valid())
+    return to_local_datenum_daytick(time, tz);
+  else
+    return {DATENUM_INVALID, DAYTICK_INVALID};
+}
+
+
+template<typename TIME, typename DATE, typename DAYTIME>
+inline LocalTime<DATE, DAYTIME>
+to_local(
+  TIME const time,
+  TimeZone const& tz)
+{
+  if (time.is_valid()) {
+    auto dd = to_local_datenum_daytick(time, tz);
+    return {DATE::from_datenum(dd.datenum), TIME::from_daytick(dd.daytick)};
+  }
+  else
+    // FIXME: LocalTime::INVALID?
+    return {DATE::INVALID, DAYTIME::INVALID};
+}
 
 
 //------------------------------------------------------------------------------

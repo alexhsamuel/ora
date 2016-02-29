@@ -1,7 +1,12 @@
 #include <cassert>
 
 #include "cron/date.hh"
+#include "cron/time.hh"
+#include "cron/time_zone.hh"
+#include "cron/types.hh"
+#include "functions.hh"
 #include "py.hh"
+#include "PyTime.hh"
 
 //------------------------------------------------------------------------------
 
@@ -9,6 +14,8 @@ using namespace alxs;
 using namespace py;
 
 namespace {
+
+//------------------------------------------------------------------------------
 
 ref<Object>
 days_per_month(
@@ -30,6 +37,52 @@ days_per_month(
     return Long::FromLong(cron::days_per_month(year, month));
   else
     throw Exception(PyExc_ValueError, "invalid year");
+}
+
+
+ref<Object>
+from_local(
+  Module* /* module */,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* arg_names[] 
+    = {"local_time", "time_zone", "first", "Time", nullptr};
+  Object* date_arg;
+  Object* daytime_arg;
+  Object* tz_arg;
+  int first = true;
+  // FIXME: DEFAULT_TIME_TYPE constant?
+  Object* time_type_arg = (Object*) &PyTime<cron::Time>::type_;
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "(OO)O|pO", arg_names,
+    &date_arg, &daytime_arg, &tz_arg, &first, &time_type_arg);
+
+  auto const datenum = to_datenum(date_arg);
+  auto const daytick = to_daytick(daytime_arg);
+  auto const tz      = to_time_zone(tz_arg);
+
+  if (time_type_arg == (Object*) &PyTime<cron::Time>::type_) 
+    return PyTime<cron::Time>::create(
+      cron::from_local<cron::Time>(datenum, daytick, tz, first));
+
+  else {
+    auto factory = time_type_arg->GetAttrString("_from_datenum_daytick");
+    if (factory == nullptr)
+      throw Exception(PyExc_TypeError, "not a time type");
+    else {
+      // FIXME: Wrap.
+      auto result = PyObject_CallFunctionObjArgs(
+        (PyObject*) factory,
+        (PyObject*) Long::FromLong(datenum),
+        (PyObject*) Long::FromLong(daytick),
+        (PyObject*) tz_arg,
+        (PyObject*) Bool::from(first),
+        nullptr);
+      check_not_null(result);
+      return ref<Object>::take(result);
+    }
+  }
 }
 
 
@@ -81,6 +134,7 @@ add_functions(
 {
   return methods
     .add<days_per_month>        ("days_per_month")
+    .add<from_local>            ("from_local")
     .add<is_leap_year>          ("is_leap_year")
     .add<ordinals_per_year>     ("ordinals_per_year")
     ;

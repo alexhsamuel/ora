@@ -23,6 +23,7 @@ __all__ = (
 
     "days_per_month",
     "is_leap_year",
+    "from_local",
     "ordinals_per_year",
 
     "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun",

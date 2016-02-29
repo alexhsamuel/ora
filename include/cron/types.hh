@@ -146,6 +146,8 @@ Ssm constexpr       SSM_MAX             = 0x1.517ffffffffffp+16;  // = std::next
 Ssm constexpr       SSM_INVALID         = std::numeric_limits<Ssm>::quiet_NaN();
 inline bool constexpr ssm_is_valid(Ssm ssm) { return in_interval(SSM_MIN, ssm, SSM_BOUND); }
 
+inline Daytick constexpr ssm_to_daytick(Ssm ssm) { return (Daytick) (DAYTICK_PER_SEC * ssm + 0.5); }
+
 /**
  * A time zone offset from UTC, in seconds.
  *

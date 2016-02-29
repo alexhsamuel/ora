@@ -7,6 +7,7 @@
 #include "cron/format.hh"
 #include "cron/time.hh"
 #include "cron/time_zone.hh"
+#include "functions.hh"
 #include "py.hh"
 #include "PyDate.hh"
 #include "PyDaytime.hh"
@@ -30,24 +31,6 @@ StructSequenceType* get_time_parts_type();
 
 // template<typename TIME> optional<TIME> convert_object(Object*);
 // template<typename TIME> optional<TIME> convert_time_object(Object*);
-
-//------------------------------------------------------------------------------
-// Helper functions
-//------------------------------------------------------------------------------
-
-namespace {
-
-inline cron::TimeZone const&
-check_time_zone_arg(
-  PyObject* const arg)
-{
-  if (!PyTimeZone::Check(arg))
-    throw Exception(PyExc_TypeError, "tz not a TimeZone");
-  return *cast<PyTimeZone>(arg)->tz_;
-}
-
-
-}  // anonymous namespace
 
 //------------------------------------------------------------------------------
 // Type class
@@ -94,10 +77,10 @@ public:
   static PyNumberMethods tp_as_number_;
 
   // Methods.
-  static ref<Object> method_from_date_daytime   (PyTypeObject*, Tuple*, Dict*);
-  static ref<Object> method_get_date_daytime    (PyTime*,       Tuple*, Dict*);
-  static ref<Object> method_get_datenum_daytick (PyTime*,       Tuple*, Dict*);
-  static ref<Object> method_get_parts           (PyTime*,       Tuple*, Dict*);
+  static ref<Object> method__from_datenum_daytick   (PyTypeObject*, Tuple*, Dict*);
+  static ref<Object> method_get_date_daytime        (PyTime*,       Tuple*, Dict*);
+  static ref<Object> method_get_datenum_daytick     (PyTime*,       Tuple*, Dict*);
+  static ref<Object> method_get_parts               (PyTime*,       Tuple*, Dict*);
   static Methods<PyTime> tp_methods_;
 
   // Getsets.
@@ -264,8 +247,8 @@ PyTime<TIME>::nb_matrix_multiply(
     return not_implemented_ref();
   else {
     auto tz = *cast<PyTimeZone>(other)->tz_;
-    auto dd = self->time_.get_datenum_daytick(tz);
-    return make_date_daytime(dd.first, dd.second);
+    auto local = cron::to_local_datenum_daytick(self->time_, tz);
+    return make_date_daytime(local.datenum, local.daytick);
   }
 }
 
@@ -320,54 +303,23 @@ PyTime<TIME>::tp_as_number_ = {
 
 template<typename TIME>
 ref<Object>
-PyTime<TIME>::method_from_date_daytime(
+PyTime<TIME>::method__from_datenum_daytick(
   PyTypeObject* const type,
   Tuple* const args,
   Dict* const kw_args)
 {
   static char const* const arg_names[] 
-    = {"date", "time", "tz", "first", nullptr};
-  Object* date;
-  Object* time;
-  Object* tz_arg;
-  bool first = true;
-  Arg::ParseTupleAndKeywords(
-    args, kw_args, "OOO|p", arg_names, &date, &time, &tz_arg, &first); 
-  
-  // Interpret the date, to obtain a datenum.
+    = {"datenum", "daytick", "time_zone", "first", nullptr};
   cron::Datenum datenum;
-  // If the date looks like a long, interpret it as a datenum.
-  auto datenum_val = date->maybe_long_value();
-  if (datenum_val && cron::datenum_is_valid(*datenum_val))
-    datenum = *datenum_val;
-  else {
-    // Otherwise, look for a datenum attribute or property.
-    auto datenum_attr = date->maybe_get_attr("datenum");
-    if (datenum_attr) 
-      datenum = (*datenum_attr)->long_value();
-    else
-      throw Exception(PyExc_TypeError, "not a date or datneum");
-  }
-
-  // Interpret the time, to obtain a daytick.
   cron::Daytick daytick;
-  // If the time looks like a long, interpret it as a daytick.
-  // FIXME: Use SSM instead?
-  auto daytick_val = time->maybe_long_value();
-  if (daytick_val && cron::daytick_is_valid(*daytick_val))
-    daytick = *daytick_val;
-  else {
-    // Otherwise, look for a daytick attribute or property.
-    auto daytick_attr = time->maybe_get_attr("daytick");
-    if (daytick_attr)
-      daytick = (*daytick_attr)->long_value();
-    else 
-      throw Exception(PyExc_TypeError, "not a time or daytick");
-  }
+  Object* tz_arg;
+  int first = true;
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "IkO|p", arg_names, &datenum, &daytick, &tz_arg, &first);
 
-  auto tz = check_time_zone_arg(tz_arg);
-                                        
-  return create(Time(datenum, daytick, tz, first), type);
+  auto tz = to_time_zone(tz_arg);
+  auto t = cron::from_local<TIME>(datenum, daytick, tz, first);
+  return create(t, type);
 }
 
 
@@ -384,9 +336,9 @@ PyTime<TIME>::method_get_date_daytime(
   Arg::ParseTupleAndKeywords(
     args, kw_args, "O", arg_names, &tz_arg);
 
-  auto tz = check_time_zone_arg(tz_arg);
-  auto dd = self->time_.get_datenum_daytick(tz);
-  return make_date_daytime(dd.first, dd.second);
+  auto tz = to_time_zone(tz_arg);
+  auto local = cron::to_local_datenum_daytick(self->time_, tz);
+  return make_date_daytime(local.datenum, local.daytick);
 }
 
 
@@ -401,12 +353,12 @@ PyTime<TIME>::method_get_datenum_daytick(
   Object* tz_arg;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz_arg);
 
-  auto tz = check_time_zone_arg(tz_arg);
-  auto datenum_daytick = self->time_.get_datenum_daytick(tz);
+  auto tz = to_time_zone(tz_arg);
+  auto local = cron::to_local_datenum_daytick(self->time_, tz);
 
   auto result = Tuple::New(2);
-  result->initialize(0, Long::FromLong(datenum_daytick.first));
-  result->initialize(1, Long::FromLong(datenum_daytick.second));
+  result->initialize(0, Long::FromLong(local.datenum));
+  result->initialize(1, Long::FromLong(local.daytick));
   return std::move(result);
 }
 
@@ -422,7 +374,7 @@ PyTime<TIME>::method_get_parts(
   Object* tz_arg;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz_arg);
 
-  auto tz = check_time_zone_arg(tz_arg);
+  auto tz = to_time_zone(tz_arg);
   auto parts = self->time_.get_parts(tz);
 
   auto date_parts = get_date_parts_type()->New();
@@ -457,10 +409,10 @@ template<typename TIME>
 Methods<PyTime<TIME>>
 PyTime<TIME>::tp_methods_
   = Methods<PyTime>()
-    .template add_class<method_from_date_daytime>   ("from_date_daytime")
-    .template add<method_get_date_daytime>          ("get_date_daytime")
-    .template add<method_get_datenum_daytick>       ("get_datenum_daytick")
-    .template add<method_get_parts>                 ("get_parts")
+    .template add_class<method__from_datenum_daytick>   ("_from_datenum_daytick")
+    .template add<method_get_date_daytime>              ("get_date_daytime")
+    .template add<method_get_datenum_daytick>           ("get_datenum_daytick")
+    .template add<method_get_parts>                     ("get_parts")
   ;
 
 
