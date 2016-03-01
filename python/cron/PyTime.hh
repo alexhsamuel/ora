@@ -456,11 +456,6 @@ PyTime<TIME>::build_type(
     (Py_ssize_t)          sizeof(PyTime),                 // tp_basicsize
     (Py_ssize_t)          0,                              // tp_itemsize
     (destructor)          wrap<PyTime, tp_dealloc>,       // tp_dealloc
-    // FIXME: Hack!  We'd like to provide a way for any PyTime instance to
-    // return its datenum, for efficient manipulation by other PyTime instances,
-    // without virtual methods.  PyTypeObject doesn't provide any slot for us to
-    // stash this, so we requisition the deprecated tp_print slot.  This may
-    // break in future Python versions, if that slot is reused.
     (printfunc)           nullptr,                        // tp_print
     (getattrfunc)         nullptr,                        // tp_getattr
     (setattrfunc)         nullptr,                        // tp_setattr
