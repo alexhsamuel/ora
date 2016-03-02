@@ -20,6 +20,12 @@ namespace cron {
 
 struct LocalDatenumDaytick
 {
+  LocalDatenumDaytick()
+  : datenum(DATENUM_INVALID),
+    daytick(DAYTICK_INVALID)
+  {
+  }
+
   LocalDatenumDaytick(
     Datenum const _datenum,
     Daytick const _daytick)
@@ -517,19 +523,6 @@ from_local(
 {
   // FIXME: Move the logic here, instead of delegating.
   return {datenum, daytick, time_zone, first};
-}
-
-
-template<typename TIME>
-inline LocalDatenumDaytick
-to_local_datenum_dayticks(
-  TIME const time,
-  TimeZone const& tz)
-{
-  if (time.is_valid())
-    return to_local_datenum_daytick(time, tz);
-  else
-    return {DATENUM_INVALID, DAYTICK_INVALID};
 }
 
 

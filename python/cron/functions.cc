@@ -17,6 +17,34 @@ namespace {
 
 //------------------------------------------------------------------------------
 
+StructSequenceType*
+get_local_time_type()
+{
+  static StructSequenceType type;
+
+  if (type.tp_name == nullptr) {
+    // Lazy one-time initialization.
+    static PyStructSequence_Field fields[] = {
+      {(char*) "date"       , nullptr},
+      {(char*) "daytime"    , nullptr},
+      {nullptr, nullptr}
+    };
+    static PyStructSequence_Desc desc{
+      (char*) "LocalTime",                                  // name
+      nullptr,                                              // doc
+      fields,                                               // fields
+      2                                                     // n_in_sequence
+    };
+
+    StructSequenceType::InitType(&type, &desc);
+  }
+
+  return &type;
+}
+
+
+//------------------------------------------------------------------------------
+
 ref<Object>
 days_per_month(
   Module* /* module */,
@@ -62,6 +90,7 @@ from_local(
   auto const daytick = to_daytick(daytime_arg);
   auto const tz      = to_time_zone(tz_arg);
 
+  // Special case fast path for the default time type.
   if (time_type_arg == (Object*) &PyTime<cron::Time>::type_) 
     return PyTime<cron::Time>::create(
       cron::from_local<cron::Time>(datenum, daytick, tz, first));
@@ -69,7 +98,7 @@ from_local(
   else {
     auto factory = time_type_arg->GetAttrString("_from_datenum_daytick");
     if (factory == nullptr)
-      throw Exception(PyExc_TypeError, "not a time type");
+      throw TypeError("not a time type");
     else {
       // FIXME: Wrap.
       auto result = PyObject_CallFunctionObjArgs(
@@ -101,7 +130,7 @@ is_leap_year(
   if (cron::year_is_valid(year))
     return Bool::from(cron::is_leap_year(year));
   else
-    throw Exception(PyExc_ValueError, "invalid year");
+    throw py::ValueError("invalid year");
 }
 
 
@@ -120,7 +149,60 @@ ordinals_per_year(
   if (cron::year_is_valid(year))
     return Long::FromLong(cron::ordinals_per_year(year));
   else
-    throw Exception(PyExc_ValueError, "invalid year");
+    throw py::ValueError("invalid year");
+}
+
+
+ref<Object>
+to_local(
+  Module* /* module */,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  Object* time_arg;
+  Object* tz_arg;
+  Object* date_type = (Object*) &PyDate<cron::Date>::type_;
+  Object* daytime_type = (Object*) &PyDaytime<cron::Daytime>::type_;
+  static char const* const arg_names[] 
+    = {"time", "time_zone", "Date", "Daytime", nullptr};
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, 
+    "OO|OO", arg_names, 
+    &time_arg, &tz_arg);
+  
+  auto const tz = to_time_zone(tz_arg);
+  cron::LocalDatenumDaytick local;
+
+  // Special case fast path for the default time type.
+  if (PyTime<cron::Time>::Check(time_arg)) {
+    auto time = cast<PyTime<cron::Time>>(time_arg)->time_;
+    local = cron::to_local_datenum_daytick(time, tz);
+  }
+  else
+    // FIXME
+    assert(false);
+
+  ref<Object> date;
+  // Special case fast path for the default date type.
+  if (date_type == (Object*) &PyDate<cron::Date>::type_)
+    date = PyDate<cron::Date>::create(cron::Date::from_datenum(local.datenum));
+  else
+    // FIXME
+    assert(false);
+
+  ref<Object> daytime;
+  // Special case fast path for the default daytime type.
+  if (daytime_type == (Object*) &PyDaytime<cron::Daytime>::type_)
+    daytime = PyDaytime<cron::Daytime>::create(
+      cron::Daytime::from_daytick(local.daytick));
+  else
+    // FIXME
+    assert(false);
+
+  auto result = get_local_time_type()->New();
+  result->initialize(0, std::move(date));
+  result->initialize(1, std::move(daytime));
+  return std::move(result);
 }
 
 
@@ -137,6 +219,7 @@ add_functions(
     .add<from_local>            ("from_local")
     .add<is_leap_year>          ("is_leap_year")
     .add<ordinals_per_year>     ("ordinals_per_year")
+    .add<to_local>              ("to_local")
     ;
 }
 

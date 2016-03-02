@@ -22,7 +22,7 @@ get_time_parts_type()
       {nullptr, nullptr}
     };
     static PyStructSequence_Desc desc{
-      (char*) "TimeParts",                                 // name
+      (char*) "TimeParts",                                  // name
       nullptr,                                              // doc
       fields,                                               // fields
       3                                                     // n_in_sequence

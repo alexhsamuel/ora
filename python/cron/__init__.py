@@ -25,6 +25,7 @@ __all__ = (
     "is_leap_year",
     "from_local",
     "ordinals_per_year",
+    "to_local",
 
     "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun",
 
