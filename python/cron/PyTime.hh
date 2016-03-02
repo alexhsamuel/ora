@@ -84,7 +84,10 @@ public:
   static Methods<PyTime> tp_methods_;
 
   // Getsets.
+  static ref<Object> get_invalid                    (PyTime* self, void*);
+  static ref<Object> get_missing                    (PyTime* self, void*);
   static ref<Object> get_offset                     (PyTime* self, void*);
+  static ref<Object> get_valid                      (PyTime* self, void*);
   static GetSets<PyTime> tp_getsets_;
 
   /** Date format used to generate the repr.  */
@@ -451,6 +454,26 @@ PyTime<TIME>::tp_methods_
 
 template<typename TIME>
 ref<Object>
+PyTime<TIME>::get_invalid(
+  PyTime* const self,
+  void* /* closure */)
+{
+  return Bool::from(self->time_.is_invalid());
+}
+
+
+template<typename TIME>
+ref<Object>
+PyTime<TIME>::get_missing(
+  PyTime* const self,
+  void* /* closure */)
+{
+  return Bool::from(self->time_.is_missing());
+}
+
+
+template<typename TIME>
+ref<Object>
 PyTime<TIME>::get_offset(
   PyTime* const self,
   void* /* closure */)
@@ -460,10 +483,23 @@ PyTime<TIME>::get_offset(
 
 
 template<typename TIME>
+ref<Object>
+PyTime<TIME>::get_valid(
+  PyTime* const self,
+  void* /* closure */)
+{
+  return Bool::from(self->time_.is_valid());
+}
+
+
+template<typename TIME>
 GetSets<PyTime<TIME>>
 PyTime<TIME>::tp_getsets_ 
   = GetSets<PyTime>()
+    .template add_get<get_invalid>      ("invalid")
+    .template add_get<get_missing>      ("missing")
     .template add_get<get_offset>       ("offset")
+    .template add_get<get_valid>        ("valid")
   ;
 
 
