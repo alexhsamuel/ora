@@ -3,4 +3,7 @@
 from   cron import *
 from   datetime import *
 
+DAY = timedelta(1, 0)
+SEC = timedelta(0, 1)
+
 bd = 1973/Dec/3
