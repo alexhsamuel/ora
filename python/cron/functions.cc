@@ -16,6 +16,7 @@ using namespace py;
 namespace {
 
 //------------------------------------------------------------------------------
+// Helpers
 
 StructSequenceType*
 get_local_time_type()
@@ -182,26 +183,9 @@ to_local(
     // FIXME
     assert(false);
 
-  ref<Object> date;
-  // Special case fast path for the default date type.
-  if (date_type == (Object*) &PyDate<cron::Date>::type_)
-    date = PyDate<cron::Date>::create(cron::Date::from_datenum(local.datenum));
-  else
-    // FIXME
-    assert(false);
-
-  ref<Object> daytime;
-  // Special case fast path for the default daytime type.
-  if (daytime_type == (Object*) &PyDaytime<cron::Daytime>::type_)
-    daytime = PyDaytime<cron::Daytime>::create(
-      cron::Daytime::from_daytick(local.daytick));
-  else
-    // FIXME
-    assert(false);
-
   auto result = get_local_time_type()->New();
-  result->initialize(0, std::move(date));
-  result->initialize(1, std::move(daytime));
+  result->initialize(0, make_date(local.datenum, date_type));
+  result->initialize(1, make_daytime(local.daytick, daytime_type));
   return std::move(result);
 }
 

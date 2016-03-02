@@ -13,6 +13,38 @@ namespace alxs {
 // Helper functions
 //------------------------------------------------------------------------------
 
+using DefaultDate = PyDate<cron::Date>;
+using DefaultDaytime = PyDaytime<cron::Daytime>;
+
+inline ref<Object>
+make_date(
+  cron::Datenum const datenum,
+  Object* type=(Object*) &DefaultDate::type_)
+{
+  // Special case fast path for the default date type.
+  if (type == (Object*) &DefaultDate::type_)
+    return DefaultDate::create(DefaultDate::Date::from_datenum(datenum));
+  else
+    // FIXME
+    assert(false);
+}
+
+
+inline ref<Object>
+make_daytime(
+  cron::Daytick const daytick,
+  Object* type=(Object*) &DefaultDaytime::type_)
+{
+  // Special case fast path for the default daytime type.
+  if (type == (Object*) &DefaultDaytime::type_)
+    return DefaultDaytime::create(
+      DefaultDaytime::Daytime::from_daytick(daytick));
+  else
+    // FIXME
+    assert(false);
+}
+
+
 inline cron::Datenum
 to_datenum(
   Object* const obj)
