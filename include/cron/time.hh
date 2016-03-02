@@ -199,7 +199,7 @@ public:
     Offset offset)
   {
     return TimeTemplate(
-      MIN.get_offset() <= offset && offset < MAX.get_offset()
+      in_range(MIN.get_offset(), offset, MAX.get_offset())
       ? offset
       : on_error<InvalidTimeError>());
   }
@@ -328,10 +328,10 @@ private:
     //   + (Offset) rescale_int<Daytick, DAYTICK_PER_SEC, DENOMINATOR>(daytick)
     //   - DENOMINATOR * tz_offset;
 
-    Offset r;
     Offset const off = 
       (Offset) rescale_int<Daytick, DAYTICK_PER_SEC, DENOMINATOR>(daytick)
       - DENOMINATOR * tz_offset;
+    Offset r;
     if (   mul_overflow(DENOMINATOR * SECS_PER_DAY, (Offset) datenum - BASE, r)
         || add_overflow(r, off, r))
       return on_error<InvalidTimeError>();
