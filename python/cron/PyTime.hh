@@ -123,13 +123,21 @@ PyTime<TIME>::add_to(
   // Build the str format.  Choose precision for seconds that captures actual
   // precision of the time class.
   std::string pattern = "%Y-%m-%dT%H:%M:%";
-  size_t const precision = (size_t) ceil(log10(Time::DENOMINATOR));
+  size_t const precision = (size_t) log10(Time::DENOMINATOR);
   if (precision > 0) {
     pattern += ".";
     pattern += std::to_string(precision);
   }
   pattern += "SZ";
   str_format_ = make_unique<cron::TimeFormat>(pattern);
+
+  // Add in static data members.
+  Dict* const dict = (Dict*) type_.tp_dict;
+  assert(dict != nullptr);
+  dict->SetItemString("INVALID" , create(Time::INVALID));
+  dict->SetItemString("MAX"     , create(Time::MAX));
+  dict->SetItemString("MIN"     , create(Time::MIN));
+  dict->SetItemString("MISSING" , create(Time::MISSING));
 
   // Add the type to the module.
   module.add(&type_);
