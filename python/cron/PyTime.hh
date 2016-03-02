@@ -29,7 +29,7 @@ using std::unique_ptr;
 StructSequenceType* get_time_parts_type();
 
 // template<typename TIME> optional<TIME> convert_object(Object*);
-// template<typename TIME> optional<TIME> convert_time_object(Object*);
+template<typename TIME> optional<TIME> convert_time_object(Object*);
 
 //------------------------------------------------------------------------------
 // Type class
@@ -81,6 +81,7 @@ public:
   static ref<Object> method_get_date_daytime        (PyTime*,       Tuple*, Dict*);
   static ref<Object> method_get_datenum_daytick     (PyTime*,       Tuple*, Dict*);
   static ref<Object> method_get_parts               (PyTime*,       Tuple*, Dict*);
+  static ref<Object> method_is_same                 (PyTime*,       Tuple*, Dict*);
   static Methods<PyTime> tp_methods_;
 
   // Getsets.
@@ -436,6 +437,23 @@ PyTime<TIME>::method_get_parts(
 }
 
 
+// We call this method "is_same" because "is" is a keyword in Python.
+template<typename TIME>
+ref<Object>
+PyTime<TIME>::method_is_same(
+  PyTime* const self,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] = {"object", nullptr};
+  Object* object;
+  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &object);
+
+  auto time_opt = convert_time_object<Time>(object);
+  return Bool::from(time_opt && self->time_.is(*time_opt));
+}
+
+
 template<typename TIME>
 Methods<PyTime<TIME>>
 PyTime<TIME>::tp_methods_
@@ -445,6 +463,7 @@ PyTime<TIME>::tp_methods_
     .template add<method_get_date_daytime>              ("get_date_daytime")
     .template add<method_get_datenum_daytick>           ("get_datenum_daytick")
     .template add<method_get_parts>                     ("get_parts")
+    .template add<method_is_same>                       ("is_same")
   ;
 
 
