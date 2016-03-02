@@ -1,8 +1,7 @@
-#include "globals.hh"
-
 #include <Python.h>
 
 #include "py.hh"
+#include "util.hh"
 
 using namespace py;
 

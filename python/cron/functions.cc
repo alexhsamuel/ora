@@ -4,9 +4,9 @@
 #include "cron/time.hh"
 #include "cron/time_zone.hh"
 #include "cron/types.hh"
-#include "globals.hh"
 #include "py.hh"
 #include "PyTime.hh"
+#include "util.hh"
 
 //------------------------------------------------------------------------------
 
