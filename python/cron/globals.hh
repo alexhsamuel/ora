@@ -1,47 +1,45 @@
 #pragma once
 
+#include <Python.h>
+
+#include "cron/types.hh"
+#include "py.hh"
 #include "PyDate.hh"
 #include "PyDaytime.hh"
-#include "PyTimeZone.hh"
 
-using namespace alxs;
 using namespace py;
 
 namespace alxs {
 
 //------------------------------------------------------------------------------
-// Helper functions
-//------------------------------------------------------------------------------
+// Declarations
 
-using DefaultDate = PyDate<cron::Date>;
-using DefaultDaytime = PyDaytime<cron::Daytime>;
+StructSequenceType* get_local_time_type();
+
+//------------------------------------------------------------------------------
+// Helpers
 
 inline ref<Object>
-make_date(
-  cron::Datenum const datenum,
-  Object* type=(Object*) &DefaultDate::type_)
+make_local(
+  cron::LocalDatenumDaytick const local,
+  Object* date_type=(Object*) &PyDateDefault::type_,
+  Object* daytime_type=(Object*) &PyDaytimeDefault::type_)
 {
-  // Special case fast path for the default date type.
-  if (type == (Object*) &DefaultDate::type_)
-    return DefaultDate::create(DefaultDate::Date::from_datenum(datenum));
-  else
-    // FIXME
-    assert(false);
+  auto result = get_local_time_type()->New();
+  result->initialize(0, make_date(local.datenum, date_type));
+  result->initialize(1, make_daytime(local.daytick, daytime_type));
+  return std::move(result);
 }
 
 
 inline ref<Object>
-make_daytime(
-  cron::Daytick const daytick,
-  Object* type=(Object*) &DefaultDaytime::type_)
+make_local_datenum_dayticks(
+  cron::LocalDatenumDaytick const local)
 {
-  // Special case fast path for the default daytime type.
-  if (type == (Object*) &DefaultDaytime::type_)
-    return DefaultDaytime::create(
-      DefaultDaytime::Daytime::from_daytick(daytick));
-  else
-    // FIXME
-    assert(false);
+  auto result = get_local_time_type()->New();
+  result->initialize(0, Long::FromLong(local.datenum));
+  result->initialize(1, Long::FromUnsignedLong(local.daytick));
+  return std::move(result);
 }
 
 
@@ -81,18 +79,8 @@ to_daytick(
 }
 
 
-// FIXME: Accept pytz time zones.
-inline cron::TimeZone const&
-to_time_zone(
-  Object* const arg)
-{
-  if (!PyTimeZone::Check(arg))
-    throw Exception(PyExc_TypeError, "tz not a TimeZone");
-  return *cast<PyTimeZone>(arg)->tz_;
-}
-
-
 //------------------------------------------------------------------------------
 
 }  // namespace alxs
+
 

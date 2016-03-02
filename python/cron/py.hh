@@ -150,14 +150,13 @@ inline Type* check_not_null(PyTypeObject* type)
 //------------------------------------------------------------------------------
 
 template<typename T>
-inline T* cast(PyObject* obj)
+inline T* 
+cast(PyObject* obj)
 {
   assert(T::Check(obj));  // FIXME: TypeError?
   return static_cast<T*>(obj);
 }
 
-
-//------------------------------------------------------------------------------
 
 inline PyObject* incref(PyObject* obj)
 {
@@ -313,6 +312,16 @@ inline ref<Object> none_ref()
 inline ref<Object> not_implemented_ref()
 {
   return ref<Object>::of(Py_NotImplemented);
+}
+
+
+//------------------------------------------------------------------------------
+
+template<typename T>
+inline ref<T>
+cast(ref<Object>&& obj)
+{
+  return ref<T>::take(obj.release());
 }
 
 

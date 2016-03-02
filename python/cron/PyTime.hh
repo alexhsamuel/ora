@@ -7,7 +7,6 @@
 #include "cron/format.hh"
 #include "cron/time.hh"
 #include "cron/time_zone.hh"
-#include "functions.hh"
 #include "py.hh"
 #include "PyDate.hh"
 #include "PyDaytime.hh"
@@ -78,6 +77,7 @@ public:
 
   // Methods.
   static ref<Object> method__from_datenum_daytick   (PyTypeObject*, Tuple*, Dict*);
+  static ref<Object> method__to_local               (PyTime*,       Tuple*, Dict*);
   static ref<Object> method_get_date_daytime        (PyTime*,       Tuple*, Dict*);
   static ref<Object> method_get_datenum_daytick     (PyTime*,       Tuple*, Dict*);
   static ref<Object> method_get_parts               (PyTime*,       Tuple*, Dict*);
@@ -334,6 +334,25 @@ PyTime<TIME>::method__from_datenum_daytick(
 
 template<typename TIME>
 ref<Object>
+PyTime<TIME>::method__to_local(
+  PyTime* const self,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] = {"time_zone", nullptr};
+  Object* tz;
+  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz);
+
+  auto local = cron::to_local_datenum_daytick(self->time_, to_time_zone(tz));
+  ref<Tuple> result = Tuple::New(2);
+  result->initialize(0, Long::FromLong(local.datenum));
+  result->initialize(1, Long::FromUnsignedLong(local.daytick));
+  return std::move(result);
+}
+
+
+template<typename TIME>
+ref<Object>
 PyTime<TIME>::method_get_date_daytime(
   PyTime* const self,
   Tuple* const args,
@@ -419,6 +438,7 @@ Methods<PyTime<TIME>>
 PyTime<TIME>::tp_methods_
   = Methods<PyTime>()
     .template add_class<method__from_datenum_daytick>   ("_from_datenum_daytick")
+    .template add<method__to_local>                     ("_to_local")
     .template add<method_get_date_daytime>              ("get_date_daytime")
     .template add<method_get_datenum_daytick>           ("get_datenum_daytick")
     .template add<method_get_parts>                     ("get_parts")
@@ -521,6 +541,37 @@ PyTime<TIME>::build_type(
     (unsigned int)        0,                              // tp_version_tag
     (destructor)          nullptr,                        // tp_finalize
   };
+}
+
+
+//------------------------------------------------------------------------------
+// Helpers
+
+using PyTimeDefault = PyTime<cron::Time>;
+
+/**
+ * From Python time and time zone objects, returns the local datenum and 
+ * daytick.
+ */
+inline cron::LocalDatenumDaytick
+to_local(
+  Object* const time,
+  Object* const time_zone)
+{
+  if (PyTime<cron::Time>::Check(time)) 
+    // Special case fast path for the default time type.
+    return cron::to_local_datenum_daytick(
+      cast<PyTime<cron::Time>>(time)->time_, to_time_zone(time_zone));
+
+  else {
+    // Call its _to_local() method.
+    auto local 
+      = cast<Sequence>(time->CallMethodObjArgs("_to_local", time_zone));
+    return {
+      (cron::Datenum) *cast<Long>(local->GetItem(0)),
+      (cron::Daytick) *cast<Long>(local->GetItem(1)),
+    };
+  }
 }
 
 

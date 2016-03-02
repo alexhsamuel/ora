@@ -794,6 +794,21 @@ PyDate<DATE>::type_;
 // Helper functions
 //------------------------------------------------------------------------------
 
+using PyDateDefault = PyDate<cron::Date>;
+
+inline ref<Object>
+make_date(
+  cron::Datenum const datenum,
+  Object* type=(Object*) &PyDateDefault::type_)
+{
+  // Special case fast path for the default date type.
+  if (type == (Object*) &PyDateDefault::type_)
+    return PyDateDefault::create(PyDateDefault::Date::from_datenum(datenum));
+  else 
+    return type->CallMethodObjArgs("from_datenum", Long::FromLong(datenum));
+}
+
+
 /**
  * Attempts to convert various kinds of Python date objects to Date.
  *

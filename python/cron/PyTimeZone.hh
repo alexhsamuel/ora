@@ -112,6 +112,20 @@ PyTimeZone::Check(
 
 
 //------------------------------------------------------------------------------
+// Helpers
+
+// FIXME: Accept pytz time zones.
+inline cron::TimeZone const&
+to_time_zone(
+  Object* const arg)
+{
+  if (!PyTimeZone::Check(arg))
+    throw Exception(PyExc_TypeError, "tz not a TimeZone");
+  return *cast<PyTimeZone>(arg)->tz_;
+}
+
+
+//------------------------------------------------------------------------------
 
 }  // namespace alxs
 

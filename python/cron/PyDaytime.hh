@@ -669,6 +669,23 @@ PyDaytime<DAYTIME>::build_type(
 // Helper functions
 //------------------------------------------------------------------------------
 
+using PyDaytimeDefault = PyDaytime<cron::Daytime>;
+
+inline ref<Object>
+make_daytime(
+  cron::Daytick const daytick,
+  Object* type=(Object*) &PyDaytimeDefault::type_)
+{
+  // Special case fast path for the default daytime type.
+  if (type == (Object*) &PyDaytimeDefault::type_)
+    return PyDaytimeDefault::create(
+      PyDaytimeDefault::Daytime::from_daytick(daytick));
+  else
+    return type->CallMethodObjArgs(
+      "from_daytick", Long::FromUnsignedLong(daytick));
+}
+
+
 /**
  * Attempts to convert various kinds of Python daytime object to `DAYTIME`.
  *

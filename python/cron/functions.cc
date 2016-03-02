@@ -4,7 +4,7 @@
 #include "cron/time.hh"
 #include "cron/time_zone.hh"
 #include "cron/types.hh"
-#include "functions.hh"
+#include "globals.hh"
 #include "py.hh"
 #include "PyTime.hh"
 
@@ -14,35 +14,6 @@ using namespace alxs;
 using namespace py;
 
 namespace {
-
-//------------------------------------------------------------------------------
-// Helpers
-
-StructSequenceType*
-get_local_time_type()
-{
-  static StructSequenceType type;
-
-  if (type.tp_name == nullptr) {
-    // Lazy one-time initialization.
-    static PyStructSequence_Field fields[] = {
-      {(char*) "date"       , nullptr},
-      {(char*) "daytime"    , nullptr},
-      {nullptr, nullptr}
-    };
-    static PyStructSequence_Desc desc{
-      (char*) "LocalTime",                                  // name
-      nullptr,                                              // doc
-      fields,                                               // fields
-      2                                                     // n_in_sequence
-    };
-
-    StructSequenceType::InitType(&type, &desc);
-  }
-
-  return &type;
-}
-
 
 //------------------------------------------------------------------------------
 
@@ -160,8 +131,8 @@ to_local(
   Tuple* const args,
   Dict* const kw_args)
 {
-  Object* time_arg;
-  Object* tz_arg;
+  Object* time;
+  Object* tz;
   Object* date_type = (Object*) &PyDate<cron::Date>::type_;
   Object* daytime_type = (Object*) &PyDaytime<cron::Daytime>::type_;
   static char const* const arg_names[] 
@@ -169,24 +140,9 @@ to_local(
   Arg::ParseTupleAndKeywords(
     args, kw_args, 
     "OO|OO", arg_names, 
-    &time_arg, &tz_arg);
+    &time, &tz, &date_type, &daytime_type);
   
-  auto const tz = to_time_zone(tz_arg);
-  cron::LocalDatenumDaytick local;
-
-  // Special case fast path for the default time type.
-  if (PyTime<cron::Time>::Check(time_arg)) {
-    auto time = cast<PyTime<cron::Time>>(time_arg)->time_;
-    local = cron::to_local_datenum_daytick(time, tz);
-  }
-  else
-    // FIXME
-    assert(false);
-
-  auto result = get_local_time_type()->New();
-  result->initialize(0, make_date(local.datenum, date_type));
-  result->initialize(1, make_daytime(local.daytick, daytime_type));
-  return std::move(result);
+  return make_local(alxs::to_local(time, tz), date_type, daytime_type);
 }
 
 
