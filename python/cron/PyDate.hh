@@ -152,7 +152,7 @@ PyDate<DATE>::add_to(
     name + ".MISSING");
 
   // Add in static data members.
-  Dict* dict = (Dict*) type_.tp_dict;
+  Dict* const dict = (Dict*) type_.tp_dict;
   assert(dict != nullptr);
   dict->SetItemString("INVALID" , create(Date::INVALID));
   dict->SetItemString("MAX"     , create(Date::MAX));
