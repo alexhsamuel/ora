@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <experimental/optional>
 
 namespace alxs {
 namespace cron {
@@ -108,6 +109,74 @@ rescale_int(
     return val * (NEW_DEN / OLD_DEN);
   else
     return round_div((intmax_t) (val * NEW_DEN), (intmax_t) OLD_DEN);
+}
+
+
+//------------------------------------------------------------------------------
+
+inline bool add_overflow(unsigned int       a, unsigned int       b, unsigned int      & r) { return __builtin_uadd_overflow  (a, b, &r); }
+inline bool add_overflow(unsigned long      a, unsigned long      b, unsigned long     & r) { return __builtin_uaddl_overflow (a, b, &r); }
+inline bool add_overflow(unsigned long long a, unsigned long long b, unsigned long long& r) { return __builtin_uaddll_overflow(a, b, &r); }
+
+inline bool add_overflow(         int       a,          int       b,          int      & r) { return __builtin_sadd_overflow  (a, b, &r); }
+inline bool add_overflow(         long      a,          long      b,          long     & r) { return __builtin_saddl_overflow (a, b, &r); }
+inline bool add_overflow(         long long a,          long long b,          long long& r) { return __builtin_saddll_overflow(a, b, &r); }
+
+inline bool sub_overflow(unsigned int       a, unsigned int       b, unsigned int      & r) { return __builtin_usub_overflow  (a, b, &r); }
+inline bool sub_overflow(unsigned long      a, unsigned long      b, unsigned long     & r) { return __builtin_usubl_overflow (a, b, &r); }
+inline bool sub_overflow(unsigned long long a, unsigned long long b, unsigned long long& r) { return __builtin_usubll_overflow(a, b, &r); }
+
+inline bool sub_overflow(         int       a,          int       b,          int      & r) { return __builtin_ssub_overflow  (a, b, &r); }
+inline bool sub_overflow(         long      a,          long      b,          long     & r) { return __builtin_ssubl_overflow (a, b, &r); }
+inline bool sub_overflow(         long long a,          long long b,          long long& r) { return __builtin_ssubll_overflow(a, b, &r); }
+
+inline bool mul_overflow(unsigned int       a, unsigned int       b, unsigned int      & r) { return __builtin_umul_overflow  (a, b, &r); }
+inline bool mul_overflow(unsigned long      a, unsigned long      b, unsigned long     & r) { return __builtin_umull_overflow (a, b, &r); }
+inline bool mul_overflow(unsigned long long a, unsigned long long b, unsigned long long& r) { return __builtin_umulll_overflow(a, b, &r); }
+
+inline bool mul_overflow(         int       a,          int       b,          int      & r) { return __builtin_smul_overflow  (a, b, &r); }
+inline bool mul_overflow(         long      a,          long      b,          long     & r) { return __builtin_smull_overflow (a, b, &r); }
+inline bool mul_overflow(         long long a,          long long b,          long long& r) { return __builtin_smulll_overflow(a, b, &r); }
+
+template<typename T>
+std::experimental::optional<T>
+add_overflow(
+  T a,
+  T b)
+{
+  T r;
+  if (add_overflow(a, b, r))
+    return {};
+  else
+    return r;
+}
+
+
+template<typename T>
+std::experimental::optional<T>
+sub_overflow(
+  T a,
+  T b)
+{
+  T r;
+  if (sub_overflow(a, b, r))
+    return {};
+  else
+    return r;
+}
+
+
+template<typename T>
+std::experimental::optional<T>
+mul_overflow(
+  T a,
+  T b)
+{
+  T r;
+  if (mul_overflow(a, b, r))
+    return {};
+  else
+    return r;
 }
 
 

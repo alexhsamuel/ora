@@ -322,11 +322,21 @@ private:
       return on_error<NonexistentLocalTime>();
     }
 
-    std::cerr << datenum << " - " << BASE << "\n";
-    return 
-        DENOMINATOR * SECS_PER_DAY * (datenum - BASE)
-      + (Offset) rescale_int<Daytick, DAYTICK_PER_SEC, DENOMINATOR>(daytick)
+    // Below, we compute this expression with overflow checking:
+    //
+    //     DENOMINATOR * SECS_PER_DAY * (datenum - BASE)
+    //   + (Offset) rescale_int<Daytick, DAYTICK_PER_SEC, DENOMINATOR>(daytick)
+    //   - DENOMINATOR * tz_offset;
+
+    Offset r;
+    Offset const off = 
+      (Offset) rescale_int<Daytick, DAYTICK_PER_SEC, DENOMINATOR>(daytick)
       - DENOMINATOR * tz_offset;
+    if (   mul_overflow(DENOMINATOR * SECS_PER_DAY, (Offset) datenum - BASE, r)
+        || add_overflow(r, off, r))
+      return on_error<InvalidTimeError>();
+    else
+      return r;
   }
 
   static Offset 
@@ -446,7 +456,7 @@ struct NsecTimeTraits
 {
   using Offset = uint64_t;
 
-  static Datenum constexpr base         = 255669;  // 1900-03-01
+  static Datenum constexpr base         = 693595;  // 1900-01-01
   static Offset  constexpr denominator  = (Offset) 1 << 30;
   static Offset  constexpr invalid      = std::numeric_limits<Offset>::max();
   static Offset  constexpr missing      = std::numeric_limits<Offset>::max() - 1;
