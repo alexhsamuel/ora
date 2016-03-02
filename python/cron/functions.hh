@@ -27,7 +27,7 @@ to_datenum(
   if (datenum_attr) 
     return (*datenum_attr)->long_value();
 
-  throw Exception(PyExc_TypeError, "not a date or datneum");
+  throw Exception(PyExc_TypeError, "not a date or datenum");
 }
 
 
