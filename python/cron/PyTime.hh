@@ -84,6 +84,7 @@ public:
   static Methods<PyTime> tp_methods_;
 
   // Getsets.
+  static ref<Object> get_offset                     (PyTime* self, void*);
   static GetSets<PyTime> tp_getsets_;
 
   /** Date format used to generate the repr.  */
@@ -429,9 +430,20 @@ PyTime<TIME>::tp_methods_
 //------------------------------------------------------------------------------
 
 template<typename TIME>
+ref<Object>
+PyTime<TIME>::get_offset(
+  PyTime* const self,
+  void* /* closure */)
+{
+  return Long::FromUnsignedLong(self->time_.get_offset());
+}
+
+
+template<typename TIME>
 GetSets<PyTime<TIME>>
 PyTime<TIME>::tp_getsets_ 
   = GetSets<PyTime>()
+    .template add_get<get_offset>       ("offset")
   ;
 
 
