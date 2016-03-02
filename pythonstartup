@@ -1,3 +1,6 @@
+# -*- python -*-
+
 from   cron import *
+from   datetime import *
 
 bd = 1973/Dec/3
