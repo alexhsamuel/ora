@@ -19,8 +19,8 @@ def test_nsec_time():
     t = from_local((1900/Jan/1, 0), UTC, Time=NsecTime)
     assert str(t) == "1900-01-01T00:00:00.000000000Z"
 
-    t = from_local((2444/May/29, Daytime.from_parts(1, 53, 4)), UTC, Time=NsecTime)
-    assert str(t) == "2444-05-29T01:53:04.000000000Z"
+    t = from_local((2444/May/29, Daytime.from_parts(1, 53, 3.999999997)), UTC, Time=NsecTime)
+    assert str(t) == "2444-05-29T01:53:03.999999997Z"
 
     t = from_local((2444/May/29, Daytime.from_parts(1, 53, 5)), UTC, Time=NsecTime)
     assert str(t) == "INVALID"
