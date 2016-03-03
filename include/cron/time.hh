@@ -210,6 +210,13 @@ public:
       : on_error<InvalidTimeError>());
   }
 
+  static TimeTemplate
+  from_timetick(
+    Timetick const timetick)
+  {
+    return TimeTemplate(rescale_int(timetick, TIMETICK_PER_SEC, DENOMINATOR));
+  }
+
   // Comparisons
 
   bool is_valid()   const { return in_range(MIN.offset_, offset_, MAX.offset_); }
@@ -293,6 +300,13 @@ public:
     const
   {
     return cron::convert_offset(get_offset(), DENOMINATOR, BASE, 1, DATENUM_UNIX_EPOCH);
+  }
+
+  Timetick
+  get_timetick()
+    const
+  {
+    return rescale_int(offset_, DENOMINATOR, TIMETICK_PER_SEC);
   }
 
 private:
