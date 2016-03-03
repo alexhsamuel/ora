@@ -315,6 +315,17 @@ inline ref<Object> not_implemented_ref()
 }
 
 
+inline ref<Object>
+take_not_null(
+  PyObject* obj)
+{
+  if (obj == nullptr)
+    throw Exception();
+  else
+    return ref<Object>::take(obj);
+}
+
+
 //------------------------------------------------------------------------------
 
 template<typename T>
@@ -513,8 +524,22 @@ public:
 
 //------------------------------------------------------------------------------
 
-class Long
+class Number
   : public Object
+{
+public:
+
+  auto Lshift(PyObject* rhs)
+    { return take_not_null(PyNumber_Lshift(this, rhs)); }
+  auto Or(PyObject* rhs)
+    { return take_not_null(PyNumber_Or(this, rhs)); }
+
+};
+
+//------------------------------------------------------------------------------
+
+class Long
+  : public Number
 {
 public:
 

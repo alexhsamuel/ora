@@ -214,7 +214,7 @@ public:
   from_timetick(
     Timetick const timetick)
   {
-    return TimeTemplate(rescale_int(timetick, TIMETICK_PER_SEC, DENOMINATOR));
+    return TimeTemplate(rescale_int<Timetick, TIMETICK_PER_SEC, DENOMINATOR>(timetick));
   }
 
   // Comparisons
@@ -306,7 +306,7 @@ public:
   get_timetick()
     const
   {
-    return rescale_int(offset_, DENOMINATOR, TIMETICK_PER_SEC);
+    return rescale_int<Timetick, DENOMINATOR, TIMETICK_PER_SEC>(offset_);
   }
 
 private:

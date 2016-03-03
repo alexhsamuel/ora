@@ -88,6 +88,7 @@ public:
   static ref<Object> get_invalid                    (PyTime* self, void*);
   static ref<Object> get_missing                    (PyTime* self, void*);
   static ref<Object> get_offset                     (PyTime* self, void*);
+  static ref<Object> get_timetick                   (PyTime* self, void*);
   static ref<Object> get_valid                      (PyTime* self, void*);
   static GetSets<PyTime> tp_getsets_;
 
@@ -503,6 +504,21 @@ PyTime<TIME>::get_offset(
 
 template<typename TIME>
 ref<Object>
+PyTime<TIME>::get_timetick(
+  PyTime* const self,
+  void* /* closure */)
+{
+  auto timetick = self->time_.get_timetick();
+  // There's no constructor for Python int from an int128, so we have to
+  // build it up.
+  ref<Number> r = Long::FromLong(timetick >> 64);
+  r = cast<Number>(r->Lshift(Long::FromLong(64)));
+  return r->Or(Long::FromUnsignedLong((unsigned long) timetick));
+}
+
+
+template<typename TIME>
+ref<Object>
 PyTime<TIME>::get_valid(
   PyTime* const self,
   void* /* closure */)
@@ -518,6 +534,7 @@ PyTime<TIME>::tp_getsets_
     .template add_get<get_invalid>      ("invalid")
     .template add_get<get_missing>      ("missing")
     .template add_get<get_offset>       ("offset")
+    .template add_get<get_timetick>     ("timetick")
     .template add_get<get_valid>        ("valid")
   ;
 

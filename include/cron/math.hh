@@ -116,7 +116,7 @@ rescale_int(
   else if (NEW_DEN % OLD_DEN == 0)
     return val * (NEW_DEN / OLD_DEN);
   else
-    return round_div((intmax_t) (val * NEW_DEN), (intmax_t) OLD_DEN);
+    return round_div((int128_t) (val * NEW_DEN), (int128_t) OLD_DEN);
 }
 
 
