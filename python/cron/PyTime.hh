@@ -630,6 +630,34 @@ to_local(
 }
 
 
+/**
+ * Attempts to convert various kinds of Python time objects to Time.
+ *
+ * If 'obj' is a time object, returns the equivalent time.  Otherwise, returns
+ * a null option with no exception set.
+ */
+template<typename TIME>
+optional<TIME> 
+convert_time_object(
+  Object* const obj)
+{
+  if (obj == nullptr)
+    // Use the default value.
+    return {};
+
+  if (PyTime<TIME>::Check(obj))
+    // Exact wrapped type.
+    return cast<PyTime<TIME>>(obj)->time_;
+
+  // FIXME: Check for other PyTime types.
+
+  // FIXME: Try for a time type.
+  
+  // No type match.
+  return {};
+}
+
+
 //------------------------------------------------------------------------------
 
 }  // namespace alxs
