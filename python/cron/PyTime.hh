@@ -86,11 +86,11 @@ public:
   static Methods<PyTime> tp_methods_;
 
   // Getsets.
-  static ref<Object> get_invalid                    (PyTime* self, void*);
-  static ref<Object> get_missing                    (PyTime* self, void*);
-  static ref<Object> get_offset                     (PyTime* self, void*);
-  static ref<Object> get_timetick                   (PyTime* self, void*);
-  static ref<Object> get_valid                      (PyTime* self, void*);
+  static ref<Object> get_invalid                    (PyTime*, void*);
+  static ref<Object> get_missing                    (PyTime*, void*);
+  static ref<Object> get_offset                     (PyTime*, void*);
+  static ref<Object> get_timetick                   (PyTime*, void*);
+  static ref<Object> get_valid                      (PyTime*, void*);
   static GetSets<PyTime> tp_getsets_;
 
   /** Date format used to generate the repr.  */
@@ -100,10 +100,11 @@ public:
 
 private:
 
-  static void tp_init(PyTime* self, Tuple* args, Dict* kw_args);
-  static void tp_dealloc(PyTime* self);
-  static ref<Unicode> tp_repr(PyTime* self);
-  static ref<Unicode> tp_str(PyTime* self);
+  static void tp_init(PyTime*, Tuple* args, Dict* kw_args);
+  static void tp_dealloc(PyTime*);
+  static ref<Unicode> tp_repr(PyTime*);
+  static ref<Unicode> tp_str(PyTime*);
+  static ref<Object> tp_richcompare(PyTime*, Object*, int);
 
   static Type build_type(string const& type_name);
 
@@ -225,6 +226,34 @@ PyTime<TIME>::tp_str(
 {
   // FIXME: Not UTC?
   return Unicode::from((*str_format_)(self->time_, cron::UTC));  
+}
+
+
+template<typename TIME>
+ref<Object>
+PyTime<TIME>::tp_richcompare(
+  PyTime* const self,
+  Object* const other,
+  int const comparison)
+{
+  auto time_opt = convert_time_object<Time>(other);
+  if (!time_opt)
+    return not_implemented_ref();
+
+  Time const t0 = self->time_;
+  Time const t1 = *time_opt;
+
+  bool result;
+  switch (comparison) {
+  case Py_EQ: result = t0 == t1; break;
+  case Py_GE: result = t0 >= t1; break;
+  case Py_GT: result = t0 >  t1; break;
+  case Py_LE: result = t0 <= t1; break;
+  case Py_LT: result = t0 <  t1; break;
+  case Py_NE: result = t0 != t1; break;
+  default:    result = false; assert(false);
+  }
+  return Bool::from(result);
 }
 
 
@@ -583,7 +612,7 @@ PyTime<TIME>::build_type(
     (char const*)         nullptr,                        // tp_doc
     (traverseproc)        nullptr,                        // tp_traverse
     (inquiry)             nullptr,                        // tp_clear
-    (richcmpfunc)         nullptr,                        // tp_richcompare
+    (richcmpfunc)         wrap<PyTime, tp_richcompare>,   // tp_richcompare
     (Py_ssize_t)          0,                              // tp_weaklistoffset
     (getiterfunc)         nullptr,                        // tp_iter
     (iternextfunc)        nullptr,                        // tp_iternext
@@ -636,8 +665,8 @@ to_local(
     auto local 
       = cast<Sequence>(time->CallMethodObjArgs("_to_local", time_zone));
     return {
-      (cron::Datenum) *cast<Long>(local->GetItem(0)),
-      (cron::Daytick) *cast<Long>(local->GetItem(1)),
+      (cron::Datenum) (long) *cast<Long>(local->GetItem(0)),
+      (cron::Daytick) (long) *cast<Long>(local->GetItem(1)),
     };
   }
 }
@@ -663,8 +692,12 @@ convert_time_object(
     return cast<PyTime<TIME>>(obj)->time_;
 
   // FIXME: Check for other PyTime types.
+  // When doing so, interpret INVALID and MISSING.
 
-  // FIXME: Try for a time type.
+  // If the type provides timetick, use that.
+  auto timetick_obj = obj->GetAttrString("timetick", false);
+  if (timetick_obj != nullptr) 
+    return TIME::from_timetick((cron::Timetick) *timetick_obj->Long());
   
   // No type match.
   return {};
