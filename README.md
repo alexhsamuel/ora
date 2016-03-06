@@ -4,8 +4,8 @@ Cron is an implementation of dates and times in the Gregorian calendar.  Many
 of these already exist.  Cron differs from them by providing, in a single
 package,
 
-- An API and defaults that encourage clear thinking about what dates and times really
-  represent. 
+- An API and defaults that encourage clear thinking about what dates and times
+  really represent.
 - A common C++ and Python API.
 - Fast nonvirtual, inline-able integer implementations.
 - Support for various widths and precisions.
