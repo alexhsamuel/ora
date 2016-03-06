@@ -214,7 +214,8 @@ public:
   from_timetick(
     Timetick const timetick)
   {
-    return TimeTemplate(rescale_int<Timetick, TIMETICK_PER_SEC, DENOMINATOR>(timetick));
+    return TimeTemplate(rescale_int<Timetick, TIMETICK_PER_SEC, DENOMINATOR>(
+      timetick - TIMETICK_PER_SEC * SECS_PER_DAY * BASE));
   }
 
   // Comparisons
@@ -306,7 +307,11 @@ public:
   get_timetick()
     const
   {
-    return rescale_int<Timetick, DENOMINATOR, TIMETICK_PER_SEC>(offset_);
+    return 
+      is_valid() 
+      ?   rescale_int<Timetick, DENOMINATOR, TIMETICK_PER_SEC>(offset_)
+        + TIMETICK_PER_SEC * SECS_PER_DAY * BASE
+      : TIMETICK_INVALID;
   }
 
 private:
