@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "cron/format.hh"
+#include "cron/math.hh"
 #include "cron/time.hh"
 #include "cron/time_zone.hh"
 #include "py.hh"
@@ -508,12 +509,7 @@ PyTime<TIME>::get_timetick(
   PyTime* const self,
   void* /* closure */)
 {
-  auto timetick = self->time_.get_timetick();
-  // There's no constructor for Python int from an int128, so we have to
-  // build it up.
-  ref<Number> r = Long::FromLong(timetick >> 64);
-  r = cast<Number>(r->Lshift(Long::FromLong(64)));
-  return r->Or(Long::FromUnsignedLong((unsigned long) timetick));
+  return Long::from(self->time_.get_timetick());
 }
 
 

@@ -550,10 +550,29 @@ public:
   static auto FromUnsignedLong(unsigned long val)
     { return ref<Long>::take(PyLong_FromUnsignedLong(val)); }
 
+  static ref<Long> from(__int128 val);
+  static ref<Long> from(unsigned __int128 val);
+
   operator long()
     { return PyLong_AsLong(this); }
 
 };
+
+
+inline ref<Long> 
+Long::from(__int128 val)
+{ 
+  return ref<Long>::take(check_not_null(
+    _PyLong_FromByteArray((unsigned char const*) &val, sizeof(val), 1, 1)));
+}
+
+
+inline ref<Long> 
+Long::from(unsigned __int128 val)
+{ 
+  return ref<Long>::take(check_not_null(
+    _PyLong_FromByteArray((unsigned char const*) &val, sizeof(val), 1, 0)));
+}
 
 
 //------------------------------------------------------------------------------
