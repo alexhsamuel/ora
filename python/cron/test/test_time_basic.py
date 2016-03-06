@@ -40,7 +40,7 @@ def test_comparison():
 
 
 def test_zero():
-    t = Time.from_date_daytime(0, 0, UTC)
+    t = from_local((0, 0), UTC)
     p = t.get_parts(UTC)
     assert p.date.year              == 1
     assert p.date.month             == Jan
@@ -53,4 +53,4 @@ def test_zero():
     assert p.time_zone.is_dst       == False
 
     midnight = Daytime.from_parts(0, 0, 0)
-    assert t == Time.from_date_daytime(1/Jan/1, midnight, UTC)
+    assert t == from_local((1/Jan/1, midnight), UTC)
