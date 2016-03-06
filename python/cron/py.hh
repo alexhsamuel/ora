@@ -553,8 +553,13 @@ public:
   static ref<Long> from(__int128 val);
   static ref<Long> from(unsigned __int128 val);
 
-  operator long()
+  operator int64_t()
     { return PyLong_AsLong(this); }
+  operator uint64_t()
+    { return PyLong_AsUnsignedLong(this); }
+
+  operator __int128();
+  operator unsigned __int128();
 
 };
 
@@ -572,6 +577,26 @@ Long::from(unsigned __int128 val)
 { 
   return ref<Long>::take(check_not_null(
     _PyLong_FromByteArray((unsigned char const*) &val, sizeof(val), 1, 0)));
+}
+
+
+inline 
+Long::operator __int128()
+{
+  __int128 val = 0;
+  check_not_minus_one(_PyLong_AsByteArray(
+    (PyLongObject*) this, (unsigned char*) &val, sizeof(val), 1, 1));
+  return val;
+}
+
+
+inline
+Long::operator unsigned __int128()
+{
+  unsigned __int128 val;
+  check_not_minus_one(_PyLong_AsByteArray(
+    (PyLongObject*) this, (unsigned char*) &val, sizeof(val), 1, 0));
+  return val;
 }
 
 
