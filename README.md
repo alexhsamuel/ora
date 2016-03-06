@@ -31,6 +31,8 @@ Cron currently has the following limitations.
 
 - Support for x86-64 only.
 
+Also, cron is not yet finished.
+
 
 # Setup
 
