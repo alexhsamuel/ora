@@ -65,6 +65,13 @@
 
 - move `py.hh` to plynth and merge with other versions
 
+- It doesn't really make sense to have C++ types corresponding to the Python
+  types, as instances are checked at runtime anyway.  Get rid of the C++ types
+  and make Object a very fat interface?  Or make cast() a no-op?
+
+- Provide wrap() template methods for dynamic methods, in addition to the
+  current function/static method wrappers.
+
 # Misc
 
 - Put back `from_parts()` overloading in date, time, daytime ctors?
