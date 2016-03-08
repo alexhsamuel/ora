@@ -68,7 +68,7 @@ from_local(
       cron::from_local<cron::Time>(datenum, daytick, tz, first));
 
   else {
-    auto factory = time_type_arg->GetAttrString("_from_datenum_daytick");
+    auto factory = time_type_arg->GetAttrString("_from_local");
     if (factory == nullptr)
       throw TypeError("not a time type");
     else {

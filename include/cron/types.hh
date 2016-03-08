@@ -177,7 +177,7 @@ Timetick constexpr TIMETICK_PER_SEC         = ((int128_t) 1) << 80;
 double   constexpr TIMETICK_SEC             = 1. / TIMETICK_PER_SEC;
 Timetick constexpr TIMETICK_MIN             = 0;
 Timetick constexpr TIMETICK_MAX             = 3652059 * SECS_PER_DAY * TIMETICK_PER_SEC;
-Timetick constexpr TIMETICK_INVALID         = ((int128_t) -1) << 127;
+Timetick const     TIMETICK_INVALID         = ((int128_t) -1) << 127;
 
 //------------------------------------------------------------------------------
 

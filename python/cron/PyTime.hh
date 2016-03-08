@@ -72,12 +72,20 @@ public:
    */
   Time const time_;
 
+private:
+
+  static void tp_init(PyTime*, Tuple* args, Dict* kw_args);
+  static void tp_dealloc(PyTime*);
+  static ref<Unicode> tp_repr(PyTime*);
+  static ref<Unicode> tp_str(PyTime*);
+  static ref<Object> tp_richcompare(PyTime*, Object*, int);
+
   // Number methods.
   static ref<Object> nb_matrix_multiply         (PyTime*, Object*, bool);
   static PyNumberMethods tp_as_number_;
 
   // Methods.
-  static ref<Object> method__from_datenum_daytick   (PyTypeObject*, Tuple*, Dict*);
+  static ref<Object> method__from_local             (PyTypeObject*, Tuple*, Dict*);
   static ref<Object> method__to_local               (PyTime*,       Tuple*, Dict*);
   static ref<Object> method_get_date_daytime        (PyTime*,       Tuple*, Dict*);
   static ref<Object> method_get_datenum_daytick     (PyTime*,       Tuple*, Dict*);
@@ -97,14 +105,6 @@ public:
   static unique_ptr<cron::TimeFormat> repr_format_;
   /** Date format used to generate the str.  */
   static unique_ptr<cron::TimeFormat> str_format_;
-
-private:
-
-  static void tp_init(PyTime*, Tuple* args, Dict* kw_args);
-  static void tp_dealloc(PyTime*);
-  static ref<Unicode> tp_repr(PyTime*);
-  static ref<Unicode> tp_str(PyTime*);
-  static ref<Object> tp_richcompare(PyTime*, Object*, int);
 
   static Type build_type(string const& type_name);
 
@@ -347,7 +347,7 @@ PyTime<TIME>::tp_as_number_ = {
 
 template<typename TIME>
 ref<Object>
-PyTime<TIME>::method__from_datenum_daytick(
+PyTime<TIME>::method__from_local(
   PyTypeObject* const type,
   Tuple* const args,
   Dict* const kw_args)
@@ -489,7 +489,7 @@ template<typename TIME>
 Methods<PyTime<TIME>>
 PyTime<TIME>::tp_methods_
   = Methods<PyTime>()
-    .template add_class<method__from_datenum_daytick>   ("_from_datenum_daytick")
+    .template add_class<method__from_local>             ("_from_local")
     .template add<method__to_local>                     ("_to_local")
     .template add<method_get_date_daytime>              ("get_date_daytime")
     .template add<method_get_datenum_daytick>           ("get_datenum_daytick")

@@ -553,6 +553,8 @@ public:
   static ref<Long> from(__int128 val);
   static ref<Long> from(unsigned __int128 val);
 
+  operator long()
+    { return PyLong_AsLong(this); }
   operator int64_t()
     { return PyLong_AsLong(this); }
   operator uint64_t()
