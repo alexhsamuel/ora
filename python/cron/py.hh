@@ -315,14 +315,15 @@ inline ref<Object> not_implemented_ref()
 }
 
 
-inline ref<Object>
+template<typename TYPE>
+inline ref<TYPE>
 take_not_null(
   PyObject* obj)
 {
   if (obj == nullptr)
     throw Exception();
   else
-    return ref<Object>::take(obj);
+    return ref<TYPE>::take(obj);
 }
 
 
@@ -530,9 +531,9 @@ class Number
 public:
 
   auto Lshift(PyObject* rhs)
-    { return take_not_null(PyNumber_Lshift(this, rhs)); }
+    { return take_not_null<Number>(PyNumber_Lshift(this, rhs)); }
   auto Or(PyObject* rhs)
-    { return take_not_null(PyNumber_Or(this, rhs)); }
+    { return take_not_null<Number>(PyNumber_Or(this, rhs)); }
 
 };
 
@@ -569,16 +570,16 @@ public:
 inline ref<Long> 
 Long::from(__int128 val)
 { 
-  return ref<Long>::take(check_not_null(
-    _PyLong_FromByteArray((unsigned char const*) &val, sizeof(val), 1, 1)));
+  return take_not_null<Long>(
+    _PyLong_FromByteArray((unsigned char const*) &val, sizeof(val), 1, 1));
 }
 
 
 inline ref<Long> 
 Long::from(unsigned __int128 val)
 { 
-  return ref<Long>::take(check_not_null(
-    _PyLong_FromByteArray((unsigned char const*) &val, sizeof(val), 1, 0)));
+  return take_not_null<Long>(
+    _PyLong_FromByteArray((unsigned char const*) &val, sizeof(val), 1, 0));
 }
 
 
