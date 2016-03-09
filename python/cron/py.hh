@@ -556,13 +556,11 @@ public:
 
   operator long()
     { return PyLong_AsLong(this); }
-  operator int64_t()
-    { return PyLong_AsLong(this); }
-  operator uint64_t()
+  operator unsigned long()
     { return PyLong_AsUnsignedLong(this); }
 
-  operator __int128();
-  operator unsigned __int128();
+  explicit operator __int128();
+  explicit operator unsigned __int128();
 
 };
 
