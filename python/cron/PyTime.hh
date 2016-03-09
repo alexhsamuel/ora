@@ -704,7 +704,26 @@ convert_time_object(
   // Try to handle it like a `datetime.datetime`.
   if (PyDateTime_Check(obj)) {
     // First, make sure it's localized.
-    // FIXME: Finish.
+    auto const tzinfo = obj->GetAttrString("tzinfo", false);
+    if (tzinfo == nullptr)
+      // FIXME: Hmm, maybe we shouldn't throw here?  But then how will the poor
+      // user know why it didn't work?
+      throw py::ValueError("unlocalized datetime doesn't represent a time");
+    auto const tz_name = tzinfo->GetAttrString("zone")->Str()->as_utf8_string();
+    std::cerr << "tz_name = " << tz_name << "\n";
+    auto const tz = cron::get_time_zone(tz_name);
+    
+    // FIXME: Provide a all-integer ctor with (sec, usec).
+    return TIME(
+      PyDateTime_GET_YEAR(obj),
+      PyDateTime_GET_MONTH(obj) - 1,
+      PyDateTime_GET_DAY(obj) - 1,
+      PyDateTime_DATE_GET_HOUR(obj),
+      PyDateTime_DATE_GET_MINUTE(obj),
+      PyDateTime_DATE_GET_SECOND(obj) 
+      + PyDateTime_DATE_GET_MICROSECOND(obj) * 1e-6,
+      tz,
+      true);
   }
 
   // No type match.
