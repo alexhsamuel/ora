@@ -45,10 +45,6 @@
 
 ## PyTimeZone
 
-## PyDateDuration
-
-## PyTime
-
 Create a separate zoneinfo object with a load method.
 
 ```python
@@ -61,6 +57,10 @@ but we also want a convenience method,
 ```python
 tz = get_time_zone("US/Eastern")
 ```
+
+## PyDateDuration
+
+## PyTime
 
 ## PyTimeDuration
 
