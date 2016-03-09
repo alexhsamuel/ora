@@ -58,6 +58,9 @@ but we also want a convenience method,
 tz = get_time_zone("US/Eastern")
 ```
 
+While we're at it, we probably need to start using `std::shared_ptr` for time
+zone objects.
+
 ## PyDateDuration
 
 ## PyTime
