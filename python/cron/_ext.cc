@@ -1,4 +1,5 @@
 #include <Python.h>
+#include <datetime.h>
 
 #include "PyDate.hh"
 #include "PyDaytime.hh"
@@ -35,6 +36,12 @@ module_def{
 PyMODINIT_FUNC
 PyInit__ext(void)
 {
+  // Set up the C API to the standard library datetime module.
+  if (PyDateTimeAPI == nullptr) {
+    PyDateTime_IMPORT;
+    assert(PyDateTimeAPI != nullptr);
+  }
+
   auto module = Module::Create(&module_def);
 
   try {

@@ -4,6 +4,8 @@
 #include <experimental/optional>
 #include <iostream>
 
+#include <datetime.h>
+
 #include "cron/format.hh"
 #include "cron/math.hh"
 #include "cron/time.hh"
@@ -698,7 +700,13 @@ convert_time_object(
   auto timetick_obj = obj->GetAttrString("timetick", false);
   if (timetick_obj != nullptr) 
     return TIME::from_timetick((cron::Timetick) *timetick_obj->Long());
-  
+
+  // Try to handle it like a `datetime.datetime`.
+  if (PyDateTime_Check(obj)) {
+    // First, make sure it's localized.
+    // FIXME: Finish.
+  }
+
   // No type match.
   return {};
 }

@@ -8,3 +8,6 @@ DAY = timedelta(1, 0)
 SEC = timedelta(0, 1)
 
 bd = 1973/Dec/3
+t = from_local((bd, Daytime.from_parts(12, 30, 0)), UTC)
+ts = pytz.UTC.localize(datetime(1973, 12, 3, 12, 30))
+
