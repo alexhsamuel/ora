@@ -705,7 +705,7 @@ convert_time_object(
   if (PyDateTime_Check(obj)) {
     // First, make sure it's localized.
     auto const tzinfo = obj->GetAttrString("tzinfo", false);
-    if (tzinfo == nullptr)
+    if (tzinfo == Py_None)
       // FIXME: Hmm, maybe we shouldn't throw here?  But then how will the poor
       // user know why it didn't work?
       throw py::ValueError("unlocalized datetime doesn't represent a time");
