@@ -81,9 +81,8 @@ Python conversion
 
   Time()
   Time(offset)
-  Time(utc_datenum, utc_daytick)
 
-  Time._from_datenum_daytick(datenum, daytick, tz, first)
+  Time._from_local(datenum, daytick, tz, first)
 
   from_local(LocalTime, TimeZone) -> Time
   from_local((Datenum, Daytick), TimeZone) -> Time
