@@ -44,7 +44,7 @@ To unpack the time zone data (one time only):
 make zoneinfo
 ```
 
-# Comparison with `std::chrono`
+# Comparison with C++ `std::chrono`
 
 - chrono splits out the duration from the epoch
 - chrono uses a nice `ratio` class.
@@ -52,3 +52,12 @@ make zoneinfo
 - chrono provides user-defined literals
 - chorno doesn't provide time of day or date types
 - chrono doesn't provide NaT / invalid (good or bad?)
+
+
+# Comparison with Python `datetime`
+
+- `datetime.datetime` represents times as year, month, date, hour, minute,
+  second, microsecond components.  Cron's `Time` stores integral ticks from a
+  fixed offset, which means decomposition into components is more expensive, but
+  other operations are cheaper.
+
