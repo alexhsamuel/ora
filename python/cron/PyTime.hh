@@ -32,7 +32,7 @@ using std::unique_ptr;
 StructSequenceType* get_time_parts_type();
 
 // template<typename TIME> optional<TIME> convert_object(Object*);
-template<typename TIME> optional<TIME> convert_time_object(Object*);
+template<typename TIME> TIME convert_time_object(Object*);
 
 //------------------------------------------------------------------------------
 // Type class
@@ -238,12 +238,14 @@ PyTime<TIME>::tp_richcompare(
   Object* const other,
   int const comparison)
 {
-  auto time_opt = convert_time_object<Time>(other);
-  if (!time_opt)
-    return not_implemented_ref();
-
   Time const t0 = self->time_;
-  Time const t1 = *time_opt;
+  Time t1;
+  try {
+    t1 = convert_time_object<Time>(other);
+  } catch (Exception) {
+    Exception::Clear();
+    return not_implemented_ref();
+  }
 
   bool result;
   switch (comparison) {
@@ -482,8 +484,15 @@ PyTime<TIME>::method_is_same(
   Object* object;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &object);
 
-  auto time_opt = convert_time_object<Time>(object);
-  return Bool::from(time_opt && self->time_.is(*time_opt));
+  Time time;
+  try {
+    time = convert_time_object<Time>(object);
+  }
+  catch (Exception) {
+    Exception::Clear();
+    return Bool::from(false);
+  }
+  return Bool::from(self->time_.is(time));
 }
 
 
@@ -677,17 +686,17 @@ to_local(
 /**
  * Attempts to convert various kinds of Python time objects to Time.
  *
- * If 'obj' is a time object, returns the equivalent time.  Otherwise, returns
- * a null option with no exception set.
+ * If 'obj' is a time object, returns the equivalent time.  Otherwise, throws
+ * 'Exception'.
  */
 template<typename TIME>
-optional<TIME> 
+TIME
 convert_time_object(
   Object* const obj)
 {
   if (obj == nullptr)
     // Use the default value.
-    return {};
+    return TIME();
 
   if (PyTime<TIME>::Check(obj))
     // Exact wrapped type.
@@ -706,11 +715,8 @@ convert_time_object(
     // First, make sure it's localized.
     auto const tzinfo = obj->GetAttrString("tzinfo", false);
     if (tzinfo == Py_None)
-      // FIXME: Hmm, maybe we shouldn't throw here?  But then how will the poor
-      // user know why it didn't work?
       throw py::ValueError("unlocalized datetime doesn't represent a time");
     auto const tz_name = tzinfo->GetAttrString("zone")->Str()->as_utf8_string();
-    std::cerr << "tz_name = " << tz_name << "\n";
     auto const tz = cron::get_time_zone(tz_name);
     
     // FIXME: Provide a all-integer ctor with (sec, usec).
@@ -726,8 +732,7 @@ convert_time_object(
       true);
   }
 
-  // No type match.
-  return {};
+  throw py::TypeError("not a time");
 }
 
 
