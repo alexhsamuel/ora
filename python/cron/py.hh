@@ -474,6 +474,10 @@ inline std::ostream& operator<<(std::ostream& os, ref<T>& ref)
 }
 
 
+extern ref<Object> const
+None;
+
+
 //------------------------------------------------------------------------------
 
 class Dict

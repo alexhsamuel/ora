@@ -194,11 +194,10 @@ PyTime<TIME>::tp_init(
   Tuple* const args,
   Dict* const kw_args)
 {
-  // FIXME
-  typename Time::Offset offset;
-  Arg::ParseTuple(args, "|k", &offset);
+  Object* obj = (Object*) Py_None;
+  Arg::ParseTuple(args, "|O", &obj);
 
-  new(self) PyTime(Time::from_offset(offset));
+  new(self) PyTime(convert_time_object<Time>(obj));
 }
 
 
