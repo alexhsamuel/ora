@@ -49,6 +49,19 @@
 
 ## PyTime
 
+Create a separate zoneinfo object with a load method.
+
+```python
+zoneinfo = Zoneinfo("/usr/share/zoneinfo")
+tz = zoneinfo.load("US/Eastern")
+```
+
+but we also want a convenience method,
+
+```python
+tz = get_time_zone("US/Eastern")
+```
+
 ## PyTimeDuration
 
 ## PyCalendar
