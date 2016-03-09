@@ -41,6 +41,37 @@ get_time_zone_parts_type()
 }
 
 
+/**
+ * Attempts to convert various kinds of Python time zone objects.
+ */
+optional<cron::TimeZone const*>
+convert_time_zone_object(
+  Object* const obj)
+{
+  if (PyTimeZone::Check(obj))
+    return static_cast<PyTimeZone*>(obj)->tz_;
+
+  // If it has a 'zone' attribute, interpret that as a time zone name.
+  auto zone_attr = obj->GetAttrString("zone", false);
+  if (zone_attr != nullptr) 
+    return &cron::get_time_zone(zone_attr->Str()->as_utf8_string());
+    
+  // Not a time zone object.
+  return {};
+}
+
+
+optional<cron::TimeZone const*>
+convert_object_to_time_zone(
+  Object* const obj)
+{
+  // FIXME: Interpret names as time zones?
+  return convert_time_zone_object(obj);
+}
+
+
+//------------------------------------------------------------------------------
+
 void
 PyTimeZone::add_to(
   Module& module,
@@ -76,6 +107,14 @@ PyTimeZone::tp_dealloc(
 
 
 ref<Unicode>
+PyTimeZone::tp_str(
+  PyTimeZone* const self)
+{
+  return Unicode::from(self->tz_->get_name());  
+}
+
+
+ref<Unicode>
 PyTimeZone::tp_repr(
   PyTimeZone* const self)
 {
@@ -86,11 +125,20 @@ PyTimeZone::tp_repr(
 }
 
 
-ref<Unicode>
-PyTimeZone::tp_str(
-  PyTimeZone* const self)
+void
+PyTimeZone::tp_init(
+  PyTimeZone* const self,
+  Tuple* const args,
+  Dict* const kw_args)
 {
-  return Unicode::from(self->tz_->get_name());  
+  Object* obj = nullptr;
+  Arg::ParseTuple(args, "O", &obj);
+
+  auto tz = convert_time_zone_object(obj);
+  if (tz)
+    new(self) PyTimeZone(*tz);
+  else
+    throw TypeError("not a time zone");
 }
 
 
@@ -238,7 +286,7 @@ PyTimeZone::build_type(
     (descrgetfunc)        nullptr,                        // tp_descr_get
     (descrsetfunc)        nullptr,                        // tp_descr_set
     (Py_ssize_t)          0,                              // tp_dictoffset
-    (initproc)            nullptr,                        // tp_init
+    (initproc)            wrap<PyTimeZone, tp_init>,      // tp_init
     (allocfunc)           nullptr,                        // tp_alloc
     (newfunc)             PyType_GenericNew,              // tp_new
     (freefunc)            nullptr,                        // tp_free

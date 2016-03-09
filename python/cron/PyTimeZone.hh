@@ -23,8 +23,8 @@ using std::unique_ptr;
 
 extern StructSequenceType* get_time_zone_parts_type();
 
-// optional<TIME_ZONE const*> convert_object(Object*);
-// optional<TIME_ZONE const*> convert_time_zone_object(Object*);
+optional<cron::TimeZone const*> convert_time_zone_object(Object*);
+optional<cron::TimeZone const*> convert_object_to_time_zone(Object*);
 
 //------------------------------------------------------------------------------
 // Type class
@@ -78,10 +78,10 @@ public:
 
 private:
 
-  static void tp_init(PyTimeZone* self, Tuple* args, Dict* kw_args);
-  static void tp_dealloc(PyTimeZone* self);
-  static ref<Unicode> tp_repr(PyTimeZone* self);
-  static ref<Unicode> tp_str(PyTimeZone* self);
+  static void           tp_dealloc  (PyTimeZone*);
+  static ref<Unicode>   tp_str      (PyTimeZone*);
+  static ref<Unicode>   tp_repr     (PyTimeZone*);
+  static void           tp_init     (PyTimeZone*, Tuple*, Dict*);
 
   static Type build_type(string const& type_name);
 
