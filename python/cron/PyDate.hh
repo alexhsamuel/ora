@@ -382,7 +382,10 @@ PyDate<DATE>::method_convert(
   if (kw_args != nullptr)
     throw TypeError("convert() takes no keyword arguments");
 
-  auto date = convert_object_to_date<Date>(obj);
+  if (obj->IsInstance(type))
+    return ref<Object>::of(obj);
+
+  auto const date = convert_object_to_date<Date>(obj);
   if (date)
     return create(*date, type);
   else

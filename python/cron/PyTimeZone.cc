@@ -42,31 +42,60 @@ get_time_zone_parts_type()
 
 
 /**
- * Attempts to convert various kinds of Python time zone objects.
+ * Interprets 'obj' as a time zone.
  */
-optional<cron::TimeZone const*>
-convert_time_zone_object(
+cron::TimeZone const&
+to_time_zone(
   Object* const obj)
 {
   if (PyTimeZone::Check(obj))
-    return static_cast<PyTimeZone*>(obj)->tz_;
+    return *static_cast<PyTimeZone*>(obj)->tz_;
 
-  // If it has a 'zone' attribute, interpret that as a time zone name.
+  // If it has a 'zone' attribute, as pytz time zone objects, interpret that as
+  // a time zone name.
   auto zone_attr = obj->GetAttrString("zone", false);
-  if (zone_attr != nullptr) 
-    return &cron::get_time_zone(zone_attr->Str()->as_utf8_string());
+  if (zone_attr != nullptr) {
+    auto const tz_name = zone_attr->Str()->as_utf8_string();
+    try {
+      return cron::get_time_zone(tz_name);
+    }
+    catch (alxs::ValueError) {
+      throw py::ValueError(string("not a time zone: ") + tz_name);
+    }
+  }
     
   // Not a time zone object.
-  return {};
+  throw py::TypeError("not a time zone");
 }
 
 
-optional<cron::TimeZone const*>
-convert_object_to_time_zone(
+/**
+ * Attempts to convert 'obj' to a time zone.
+ */
+cron::TimeZone const&
+convert_to_time_zone(
   Object* const obj)
 {
-  // FIXME: Interpret names as time zones?
-  return convert_time_zone_object(obj);
+  try {
+    return to_time_zone(obj);
+  }
+  catch (Exception) {
+    Exception::Clear();
+  }
+
+  // If it's a string, interpret it as a time zone name.
+  if (Unicode::Check(obj)) {
+    auto const tz_name = cast<Unicode>(obj)->as_utf8_string();
+    try {
+      return cron::get_time_zone(tz_name);
+    }
+    catch (alxs::ValueError) {
+      throw py::ValueError(string("not a time zone: ") + tz_name);
+    }
+  }
+
+  // Can't convert to a time zone.
+  throw py::TypeError("can't convert to a time zone");
 }
 
 
@@ -134,11 +163,7 @@ PyTimeZone::tp_init(
   Object* obj = nullptr;
   Arg::ParseTuple(args, "O", &obj);
 
-  auto tz = convert_time_zone_object(obj);
-  if (tz)
-    new(self) PyTimeZone(*tz);
-  else
-    throw TypeError("not a time zone");
+  new(self) PyTimeZone(&to_time_zone(obj));
 }
 
 
@@ -194,10 +219,27 @@ PyTimeZone::tp_as_number_ = {
 //------------------------------------------------------------------------------
 
 ref<Object>
+PyTimeZone::method_convert(
+  PyTypeObject* const type,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] = {"time_zone", nullptr};
+  Object* obj;
+  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &obj);
+
+  if (obj->IsInstance(type))
+    return ref<Object>::of(obj);
+
+  return create(&convert_to_time_zone(obj));
+}
+
+
+ref<Object>
 PyTimeZone::method_get(
   PyTypeObject* const type,
-  Tuple* args,
-  Dict* kw_args)
+  Tuple* const args,
+  Dict* const kw_args)
 {
   static char const* const arg_names[] = {"name", nullptr};
   char const* name;
@@ -217,6 +259,7 @@ PyTimeZone::method_get(
 Methods<PyTimeZone>
 PyTimeZone::tp_methods_
   = Methods<PyTimeZone>()
+    .template add_class<method_convert>         ("convert")
     .template add_class<method_get>             ("get")
   ;
 

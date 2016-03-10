@@ -354,6 +354,8 @@ public:
   ref<Object> GetAttrString(char const* const name, bool check=true);
   bool IsInstance(PyObject* type)
     { return (bool) PyObject_IsInstance(this, type); }
+  bool IsInstance(PyTypeObject* type)
+    { return IsInstance((PyObject*) type); }
   auto Length()
     { return PyObject_Length(this); }
   auto Repr()

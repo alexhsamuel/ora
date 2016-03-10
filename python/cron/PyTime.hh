@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cmath>
-#include <experimental/optional>
 #include <iostream>
 
 #include <datetime.h>
@@ -20,7 +19,6 @@ namespace alxs {
 
 using namespace py;
 
-using std::experimental::optional;
 using std::make_unique;
 using std::string;
 using std::unique_ptr;
@@ -31,7 +29,7 @@ using std::unique_ptr;
 
 StructSequenceType* get_time_parts_type();
 
-// template<typename TIME> optional<TIME> convert_object(Object*);
+// template<typename TIME> TIME convert_object(Object*);
 template<typename TIME> TIME convert_time_object(Object*);
 
 //------------------------------------------------------------------------------
@@ -713,10 +711,9 @@ convert_time_object(
   if (PyDateTime_Check(obj)) {
     // First, make sure it's localized.
     auto const tzinfo = obj->GetAttrString("tzinfo", false);
-    if (tzinfo == Py_None)
+    if (tzinfo == None)
       throw py::ValueError("unlocalized datetime doesn't represent a time");
-    auto const tz_name = tzinfo->GetAttrString("zone")->Str()->as_utf8_string();
-    auto const tz = cron::get_time_zone(tz_name);
+    auto const tz = to_time_zone(tzinfo);
     
     // FIXME: Provide a all-integer ctor with (sec, usec).
     return TIME(

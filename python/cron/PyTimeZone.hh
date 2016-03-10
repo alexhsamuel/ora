@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cmath>
-#include <experimental/optional>
 #include <iostream>
 
 #include "cron/format.hh"
@@ -12,7 +11,6 @@ namespace alxs {
 
 using namespace py;
 
-using std::experimental::optional;
 using std::make_unique;
 using std::string;
 using std::unique_ptr;
@@ -23,8 +21,8 @@ using std::unique_ptr;
 
 extern StructSequenceType* get_time_zone_parts_type();
 
-optional<cron::TimeZone const*> convert_time_zone_object(Object*);
-optional<cron::TimeZone const*> convert_object_to_time_zone(Object*);
+cron::TimeZone const& to_time_zone(Object*);
+cron::TimeZone const& convert_to_time_zone(Object*);
 
 //------------------------------------------------------------------------------
 // Type class
@@ -69,7 +67,8 @@ public:
   static PyNumberMethods tp_as_number_;
 
   // Methods.
-  static ref<Object> method_get(PyTypeObject* type, Tuple* args, Dict* kw_args);
+  static ref<Object> method_convert (PyTypeObject*, Tuple*, Dict*);
+  static ref<Object> method_get     (PyTypeObject*, Tuple*, Dict*);
   static Methods<PyTimeZone> tp_methods_;
 
   // Getsets.
@@ -87,6 +86,8 @@ private:
 
 };
 
+
+// FIXME: Use a singleton object per underlying time zone.
 
 inline ref<PyTimeZone>
 PyTimeZone::create(
@@ -108,20 +109,6 @@ PyTimeZone::Check(
   PyObject* const other)
 {
   return static_cast<Object*>(other)->IsInstance((PyObject*) &type_);
-}
-
-
-//------------------------------------------------------------------------------
-// Helpers
-
-// FIXME: Accept pytz time zones.
-inline cron::TimeZone const&
-to_time_zone(
-  Object* const arg)
-{
-  if (!PyTimeZone::Check(arg))
-    throw Exception(PyExc_TypeError, "tz not a TimeZone");
-  return *cast<PyTimeZone>(arg)->tz_;
 }
 
 
