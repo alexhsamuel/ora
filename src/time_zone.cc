@@ -194,7 +194,8 @@ TimeZone::get_parts_local(
 
 
 shared_ptr<TimeZone> const
-UTC;
+UTC 
+  = make_shared<TimeZone>();
 
 
 //------------------------------------------------------------------------------
