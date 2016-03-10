@@ -912,16 +912,10 @@ convert_to_date(
 
   auto const long_obj = obj->Long(false);
   if (long_obj != nullptr) {
-    // Interpret 10000000 through 99991231 as ymdi.
-    long        const val   = (long) *long_obj;
-    cron::Year  const year  = val / 10000;
-    cron::Month const month = (val % 10000) / 100 - 1;
-    cron::Day   const day   = val % 100 - 1;
-    if (year >= 1000) {
-      cron::Datenum const datenum  = cron::ymd_to_datenum(year, month, day);
-      if (datenum != cron::DATENUM_INVALID)
-        return DATE::from_datenum(datenum);
-    }
+    // Interpret eight-digit values as YMDI.
+    long const ymdi = (long) *long_obj;
+    if (10000000 <= ymdi && ymdi <= 99999999) 
+      return DATE::from_ymdi(ymdi);
   }
 
   // FIXME: Parse strings.
