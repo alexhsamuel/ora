@@ -29,7 +29,20 @@ StructSequenceType* get_date_parts_type();
 ref<Object> get_month_obj(int month);
 ref<Object> get_weekday_obj(int weekday);
 
+/**
+ * Attempts to convert various kinds of Python date objects to Date.
+ *
+ * If 'obj' is a date object (a PyDate instance, datetime.date, or
+ * compatible), returns the equivalent date.  Otherwise, raises 'Exception'.
+ */
 template<typename DATE> DATE to_date(Object*);
+
+/**
+ * Attempts to convert various kinds of Python objects to Date.
+ *
+ * If 'obj' can be converted unambiguously to a date, returns it.  Otherwise,
+ * raises 'Exception'.
+ */
 template<typename DATE> DATE convert_to_date(Object*);
 
 //------------------------------------------------------------------------------
@@ -813,12 +826,6 @@ make_date(
 }
 
 
-/**
- * Attempts to convert various kinds of Python date objects to Date.
- *
- * If 'obj' is a date object (a PyDate instance, datetime.date, or
- * compatible), returns the equivalent date.  Otherwise, raises 'Exception'.
- */
 template<typename DATE>
 inline DATE
 to_date(
@@ -855,12 +862,6 @@ to_date(
 }
 
 
-/**
- * Attempts to convert various kinds of Python objects to Date.
- *
- * If 'obj' can be converted unambiguously to a date, returns it.  Otherwise,
- * raises 'Exception'.
- */
 template<typename DATE>
 inline DATE
 convert_to_date(
