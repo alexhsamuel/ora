@@ -140,7 +140,7 @@ public:
     TimeTemplate<TRAITS> time) 
     const 
   { 
-    return operator()(time, get_display_time_zone()); 
+    return operator()(time, *get_display_time_zone()); 
   }
 
 };

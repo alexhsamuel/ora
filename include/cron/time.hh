@@ -293,8 +293,8 @@ public:
     return parts;
   }
 
-  TimeParts get_parts(std::string const& tz_name) const { return get_parts(get_time_zone(tz_name)); }
-  TimeParts get_parts() const { return get_parts(get_display_time_zone()); }
+  TimeParts get_parts(std::string const& tz_name) const { return get_parts(*get_time_zone(tz_name)); }
+  TimeParts get_parts() const { return get_parts(*get_display_time_zone()); }
 
   TimeOffset 
   get_time_offset()

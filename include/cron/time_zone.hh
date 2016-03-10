@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 #include "cron/types.hh"
@@ -97,21 +98,19 @@ find_time_zone_file(
 
 /**
  * Returns a time zone named 'name' from the default zoneinfo directory.
- *
- * It is safe to hold a reference or pointer to the return value.
  */
-extern TimeZone const&  get_time_zone(std::string const& name);
+extern std::shared_ptr<TimeZone>    get_time_zone(std::string const& name);
 
 /**
  * Returns a time zone named 'name' from the given zoneinfo directory.
  */
-extern TimeZone         get_time_zone(std::string const& name, fs::Filename const& zoneinfo_dir);
+extern TimeZone                     get_time_zone(std::string const& name, fs::Filename const& zoneinfo_dir);
 
-extern std::string      get_system_time_zone_name();
-extern TimeZone const&  get_system_time_zone();
+extern std::string                  get_system_time_zone_name();
+extern std::shared_ptr<TimeZone>    get_system_time_zone();
 
-extern TimeZone const&  get_display_time_zone();
-extern void             set_display_time_zone(TimeZone const& tz);
+extern std::shared_ptr<TimeZone>    get_display_time_zone();
+extern void                         set_display_time_zone(std::shared_ptr<TimeZone> tz);
 
 extern inline void 
 set_display_time_zone(
