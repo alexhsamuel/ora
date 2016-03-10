@@ -45,6 +45,11 @@ template<typename DATE> DATE to_date(Object*);
  */
 template<typename DATE> DATE convert_to_date(Object*);
 
+/**
+ * Helper for converting a 3-element sequence of date parts.
+ */
+template<typename DATE> inline DATE from_parts(Sequence*);
+
 //------------------------------------------------------------------------------
 // Type class
 //------------------------------------------------------------------------------
@@ -210,10 +215,19 @@ PyDate<DATE>::tp_init(
   Tuple* const args, 
   Dict* const kw_args)
 {
-  Object* obj = nullptr;
-  Arg::ParseTuple(args, "|O", &obj);
+  if (kw_args != nullptr)
+    throw TypeError("function takes no keyword arguments");
+  Date date;
+  if (args->Length() == 0)
+    ;
+  else if (args->Length() == 1)
+    date = to_date<Date>(args->GetItem(0));
+  else if (args->Length() == 3)
+    date = from_parts<Date>(args);
+  else
+    throw TypeError("function takes 0, 1, or 3 arguments");
 
-  new(self) PyDate{to_date<Date>(obj)};
+  new(self) PyDate{date};
 }
 
 
@@ -459,10 +473,7 @@ PyDate<DATE>::method_from_parts(
   else
     throw TypeError("from_parts() takes one or three arguments");
 
-  long const year   = parts->GetItem(0)->long_value();
-  long const month  = parts->GetItem(1)->long_value();
-  long const day    = parts->GetItem(2)->long_value();
-  return create(Date::from_parts(year, month - 1, day - 1), type);
+  return create(from_parts<Date>(parts), type);
 }
 
 
@@ -828,6 +839,18 @@ make_date(
 
 template<typename DATE>
 inline DATE
+from_parts(
+  Sequence* const parts)
+{
+  long const year   = parts->GetItem(0)->long_value();
+  long const month  = parts->GetItem(1)->long_value();
+  long const day    = parts->GetItem(2)->long_value();
+  return DATE::from_parts(year, month - 1, day - 1);
+}
+
+
+template<typename DATE>
+inline DATE
 to_date(
   Object* const obj)
 {
@@ -876,13 +899,9 @@ convert_to_date(
 
   if (Sequence::Check(obj)) {
     auto seq = static_cast<Sequence*>(obj);
-    if (seq->Length() == 3) {
+    if (seq->Length() == 3) 
       // Interpret a three-element sequence as date parts.
-      long const year   = seq->GetItem(0)->long_value();
-      long const month  = seq->GetItem(1)->long_value();
-      long const day    = seq->GetItem(2)->long_value();
-      return DATE::from_parts(year, month - 1, day - 1);
-    }
+      return from_parts<DATE>(seq);
     else if (seq->Length() == 2) {
       // Interpret a two-element sequence as ordinal parts.
       long const year       = seq->GetItem(0)->long_value();
