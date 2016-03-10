@@ -817,8 +817,7 @@ make_date(
  * Attempts to convert various kinds of Python date objects to Date.
  *
  * If 'obj' is a date object (a PyDate instance, datetime.date, or
- * compatible), returns the equivalent date.  Otherwise, returns a null
- * option with no exception set.
+ * compatible), returns the equivalent date.  Otherwise, raises 'Exception'.
  */
 template<typename DATE>
 inline DATE
@@ -860,7 +859,7 @@ to_date(
  * Attempts to convert various kinds of Python objects to Date.
  *
  * If 'obj' can be converted unambiguously to a date, returns it.  Otherwise,
- * returns a null option with no exception set.
+ * raises 'Exception'.
  */
 template<typename DATE>
 inline DATE
