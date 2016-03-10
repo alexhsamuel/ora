@@ -31,8 +31,8 @@ StructSequenceType* get_date_parts_type();
 ref<Object> get_month_obj(int month);
 ref<Object> get_weekday_obj(int weekday);
 
-template<typename DATE> optional<DATE> convert_date_object(Object*);
-template<typename DATE> optional<DATE> convert_object_to_date(Object*);
+template<typename DATE> DATE to_date(Object*);
+template<typename DATE> DATE convert_to_date(Object*);
 
 //------------------------------------------------------------------------------
 // Type class
@@ -202,11 +202,7 @@ PyDate<DATE>::tp_init(
   Object* obj = nullptr;
   Arg::ParseTuple(args, "|O", &obj);
 
-  auto date = convert_date_object<Date>(obj);
-  if (date)
-    new(self) PyDate{*date};
-  else
-    throw TypeError("not a date");
+  new(self) PyDate{to_date<Date>(obj)};
 }
 
 
@@ -247,12 +243,15 @@ PyDate<DATE>::tp_richcompare(
   Object* const other,
   int const comparison)
 {
-  auto date_opt = convert_date_object<Date>(other);
-  if (!date_opt)
-    return not_implemented_ref();
-  
   Date const d0 = self->date_;
-  Date const d1 = *date_opt;
+  Date d1;
+  try {
+    d1 = to_date<Date>(other);
+  }
+  catch (Exception) {
+    Exception::Clear();
+    return not_implemented_ref();
+  }
 
   bool result;
   switch (comparison) {
@@ -300,24 +299,26 @@ PyDate<DATE>::nb_subtract(
 {
   if (right) 
     return not_implemented_ref();
-  else {
-    auto date = self->date_;
-    auto other_date = convert_date_object<DATE>(other);
-    if (other_date) 
-      if (date.is_valid() && other_date->is_valid())
-        return 
-          Long::FromLong((long) date.get_datenum() - other_date->get_datenum());
-      else
-        return none_ref();
 
-    auto offset = other->maybe_long_value();
-    if (offset)
-      return 
-        *offset == 0 ? ref<PyDate>::of(self)
-        : create(date - *offset, self->ob_type);
-
-    return not_implemented_ref();
+  try {
+    auto const other_date = to_date<Date>(other);
+    if (self->date_.is_valid() && other_date.is_valid())
+      return Long::FromLong(
+        (long) self->date_.get_datenum() - other_date.get_datenum());
+    else
+      return none_ref();
   }
+  catch (Exception) {
+    Exception::Clear();
+  }
+
+  auto offset = other->maybe_long_value();
+  if (offset)
+    return 
+      *offset == 0 ? ref<PyDate>::of(self)
+      : create(self->date_ - *offset, self->ob_type);
+
+  return not_implemented_ref();
 }
 
 
@@ -385,12 +386,7 @@ PyDate<DATE>::method_convert(
   if (obj->IsInstance(type))
     return ref<Object>::of(obj);
 
-  auto const date = convert_object_to_date<Date>(obj);
-  if (date)
-    return create(*date, type);
-  else
-    // FIXME: Return INVALID instead?
-    throw TypeError("cannot convert to date");
+  return create(convert_to_date<Date>(obj), type);
 }
 
 
@@ -508,8 +504,15 @@ PyDate<DATE>::method_is_same(
   Object* object;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &object);
 
-  auto date_opt = convert_date_object<Date>(object);
-  return Bool::from(date_opt && self->date_.is(*date_opt));
+  bool is_same;
+  try {
+    is_same = self->date_.is(to_date<Date>(object));
+  }
+  catch (Exception) {
+    Exception::Clear();
+    is_same = false;
+  }
+  return Bool::from(is_same);
 }
 
 
@@ -820,13 +823,13 @@ make_date(
  * option with no exception set.
  */
 template<typename DATE>
-inline optional<DATE>
-convert_date_object(
+inline DATE
+to_date(
   Object* const obj)
 {
-  if (obj == nullptr) 
+  if (obj == nullptr || obj == None) 
     // Use the default value.
-    return DATE{};
+    return DATE();
 
   if (PyDate<DATE>::Check(obj)) 
     // Exact wrapped type.
@@ -851,7 +854,7 @@ convert_date_object(
     return DATE::from_datenum(ordinal->long_value() - 1);
 
   // No type match.
-  return {};
+  throw py::TypeError("not a date");
 }
 
 
@@ -862,14 +865,16 @@ convert_date_object(
  * returns a null option with no exception set.
  */
 template<typename DATE>
-inline optional<DATE>
-convert_object_to_date(
+inline DATE
+convert_to_date(
   Object* const obj)
 {
-  // Try to convert various date objects.
-  auto opt = convert_date_object<DATE>(obj);
-  if (opt)
-    return opt;
+  try {
+    return to_date<DATE>(obj);
+  }
+  catch (Exception) {
+    Exception::Clear();
+  }
 
   if (Sequence::Check(obj)) {
     auto seq = static_cast<Sequence*>(obj);
@@ -904,7 +909,7 @@ convert_object_to_date(
 
   // FIXME: Parse strings.
 
-  return {};
+  throw py::TypeError("can't convert to a date");
 }
 
 
