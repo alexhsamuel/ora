@@ -1,3 +1,4 @@
+#include <memory>
 #include <string>
 
 #include "py.hh"
@@ -44,12 +45,12 @@ get_time_zone_parts_type()
 /**
  * Interprets 'obj' as a time zone.
  */
-cron::TimeZone const&
+cron::TimeZone_ptr
 to_time_zone(
   Object* const obj)
 {
   if (PyTimeZone::Check(obj))
-    return *static_cast<PyTimeZone*>(obj)->tz_;
+    return cast<PyTimeZone>(obj)->tz_;
 
   // If it has a 'zone' attribute, as pytz time zone objects, interpret that as
   // a time zone name.
@@ -72,7 +73,7 @@ to_time_zone(
 /**
  * Attempts to convert 'obj' to a time zone.
  */
-cron::TimeZone const&
+cron::TimeZone_ptr
 convert_to_time_zone(
   Object* const obj)
 {
@@ -163,7 +164,7 @@ PyTimeZone::tp_init(
   Object* obj = nullptr;
   Arg::ParseTuple(args, "O", &obj);
 
-  new(self) PyTimeZone(&to_time_zone(obj));
+  new(self) PyTimeZone(to_time_zone(obj));
 }
 
 
@@ -231,7 +232,7 @@ PyTimeZone::method_convert(
   if (obj->IsInstance(type))
     return ref<Object>::of(obj);
 
-  return create(&convert_to_time_zone(obj));
+  return create(convert_to_time_zone(obj));
 }
 
 
@@ -245,9 +246,9 @@ PyTimeZone::method_get(
   char const* name;
   Arg::ParseTupleAndKeywords(args, kw_args, "s", arg_names, &name);
 
-  TimeZone const* tz;
+  cron::TimeZone_ptr tz;
   try {
-    tz = &cron::get_time_zone(name);
+    tz = cron::get_time_zone(name);
   }
   catch (alxs::ValueError) {
     throw Exception(PyExc_ValueError, "unknown time zone: "s + name);

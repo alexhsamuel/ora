@@ -21,8 +21,8 @@ using std::unique_ptr;
 
 extern StructSequenceType* get_time_zone_parts_type();
 
-cron::TimeZone const& to_time_zone(Object*);
-cron::TimeZone const& convert_to_time_zone(Object*);
+cron::TimeZone_ptr to_time_zone(Object*);
+cron::TimeZone_ptr convert_to_time_zone(Object*);
 
 //------------------------------------------------------------------------------
 // Type class
@@ -47,21 +47,21 @@ public:
   /**
    * Creates an instance of the Python type.
    */
-  static ref<PyTimeZone> create(TimeZone const* tz, PyTypeObject* type=&type_);
+  static ref<PyTimeZone> create(cron::TimeZone_ptr tz, PyTypeObject* type=&type_);
 
   /**
    * Returns true if 'object' is an instance of this type.
    */
   static bool Check(PyObject* object);
 
-  PyTimeZone(TimeZone const* tz) : tz_(tz) {}
+  PyTimeZone(cron::TimeZone_ptr tz) : tz_(tz) {}
 
   /**
    * The wrapped date instance.
    *
    * This is the only non-static data member.
    */
-  TimeZone const* const tz_;
+  cron::TimeZone_ptr const tz_;
 
   // Number methods.
   static PyNumberMethods tp_as_number_;
@@ -91,7 +91,7 @@ private:
 
 inline ref<PyTimeZone>
 PyTimeZone::create(
-  TimeZone const* const tz,
+  cron::TimeZone_ptr const tz,
   PyTypeObject* const type)
 {
   auto self = ref<PyTimeZone>::take(
@@ -99,7 +99,7 @@ PyTimeZone::create(
 
   // tz_ is const to indicate immutablity, but Python initialization is later
   // than C++ initialization, so we have to cast off const here.
-  *const_cast<TimeZone const**>(&self->tz_) = tz;
+  const_cast<cron::TimeZone_ptr&>(self->tz_) = tz;
   return self;
 }
 

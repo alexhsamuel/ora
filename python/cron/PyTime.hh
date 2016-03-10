@@ -214,7 +214,7 @@ ref<Unicode>
 PyTime<TIME>::tp_repr(
   PyTime* const self)
 {
-  return Unicode::from((*repr_format_)(self->time_, cron::UTC));
+  return Unicode::from((*repr_format_)(self->time_, *cron::UTC));
 }
 
 
@@ -224,7 +224,7 @@ PyTime<TIME>::tp_str(
   PyTime* const self)
 {
   // FIXME: Not UTC?
-  return Unicode::from((*str_format_)(self->time_, cron::UTC));  
+  return Unicode::from((*str_format_)(self->time_, *cron::UTC));  
 }
 
 
@@ -363,7 +363,7 @@ PyTime<TIME>::method__from_local(
     args, kw_args, "IkO|p", arg_names, &datenum, &daytick, &tz_arg, &first);
 
   auto tz = to_time_zone(tz_arg);
-  auto t = cron::from_local<TIME>(datenum, daytick, tz, first);
+  auto t = cron::from_local<TIME>(datenum, daytick, *tz, first);
   return create(t, type);
 }
 
@@ -380,7 +380,7 @@ PyTime<TIME>::method__to_local(
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz);
 
   auto local = cron::to_local_datenum_daytick(
-    self->time_, convert_to_time_zone(tz));
+    self->time_, *convert_to_time_zone(tz));
   ref<Tuple> result = Tuple::New(2);
   result->initialize(0, Long::FromLong(local.datenum));
   result->initialize(1, Long::FromUnsignedLong(local.daytick));
@@ -396,13 +396,11 @@ PyTime<TIME>::method_get_date_daytime(
   Dict* const kw_args)
 {
   // FIXME: Pass in the Date and Daytime class to use as keyword arguments.
-  static char const* const arg_names[] = {"tz", nullptr};
-  Object* tz_arg;
-  Arg::ParseTupleAndKeywords(
-    args, kw_args, "O", arg_names, &tz_arg);
+  static char const* const arg_names[] = {"time_zone", nullptr};
+  Object* tz;
+  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz);
 
-  auto tz = to_time_zone(tz_arg);
-  auto local = cron::to_local_datenum_daytick(self->time_, tz);
+  auto local = cron::to_local_datenum_daytick(self->time_, *to_time_zone(tz));
   return make_date_daytime(local.datenum, local.daytick);
 }
 
@@ -414,12 +412,11 @@ PyTime<TIME>::method_get_datenum_daytick(
   Tuple* const args,
   Dict* const kw_args)
 {
-  static char const* const arg_names[] = {"tz", nullptr};
-  Object* tz_arg;
-  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz_arg);
+  static char const* const arg_names[] = {"time_zone", nullptr};
+  Object* tz;
+  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz);
 
-  auto tz = to_time_zone(tz_arg);
-  auto local = cron::to_local_datenum_daytick(self->time_, tz);
+  auto local = cron::to_local_datenum_daytick(self->time_, *to_time_zone(tz));
 
   auto result = Tuple::New(2);
   result->initialize(0, Long::FromLong(local.datenum));
@@ -435,12 +432,11 @@ PyTime<TIME>::method_get_parts(
   Tuple* const args,
   Dict* const kw_args)
 {
-  static char const* const arg_names[] = {"tz", nullptr};
-  Object* tz_arg;
-  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz_arg);
+  static char const* const arg_names[] = {"time_zone", nullptr};
+  Object* tz;
+  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz);
 
-  auto tz = to_time_zone(tz_arg);
-  auto parts = self->time_.get_parts(tz);
+  auto parts = self->time_.get_parts(*to_time_zone(tz));
 
   auto date_parts = get_date_parts_type()->New();
   date_parts->initialize(0, Long::FromLong(parts.date.year));
@@ -667,7 +663,7 @@ to_local(
   if (PyTime<cron::Time>::Check(time)) 
     // Special case fast path for the default time type.
     return cron::to_local_datenum_daytick(
-      cast<PyTime<cron::Time>>(time)->time_, convert_to_time_zone(tz));
+      cast<PyTime<cron::Time>>(time)->time_, *convert_to_time_zone(tz));
 
   else {
     // FIXME: Raise a reasonable exception if 'time' is not a time.
@@ -714,7 +710,6 @@ convert_time_object(
     auto const tzinfo = obj->GetAttrString("tzinfo", false);
     if (tzinfo == None)
       throw py::ValueError("unlocalized datetime doesn't represent a time");
-    auto const tz = to_time_zone(tzinfo);
     
     // FIXME: Provide a all-integer ctor with (sec, usec).
     return TIME(
@@ -725,7 +720,7 @@ convert_time_object(
       PyDateTime_DATE_GET_MINUTE(obj),
       PyDateTime_DATE_GET_SECOND(obj) 
       + PyDateTime_DATE_GET_MICROSECOND(obj) * 1e-6,
-      tz,
+      *to_time_zone(tzinfo),
       true);
   }
 

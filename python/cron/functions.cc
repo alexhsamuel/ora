@@ -65,7 +65,7 @@ from_local(
   // Special case fast path for the default time type.
   if (time_type_arg == (Object*) &PyTime<cron::Time>::type_) 
     return PyTime<cron::Time>::create(
-      cron::from_local<cron::Time>(datenum, daytick, tz, first));
+      cron::from_local<cron::Time>(datenum, daytick, *tz, first));
 
   else {
     auto factory = time_type_arg->GetAttrString("_from_local");

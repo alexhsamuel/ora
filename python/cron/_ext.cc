@@ -64,7 +64,7 @@ PyInit__ext(void)
 
     module->AddObject("DATENUM_MIN" , Long::FromLong(cron::DATENUM_MIN));
     module->AddObject("DATENUM_MAX" , Long::FromLong(cron::DATENUM_MAX));
-    module->AddObject("UTC"         , PyTimeZone::create(&cron::UTC));
+    module->AddObject("UTC"         , PyTimeZone::create(cron::UTC));
 
     return module.release();
   }
