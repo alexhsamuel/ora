@@ -2,7 +2,6 @@
 #pragma GCC diagnostic ignored "-Wparentheses"
 
 #include <cstring>
-#include <experimental/optional>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -17,7 +16,6 @@ namespace alxs {
 
 using namespace py;
 
-using std::experimental::optional;
 using std::make_unique;
 using std::string;
 using std::unique_ptr;
