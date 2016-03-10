@@ -78,21 +78,21 @@ TEST(Time, from_parts_dst) {
 
   // Test transition to DST.
   Date const dst0 = 2013/MAR/10;
-  EXPECT_EQ(Time(dst0, Daytime(6, 59, 0), UTC), Time(dst0, Daytime(1, 59, 0), *tz));
-  EXPECT_EQ(Time(dst0, Daytime(7,  0, 0), UTC), Time(dst0, Daytime(3,  0, 0), *tz));
-  EXPECT_EQ(Time(dst0, Daytime(7,  0, 0), UTC), Time(dst0, Daytime(3,  0, 0), *tz, false));
+  EXPECT_EQ(Time(dst0, Daytime(6, 59, 0), *UTC), Time(dst0, Daytime(1, 59, 0), *tz));
+  EXPECT_EQ(Time(dst0, Daytime(7,  0, 0), *UTC), Time(dst0, Daytime(3,  0, 0), *tz));
+  EXPECT_EQ(Time(dst0, Daytime(7,  0, 0), *UTC), Time(dst0, Daytime(3,  0, 0), *tz, false));
 
   // Test transition from DST.
   Date const dst1 = 2013/NOV/3;
-  EXPECT_EQ(Time(dst1, Daytime(4, 59, 0), UTC), Time(dst1, Daytime(0, 59, 0), *tz));
-  EXPECT_EQ(Time(dst1, Daytime(5,  0, 0), UTC), Time(dst1, Daytime(1,  0, 0), *tz));
-  EXPECT_EQ(Time(dst1, Daytime(5,  0, 0), UTC), Time(dst1, Daytime(1,  0, 0), *tz, true));
-  EXPECT_EQ(Time(dst1, Daytime(5, 59, 0), UTC), Time(dst1, Daytime(1, 59, 0), *tz));
-  EXPECT_EQ(Time(dst1, Daytime(5, 59, 0), UTC), Time(dst1, Daytime(1, 59, 0), *tz, true));
-  EXPECT_EQ(Time(dst1, Daytime(6,  0, 0), UTC), Time(dst1, Daytime(1,  0, 0), *tz, false));
-  EXPECT_EQ(Time(dst1, Daytime(6, 59, 0), UTC), Time(dst1, Daytime(1, 59, 0), *tz, false));
-  EXPECT_EQ(Time(dst1, Daytime(7,  0, 0), UTC), Time(dst1, Daytime(2,  0, 0), *tz));
-  EXPECT_EQ(Time(dst1, Daytime(7,  0, 0), UTC), Time(dst1, Daytime(2,  0, 0), *tz, false));
+  EXPECT_EQ(Time(dst1, Daytime(4, 59, 0), *UTC), Time(dst1, Daytime(0, 59, 0), *tz));
+  EXPECT_EQ(Time(dst1, Daytime(5,  0, 0), *UTC), Time(dst1, Daytime(1,  0, 0), *tz));
+  EXPECT_EQ(Time(dst1, Daytime(5,  0, 0), *UTC), Time(dst1, Daytime(1,  0, 0), *tz, true));
+  EXPECT_EQ(Time(dst1, Daytime(5, 59, 0), *UTC), Time(dst1, Daytime(1, 59, 0), *tz));
+  EXPECT_EQ(Time(dst1, Daytime(5, 59, 0), *UTC), Time(dst1, Daytime(1, 59, 0), *tz, true));
+  EXPECT_EQ(Time(dst1, Daytime(6,  0, 0), *UTC), Time(dst1, Daytime(1,  0, 0), *tz, false));
+  EXPECT_EQ(Time(dst1, Daytime(6, 59, 0), *UTC), Time(dst1, Daytime(1, 59, 0), *tz, false));
+  EXPECT_EQ(Time(dst1, Daytime(7,  0, 0), *UTC), Time(dst1, Daytime(2,  0, 0), *tz));
+  EXPECT_EQ(Time(dst1, Daytime(7,  0, 0), *UTC), Time(dst1, Daytime(2,  0, 0), *tz, false));
 }
 
 TEST(Time, from_parts_invalid) {

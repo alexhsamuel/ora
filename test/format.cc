@@ -162,8 +162,8 @@ TEST(TimeFormat, iso) {
   set_display_time_zone("US/Eastern");
   EXPECT_EQ("20130728T153738",              TimeFormat::ISO_LOCAL_BASIC(time));
   EXPECT_EQ("2013-07-28T15:37:38",          TimeFormat::ISO_LOCAL_EXTENDED(time));
-  EXPECT_EQ("20130728T193738Z",             TimeFormat::ISO_UTC_BASIC(time, UTC));
-  EXPECT_EQ("2013-07-28T19:37:38Z",         TimeFormat::ISO_UTC_EXTENDED(time, UTC));
+  EXPECT_EQ("20130728T193738Z",             TimeFormat::ISO_UTC_BASIC(time, *UTC));
+  EXPECT_EQ("2013-07-28T19:37:38Z",         TimeFormat::ISO_UTC_EXTENDED(time, *UTC));
   EXPECT_EQ("20130728T153738-0400",         TimeFormat::ISO_ZONE_BASIC(time));
   EXPECT_EQ("2013-07-28T15:37:38-04:00",    TimeFormat::ISO_ZONE_EXTENDED(time));
 }

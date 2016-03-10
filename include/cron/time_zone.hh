@@ -72,7 +72,7 @@ private:
 /**
  * UTC time zone singleton.
  */
-extern TimeZone const   UTC;
+extern std::shared_ptr<TimeZone> const UTC;
 
 /**
  * Returns the path to the current default zoneinfo directory.

@@ -193,7 +193,7 @@ TimeZone::get_parts_local(
 }
 
 
-TimeZone const
+shared_ptr<TimeZone> const
 UTC;
 
 
