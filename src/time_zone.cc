@@ -34,7 +34,7 @@ bool
 display_time_zone_initialized
   = false;
 
-shared_ptr<TimeZone>
+TimeZone_ptr
 display_time_zone;
 
 
@@ -193,7 +193,7 @@ TimeZone::get_parts_local(
 }
 
 
-shared_ptr<TimeZone> const
+TimeZone_ptr const
 UTC 
   = make_shared<TimeZone>();
 
@@ -227,7 +227,7 @@ zoneinfo_dir
 // Cache of loaded time zone objects.  
 //
 // Pointers in this cache should not be 
-std::map<string, shared_ptr<TimeZone>>
+std::map<string, TimeZone_ptr>
 time_zones;
 
 }  // anonymous namespace
@@ -261,7 +261,7 @@ find_time_zone_file(
 }
 
 
-extern shared_ptr<TimeZone>
+extern TimeZone_ptr
 get_time_zone(
   std::string const& name)
 {
@@ -272,8 +272,8 @@ get_time_zone(
     auto const filename = find_time_zone_file(name);
     // We can safely return a reference because we never remove or replace
     // time zone objects from the cache map.
-    return 
-      time_zones[name] = make_shared<TimeZone>(TzFile::load(filename), name);
+    return time_zones[name] 
+      = make_shared<TimeZone const>(TzFile::load(filename), name);
   }
 }
 
@@ -344,7 +344,7 @@ get_system_time_zone_name()
 }
 
 
-extern shared_ptr<TimeZone>
+extern TimeZone_ptr
 get_system_time_zone()
 {
   // FIXME: Portability.
@@ -353,7 +353,7 @@ get_system_time_zone()
 }
 
 
-extern shared_ptr<TimeZone>
+extern TimeZone_ptr
 get_display_time_zone()
 {
   if (! display_time_zone_initialized) {
@@ -366,7 +366,7 @@ get_display_time_zone()
 
 extern void
 set_display_time_zone(
-  shared_ptr<TimeZone> tz)
+  TimeZone_ptr tz)
 {
   display_time_zone = tz;
   display_time_zone_initialized = true;

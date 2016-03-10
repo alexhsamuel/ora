@@ -69,10 +69,12 @@ private:
 
 //------------------------------------------------------------------------------
 
+using TimeZone_ptr = std::shared_ptr<TimeZone const>;
+
 /**
  * UTC time zone singleton.
  */
-extern std::shared_ptr<TimeZone> const UTC;
+extern TimeZone_ptr const UTC;
 
 /**
  * Returns the path to the current default zoneinfo directory.
@@ -99,18 +101,17 @@ find_time_zone_file(
 /**
  * Returns a time zone named 'name' from the default zoneinfo directory.
  */
-extern std::shared_ptr<TimeZone>    get_time_zone(std::string const& name);
+extern TimeZone_ptr     get_time_zone(std::string const& name);
 
 /**
  * Returns a time zone named 'name' from the given zoneinfo directory.
  */
-extern TimeZone                     get_time_zone(std::string const& name, fs::Filename const& zoneinfo_dir);
+extern TimeZone         get_time_zone(std::string const& name, fs::Filename const& zoneinfo_dir);
 
-extern std::string                  get_system_time_zone_name();
-extern std::shared_ptr<TimeZone>    get_system_time_zone();
-
-extern std::shared_ptr<TimeZone>    get_display_time_zone();
-extern void                         set_display_time_zone(std::shared_ptr<TimeZone> tz);
+extern std::string      get_system_time_zone_name();
+extern TimeZone_ptr     get_system_time_zone();
+extern TimeZone_ptr     get_display_time_zone();
+extern void             set_display_time_zone(TimeZone_ptr tz);
 
 extern inline void 
 set_display_time_zone(
