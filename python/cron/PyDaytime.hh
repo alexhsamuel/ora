@@ -416,20 +416,21 @@ PyDaytime<DAYTIME>::method_from_parts(
     throw TypeError("from_parts() takes no keyword arguments");
 
   Sequence* parts;
-  // Accept either a single three-element sequence, or three args.
+  // Accept either a single two- or three-element sequence, or three args.
   if (args->Length() == 1) {
     parts = cast<Sequence>(args->GetItem(0));
     if (parts->Length() < 3)
       throw TypeError("parts must be a 3-element (or longer) sequence");
   }
-  else if (args->Length() == 3)
+  else if (args->Length() == 2 || args->Length() == 3)
     parts = args;
   else
     throw TypeError("from_parts() takes one or three arguments");
 
   long   const hour   = parts->GetItem(0)->long_value();
   long   const minute = parts->GetItem(1)->long_value();
-  double const second = parts->GetItem(2)->double_value();
+  double const second
+    = args->Length() == 3 ? parts->GetItem(2)->double_value() : 0;
   return create(Daytime::from_parts(hour, minute, second), type);
 }
 
