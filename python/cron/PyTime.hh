@@ -379,7 +379,8 @@ PyTime<TIME>::method__to_local(
   Object* tz;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz);
 
-  auto local = cron::to_local_datenum_daytick(self->time_, to_time_zone(tz));
+  auto local = cron::to_local_datenum_daytick(
+    self->time_, convert_to_time_zone(tz));
   ref<Tuple> result = Tuple::New(2);
   result->initialize(0, Long::FromLong(local.datenum));
   result->initialize(1, Long::FromUnsignedLong(local.daytick));
@@ -661,17 +662,17 @@ using PyTimeDefault = PyTime<cron::Time>;
 inline cron::LocalDatenumDaytick
 to_local(
   Object* const time,
-  Object* const time_zone)
+  Object* const tz)
 {
   if (PyTime<cron::Time>::Check(time)) 
     // Special case fast path for the default time type.
     return cron::to_local_datenum_daytick(
-      cast<PyTime<cron::Time>>(time)->time_, to_time_zone(time_zone));
+      cast<PyTime<cron::Time>>(time)->time_, convert_to_time_zone(tz));
 
   else {
+    // FIXME: Raise a reasonable exception if 'time' is not a time.
     // Call its _to_local() method.
-    auto local 
-      = cast<Sequence>(time->CallMethodObjArgs("_to_local", time_zone));
+    auto local = cast<Sequence>(time->CallMethodObjArgs("_to_local", tz));
     return {
       (cron::Datenum) (long) *cast<Long>(local->GetItem(0)),
       (cron::Daytick) (long) *cast<Long>(local->GetItem(1)),
@@ -735,4 +736,5 @@ convert_time_object(
 //------------------------------------------------------------------------------
 
 }  // namespace alxs
+
 

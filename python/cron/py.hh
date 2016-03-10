@@ -344,10 +344,10 @@ class Object
 {
 public:
 
-  ref<Object> CallMethodObjArgs(char const* name, bool check=false);
+  ref<Object> CallMethodObjArgs(char const* name, bool check=true);
   // FIXME: Hacky.
-  ref<Object> CallMethodObjArgs(char const* name, PyObject* arg0, bool check=false);
-  ref<Object> CallMethodObjArgs(char const* name, PyObject* arg0, PyObject* arg1, bool check=false);
+  ref<Object> CallMethodObjArgs(char const* name, PyObject* arg0, bool check=true);
+  ref<Object> CallMethodObjArgs(char const* name, PyObject* arg0, PyObject* arg1, bool check=true);
   ref<Object> CallObject(Tuple* args);
   static bool Check(PyObject* obj)
     { return true; }
@@ -386,9 +386,11 @@ Object::CallMethodObjArgs(
   char const* name,
   bool check)
 {
-  ref<Object> method = GetAttrString(name, false);
-  if (check)
-    check_not_null(method);
+  ref<Object> method = GetAttrString(name, check);
+  if (!check && method == nullptr) {
+    Exception::Clear();
+    return ref<Object>::take(nullptr);
+  }
   auto result = PyObject_CallFunctionObjArgs(method, nullptr);
   if (check)
     check_not_null(result);
@@ -405,9 +407,11 @@ Object::CallMethodObjArgs(
   PyObject* arg0,
   bool check)
 {
-  ref<Object> method = GetAttrString(name, false);
-  if (check)
-    check_not_null(method);
+  ref<Object> method = GetAttrString(name, check);
+  if (!check && method == nullptr) {
+    Exception::Clear();
+    return ref<Object>::take(nullptr);
+  }
   auto result = PyObject_CallFunctionObjArgs(method, arg0, nullptr);
   if (check)
     check_not_null(result);
@@ -425,9 +429,11 @@ Object::CallMethodObjArgs(
   PyObject* arg1,
   bool check)
 {
-  ref<Object> method = GetAttrString(name, false);
-  if (check)
-    check_not_null(method);
+  ref<Object> method = GetAttrString(name, check);
+  if (!check && method == nullptr) {
+    Exception::Clear();
+    return ref<Object>::take(nullptr);
+  }
   auto result = PyObject_CallFunctionObjArgs(method, arg0, arg1, nullptr);
   if (check)
     check_not_null(result);

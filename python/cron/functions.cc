@@ -60,7 +60,7 @@ from_local(
 
   auto const datenum = to_datenum(date_arg);
   auto const daytick = to_daytick(daytime_arg);
-  auto const tz      = to_time_zone(tz_arg);
+  auto const tz      = convert_to_time_zone(tz_arg);
 
   // Special case fast path for the default time type.
   if (time_type_arg == (Object*) &PyTime<cron::Time>::type_) 
