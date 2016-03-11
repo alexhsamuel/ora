@@ -169,6 +169,22 @@ PyTimeZone::tp_init(
 // Number methods
 //------------------------------------------------------------------------------
 
+inline ref<Object>
+PyTimeZone::nb_matrix_multiply(
+  PyTimeZone* const self,
+  Object* const other,
+  bool const right)
+{
+  // The time zone should be the RHS.
+  if (!right)
+    return not_implemented_ref();
+
+  // FIXME: Do stuff.
+
+  return not_implemented_ref();
+}
+
+
 PyNumberMethods
 PyTimeZone::tp_as_number_ = {
   (binaryfunc)  nullptr,                        // nb_add
@@ -205,10 +221,10 @@ PyTimeZone::tp_as_number_ = {
   (binaryfunc)  nullptr,                        // nb_inplace_floor_divide
   (binaryfunc)  nullptr,                        // nb_inplace_true_divide
   (unaryfunc)   nullptr,                        // nb_index
-/* FIXME: Python 2.5
-  (binaryfunc)  nullptr,                        // nb_matrix_multiply
+#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 5
+  (binaryfunc)  wrap<PyTimeZone, nb_matrix_multiply>, // nb_matrix_multiply
   (binaryfunc)  nullptr,                        // nb_inplace_matrix_multiply
-*/
+#endif
 };
 
 

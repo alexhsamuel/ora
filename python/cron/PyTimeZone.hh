@@ -83,6 +83,7 @@ public:
   cron::TimeZone_ptr const tz_;
 
   // Number methods.
+  static ref<Object> nb_matrix_multiply (PyTimeZone*, Object*, bool);
   static PyNumberMethods tp_as_number_;
 
   // Methods.
