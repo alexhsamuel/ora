@@ -334,16 +334,3 @@ def test_subtract2():
     assert near(a - 1     , Daytime.from_parts(23, 59, 58.9990))
     
 
-def test_difference():
-    assert Daytime.MIN - Daytime.MIN == 0
-    assert 84399.999999 < Daytime.MAX - Daytime.MIN <= 86400
-
-    a0 = Daytime.from_parts(3, 4, 5)
-    a1 = Daytime.from_parts(4, 5, 6)
-    assert a0 - Daytime.MIN == a0.ssm
-    assert a1 - Daytime.MIN == a1.ssm
-
-    assert a0 - a0 ==     0
-    assert a0 - a1 == -3661
-    assert a1 - a0 ==  3661
-    assert a1 - a1 ==     0
