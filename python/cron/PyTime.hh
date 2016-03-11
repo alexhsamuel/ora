@@ -3,6 +3,7 @@
 #include <cmath>
 #include <experimental/optional>
 #include <iostream>
+#include <map>
 
 #include <Python.h>
 #include <datetime.h>
@@ -54,6 +55,53 @@ template<typename TIME> inline optional<TIME> maybe_time(Object*);
 template<typename TIME> inline TIME convert_to_time(Object*);
 
 //------------------------------------------------------------------------------
+// Virtual API
+//------------------------------------------------------------------------------
+
+/**
+ * Provides an API with dynamic dispatch to PyTime objects.
+ * 
+ * The PyTime class, since it is a Python type, cannot be a C++ virtual class.
+ * This mechanism interfaces the C++ virtual method mechanism with the Python
+ * type system by mapping the Python type to a stub virtual C++ class.
+ */
+class PyTimeAPI
+{
+public:
+
+  /**
+   * Registers a virtual API for a Python type.
+   */
+  static void 
+  add(
+    PyTypeObject* const type, 
+    std::unique_ptr<PyTimeAPI>&& api)
+  {
+    apis_.emplace(type, std::move(api));
+  }
+
+  /**
+   * Returns the API for a Python object, or nullptr if there is none.
+   */
+  static PyTimeAPI const* 
+  get(
+    PyObject* const obj)
+  {
+    auto api = apis_.find(obj->ob_type);
+    return api == apis_.end() ? nullptr : api->second.get();
+  }
+
+  // API methods.
+  virtual cron::LocalDatenumDaytick to_local_datenum_daytick(PyObject* time, cron::TimeZone const& tz) const = 0;
+
+private:
+
+  static std::map<PyTypeObject*, std::unique_ptr<PyTimeAPI>> apis_;
+
+};
+
+
+//------------------------------------------------------------------------------
 // Type class
 //------------------------------------------------------------------------------
 
@@ -93,6 +141,22 @@ public:
    */
   Time const time_;
 
+  class API 
+  : public PyTimeAPI 
+  {
+  public:
+
+    virtual cron::LocalDatenumDaytick 
+    to_local_datenum_daytick(
+      PyObject* time, 
+      cron::TimeZone const& tz) 
+      const
+    { 
+      return cron::to_local_datenum_daytick(((PyTime*) time)->time_, tz);
+    }
+
+  };
+
 private:
 
   static void tp_init(PyTime*, Tuple* args, Dict* kw_args);
@@ -107,7 +171,6 @@ private:
 
   // Methods.
   static ref<Object> method__from_local             (PyTypeObject*, Tuple*, Dict*);
-  static ref<Object> method__to_local               (PyTime*,       Tuple*, Dict*);
   static ref<Object> method_get_date_daytime        (PyTime*,       Tuple*, Dict*);
   static ref<Object> method_get_datenum_daytick     (PyTime*,       Tuple*, Dict*);
   static ref<Object> method_get_parts               (PyTime*,       Tuple*, Dict*);
@@ -142,6 +205,8 @@ PyTime<TIME>::add_to(
   type_ = build_type(string{module.GetName()} + "." + name);
   // Hand it to Python.
   type_.Ready();
+
+  PyTimeAPI::add(&type_, std::make_unique<API>());
 
   // Build the repr format.
   repr_format_ = make_unique<cron::TimeFormat>(
@@ -389,30 +454,6 @@ PyTime<TIME>::method__from_local(
 
 template<typename TIME>
 ref<Object>
-PyTime<TIME>::method__to_local(
-  PyTime* const self,
-  Tuple* const args,
-  Dict* const kw_args)
-{
-  static char const* const arg_names[] = {"time_zone", nullptr};
-  Object* tz_arg;
-  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz_arg);
-
-  auto const tz = maybe_time_zone(tz_arg);
-  if (tz == nullptr)
-    throw py::ValueError(
-      string("not a time zone: ") + tz_arg->Repr()->as_utf8_string());
-
-  auto local = cron::to_local_datenum_daytick(self->time_, *tz);
-  ref<Tuple> result = Tuple::New(2);
-  result->initialize(0, Long::FromLong(local.datenum));
-  result->initialize(1, Long::FromUnsignedLong(local.daytick));
-  return std::move(result);
-}
-
-
-template<typename TIME>
-ref<Object>
 PyTime<TIME>::method_get_date_daytime(
   PyTime* const self,
   Tuple* const args,
@@ -513,7 +554,6 @@ Methods<PyTime<TIME>>
 PyTime<TIME>::tp_methods_
   = Methods<PyTime>()
     .template add_class<method__from_local>             ("_from_local")
-    .template add<method__to_local>                     ("_to_local")
     .template add<method_get_date_daytime>              ("get_date_daytime")
     .template add<method_get_datenum_daytick>           ("get_datenum_daytick")
     .template add<method_get_parts>                     ("get_parts")
@@ -668,32 +708,6 @@ PyTime<TIME>::build_type(
 // Helpers
 
 using PyTimeDefault = PyTime<cron::Time>;
-
-/**
- * From Python time and time zone objects, returns the local datenum and 
- * daytick.
- */
-inline cron::LocalDatenumDaytick
-to_local(
-  Object* const time,
-  Object* const tz)
-{
-  if (PyTime<cron::Time>::Check(time)) 
-    // Special case fast path for the default time type.
-    return cron::to_local_datenum_daytick(
-      cast<PyTime<cron::Time>>(time)->time_, *convert_to_time_zone(tz));
-
-  else {
-    // FIXME: Raise a reasonable exception if 'time' is not a time.
-    // Call its _to_local() method.
-    auto local = cast<Sequence>(time->CallMethodObjArgs("_to_local", tz));
-    return {
-      (cron::Datenum) (long) *cast<Long>(local->GetItem(0)),
-      (cron::Daytick) (long) *cast<Long>(local->GetItem(1)),
-    };
-  }
-}
-
 
 template<typename TIME>
 optional<TIME>

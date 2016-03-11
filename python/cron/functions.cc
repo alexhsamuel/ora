@@ -132,7 +132,7 @@ to_local(
   Dict* const kw_args)
 {
   Object* time;
-  Object* tz;
+  Object* tz_arg;
   Object* date_type = (Object*) &PyDate<cron::Date>::type_;
   Object* daytime_type = (Object*) &PyDaytime<cron::Daytime>::type_;
   static char const* const arg_names[] 
@@ -140,9 +140,17 @@ to_local(
   Arg::ParseTupleAndKeywords(
     args, kw_args, 
     "OO|OO", arg_names, 
-    &time, &tz, &date_type, &daytime_type);
+    &time, &tz_arg, &date_type, &daytime_type);
   
-  return make_local(alxs::to_local(time, tz), date_type, daytime_type);
+  cron::LocalDatenumDaytick local;
+  auto const tz = convert_to_time_zone(tz_arg);
+
+  auto api = PyTimeAPI::get(time);
+  if (api != nullptr)
+    local = api->to_local_datenum_daytick(time, *tz);
+  else 
+    local = cron::to_local_datenum_daytick(convert_to_time<cron::Time>(time), *tz);
+  return make_local(local, date_type, daytime_type);
 }
 
 
