@@ -21,7 +21,26 @@ using std::unique_ptr;
 
 extern StructSequenceType* get_time_zone_parts_type();
 
-cron::TimeZone_ptr to_time_zone(Object*);
+/**
+ * Unpacks various Python time zone objects to a TimeZone.  Accepts the 
+ * following:
+ *
+ *  - PyTimeZone instances
+ *  - pytz time zone instances, or any object with a 'zone' attribute naming
+ *    a time zone
+ *
+ * Returns nullptr if the object isn't a time zone.
+ */
+cron::TimeZone_ptr maybe_time_zone(Object*);
+
+/**
+ * Converts various kinds of Python objects to a TimeZone.  Beyond
+ * 'to_time_zone()', this function also accepts the following.
+ *
+ *  - If the object is a string, it is interpreted as a time zone name.
+ *
+ * If the object cannot be converted, raises a Python exception.
+ */
 cron::TimeZone_ptr convert_to_time_zone(Object*);
 
 //------------------------------------------------------------------------------
@@ -67,7 +86,6 @@ public:
   static PyNumberMethods tp_as_number_;
 
   // Methods.
-  static ref<Object> method_convert (PyTypeObject*, Tuple*, Dict*);
   static ref<Object> method_get     (PyTypeObject*, Tuple*, Dict*);
   static Methods<PyTimeZone> tp_methods_;
 

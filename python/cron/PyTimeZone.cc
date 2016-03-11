@@ -46,7 +46,7 @@ get_time_zone_parts_type()
  * Interprets 'obj' as a time zone.
  */
 cron::TimeZone_ptr
-to_time_zone(
+maybe_time_zone(
   Object* const obj)
 {
   if (PyTimeZone::Check(obj))
@@ -66,7 +66,7 @@ to_time_zone(
   }
     
   // Not a time zone object.
-  throw py::TypeError("not a time zone");
+  return nullptr;
 }
 
 
@@ -77,12 +77,9 @@ cron::TimeZone_ptr
 convert_to_time_zone(
   Object* const obj)
 {
-  try {
-    return to_time_zone(obj);
-  }
-  catch (Exception) {
-    Exception::Clear();
-  }
+  auto const tz = maybe_time_zone(obj);
+  if (tz != nullptr)
+    return tz;
 
   // If it's a string, interpret it as a time zone name.
   if (Unicode::Check(obj)) {
@@ -164,7 +161,7 @@ PyTimeZone::tp_init(
   Object* obj = nullptr;
   Arg::ParseTuple(args, "O", &obj);
 
-  new(self) PyTimeZone(to_time_zone(obj));
+  new(self) PyTimeZone(convert_to_time_zone(obj));
 }
 
 
@@ -220,23 +217,6 @@ PyTimeZone::tp_as_number_ = {
 //------------------------------------------------------------------------------
 
 ref<Object>
-PyTimeZone::method_convert(
-  PyTypeObject* const type,
-  Tuple* const args,
-  Dict* const kw_args)
-{
-  static char const* const arg_names[] = {"time_zone", nullptr};
-  Object* obj;
-  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &obj);
-
-  if (obj->IsInstance(type))
-    return ref<Object>::of(obj);
-
-  return create(convert_to_time_zone(obj));
-}
-
-
-ref<Object>
 PyTimeZone::method_get(
   PyTypeObject* const type,
   Tuple* const args,
@@ -260,7 +240,6 @@ PyTimeZone::method_get(
 Methods<PyTimeZone>
 PyTimeZone::tp_methods_
   = Methods<PyTimeZone>()
-    .template add_class<method_convert>         ("convert")
     .template add_class<method_get>             ("get")
   ;
 

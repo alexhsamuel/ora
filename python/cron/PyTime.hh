@@ -363,7 +363,7 @@ PyTime<TIME>::method__from_local(
   Arg::ParseTupleAndKeywords(
     args, kw_args, "IkO|p", arg_names, &datenum, &daytick, &tz_arg, &first);
 
-  auto tz = to_time_zone(tz_arg);
+  auto tz = convert_to_time_zone(tz_arg);
   auto t = cron::from_local<TIME>(datenum, daytick, *tz, first);
   return create(t, type);
 }
@@ -377,11 +377,15 @@ PyTime<TIME>::method__to_local(
   Dict* const kw_args)
 {
   static char const* const arg_names[] = {"time_zone", nullptr};
-  Object* tz;
-  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz);
+  Object* tz_arg;
+  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz_arg);
 
-  auto local = cron::to_local_datenum_daytick(
-    self->time_, *convert_to_time_zone(tz));
+  auto const tz = maybe_time_zone(tz_arg);
+  if (tz == nullptr)
+    throw py::ValueError(
+      string("not a time zone: ") + tz_arg->Repr()->as_utf8_string());
+
+  auto local = cron::to_local_datenum_daytick(self->time_, *tz);
   ref<Tuple> result = Tuple::New(2);
   result->initialize(0, Long::FromLong(local.datenum));
   result->initialize(1, Long::FromUnsignedLong(local.daytick));
@@ -401,7 +405,8 @@ PyTime<TIME>::method_get_date_daytime(
   Object* tz;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz);
 
-  auto local = cron::to_local_datenum_daytick(self->time_, *to_time_zone(tz));
+  auto local
+    = cron::to_local_datenum_daytick(self->time_, *convert_to_time_zone(tz));
   return make_date_daytime(local.datenum, local.daytick);
 }
 
@@ -417,7 +422,8 @@ PyTime<TIME>::method_get_datenum_daytick(
   Object* tz;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz);
 
-  auto local = cron::to_local_datenum_daytick(self->time_, *to_time_zone(tz));
+  auto local
+    = cron::to_local_datenum_daytick(self->time_, *convert_to_time_zone(tz));
 
   auto result = Tuple::New(2);
   result->initialize(0, Long::FromLong(local.datenum));
@@ -437,7 +443,7 @@ PyTime<TIME>::method_get_parts(
   Object* tz;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz);
 
-  auto parts = self->time_.get_parts(*to_time_zone(tz));
+  auto parts = self->time_.get_parts(*convert_to_time_zone(tz));
 
   auto date_parts = get_date_parts_type()->New();
   date_parts->initialize(0, Long::FromLong(parts.date.year));
@@ -711,6 +717,10 @@ convert_time_object(
     auto const tzinfo = obj->GetAttrString("tzinfo", false);
     if (tzinfo == None)
       throw py::ValueError("unlocalized datetime doesn't represent a time");
+    auto const tz = maybe_time_zone(tzinfo);
+    if (tz == nullptr)
+      throw py::ValueError(
+        string("unknown tzinfo: ") + tzinfo->Repr()->as_utf8_string());
     
     // FIXME: Provide a all-integer ctor with (sec, usec).
     return TIME(
@@ -721,7 +731,7 @@ convert_time_object(
       PyDateTime_DATE_GET_MINUTE(obj),
       PyDateTime_DATE_GET_SECOND(obj) 
       + PyDateTime_DATE_GET_MICROSECOND(obj) * 1e-6,
-      *to_time_zone(tzinfo),
+      *tz,
       true);
   }
 
