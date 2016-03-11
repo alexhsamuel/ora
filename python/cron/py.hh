@@ -905,6 +905,15 @@ inline std::ostream& operator<<(std::ostream& os, ref<Unicode>& ref)
 }
 
 
+inline std::string
+operator+(
+  std::string const& str0,
+  Unicode& str1)
+{
+  return str0 + str1.as_utf8_string();
+}
+
+
 //==============================================================================
 
 inline void baseref::clear()

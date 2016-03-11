@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <experimental/optional>
 #include <iostream>
 
 #include <Python.h>
@@ -19,7 +20,9 @@
 namespace alxs {
 
 using namespace py;
+using namespace std::literals;
 
+using std::experimental::optional;
 using std::make_unique;
 using std::string;
 using std::unique_ptr;
@@ -30,8 +33,25 @@ using std::unique_ptr;
 
 StructSequenceType* get_time_parts_type();
 
-// template<typename TIME> TIME convert_object(Object*);
-template<typename TIME> TIME convert_time_object(Object*);
+/**
+ * Attempts to decode various time objects.  The following objects are
+ * recognized:
+ *
+ *   - PyTime instances
+ *   - objects with a 'timetick' attribute
+ *   - datetime.datetime instances
+ */
+template<typename TIME> inline optional<TIME> maybe_time(Object*);
+
+/**
+ * Converts an object to a time.  Beyond 'maybe_time()', recognizes the 
+ * following: 
+ *
+ *   - 
+ *
+ * If the argument cannot be converted, raises a Python exception.
+ */
+template<typename TIME> inline TIME convert_to_time(Object*);
 
 //------------------------------------------------------------------------------
 // Type class
@@ -196,7 +216,7 @@ PyTime<TIME>::tp_init(
   Object* obj = (Object*) Py_None;
   Arg::ParseTuple(args, "|O", &obj);
 
-  new(self) PyTime(convert_time_object<Time>(obj));
+  new(self) PyTime(convert_to_time<Time>(obj));
 }
 
 
@@ -236,14 +256,12 @@ PyTime<TIME>::tp_richcompare(
   Object* const other,
   int const comparison)
 {
-  Time const t0 = self->time_;
-  Time t1;
-  try {
-    t1 = convert_time_object<Time>(other);
-  } catch (Exception) {
-    Exception::Clear();
+  auto const other_time = maybe_time<Time>(other);
+  if (!other_time)
     return not_implemented_ref();
-  }
+
+  Time const t0 = self->time_;
+  Time const t1 = *other_time;
 
   bool result;
   switch (comparison) {
@@ -481,19 +499,12 @@ PyTime<TIME>::method_is_same(
   Tuple* const args,
   Dict* const kw_args)
 {
-  static char const* const arg_names[] = {"object", nullptr};
-  Object* object;
-  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &object);
+  static char const* const arg_names[] = {"other", nullptr};
+  Object* other;
+  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &other);
 
-  Time time;
-  try {
-    time = convert_time_object<Time>(object);
-  }
-  catch (Exception) {
-    Exception::Clear();
-    return Bool::from(false);
-  }
-  return Bool::from(self->time_.is(time));
+  auto const other_time = maybe_time<Time>(other);
+  return Bool::from(other_time && self->time_.is(*other_time));
 }
 
 
@@ -684,21 +695,11 @@ to_local(
 }
 
 
-/**
- * Attempts to convert various kinds of Python time objects to Time.
- *
- * If 'obj' is a time object, returns the equivalent time.  Otherwise, throws
- * 'Exception'.
- */
 template<typename TIME>
-TIME
-convert_time_object(
+optional<TIME>
+maybe_time(
   Object* const obj)
 {
-  if (obj == nullptr)
-    // Use the default value.
-    return TIME();
-
   if (PyTime<TIME>::Check(obj))
     // Exact wrapped type.
     return cast<PyTime<TIME>>(obj)->time_;
@@ -735,7 +736,30 @@ convert_time_object(
       true);
   }
 
-  throw py::TypeError("not a time");
+  // No type match.
+  return {};
+}
+
+
+template<typename TIME>
+TIME
+convert_to_time(
+  Object* const obj)
+{
+  if (obj == None)
+    // Use the default value.
+    return TIME{};
+
+  auto time = maybe_time<TIME>(obj);
+  if (time)
+    return *time;
+
+  // FIXME: Accept (localtime, tz) sequences.
+  // FIXME: Accept (date, daytime, tz) sequences.
+  // FIXME: Accept (y,m,d,H,M,S,tz) sequences.
+  // FIXME: Parse strings.
+
+  throw py::TypeError("can't convert to a time: "s + *obj->Repr());
 }
 
 
