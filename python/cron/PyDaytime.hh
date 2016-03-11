@@ -30,7 +30,7 @@ using std::unique_ptr;
 StructSequenceType* get_daytime_parts_type();
 
 /**
- * Attempts to convert various kinds of Python daytime object to `DAYTIME`.
+ * Attempts to convert various kinds of Python daytime object to 'DAYTIME'.
  *
  * If 'obj' is a daytime object of some kind, returns the equivalent daytime;
  * otherwise a null option.  The following daytime objects are recognized:
