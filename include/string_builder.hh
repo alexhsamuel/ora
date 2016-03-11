@@ -64,9 +64,10 @@ public:
   {
     maybe_resize(width);
 
-    // Count the number of digits needed to represent the value.
-    size_t digits = 0;
-    for (uint64_t rem = value; rem > 0; digits++, rem /= 10)
+    // Count the number of digits needed to represent the value.  At least one
+    // digit is required.
+    size_t digits = 1;
+    for (uint64_t rem = value / 10; rem > 0; digits++, rem /= 10)
       ;
 
     if (digits > width)

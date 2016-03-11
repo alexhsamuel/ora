@@ -154,7 +154,7 @@ PyDaytime<DAYTIME>::add_to(
 
   // Build the repr format.
   repr_format_ = make_unique<cron::DaytimeFormat>(
-    name + "(%H, %M, %S)",
+    name + "(%0H, %0M, %0S)",
     name + ".INVALID",
     name + ".MISSING");
 
