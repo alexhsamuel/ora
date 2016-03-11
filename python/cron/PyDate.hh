@@ -8,6 +8,7 @@
 #include <string>
 
 #include <Python.h>
+#include <datetime.h>
 
 #include "cron/date.hh"
 #include "cron/format.hh"
@@ -34,16 +35,21 @@ ref<Object> get_weekday_obj(int weekday);
 /**
  * Attempts to convert various kinds of Python date objects to Date.
  *
- * If 'obj' is a date object (a PyDate instance, datetime.date, or
- * compatible), returns the equivalent date.  Otherwise, raises 'Exception'.
+ * If 'obj' is a date object of some kind, returns the equivalent date;
+ * otherwise a null option.  The following date objects are recognized:
+ *
+ *  - PyDateTemplate instances
+ *  - 'datetime.date' instances
+ *  - objects with a 'datenum' attribute
+ *  - objects with a 'toordinal()' method
  */
 template<typename DATE> optional<DATE> maybe_date(Object*);
 
 /**
- * Attempts to convert various kinds of Python objects to Date.
+ * Converts various kinds of Python objects to Date.
  *
  * If 'obj' can be converted unambiguously to a date, returns it.  Otherwise,
- * raises 'Exception'.
+ * raises a Python exception.
  */
 template<typename DATE> DATE convert_to_date(Object*);
 
@@ -120,7 +126,6 @@ private:
   static PyNumberMethods tp_as_number_;
 
   // Methods.
-  static ref<Object> method_convert             (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_datenum        (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_ordinal_date   (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_parts          (PyTypeObject* type, Tuple* args, Dict* kw_args);
@@ -224,17 +229,18 @@ PyDate<DATE>::tp_init(
 {
   if (kw_args != nullptr)
     throw TypeError("function takes no keyword arguments");
+  auto const num_args = args->Length();
   Date date;
-  if (args->Length() == 0)
+  if (num_args == 0)
     ;
-  else if (args->Length() == 1)
+  else if (num_args == 1)
     date = convert_to_date<Date>(args->GetItem(0));
-  else if (args->Length() == 2)
+  else if (num_args == 2)
     date = ordinal_parts_to_date<Date>(args);
-  else if (args->Length() == 3)
+  else if (num_args == 3)
     date = parts_to_date<Date>(args);
   else
-    throw TypeError("function takes 0, 1, or 3 arguments");
+    throw TypeError("function takes 0, 1, 2, or 3 arguments");
 
   new(self) PyDate{date};
 }
@@ -399,26 +405,6 @@ PyDate<DATE>::tp_as_number_ = {
 
 template<typename DATE>
 ref<Object>
-PyDate<DATE>::method_convert(
-  PyTypeObject* const type,
-  Tuple* const args,
-  Dict* const kw_args)
-{
-  if (args->Length() != 1)
-    throw TypeError("from() takes one argument");
-  Object* const obj = args->GetItem(0);
-  if (kw_args != nullptr)
-    throw TypeError("convert() takes no keyword arguments");
-
-  if (obj->IsInstance(type))
-    return ref<Object>::of(obj);
-
-  return create(convert_to_date<Date>(obj), type);
-}
-
-
-template<typename DATE>
-ref<Object>
 PyDate<DATE>::method_from_datenum(
   PyTypeObject* const type,
   Tuple* const args,
@@ -463,14 +449,15 @@ PyDate<DATE>::method_from_parts(
   if (kw_args != nullptr)
     throw TypeError("from_parts() takes no keyword arguments");
 
+  auto const num_args = args->Length();
   Sequence* parts;
   // Accept either a single three-element sequence, or three args.
-  if (args->Length() == 1) {
+  if (num_args == 1) {
     parts = cast<Sequence>(args->GetItem(0));
     if (parts->Length() < 3)
       throw TypeError("parts must be a 3-element (or longer) sequence");
   }
-  else if (args->Length() == 3)
+  else if (num_args == 3)
     parts = args;
   else
     throw TypeError("from_parts() takes one or three arguments");
@@ -537,7 +524,6 @@ template<typename DATE>
 Methods<PyDate<DATE>>
 PyDate<DATE>::tp_methods_
   = Methods<PyDate>()
-    .template add_class<method_convert>             ("convert")
     .template add_class<method_from_datenum>        ("from_datenum")
     .template add_class<method_from_ordinal_date>   ("from_ordinal_date")
     .template add_class<method_from_parts>          ("from_parts")
@@ -860,10 +846,6 @@ inline optional<DATE>
 maybe_date(
   Object* const obj)
 {
-  if (obj == nullptr || obj == None) 
-    // Use the default value.
-    return DATE{};
-
   if (PyDate<DATE>::Check(obj)) 
     // Exact wrapped type.
     return static_cast<PyDate<DATE>*>(obj)->date_;
@@ -875,6 +857,12 @@ maybe_date(
       = reinterpret_cast<cron::Datenum (*)(Object*)>(obj->ob_type->tp_print);
     return DATE::from_datenum(get_datenum(obj));
   }
+
+  if (PyDate_Check(obj)) 
+    return DATE::from_parts(
+      PyDateTime_GET_YEAR(obj),
+      PyDateTime_GET_MONTH(obj) - 1,
+      PyDateTime_GET_DAY(obj) - 1);
 
   // Try for a date type that has a 'datenum' attribute.
   auto datenum = obj->GetAttrString("datenum", false);
@@ -896,6 +884,10 @@ inline DATE
 convert_to_date(
   Object* const obj)
 {
+  if (obj == None) 
+    // Use the default value.
+    return DATE{};
+
   auto date = maybe_date<DATE>(obj);
   if (date)
     return *date;

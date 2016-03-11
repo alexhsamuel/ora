@@ -230,6 +230,8 @@ public:
   {
   }
 
+  // FIXME: Need DateTemplate(Year, Month, Date)?
+
   DateTemplate
   operator=(
     DateTemplate const& date)

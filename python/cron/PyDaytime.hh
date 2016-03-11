@@ -5,6 +5,9 @@
 #include <experimental/optional>
 #include <iostream>
 
+#include <Python.h>
+#include <datetime.h>
+
 #include "cron/format.hh"
 #include "cron/daytime.hh"
 #include "cron/time_zone.hh"
@@ -26,8 +29,29 @@ using std::unique_ptr;
 
 StructSequenceType* get_daytime_parts_type();
 
-template<typename DAYTIME> optional<DAYTIME> convert_daytime_object(Object*);
-template<typename DAYTIME> optional<DAYTIME> convert_object_to_daytime(Object*);
+/**
+ * Attempts to convert various kinds of Python daytime object to `DAYTIME`.
+ *
+ * If 'obj' is a daytime object of some kind, returns the equivalent daytime;
+ * otherwise a null option.  The following daytime objects are recognized:
+ *
+ *  - PyDaytimeTemplate instances
+ *  - 'datetime.time` instances
+ */
+template<typename DAYTIME> optional<DAYTIME> maybe_daytime(Object*);
+
+/**
+ * Converts various kinds of Python objects to Daytime.
+ *
+ * If 'obj' can be converted unambiguously to a daytime, returns it; otherwise
+ * rasies a Python exception.
+ */
+template<typename DAYTIME> DAYTIME convert_to_daytime(Object*);
+
+/**
+ * Helper for converting a 2- or 3-eleme4nt sequence of daytime parts.
+ */
+template<typename DAYTIME> inline DAYTIME parts_to_daytime(Sequence*);
 
 //------------------------------------------------------------------------------
 // Type class
@@ -90,7 +114,6 @@ private:
   static PyNumberMethods tp_as_number_;
 
   // Methods.
-  static ref<Object> method_convert             (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_daytick        (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_parts          (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_ssm            (PyTypeObject* type, Tuple* args, Dict* kw_args);
@@ -193,14 +216,20 @@ PyDaytime<DAYTIME>::tp_init(
   Tuple* const args,
   Dict* const kw_args)
 {
-  Object* obj = nullptr;
-  Arg::ParseTuple(args, "|O", &obj);
-
-  auto daytime = convert_daytime_object<Daytime>(obj);
-  if (daytime)
-    new(self) PyDaytime{*daytime};
+  if (kw_args != nullptr)
+    throw TypeError("function takes no keyword arguments");
+  auto const num_args = args->Length();
+  Daytime daytime;
+  if (num_args == 0)
+    ;
+  else if (num_args == 1)
+    daytime = convert_to_daytime<Daytime>(args->GetItem(0));
+  else if (num_args == 2 || num_args == 3)
+    daytime = parts_to_daytime<Daytime>(args);
   else
-    throw TypeError("not a daytime");
+    throw TypeError("function takes 0, 1, 2, or 3 arguments");
+
+  new(self) PyDaytime{daytime};
 }
 
 
@@ -247,7 +276,7 @@ PyDaytime<DAYTIME>::tp_richcompare(
   Object* const other,
   int const comparison)
 {
-  auto opt = convert_daytime_object<Daytime>(other);
+  auto const opt = maybe_daytime<Daytime>(other);
   if (!opt)
     return not_implemented_ref();
   
@@ -298,23 +327,14 @@ PyDaytime<DAYTIME>::nb_subtract(
 {
   if (right) 
     return not_implemented_ref();
-  else {
-    auto daytime = self->daytime_;
-    auto other_daytime = convert_daytime_object<DAYTIME>(other);
-    if (other_daytime) 
-      if (daytime.is_valid() && other_daytime->is_valid())
-        return Float::FromDouble(daytime.get_ssm() - other_daytime->get_ssm());
-      else
-        return none_ref();
 
-    auto shift = other->maybe_double_value();
-    if (shift)
-      return 
-        *shift == 0 ? ref<PyDaytime>::of(self)
-        : create(daytime - *shift, self->ob_type);
-
+  auto shift = other->maybe_double_value();
+  if (shift)
+    return 
+      *shift == 0 ? ref<PyDaytime>::of(self)
+      : create(self->daytime_ - *shift, self->ob_type);
+  else
     return not_implemented_ref();
-  }
 }
 
 
@@ -365,28 +385,6 @@ PyDaytime<DAYTIME>::tp_as_number_ = {
 //------------------------------------------------------------------------------
 // Methods
 //------------------------------------------------------------------------------
-
-template<typename DAYTIME>
-ref<Object>
-PyDaytime<DAYTIME>::method_convert(
-  PyTypeObject* const type,
-  Tuple* const args,
-  Dict* const kw_args)
-{
-  if (args->Length() != 1)
-    throw TypeError("from() takes one argument");
-  Object* const obj = args->GetItem(0);
-  if (kw_args != nullptr)
-    throw TypeError("convert() takes no keyword arguments");
-
-  auto daytime = convert_object_to_daytime<Daytime>(obj);
-  if (daytime)
-    return create(*daytime, type);
-  else
-    // FIXME: Return INVALID instead?
-    throw TypeError("cannot convert to daytime");
-}
-
 
 template<typename DAYTIME>
 ref<Object>
@@ -462,7 +460,7 @@ PyDaytime<DAYTIME>::method_is_same(
   Object* object;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &object);
 
-  auto daytime_opt = convert_daytime_object<Daytime>(object);
+  auto daytime_opt = maybe_daytime<Daytime>(object);
   return Bool::from(daytime_opt && self->daytime_.is(*daytime_opt));
 }
 
@@ -471,7 +469,6 @@ template<typename DAYTIME>
 Methods<PyDaytime<DAYTIME>>
 PyDaytime<DAYTIME>::tp_methods_
   = Methods<PyDaytime>()
-    .template add_class<method_convert>             ("convert")
     .template add_class<method_from_daytick>        ("from_daytick")
     .template add_class<method_from_parts>          ("from_parts")
     .template add_class<method_from_ssm>            ("from_ssm")
@@ -687,75 +684,72 @@ make_daytime(
 }
 
 
-/**
- * Attempts to convert various kinds of Python daytime object to `DAYTIME`.
- *
- * If 'obj' is a daytime object (a PyDaytime instance, datetime.time, or
- * compatible), returns the equivalent daytime.  Otherwise, returns a null
- * option with no exception set.
- */
+template<typename DAYTIME>
+inline DAYTIME
+parts_to_daytime(
+  Sequence* const parts)
+{
+  // Interpret a two- or three-element sequence as parts.
+  long   const hour     = parts->GetItem(0)->long_value();
+  long   const minute   = parts->GetItem(1)->long_value();
+  double const second
+    = parts->Length() > 2 ? parts->GetItem(2)->double_value() : 0;
+  return DAYTIME::from_parts(hour, minute, second);
+}
+
+
 template<typename DAYTIME>
 inline optional<DAYTIME>
-convert_daytime_object(
+maybe_daytime(
   Object* const obj)
 {
-  if (obj == nullptr)
-    // Use the default value.
-    return DAYTIME{};
-
   if (PyDaytime<DAYTIME>::Check(obj))
     // Exact wrapped type.
     return static_cast<PyDaytime<DAYTIME>*>(obj)->daytime_;
 
-  // Try for a daytime type that has a `daytick` attribute.
+  // Try for a 'datetime.time' instance.
+  if (PyTime_Check(obj))
+    return DAYTIME(
+      PyDateTime_TIME_GET_HOUR(obj),
+      PyDateTime_TIME_GET_MINUTE(obj),
+      PyDateTime_TIME_GET_SECOND(obj)
+      + 1e-6 * PyDateTime_TIME_GET_MICROSECOND(obj));
+
+  // Try for a daytime type that has a 'daytick' attribute.
   auto daytick = obj->GetAttrString("daytick", false);
   if (daytick != nullptr)
     return DAYTIME::from_daytick(daytick->long_value());
-
-  // FIXME: Convert from datetime.time, somehow.
 
   // No type match.
   return {};
 }
 
 
-/**
- * Attempts to convert various kinds of Python objects to Daytime.
- *
- * If 'obj' can be converted unambiguously to a daytime, returns it.  Otherwise,
- * returns a null option with no exception set.
- */
 template<typename DAYTIME>
-inline optional<DAYTIME>
-convert_object_to_daytime(
+inline DAYTIME
+convert_to_daytime(
   Object* const obj)
 {
-  // Try to convert various daytime objects.
-  auto opt = convert_daytime_object<DAYTIME>(obj);
-  if (opt)
-    return opt;
+  if (obj == None)
+    // Use the default value.
+    return DAYTIME{};
 
-  if (Sequence::Check(obj)) {
-    auto seq = static_cast<Sequence*>(obj);
-    if (seq->Length() == 2 || seq->Length() == 3) {
-      // Interpret a two- or three-element sequence as parts.
-      long   const hour     = seq->GetItem(0)->long_value();
-      long   const minute   = seq->GetItem(1)->long_value();
-      double const second   = seq->Length() > 2 ? seq->GetItem(2)->double_value() : 0;
-      return DAYTIME::from_parts(hour, minute, second);
-    }
-  }
+  auto opt = maybe_daytime<DAYTIME>(obj);
+  if (opt)
+    return *opt;
+
+  if (Sequence::Check(obj)) 
+    return parts_to_daytime<DAYTIME>(static_cast<Sequence*>(obj));
 
   auto const double_opt = obj->maybe_double_value();
-  if (double_opt) {
+  if (double_opt) 
     // Interpret as SSM.
     return DAYTIME::from_ssm(*double_opt);
-  }
       
   // FIXME: Parse strings.
 
   // Failed to convert.
-  return {};
+  throw py::TypeError("can't convert to daytime");
 }
 
 
