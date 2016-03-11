@@ -132,7 +132,8 @@ private:
   static ref<Object> get_valid                  (PyDaytime* self, void*);
   static GetSets<PyDaytime> tp_getsets_;
 
-  /** Date format used to generate the str.  */
+  /** Date format used to generate the repr and str.  */
+  static unique_ptr<cron::DaytimeFormat> repr_format_;
   static unique_ptr<cron::DaytimeFormat> str_format_;
 
   static Type build_type(string const& type_name);
@@ -150,6 +151,12 @@ PyDaytime<DAYTIME>::add_to(
   type_ = build_type(string{module.GetName()} + "." + name);
   // Hand it to Python.
   type_.Ready();
+
+  // Build the repr format.
+  repr_format_ = make_unique<cron::DaytimeFormat>(
+    name + "(%H, %M, %S)",
+    name + ".INVALID",
+    name + ".MISSING");
 
   // Build the str format.  Choose precision for seconds that captures actual
   // precision of the daytime class.
@@ -248,15 +255,7 @@ ref<Unicode>
 PyDaytime<DAYTIME>::tp_repr(
   PyDaytime* const self)
 {
-  string full_name{self->ob_type->tp_name};
-  string type_name = full_name.substr(full_name.rfind('.') + 1);
-
-  auto const daytime = self->daytime_;
-  return Unicode::from(
-    type_name + (
-        daytime.is_invalid() ? ".INVALID"s
-      : daytime.is_missing() ? ".MISSING"s
-      : "("s + std::to_string(daytime.get_daytick()) + ")"));
+  return Unicode::from((*repr_format_)(self->daytime_));
 }
 
 
@@ -597,8 +596,11 @@ PyDaytime<DAYTIME>::tp_getsets_
 
 template<typename DAYTIME>
 unique_ptr<cron::DaytimeFormat>
-PyDaytime<DAYTIME>::str_format_;
+PyDaytime<DAYTIME>::repr_format_;
 
+template<typename DAYTIME>
+unique_ptr<cron::DaytimeFormat>
+PyDaytime<DAYTIME>::str_format_;
 
 //------------------------------------------------------------------------------
 // Type object
