@@ -504,7 +504,7 @@ operator-(
   DateTemplate<TRAITS> date1)
 {
   if (date0.is_valid() && date1.is_valid())
-    return date0.get_offset() - date1.get_offset();
+    return (ssize_t) date0.get_offset() - date1.get_offset();
   else if (DateTemplate<TRAITS>::USE_INVALID)
     // FIXME: What do we do with invalid/missing values?
     return 0;

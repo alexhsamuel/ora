@@ -2,6 +2,7 @@
 #pragma GCC diagnostic ignored "-Wparentheses"
 
 #include <cstring>
+#include <experimental/optional>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -16,6 +17,7 @@ namespace alxs {
 
 using namespace py;
 
+using std::experimental::optional;
 using std::make_unique;
 using std::string;
 using std::unique_ptr;
@@ -35,7 +37,7 @@ ref<Object> get_weekday_obj(int weekday);
  * If 'obj' is a date object (a PyDate instance, datetime.date, or
  * compatible), returns the equivalent date.  Otherwise, raises 'Exception'.
  */
-template<typename DATE> DATE to_date(Object*);
+template<typename DATE> optional<DATE> maybe_date(Object*);
 
 /**
  * Attempts to convert various kinds of Python objects to Date.
@@ -48,7 +50,12 @@ template<typename DATE> DATE convert_to_date(Object*);
 /**
  * Helper for converting a 3-element sequence of date parts.
  */
-template<typename DATE> inline DATE from_parts(Sequence*);
+template<typename DATE> inline DATE parts_to_date(Sequence*);
+
+/**
+ * Helper for converting a 2-element sequence of ordinal date parts.
+ */
+template<typename DATE> inline DATE ordinal_parts_to_date(Sequence*);
 
 //------------------------------------------------------------------------------
 // Type class
@@ -221,9 +228,11 @@ PyDate<DATE>::tp_init(
   if (args->Length() == 0)
     ;
   else if (args->Length() == 1)
-    date = to_date<Date>(args->GetItem(0));
+    date = convert_to_date<Date>(args->GetItem(0));
+  else if (args->Length() == 2)
+    date = ordinal_parts_to_date<Date>(args);
   else if (args->Length() == 3)
-    date = from_parts<Date>(args);
+    date = parts_to_date<Date>(args);
   else
     throw TypeError("function takes 0, 1, or 3 arguments");
 
@@ -268,15 +277,12 @@ PyDate<DATE>::tp_richcompare(
   Object* const other,
   int const comparison)
 {
-  Date const d0 = self->date_;
-  Date d1;
-  try {
-    d1 = to_date<Date>(other);
-  }
-  catch (Exception) {
-    Exception::Clear();
+  auto other_date = maybe_date<Date>(other);
+  if (!other_date)
     return not_implemented_ref();
-  }
+
+  Date const d0 = self->date_;
+  Date const d1 = *other_date;
 
   bool result;
   switch (comparison) {
@@ -325,22 +331,18 @@ PyDate<DATE>::nb_subtract(
   if (right) 
     return not_implemented_ref();
 
-  try {
-    auto const other_date = to_date<Date>(other);
-    if (self->date_.is_valid() && other_date.is_valid())
-      return Long::FromLong(
-        (long) self->date_.get_datenum() - other_date.get_datenum());
+  auto const other_date = maybe_date<Date>(other);
+  if (other_date)
+    if (self->date_.is_valid() && other_date->is_valid())
+      return Long::FromLong(self->date_ - *other_date);
     else
       return none_ref();
-  }
-  catch (Exception) {
-    Exception::Clear();
-  }
 
   auto offset = other->maybe_long_value();
   if (offset)
     return 
-      *offset == 0 ? ref<PyDate>::of(self)
+      *offset == 0 
+      ? ref<PyDate>::of(self)  // Optimization: same date.
       : create(self->date_ - *offset, self->ob_type);
 
   return not_implemented_ref();
@@ -473,7 +475,7 @@ PyDate<DATE>::method_from_parts(
   else
     throw TypeError("from_parts() takes one or three arguments");
 
-  return create(from_parts<Date>(parts), type);
+  return create(parts_to_date<Date>(parts), type);
 }
 
 
@@ -522,19 +524,12 @@ PyDate<DATE>::method_is_same(
   Tuple* const args,
   Dict* const kw_args)
 {
-  static char const* const arg_names[] = {"object", nullptr};
-  Object* object;
-  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &object);
+  static char const* const arg_names[] = {"other", nullptr};
+  Object* other;
+  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &other);
 
-  bool is_same;
-  try {
-    is_same = self->date_.is(to_date<Date>(object));
-  }
-  catch (Exception) {
-    Exception::Clear();
-    is_same = false;
-  }
-  return Bool::from(is_same);
+  auto const other_date = maybe_date<Date>(other);
+  return Bool::from(other_date && self->date_.is(*other_date));
 }
 
 
@@ -839,7 +834,7 @@ make_date(
 
 template<typename DATE>
 inline DATE
-from_parts(
+parts_to_date(
   Sequence* const parts)
 {
   long const year   = parts->GetItem(0)->long_value();
@@ -851,12 +846,23 @@ from_parts(
 
 template<typename DATE>
 inline DATE
-to_date(
+ordinal_parts_to_date(
+  Sequence* const parts)
+{
+  long const year       = parts->GetItem(0)->long_value();
+  long const ordinal    = parts->GetItem(1)->long_value();
+  return DATE::from_ordinal_date(year, ordinal - 1);
+}
+
+
+template<typename DATE>
+inline optional<DATE>
+maybe_date(
   Object* const obj)
 {
   if (obj == nullptr || obj == None) 
     // Use the default value.
-    return DATE();
+    return DATE{};
 
   if (PyDate<DATE>::Check(obj)) 
     // Exact wrapped type.
@@ -881,7 +887,7 @@ to_date(
     return DATE::from_datenum(ordinal->long_value() - 1);
 
   // No type match.
-  throw py::TypeError("not a date");
+  return {};
 }
 
 
@@ -890,24 +896,18 @@ inline DATE
 convert_to_date(
   Object* const obj)
 {
-  try {
-    return to_date<DATE>(obj);
-  }
-  catch (Exception) {
-    Exception::Clear();
-  }
+  auto date = maybe_date<DATE>(obj);
+  if (date)
+    return *date;
 
   if (Sequence::Check(obj)) {
     auto seq = static_cast<Sequence*>(obj);
     if (seq->Length() == 3) 
       // Interpret a three-element sequence as date parts.
-      return from_parts<DATE>(seq);
-    else if (seq->Length() == 2) {
+      return parts_to_date<DATE>(seq);
+    else if (seq->Length() == 2) 
       // Interpret a two-element sequence as ordinal parts.
-      long const year       = seq->GetItem(0)->long_value();
-      long const ordinal    = seq->GetItem(1)->long_value();
-      return DATE::from_ordinal_date(year, ordinal - 1);
-    }
+      return ordinal_parts_to_date<DATE>(seq);
   }
 
   auto const long_obj = obj->Long(false);
