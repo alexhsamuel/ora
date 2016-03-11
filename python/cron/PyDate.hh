@@ -175,7 +175,7 @@ PyDate<DATE>::add_to(
 
   // Build the repr format.
   repr_format_ = make_unique<cron::DateFormat>(
-    name + "(%0Y, %0m, %0d)",  // FIXME: This is not a ctor!
+    name + "(%Y, %m, %d)",
     name + ".INVALID",
     name + ".MISSING");
 
