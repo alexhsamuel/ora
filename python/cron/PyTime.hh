@@ -3,6 +3,7 @@
 #include <cmath>
 #include <iostream>
 
+#include <Python.h>
 #include <datetime.h>
 
 #include "cron/format.hh"
