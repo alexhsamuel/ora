@@ -93,7 +93,7 @@ convert_to_time_zone(
   }
 
   // Can't convert to a time zone.
-  throw py::TypeError("can't convert to a time zone");
+  throw py::TypeError("can't convert to a time zone: "s + *obj->Repr());
 }
 
 

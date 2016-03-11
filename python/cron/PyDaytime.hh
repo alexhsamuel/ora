@@ -16,11 +16,11 @@
 namespace alxs {
 
 using namespace py;
+using namespace std::literals;
 
 using std::experimental::optional;
 using std::make_unique;
 using std::string;
-using namespace std::literals;
 using std::unique_ptr;
 
 //------------------------------------------------------------------------------
@@ -751,7 +751,7 @@ convert_to_daytime(
   // FIXME: Parse strings.
 
   // Failed to convert.
-  throw py::TypeError("can't convert to daytime");
+  throw py::TypeError("can't convert to daytime: "s + *obj->Repr());
 }
 
 

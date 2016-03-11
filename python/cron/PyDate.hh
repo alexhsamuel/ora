@@ -17,6 +17,7 @@
 namespace alxs {
 
 using namespace py;
+using namespace std::literals;
 
 using std::experimental::optional;
 using std::make_unique;
@@ -283,7 +284,7 @@ PyDate<DATE>::tp_richcompare(
   Object* const other,
   int const comparison)
 {
-  auto other_date = maybe_date<Date>(other);
+  auto const other_date = maybe_date<Date>(other);
   if (!other_date)
     return not_implemented_ref();
 
@@ -912,7 +913,7 @@ convert_to_date(
 
   // FIXME: Parse strings.
 
-  throw py::TypeError("can't convert to a date");
+  throw py::TypeError("can't convert to a date"s + *obj->Repr());
 }
 
 
