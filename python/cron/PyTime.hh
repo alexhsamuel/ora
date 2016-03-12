@@ -90,6 +90,9 @@ public:
     { return get(obj->ob_type);  }
 
   // API methods.
+  virtual cron::Timetick get_timetick(PyObject* time) const = 0;
+  virtual bool is_invalid(PyObject* time) const = 0;
+  virtual bool is_missing(PyObject* time) const = 0;
   virtual cron::LocalDatenumDaytick to_local_datenum_daytick(PyObject* time, cron::TimeZone const& tz) const = 0;
 
 private:
@@ -144,14 +147,17 @@ public:
   {
   public:
 
-    virtual cron::LocalDatenumDaytick 
-    to_local_datenum_daytick(
-      PyObject* time, 
-      cron::TimeZone const& tz) 
-      const
-    { 
-      return cron::to_local_datenum_daytick(((PyTime*) time)->time_, tz);
-    }
+    virtual cron::Timetick get_timetick(PyObject* const time) const
+      { return ((PyTime*) time)->time_.get_timetick(); }
+
+    virtual bool is_invalid(PyObject* const time) const
+      { return ((PyTime*) time)->time_.is_invalid(); }
+
+    virtual bool is_missing(PyObject* const time) const
+      { return ((PyTime*) time)->time_.is_missing(); }
+
+    virtual cron::LocalDatenumDaytick to_local_datenum_daytick(PyObject* const time, cron::TimeZone const& tz) const
+      { return cron::to_local_datenum_daytick(((PyTime*) time)->time_, tz); }
 
   };
 
@@ -712,19 +718,19 @@ optional<TIME>
 maybe_time(
   Object* const obj)
 {
+  // An object of the same type?
   if (PyTime<TIME>::Check(obj))
-    // Exact wrapped type.
     return cast<PyTime<TIME>>(obj)->time_;
 
-  // FIXME: Check for other PyTime types.
-  // When doing so, interpret INVALID and MISSING.
+  // A different instance of the time class?
+  auto const api = PyTimeAPI::get(obj);
+  if (api != nullptr) 
+    return 
+        api->is_invalid(obj) ? TIME::INVALID
+      : api->is_missing(obj) ? TIME::MISSING
+      : TIME::from_timetick(api->get_timetick(obj));
 
-  // If the type provides timetick, use that.
-  auto timetick_obj = obj->GetAttrString("timetick", false);
-  if (timetick_obj != nullptr) 
-    return TIME::from_timetick((cron::Timetick) *timetick_obj->Long());
-
-  // Try to handle it like a `datetime.datetime`.
+  // A 'datetime.datetime'?
   if (PyDateTime_Check(obj)) {
     // First, make sure it's localized.
     auto const tzinfo = obj->GetAttrString("tzinfo", false);
