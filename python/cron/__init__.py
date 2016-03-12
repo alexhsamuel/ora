@@ -8,6 +8,7 @@ __all__ = (
     "Date",
     "DateParts",
     "Daytime",
+    "DT",
     "Month",
     "MonthOfYear",
     "NsecTime",
@@ -111,6 +112,40 @@ class Month(enum.IntEnum):
 # Add the months to the module namespace.
 globals().update(Month.__members__)
 
+
+#-------------------------------------------------------------------------------
+
+class _DaytimeHourMinute:
+
+    def __init__(self, hour, minute):
+        self.hour = hour
+        self.minute = minute
+
+
+    def __truediv__(self, second):
+        return Daytime.from_parts(self.hour, self.minute, second)
+
+
+
+class _DaytimeHour:
+
+    def __init__(self, hour):
+        self.hour = hour
+
+
+    def __truediv__(self, minute):
+        return _DaytimeHourMinute(self.hour, minute)
+
+
+
+class _Daytime:
+
+    def __truediv__(self, hour):
+        return _DaytimeHour(hour)
+
+
+
+DT = _Daytime()
 
 #-------------------------------------------------------------------------------
 
