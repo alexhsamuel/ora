@@ -72,24 +72,22 @@ public:
   /**
    * Registers a virtual API for a Python type.
    */
-  static void 
-  add(
-    PyTypeObject* const type, 
-    std::unique_ptr<PyTimeAPI>&& api)
-  {
-    apis_.emplace(type, std::move(api));
-  }
+  static void add(PyTypeObject* const type, std::unique_ptr<PyTimeAPI>&& api) 
+    { apis_.emplace(type, std::move(api)); }
 
   /**
    * Returns the API for a Python object, or nullptr if there is none.
    */
-  static PyTimeAPI const* 
+  static PyTimeAPI const*
   get(
-    PyObject* const obj)
+    PyTypeObject* const type)
   {
-    auto api = apis_.find(obj->ob_type);
+    auto api = apis_.find(type);
     return api == apis_.end() ? nullptr : api->second.get();
   }
+
+  static PyTimeAPI const* get(PyObject* const obj)
+    { return get(obj->ob_type);  }
 
   // API methods.
   virtual cron::LocalDatenumDaytick to_local_datenum_daytick(PyObject* time, cron::TimeZone const& tz) const = 0;
