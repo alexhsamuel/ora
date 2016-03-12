@@ -64,6 +64,8 @@ PyInit__ext(void)
 
     module->AddObject("DATENUM_MIN" , Long::FromLong(cron::DATENUM_MIN));
     module->AddObject("DATENUM_MAX" , Long::FromLong(cron::DATENUM_MAX));
+    module->AddObject("MIDNIGHT"    , PyDaytimeDefault::create(PyDaytimeDefault::Daytime::MIDNIGHT));
+    module->AddObject("NOON"        , PyDaytimeDefault::create(PyDaytimeDefault::Daytime::NOON));
     module->AddObject("UTC"         , PyTimeZone::create(cron::UTC));
 
     return module.release();
