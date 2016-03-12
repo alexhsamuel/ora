@@ -39,7 +39,6 @@ StructSequenceType* get_time_parts_type();
  * recognized:
  *
  *   - PyTime instances
- *   - objects with a 'timetick' attribute
  *   - datetime.datetime instances
  */
 template<typename TIME> inline optional<TIME> maybe_time(Object*);
