@@ -52,8 +52,7 @@ from_local(
   Object* daytime_arg;
   Object* tz_arg;
   int first = true;
-  // FIXME: DEFAULT_TIME_TYPE constant?
-  Object* time_type_arg = (Object*) &PyTime<cron::Time>::type_;
+  Object* time_type_arg = (Object*) &PyTimeDefault::type_;
   Arg::ParseTupleAndKeywords(
     args, kw_args, "(OO)O|pO", arg_names,
     &date_arg, &daytime_arg, &tz_arg, &first, &time_type_arg);
@@ -62,9 +61,9 @@ from_local(
   auto const daytick = to_daytick(daytime_arg);
 
   // Special case fast path for the default time type.
-  if (time_type_arg == (Object*) &PyTime<cron::Time>::type_) 
-    return PyTime<cron::Time>::create(
-      cron::from_local<cron::Time>(
+  if (time_type_arg == (Object*) &PyTimeDefault::type_) 
+    return PyTimeDefault::create(
+      cron::from_local<typename PyTimeDefault::Time>(
         datenum, daytick, *convert_to_time_zone(tz_arg), first));
 
   else {
