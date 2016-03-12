@@ -24,7 +24,7 @@ Cron currently has the following limitations.
 - No support for leap seconds or relativistic effects.
 - Support for C++14 and Python 3.4+ only.
 - Tested on Linux and OSX.  Not currently tested on Windows.
-- Support for LP64 architectures (so, x86-64 but not i386) only.
+- Support for LP64 architectures (so, x86-64 but not x86) only.
 
 Also, cron is not yet finished.
 
