@@ -17,6 +17,7 @@
 #include "PyDaytime.hh"
 #include "PyTime.hh"
 #include "PyTimeZone.hh"
+#include "util.hh"
 
 namespace alxs {
 
@@ -33,6 +34,21 @@ using std::unique_ptr;
 //------------------------------------------------------------------------------
 
 StructSequenceType* get_time_parts_type();
+
+/**
+ * Helper for converting a (localtime, tz) sequence to a time.
+ */
+template<typename TIME> inline TIME localtime_to_time(Sequence*);
+
+/**
+ * Helper for converting a (date, daytime, tz) sequence to a time.
+ */
+template<typename TIME> inline TIME date_daytime_to_time(Sequence*);
+
+/**
+ * Helper for converting a (Y,m,d,H,M,S,tz) sequence to a time.
+ */
+template<typename TIME> inline TIME parts_to_time(Sequence*);
 
 /**
  * Attempts to decode various time objects.  The following objects are
@@ -218,7 +234,7 @@ PyTime<TIME>::add_to(
 
   // Build the repr format.
   repr_format_ = make_unique<cron::TimeFormat>(
-    name + "(%0Y, %0m, %0d, %H, %M, %S)",  // FIXME: Not a ctor.
+    name + "(%0Y, %0m, %0d, %0H, %0M, %0S, UTC)",
     name + ".INVALID",
     name + ".MISSING");
 
@@ -286,10 +302,24 @@ PyTime<TIME>::tp_init(
   Tuple* const args,
   Dict* const kw_args)
 {
-  Object* obj = (Object*) Py_None;
-  Arg::ParseTuple(args, "|O", &obj);
+  if (kw_args != nullptr)
+    throw TypeError("function takes no keyword arguments");
+  auto const num_args = args->Length();
+  Time time;
+  if (num_args == 0)
+    ;
+  else if (num_args == 1)
+    time = convert_to_time<Time>(args->GetItem(0));
+  else if (num_args == 2)
+    time = localtime_to_time<Time>(args);
+  else if (num_args == 3)
+    time = date_daytime_to_time<Time>(args);
+  else if (num_args == 7)
+    time = parts_to_time<Time>(args);
+  else
+    throw TypeError("function takes 0, 1, 2, 3, or 7 arguments");
 
-  new(self) PyTime(convert_to_time<Time>(obj));
+  new(self) PyTime(time);
 }
 
 
@@ -695,6 +725,52 @@ PyTime<TIME>::build_type(
 using PyTimeDefault = PyTime<cron::Time>;
 
 template<typename TIME>
+inline TIME
+localtime_to_time(
+  Sequence* const parts)
+{
+  assert(parts->Length() == 2);
+  auto const localtime  = cast<Sequence>(parts->GetItem(0));
+  if (localtime->Length() != 2)
+    throw TypeError("not a localtime: "s + *localtime->Repr());
+  auto const datenum    = to_datenum(localtime->GetItem(0));
+  auto const daytick    = to_daytick(localtime->GetItem(1));
+  auto const tz         = convert_to_time_zone(parts->GetItem(1));
+  return TIME(datenum, daytick, *tz);
+}
+
+
+template<typename TIME>
+inline TIME
+date_daytime_to_time(
+  Sequence* const parts)
+{
+  assert(parts->Length() == 3);
+  auto const datenum    = to_datenum(parts->GetItem(0));
+  auto const daytick    = to_daytick(parts->GetItem(1));
+  auto const tz         = convert_to_time_zone(parts->GetItem(2));
+  return TIME(datenum, daytick, *tz);
+}
+
+
+template<typename TIME>
+inline TIME
+parts_to_time(
+  Sequence* const parts)
+{
+  assert(parts->Length() == 7);
+  auto const year   = parts->GetItem(0)->long_value();
+  auto const month  = parts->GetItem(1)->long_value() - 1;
+  auto const day    = parts->GetItem(2)->long_value() - 1;
+  auto const hour   = parts->GetItem(3)->long_value();
+  auto const minute = parts->GetItem(4)->long_value();
+  auto const second = parts->GetItem(5)->double_value();
+  auto const tz     = convert_to_time_zone(parts->GetItem(6));
+  return TIME(year, month, day, hour, minute, second, *tz);
+}
+
+
+template<typename TIME>
 optional<TIME>
 maybe_time(
   Object* const obj)
@@ -753,9 +829,17 @@ convert_to_time(
   if (time)
     return *time;
 
-  // FIXME: Accept (localtime, tz) sequences.
-  // FIXME: Accept (date, daytime, tz) sequences.
-  // FIXME: Accept (y,m,d,H,M,S,tz) sequences.
+  if (Sequence::Check(obj)) {
+    auto const parts = cast<Sequence>(obj);
+    auto const length = parts->Length();
+    if (length == 2)
+      return localtime_to_time<TIME>(parts);
+    else if (length == 3)
+      return date_daytime_to_time<TIME>(parts);
+    else if (length == 7)
+      return parts_to_time<TIME>(parts);
+  }
+
   // FIXME: Parse strings.
 
   throw py::TypeError("can't convert to a time: "s + *obj->Repr());
