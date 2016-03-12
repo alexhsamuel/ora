@@ -89,10 +89,11 @@ public:
     { return get(obj->ob_type);  }
 
   // API methods.
-  virtual cron::Timetick get_timetick(PyObject* time) const = 0;
-  virtual bool is_invalid(PyObject* time) const = 0;
-  virtual bool is_missing(PyObject* time) const = 0;
-  virtual cron::LocalDatenumDaytick to_local_datenum_daytick(PyObject* time, cron::TimeZone const& tz) const = 0;
+  virtual cron::Timetick            get_timetick(Object* time) const = 0;
+  virtual ref<Object>               from_local_datenum_daytick(cron::Datenum, cron::Daytick, cron::TimeZone const&, bool) const = 0;
+  virtual bool                      is_invalid(Object* time) const = 0;
+  virtual bool                      is_missing(Object* time) const = 0;
+  virtual cron::LocalDatenumDaytick to_local_datenum_daytick(Object* time, cron::TimeZone const& tz) const = 0;
 
 private:
 
@@ -146,16 +147,19 @@ public:
   {
   public:
 
-    virtual cron::Timetick get_timetick(PyObject* const time) const
+    virtual cron::Timetick get_timetick(Object* const time) const
       { return ((PyTime*) time)->time_.get_timetick(); }
 
-    virtual bool is_invalid(PyObject* const time) const
+    virtual ref<Object> from_local_datenum_daytick(cron::Datenum const datenum, cron::Daytick const daytick, cron::TimeZone const& tz, bool first) const
+      { return PyTime::create(cron::from_local<Time>(datenum, daytick, tz, first)); }
+
+    virtual bool is_invalid(Object* const time) const
       { return ((PyTime*) time)->time_.is_invalid(); }
 
-    virtual bool is_missing(PyObject* const time) const
+    virtual bool is_missing(Object* const time) const
       { return ((PyTime*) time)->time_.is_missing(); }
 
-    virtual cron::LocalDatenumDaytick to_local_datenum_daytick(PyObject* const time, cron::TimeZone const& tz) const
+    virtual cron::LocalDatenumDaytick to_local_datenum_daytick(Object* const time, cron::TimeZone const& tz) const
       { return cron::to_local_datenum_daytick(((PyTime*) time)->time_, tz); }
 
   };
@@ -173,7 +177,6 @@ private:
   static PyNumberMethods tp_as_number_;
 
   // Methods.
-  static ref<Object> method__from_local             (PyTypeObject*, Tuple*, Dict*);
   static ref<Object> method_get_date_daytime        (PyTime*,       Tuple*, Dict*);
   static ref<Object> method_get_datenum_daytick     (PyTime*,       Tuple*, Dict*);
   static ref<Object> method_get_parts               (PyTime*,       Tuple*, Dict*);
@@ -437,28 +440,6 @@ PyTime<TIME>::tp_as_number_ = {
 
 template<typename TIME>
 ref<Object>
-PyTime<TIME>::method__from_local(
-  PyTypeObject* const type,
-  Tuple* const args,
-  Dict* const kw_args)
-{
-  static char const* const arg_names[] 
-    = {"datenum", "daytick", "time_zone", "first", nullptr};
-  cron::Datenum datenum;
-  cron::Daytick daytick;
-  Object* tz_arg;
-  int first = true;
-  Arg::ParseTupleAndKeywords(
-    args, kw_args, "IkO|p", arg_names, &datenum, &daytick, &tz_arg, &first);
-
-  auto tz = convert_to_time_zone(tz_arg);
-  auto t = cron::from_local<TIME>(datenum, daytick, *tz, first);
-  return create(t, type);
-}
-
-
-template<typename TIME>
-ref<Object>
 PyTime<TIME>::method_get_date_daytime(
   PyTime* const self,
   Tuple* const args,
@@ -558,7 +539,6 @@ template<typename TIME>
 Methods<PyTime<TIME>>
 PyTime<TIME>::tp_methods_
   = Methods<PyTime>()
-    .template add_class<method__from_local>             ("_from_local")
     .template add<method_get_date_daytime>              ("get_date_daytime")
     .template add<method_get_datenum_daytick>           ("get_datenum_daytick")
     .template add<method_get_parts>                     ("get_parts")

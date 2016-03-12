@@ -52,37 +52,22 @@ from_local(
   Object* daytime_arg;
   Object* tz_arg;
   int first = true;
-  Object* time_type_arg = (Object*) &PyTimeDefault::type_;
+  Object* time_type = (Object*) &PyTimeDefault::type_;
   Arg::ParseTupleAndKeywords(
     args, kw_args, "(OO)O|pO", arg_names,
-    &date_arg, &daytime_arg, &tz_arg, &first, &time_type_arg);
+    &date_arg, &daytime_arg, &tz_arg, &first, &time_type);
 
-  auto const datenum = to_datenum(date_arg);
-  auto const daytick = to_daytick(daytime_arg);
+  // Make sure the time type is a PyTime instance, and get its virtual API.
+  if (!Type::Check(time_type))
+    throw py::TypeError("not a type: "s + *time_type->Repr());
+  auto const api = PyTimeAPI::get((PyTypeObject*) time_type);
+  if (api == nullptr)
+    throw py::TypeError("not a time type: "s + *time_type->Repr());
 
-  // Special case fast path for the default time type.
-  if (time_type_arg == (Object*) &PyTimeDefault::type_) 
-    return PyTimeDefault::create(
-      cron::from_local<typename PyTimeDefault::Time>(
-        datenum, daytick, *convert_to_time_zone(tz_arg), first));
-
-  else {
-    auto factory = time_type_arg->GetAttrString("_from_local");
-    if (factory == nullptr)
-      throw TypeError("not a time type");
-    else {
-      // FIXME: Wrap.
-      auto result = PyObject_CallFunctionObjArgs(
-        (PyObject*) factory,
-        (PyObject*) Long::FromLong(datenum),
-        (PyObject*) Long::FromLong(daytick),
-        (PyObject*) tz_arg,
-        (PyObject*) Bool::from(first),
-        nullptr);
-      check_not_null(result);
-      return ref<Object>::take(result);
-    }
-  }
+  auto const datenum    = to_datenum(date_arg);
+  auto const daytick    = to_daytick(daytime_arg);
+  auto const tz         = convert_to_time_zone(tz_arg);
+  return api->from_local_datenum_daytick(datenum, daytick, *tz, first);
 }
 
 

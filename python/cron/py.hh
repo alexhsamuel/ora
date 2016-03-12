@@ -811,6 +811,9 @@ class Type
 {
 public:
 
+  static bool Check(PyObject* const obj)
+    { return PyType_Check(obj); }
+
   Type() {}
   Type(PyTypeObject o) : PyTypeObject(o) {}
 
