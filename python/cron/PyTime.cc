@@ -37,7 +37,7 @@ get_time_parts_type()
 
 //------------------------------------------------------------------------------
 
-std::map<PyTypeObject*, std::unique_ptr<PyTimeAPI>>
+std::unordered_map<PyTypeObject*, std::unique_ptr<PyTimeAPI>>
 PyTimeAPI::apis_;
 
 //------------------------------------------------------------------------------

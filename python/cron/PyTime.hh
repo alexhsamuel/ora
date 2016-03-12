@@ -3,7 +3,7 @@
 #include <cmath>
 #include <experimental/optional>
 #include <iostream>
-#include <map>
+#include <unordered_map>
 
 #include <Python.h>
 #include <datetime.h>
@@ -96,7 +96,7 @@ public:
 
 private:
 
-  static std::map<PyTypeObject*, std::unique_ptr<PyTimeAPI>> apis_;
+  static std::unordered_map<PyTypeObject*, std::unique_ptr<PyTimeAPI>> apis_;
 
 };
 
