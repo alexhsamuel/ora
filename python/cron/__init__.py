@@ -114,6 +114,7 @@ globals().update(Month.__members__)
 
 
 #-------------------------------------------------------------------------------
+# FIXME: This may be ill-advised.
 
 class _DaytimeHourMinute:
 
