@@ -252,10 +252,12 @@ PyTime<TIME>::add_to(
   // Add in static data members.
   Dict* const dict = (Dict*) type_.tp_dict;
   assert(dict != nullptr);
-  dict->SetItemString("INVALID" , create(Time::INVALID));
-  dict->SetItemString("MAX"     , create(Time::MAX));
-  dict->SetItemString("MIN"     , create(Time::MIN));
-  dict->SetItemString("MISSING" , create(Time::MISSING));
+  dict->SetItemString("DENOMINATOR" , Long::FromUnsignedLong(Time::DENOMINATOR));
+  dict->SetItemString("INVALID"     , create(Time::INVALID));
+  dict->SetItemString("MAX"         , create(Time::MAX));
+  dict->SetItemString("MIN"         , create(Time::MIN));
+  dict->SetItemString("MISSING"     , create(Time::MISSING));
+  dict->SetItemString("RESOLUTION"  , Float::FromDouble(1.0 / Time::DENOMINATOR));
 
   // Add the type to the module.
   module.add(&type_);
