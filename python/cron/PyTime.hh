@@ -182,20 +182,20 @@ public:
 
 private:
 
-  static void tp_init(PyTime*, Tuple* args, Dict* kw_args);
-  static void tp_dealloc(PyTime*);
-  static ref<Unicode> tp_repr(PyTime*);
-  static ref<Unicode> tp_str(PyTime*);
-  static ref<Object> tp_richcompare(PyTime*, Object*, int);
+  static void           tp_init(PyTime*, Tuple* args, Dict* kw_args);
+  static void           tp_dealloc(PyTime*);
+  static ref<Unicode>   tp_repr(PyTime*);
+  static ref<Unicode>   tp_str(PyTime*);
+  static ref<Object>    tp_richcompare(PyTime*, Object*, int);
 
   // Number methods.
-  static ref<Object> nb_matrix_multiply         (PyTime*, Object*, bool);
+  static ref<Object>    nb_matrix_multiply          (PyTime*, Object*, bool);
   static PyNumberMethods tp_as_number_;
 
   // Methods.
-  static ref<Object> method_get_datenum_daytick     (PyTime*,       Tuple*, Dict*);
-  static ref<Object> method_get_parts               (PyTime*,       Tuple*, Dict*);
-  static ref<Object> method_is_same                 (PyTime*,       Tuple*, Dict*);
+  static ref<Object>    method_get_datenum_daytick  (PyTime*, Tuple*, Dict*);
+  static ref<Object>    method_get_parts            (PyTime*, Tuple*, Dict*);
+  static ref<Object>    method_is_same              (PyTime*, Tuple*, Dict*);
   static Methods<PyTime> tp_methods_;
 
   // Getsets.
