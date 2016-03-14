@@ -193,7 +193,6 @@ private:
   static PyNumberMethods tp_as_number_;
 
   // Methods.
-  static ref<Object> method_get_date_daytime        (PyTime*,       Tuple*, Dict*);
   static ref<Object> method_get_datenum_daytick     (PyTime*,       Tuple*, Dict*);
   static ref<Object> method_get_parts               (PyTime*,       Tuple*, Dict*);
   static ref<Object> method_is_same                 (PyTime*,       Tuple*, Dict*);
@@ -386,42 +385,6 @@ PyTime<TIME>::tp_richcompare(
 // Number methods
 //------------------------------------------------------------------------------
 
-namespace {
-
-// FIXME: Use a LocalTime object instead of a pair.
-inline ref<Object>
-make_date_daytime(
-  cron::Datenum const datenum,
-  cron::Daytick const daytick)
-{
-  auto result = Tuple::New(2);
-  result->initialize(
-    0, PyDate<cron::Date>::create(cron::Date::from_datenum(datenum)));
-  result->initialize(
-    1, PyDaytime<cron::Daytime>::create(cron::Daytime::from_daytick(daytick)));
-  return std::move(result);
-}
-
-
-}  // anonymous namespace
-
-template<typename TIME>
-inline ref<Object>
-PyTime<TIME>::nb_matrix_multiply(
-  PyTime* const self,
-  Object* const other,
-  bool right)
-{
-  if (right || !PyTimeZone::Check(other))
-    return not_implemented_ref();
-  else {
-    auto tz = *cast<PyTimeZone>(other)->tz_;
-    auto local = cron::to_local_datenum_daytick(self->time_, tz);
-    return make_date_daytime(local.datenum, local.daytick);
-  }
-}
-
-
 template<typename TIME>
 PyNumberMethods
 PyTime<TIME>::tp_as_number_ = {
@@ -460,7 +423,7 @@ PyTime<TIME>::tp_as_number_ = {
   (binaryfunc)  nullptr,                        // nb_inplace_true_divide
   (unaryfunc)   nullptr,                        // nb_index
 #if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 5
-  (binaryfunc)  wrap<PyTime, nb_matrix_multiply>, // nb_matrix_multiply
+  (binaryfunc)  nullptr,                        // nb_matrix_multiply
   (binaryfunc)  nullptr,                        // nb_inplace_matrix_multiply
 #endif
 };
@@ -469,24 +432,6 @@ PyTime<TIME>::tp_as_number_ = {
 //------------------------------------------------------------------------------
 // Methods
 //------------------------------------------------------------------------------
-
-template<typename TIME>
-ref<Object>
-PyTime<TIME>::method_get_date_daytime(
-  PyTime* const self,
-  Tuple* const args,
-  Dict* const kw_args)
-{
-  // FIXME: Pass in the Date and Daytime class to use as keyword arguments.
-  static char const* const arg_names[] = {"time_zone", nullptr};
-  Object* tz;
-  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz);
-
-  auto local
-    = cron::to_local_datenum_daytick(self->time_, *convert_to_time_zone(tz));
-  return make_date_daytime(local.datenum, local.daytick);
-}
-
 
 template<typename TIME>
 ref<Object>
@@ -571,7 +516,6 @@ template<typename TIME>
 Methods<PyTime<TIME>>
 PyTime<TIME>::tp_methods_
   = Methods<PyTime>()
-    .template add<method_get_date_daytime>              ("get_date_daytime")
     .template add<method_get_datenum_daytick>           ("get_datenum_daytick")
     .template add<method_get_parts>                     ("get_parts")
     .template add<method_is_same>                       ("is_same")

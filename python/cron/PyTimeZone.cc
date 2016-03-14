@@ -2,6 +2,7 @@
 #include <string>
 
 #include "py.hh"
+#include "PyTime.hh"
 #include "PyTimeZone.hh"
 
 namespace alxs {
@@ -179,7 +180,10 @@ PyTimeZone::nb_matrix_multiply(
   if (!right)
     return not_implemented_ref();
 
-  // FIXME: Do stuff.
+  auto api = PyTimeAPI::get(other);
+  if (api != nullptr) 
+    // The LHS is a time.  Localize it.
+    return make_local(api->to_local_datenum_daytick(other, *self->tz_));
 
   return not_implemented_ref();
 }
