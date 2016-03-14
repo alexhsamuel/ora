@@ -82,8 +82,6 @@ Python conversion
   Time()
   Time(offset)
 
-  Time._from_local(datenum, daytick, tz, first)
-
   from_local(LocalTime, TimeZone) -> Time
   from_local((Datenum, Daytick), TimeZone) -> Time
   from_local(Date, Daytime, TimeZone) -> Time
@@ -91,5 +89,17 @@ Python conversion
   (date, daytime) @ tz -> Time          # synonym for from_local()
 
   to_local(Time, TimeZone) -> LocalTime
+  to_local_datenum_daytick(Time, TimeZone) -> (datenum, daytick)
   time @ tz -> LocalTime                # synonym for to_local()
+
+--------------------------------------------------------------------------------
+
+Formatting
+
+  format(t, "pattern")                  # display time zone
+  format(d, "pattern")
+  format(y, "pattern")
+  format(local, "pattern")
+
+!! Should LocalTime carry a time zone?
 
