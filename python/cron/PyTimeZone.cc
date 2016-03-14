@@ -180,10 +180,20 @@ PyTimeZone::nb_matrix_multiply(
   if (!right)
     return not_implemented_ref();
 
-  auto api = PyTimeAPI::get(other);
+  auto const api = PyTimeAPI::get(other);
   if (api != nullptr) 
     // The LHS is a time.  Localize it.
     return make_local(api->to_local_datenum_daytick(other, *self->tz_));
+
+  if (Sequence::Check(other)) {
+    auto const local = cast<Sequence>(other);
+    if (local->Length() == 2) {
+      auto const datenum = to_datenum(local->GetItem(0));
+      auto const daytick = to_daytick(local->GetItem(1));
+      return PyTimeDefault::create(
+        PyTimeDefault::Time(datenum, daytick, *self->tz_));
+    }
+  }
 
   return not_implemented_ref();
 }
