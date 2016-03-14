@@ -52,6 +52,8 @@ to_datenum(
   if (datenum_val && cron::datenum_is_valid(*datenum_val))
     return *datenum_val;
 
+  // FIXME: Use API, or convert to date and then.
+
   // Otherwise, look for a datenum attribute or property.
   auto datenum_attr = obj->maybe_get_attr("datenum");
   if (datenum_attr) 
@@ -69,6 +71,8 @@ to_daytick(
   auto ssm_val = obj->maybe_double_value();
   if (ssm_val && cron::ssm_is_valid(*ssm_val))
     return cron::ssm_to_daytick(*ssm_val);
+
+  // FIXME: Use API, or convert to daytime and then.
 
   // Otherwise, look for a daytick attribute or property.
   auto daytick_attr = obj->maybe_get_attr("daytick");
