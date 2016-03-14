@@ -73,7 +73,7 @@ public:
    */
   static bool Check(PyObject* object);
 
-  PyTimeZone(cron::TimeZone_ptr tz) : tz_(tz) {}
+  PyTimeZone(cron::TimeZone_ptr&& tz) : tz_(tz) {}
 
   /**
    * The wrapped date instance.
