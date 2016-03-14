@@ -193,7 +193,6 @@ private:
   static PyNumberMethods tp_as_number_;
 
   // Methods.
-  static ref<Object>    method_get_datenum_daytick  (PyTime*, Tuple*, Dict*);
   static ref<Object>    method_get_parts            (PyTime*, Tuple*, Dict*);
   static ref<Object>    method_is_same              (PyTime*, Tuple*, Dict*);
   static Methods<PyTime> tp_methods_;
@@ -435,27 +434,6 @@ PyTime<TIME>::tp_as_number_ = {
 
 template<typename TIME>
 ref<Object>
-PyTime<TIME>::method_get_datenum_daytick(
-  PyTime* const self,
-  Tuple* const args,
-  Dict* const kw_args)
-{
-  static char const* const arg_names[] = {"time_zone", nullptr};
-  Object* tz;
-  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz);
-
-  auto local
-    = cron::to_local_datenum_daytick(self->time_, *convert_to_time_zone(tz));
-
-  auto result = Tuple::New(2);
-  result->initialize(0, Long::FromLong(local.datenum));
-  result->initialize(1, Long::FromLong(local.daytick));
-  return std::move(result);
-}
-
-
-template<typename TIME>
-ref<Object>
 PyTime<TIME>::method_get_parts(
   PyTime* const self,
   Tuple* const args,
@@ -516,7 +494,6 @@ template<typename TIME>
 Methods<PyTime<TIME>>
 PyTime<TIME>::tp_methods_
   = Methods<PyTime>()
-    .template add<method_get_datenum_daytick>           ("get_datenum_daytick")
     .template add<method_get_parts>                     ("get_parts")
     .template add<method_is_same>                       ("is_same")
   ;

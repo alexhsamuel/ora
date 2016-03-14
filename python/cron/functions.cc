@@ -138,6 +138,28 @@ to_local(
 }
 
 
+ref<Object>
+to_local_datenum_daytick(
+  Module* /* module */,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  Object* time;
+  Object* tz_arg;
+  static char const* const arg_names[] = {"time", "time_zone", nullptr};
+  Arg::ParseTupleAndKeywords(args, kw_args, "OO", arg_names, &time, &tz_arg);
+  
+  auto const tz = convert_to_time_zone(tz_arg);
+  auto api = PyTimeAPI::get(time);
+  auto local = 
+    // If this is a PyTime object and we have an API, use it.
+    api != nullptr ? api->to_local_datenum_daytick(time, *tz)
+    // Otherwise, convert to a time and then proceed.
+    : cron::to_local_datenum_daytick(convert_to_time<cron::Time>(time), *tz);
+  return make_local_datenum_daytick(local);
+}
+
+
 }  // anonymous namespace
 
 //------------------------------------------------------------------------------
@@ -147,11 +169,12 @@ add_functions(
   Methods<Module>& methods)
 {
   return methods
-    .add<days_per_month>        ("days_per_month")
-    .add<from_local>            ("from_local")
-    .add<is_leap_year>          ("is_leap_year")
-    .add<ordinals_per_year>     ("ordinals_per_year")
-    .add<to_local>              ("to_local")
+    .add<days_per_month>            ("days_per_month")
+    .add<from_local>                ("from_local")
+    .add<is_leap_year>              ("is_leap_year")
+    .add<ordinals_per_year>         ("ordinals_per_year")
+    .add<to_local>                  ("to_local")
+    .add<to_local_datenum_daytick>  ("to_local_datenum_daytick")
     ;
 }
 

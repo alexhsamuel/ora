@@ -33,7 +33,7 @@ make_local(
 
 
 inline ref<Object>
-make_local_datenum_dayticks(
+make_local_datenum_daytick(
   cron::LocalDatenumDaytick const local)
 {
   auto result = get_local_time_type()->New();

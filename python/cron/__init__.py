@@ -29,6 +29,7 @@ __all__ = (
     "from_local",
     "ordinals_per_year",
     "to_local",
+    "to_local_datenum_daytick",
 
     "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun",
 
