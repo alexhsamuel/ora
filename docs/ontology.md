@@ -18,8 +18,8 @@ A _date_ is a social construct that represents a period of time of approximately
 area.
 
 A date is specific to time zone geography; for example, Monday, 2016 March 15 in
-Tokyo.  starts and ends earlier than Monday, 2016 March 15 in New York.  The
-same date in these two time zones overlaps only for a few hours.
+Tokyo starts and ends earlier than Monday, 2016 March 15 in New York.  The same
+date in these two time zones overlaps only for a few hours.
 
 A specific date in a specific time zone is generally, but not always, 24 hours
 long.  For example, 2016 March 14 in the US/Eastern time zone is only 23 hours
