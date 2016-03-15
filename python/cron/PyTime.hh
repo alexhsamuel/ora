@@ -107,6 +107,7 @@ public:
   // API methods.
   virtual cron::Timetick            get_timetick(Object* time) const = 0;
   virtual ref<Object>               from_local_datenum_daytick(cron::Datenum, cron::Daytick, cron::TimeZone const&, bool) const = 0;
+  virtual ref<Object>               now() const = 0;
   virtual bool                      is_invalid(Object* time) const = 0;
   virtual bool                      is_missing(Object* time) const = 0;
   virtual cron::LocalDatenumDaytick to_local_datenum_daytick(Object* time, cron::TimeZone const& tz) const = 0;
@@ -168,6 +169,9 @@ public:
 
     virtual ref<Object> from_local_datenum_daytick(cron::Datenum const datenum, cron::Daytick const daytick, cron::TimeZone const& tz, bool first) const
       { return PyTime::create(cron::from_local<Time>(datenum, daytick, tz, first)); }
+
+    virtual ref<Object> now() const
+      { return PyTime::create(cron::now<Time>()); }
 
     virtual bool is_invalid(Object* const time) const
       { return ((PyTime*) time)->time_.is_invalid(); }

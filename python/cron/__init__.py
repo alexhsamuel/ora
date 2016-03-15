@@ -26,6 +26,7 @@ __all__ = (
     "days_per_month",
     "is_leap_year",
     "from_local",
+    "now",
     "ordinals_per_year",
     "to_local",
     "to_local_datenum_daytick",

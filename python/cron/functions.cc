@@ -1,4 +1,6 @@
 #include <cassert>
+#include <cstring>
+#include <time.h>
 
 #include "cron/date.hh"
 #include "cron/time.hh"
@@ -90,6 +92,25 @@ is_leap_year(
 }
 
 
+
+ref<Object>
+now(
+  Module* /* module */,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* arg_names[] = {"Time", nullptr};
+  PyTypeObject* time_type = &PyTimeDefault::type_;
+  Arg::ParseTupleAndKeywords(args, kw_args, "|O", arg_names, &time_type);
+
+  auto const api = PyTimeAPI::get(time_type);
+  if (api == nullptr)
+    throw TypeError("not a time type");
+
+  return api->now();
+}
+
+
 ref<Object>
 ordinals_per_year(
   Module* /* module */,
@@ -117,8 +138,8 @@ to_local(
 {
   Object* time;
   Object* tz_arg;
-  Object* date_type = (Object*) &PyDate<cron::Date>::type_;
-  Object* daytime_type = (Object*) &PyDaytime<cron::Daytime>::type_;
+  Object* date_type = (Object*) &PyDateDefault::type_;
+  Object* daytime_type = (Object*) &PyDaytimeDefault::type_;
   static char const* const arg_names[] 
     = {"time", "time_zone", "Date", "Daytime", nullptr};
   Arg::ParseTupleAndKeywords(
@@ -172,6 +193,7 @@ add_functions(
     .add<days_per_month>            ("days_per_month")
     .add<from_local>                ("from_local")
     .add<is_leap_year>              ("is_leap_year")
+    .add<now>                       ("now")
     .add<ordinals_per_year>         ("ordinals_per_year")
     .add<to_local>                  ("to_local")
     .add<to_local_datenum_daytick>  ("to_local_datenum_daytick")

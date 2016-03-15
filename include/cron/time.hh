@@ -65,14 +65,14 @@ namespace {
 
 inline intmax_t
 convert_offset(
-  intmax_t offset0,
-  intmax_t denominator0,
-  Datenum base0,
-  intmax_t denominator1,
-  Datenum base1)
+  intmax_t  const offset0,
+  intmax_t  const denominator0,
+  Datenum   const base0,
+  intmax_t  const denominator1,
+  Datenum   const base1)
 {
   return
-    rescale_int(offset0, denominator0, denominator1)
+      rescale_int(offset0, denominator0, denominator1)
     + ((intmax_t) base0 - base1) * SECS_PER_DAY * denominator1;
 }
   
@@ -110,6 +110,23 @@ to_local_datenum_daytick(
 
 
 }  // anonymous namespace
+
+
+/* 
+ * Converts the time in a a 'struct timespec' to an offset for 'TIME'.
+ */
+template<typename TIME>
+inline typename TIME::Offset
+timespec_to_offset(
+  struct timespec const& ts)
+{
+  using Offset = typename TIME::Offset;
+  return 
+      ((Offset) (DATENUM_UNIX_EPOCH - TIME::BASE) * SECS_PER_DAY + ts.tv_sec) 
+    * TIME::DENOMINATOR
+    + rescale_int<Offset, (Offset) 1000000000, TIME::DENOMINATOR>(ts.tv_nsec);
+}
+
 
 //------------------------------------------------------------------------------
 
@@ -542,6 +559,19 @@ from_local(
 {
   // FIXME: Move the logic here, instead of delegating.
   return {datenum, daytick, time_zone, first};
+}
+
+
+template<typename TIME>
+inline TIME
+now()
+{
+  struct timespec ts;
+  auto const rval = clock_gettime(CLOCK_REALTIME, &ts);
+  return 
+      rval == 0 
+    ? TIME::from_offset(cron::timespec_to_offset<Time>(ts)) 
+    : TIME::INVALID;
 }
 
 
