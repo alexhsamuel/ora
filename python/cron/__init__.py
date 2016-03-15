@@ -12,7 +12,6 @@ __all__ = (
     "MIDNIGHT",
     "Month",
     "MonthOfYear",
-    "NOON",
     "NsecTime",
     "SmallDate",
     "SmallDaytime",

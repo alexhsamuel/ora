@@ -65,7 +65,6 @@ public:
   static bool constexpr USE_INVALID = TRAITS::use_invalid;
 
   static DaytimeTemplate const MIDNIGHT;
-  static DaytimeTemplate const NOON;
 
   // Constructors
 
@@ -293,10 +292,6 @@ DaytimeTemplate<TRAITS>::MISSING{TRAITS::denominator * SECS_PER_DAY};
 template<class TRAITS>
 DaytimeTemplate<TRAITS> const
 DaytimeTemplate<TRAITS>::MIDNIGHT{0, 0, 0};
-
-template<class TRAITS>
-DaytimeTemplate<TRAITS> const
-DaytimeTemplate<TRAITS>::NOON{12, 0, 0};
 
 //------------------------------------------------------------------------------
 // Concrete Daytime types.
