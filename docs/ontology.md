@@ -57,7 +57,7 @@ Conversions
 _Localization_ maps a time to a date and daytime in a given time zone.  The
 mapping,
 
-  time <-> (date, daytime, time_zone)
+> time ⇔ (date, daytime, time_zone)
 
 for valid dates and daytimes is approximately bijective.  The bijection is
 violated only at transitions to and from DST, near which a given (date, daytime,
