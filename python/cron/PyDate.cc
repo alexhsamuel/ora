@@ -31,7 +31,7 @@ get_date_parts_type()
       (char*) "DateParts",                                  // name
       nullptr,                                              // doc
       fields,                                               // fields
-      7                                                     // n_in_sequence
+      3                                                     // n_in_sequence
     };
 
     StructSequenceType::InitType(&type, &desc);
