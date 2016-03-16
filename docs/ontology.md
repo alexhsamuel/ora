@@ -105,7 +105,7 @@ finite-precision approximation.
 
 Daytimes are measured forward from **midnight**, the first instant of any date.  Daytime can be represented most easily as seconds since midnight (**SSM**).  
 
-Conventionally, however, daytime is represented in hours, minutes, and seconds.  Hours are numbered as integers 0 through 23, or 22 or 24 on DST transition dates; minutes as integers from 0 through 59; and seconds as real numbers in the half-open range [0, 60).  
+Conventionally, however, daytime is represented in hours, minutes, and seconds.  Hours are numbered as integers 0 through 23; minutes as integers from 0 through 59; and seconds as real numbers in the half-open range [0, 60).  
 
 The ISO 8601 textual representation of a daytime looks like this (note the zero padding):
 
