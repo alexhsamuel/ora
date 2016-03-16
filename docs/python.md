@@ -154,3 +154,16 @@ The difference between two dates is the number of days between them.
 
 Note that this value is one smaller than the date's ordinal, 75, since the ordinal is one-indexed.
 
+### Today
+
+The `today()` function returns the current date (based on the system clock) in a specified time zone.  _The time zone must be specified_, since at any instant there are always two parts of the earth that are on different dates.
+
+This code was evaluated at approximately 23:00 New York time.
+
+```py
+>>> today("US/Eastern")
+Date(2016, Mar, 15)
+>>> today(UTC)
+Date(2016, Mar, 16)
+```
+ 
