@@ -25,7 +25,7 @@ The components of date representations are available as attributes.  These inclu
 
 These components are also accessible in the `parts` attribute, whose value can be unpacked to produce the ordinary date components, but which also has the other components as attributes.  
 
-:wrench: **FIXME:** Should we dispents with `parts` and just make the date itself iterable?
+:wrench: **FIXME:** Should we dispence with `parts` and just make the date itself iterable?
 
 ```py
 >>> year, month, day = d.parts
