@@ -94,6 +94,9 @@ Given these (somewhat arbitrary) definitions, a number of textual representation
   ```
   2016-076
   ```
+  
+The default year, month, day components are often encoded in an eight-digit decimal integer, instead of a string, for example 20160316, called the **YMDI** (year-month-day integer) representation.  This representation is discouraged, but supported by Cron.
+
 
 ## Daytime
 
