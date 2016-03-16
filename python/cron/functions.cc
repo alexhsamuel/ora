@@ -181,6 +181,25 @@ to_local_datenum_daytick(
 }
 
 
+ref<Object>
+today(
+  Module* /* module */,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  Object* tz;
+  Object* date_type = (Object*) &PyDateDefault::type_;
+  static char const* const arg_names[] = {"time_zone", "Date", nullptr};
+  Arg::ParseTupleAndKeywords(args, kw_args, "O|O", arg_names, &tz, &date_type);
+
+  auto local = cron::to_local_datenum_daytick(
+    cron::now<cron::Time>(), *convert_to_time_zone(tz));
+  // FIXME: Use API.
+  return date_type
+    ->CallMethodObjArgs("from_datenum", Long::from(local.datenum));
+}
+
+
 }  // anonymous namespace
 
 //------------------------------------------------------------------------------
@@ -197,6 +216,7 @@ add_functions(
     .add<ordinals_per_year>         ("ordinals_per_year")
     .add<to_local>                  ("to_local")
     .add<to_local_datenum_daytick>  ("to_local_datenum_daytick")
+    .add<today>                     ("today")
     ;
 }
 

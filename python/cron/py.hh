@@ -563,8 +563,16 @@ public:
   static auto FromUnsignedLong(unsigned long val)
     { return ref<Long>::take(PyLong_FromUnsignedLong(val)); }
 
-  static ref<Long> from(__int128 val);
-  static ref<Long> from(unsigned __int128 val);
+  static ref<Long> from(int const val)
+    { return FromLong(val); }
+  static ref<Long> from(unsigned int const val)
+    { return FromUnsignedLong(val); }
+  static ref<Long> from(long const val)
+    { return FromLong(val); }
+  static ref<Long> from(unsigned long const val)
+    { return FromUnsignedLong(val); }
+  static ref<Long> from(__int128 const val);
+  static ref<Long> from(unsigned __int128 const val);
 
   operator long()
     { return PyLong_AsLong(this); }
