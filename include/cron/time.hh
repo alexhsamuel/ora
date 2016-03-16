@@ -2,6 +2,14 @@
 
 #include <limits>
 #include <string>
+#include <time.h>
+
+#ifdef __MACH__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#undef TRUE
+#undef FALSE
+#endif
 
 #include "cron/date.hh"
 #include "cron/daytime.hh"
@@ -567,9 +575,23 @@ inline TIME
 now()
 {
   struct timespec ts;
-  auto const rval = clock_gettime(CLOCK_REALTIME, &ts);
+  bool success;
+
+#ifdef __MACH__
+  clock_serv_t cclock;
+  mach_timespec_t mts;
+  success = 
+       host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock) == 0
+    && clock_get_time(cclock, &mts) == 0;
+  mach_port_deallocate(mach_task_self(), cclock);
+  ts.tv_sec = mts.tv_sec;
+  ts.tv_nsec = mts.tv_nsec;
+#else
+  success = clock_gettime(CLOCK_REALTIME, &ts) == 0;
+#endif
+
   return 
-      rval == 0 
+      success
     ? TIME::from_offset(cron::timespec_to_offset<Time>(ts)) 
     : TIME::INVALID;
 }
