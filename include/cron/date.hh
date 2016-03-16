@@ -188,9 +188,26 @@ extern DateParts datenum_to_parts(Datenum datenum);
 // Generic date type.
 //------------------------------------------------------------------------------
 
-/**
- * This class represents a date as a datenum stored as an offset of type
- * `TRAITS::Offset` plus a fixed `TRAITS::base`.  
+/*
+ * Represents a Gregorian date as an integer day offset from a fixed base date.
+ *
+ * Each template instance is a non-virtual class with a single integer data
+ * member, the offset, and no nontrivial destructor behavior.  The class is
+ * designed so that a pointer to the underlying integer type can safely be cast
+ * to the date class.
+ *
+ * A template instance is customized by `TRAITS`, which specifies the following:
+ *
+ * - The base date, as days counted from 0001-01-01.
+ * - The integer type of the offset from the base date.
+ * - The min and max valid dates.
+ * - A flag indicating whether to use a special `INVALID` value instead of
+ *   raising an exception.
+ * - Offset values used to represent `INVALID` and `MISSING` date values.
+ *
+ * For example, the <SmallDate> class, instantiated with the <SmallDateTraits>
+ * traits class, uses an unsigned 16-bit integer to store date offsets from
+ * 1970-01-01, with a maximum date of 2149-06-04.
  */
 template<class TRAITS>
 class DateTemplate
