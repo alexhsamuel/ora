@@ -197,7 +197,8 @@ private:
   static ref<Object>    tp_richcompare(PyTime*, Object*, int);
 
   // Number methods.
-  static ref<Object>    nb_matrix_multiply          (PyTime*, Object*, bool);
+  static ref<Object>    nb_add                      (PyTime*, Object*, bool);
+  static ref<Object>    nb_subtract                 (PyTime*, Object*, bool);
   static PyNumberMethods tp_as_number_;
 
   // Methods.
@@ -393,10 +394,55 @@ PyTime<TIME>::tp_richcompare(
 //------------------------------------------------------------------------------
 
 template<typename TIME>
+inline ref<Object>
+PyTime<TIME>::nb_add(
+  PyTime* const self,
+  Object* const other,
+  bool /* ignored */)
+{
+  auto offset = other->maybe_double_value();
+  if (offset)
+    return 
+      *offset == 0 ? ref<PyTime>::of(self)
+      : create(self->time_ + *offset, self->ob_type);
+  else
+    return not_implemented_ref();
+}
+
+
+template<typename TIME>
+inline ref<Object>
+PyTime<TIME>::nb_subtract(
+  PyTime* const self,
+  Object* const other,
+  bool right)
+{
+  if (right) 
+    return not_implemented_ref();
+
+  auto const other_time = maybe_time<Time>(other);
+  if (other_time)
+    if (self->time_.is_valid() && other_time->is_valid())
+      return Float::from(self->time_ - *other_time);
+    else
+      return none_ref();
+
+  auto offset = other->maybe_double_value();
+  if (offset)
+    return 
+      *offset == 0 
+      ? ref<PyTime>::of(self)  // Optimization: same time.
+      : create(self->time_ - *offset, self->ob_type);
+
+  return not_implemented_ref();
+}
+
+
+template<typename TIME>
 PyNumberMethods
 PyTime<TIME>::tp_as_number_ = {
-  (binaryfunc)  nullptr,                        // nb_add
-  (binaryfunc)  nullptr,                        // nb_subtract
+  (binaryfunc)  wrap<PyTime, nb_add>,           // nb_add
+  (binaryfunc)  wrap<PyTime, nb_subtract>,      // nb_subtract
   (binaryfunc)  nullptr,                        // nb_multiply
   (binaryfunc)  nullptr,                        // nb_remainder
   (binaryfunc)  nullptr,                        // nb_divmod

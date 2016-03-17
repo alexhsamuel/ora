@@ -633,6 +633,8 @@ public:
     { return PyFloat_Check(obj); }
   static auto FromDouble(double val)
     { return ref<Float>::take(PyFloat_FromDouble(val)); }
+  static auto from(double const val)
+    { return FromDouble(val); }
 
   operator double()
     { return PyFloat_AsDouble(this); }

@@ -557,6 +557,56 @@ using Unix64Time = TimeTemplate<Unix64TimeTraits>;
 // Functions
 //------------------------------------------------------------------------------
 
+template<typename TRAITS>
+extern inline TimeTemplate<TRAITS>
+operator+(
+  TimeTemplate<TRAITS> time,
+  double shift)
+{
+  using Time = TimeTemplate<TRAITS>;
+  using Offset = typename Time::Offset;
+  return
+      time.is_invalid() || time.is_missing() ? time
+    : Time::from_offset(
+        time.get_offset() + (Offset) (shift * Time::DENOMINATOR));
+}
+
+
+template<typename TRAITS>
+extern inline TimeTemplate<TRAITS>
+operator-(
+  TimeTemplate<TRAITS> time,
+  double shift)
+{
+  using Time = TimeTemplate<TRAITS>;
+  using Offset = typename Time::Offset;
+  return
+      time.is_invalid() || time.is_missing() ? time
+    : Time::from_offset(
+        time.get_offset() - (Offset) (shift * Time::DENOMINATOR));
+}
+
+
+template<typename TRAITS>
+extern inline double
+operator-(
+  TimeTemplate<TRAITS> time0,
+  TimeTemplate<TRAITS> time1)
+{
+  using Time = TimeTemplate<TRAITS>;
+
+  if (time0.is_valid() && time1.is_valid())
+    return 
+        (double) time0.get_offset() / Time::DENOMINATOR
+      - (double) time1.get_offset() / Time::DENOMINATOR;
+  else if (Time::USE_INVALID)
+    // FIXME: What do we do with invalid/missing values?
+    return 0;
+  else
+    throw ValueError("can't subtract invalid times");
+}
+
+
 template<typename TIME>
 inline TIME
 from_local(
