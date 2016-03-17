@@ -14,4 +14,5 @@ The C++ types for times, dates, and daytimes are templated; Python, however, doe
 - [daytimes](python-daytime.md)
 - [time zones](python-time-zone.md)
 - [times](python-time.md)
+- [localizing times](python-local.md)
 
