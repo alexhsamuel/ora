@@ -19,7 +19,8 @@ SOURCES         = $(wildcard src/*.cc)
 DEPS            = $(SOURCES:%.cc=%.dd)
 OBJS            = $(SOURCES:%.cc=%.o)
 LIB	    	= lib/libcron.a
-BINS            = $(SOURCES:%.cc=%)
+BIN_SOURCES 	= $(wildcard src/bin/*.cc)
+BINS            = $(BIN_SOURCES:%.cc=%)
 
 TEST_DIR    	= $(TOP)/test
 TEST_SOURCES    = $(wildcard $(TEST_DIR)/*.cc)
@@ -89,6 +90,10 @@ test-cxx: $(TEST_OKS)
 $(LIB):			$(OBJS)
 	mkdir -p $(shell dirname $@)
 	ar -r $@ $^
+
+$(BINS): \
+src/bin/%:	   	src/bin/%.cc
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $< $(LDLIBS) $(LIB) -o $@
 
 $(TEST_DEPS): \
 %.dd: 			%.cc
