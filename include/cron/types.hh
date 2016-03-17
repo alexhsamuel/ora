@@ -160,6 +160,7 @@ TimeZoneOffset constexpr TIME_ZONE_OFFSET_MAX       =  43200;
 TimeZoneOffset constexpr TIME_ZONE_OFFSET_INVALID   = std::numeric_limits<TimeZoneOffset>::max();
 inline constexpr bool time_zone_offset_is_valid(TimeZoneOffset offset) { return in_range(TIME_ZONE_OFFSET_MIN, offset, TIME_ZONE_OFFSET_MAX); }
 
+// FIXME: Rename this.
 /**
  * A time expressed in (positive or negative) seconds since the UNIX epoch,
  * midnight on 1970 January 1.
