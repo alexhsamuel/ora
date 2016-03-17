@@ -43,6 +43,18 @@ get_time_zone_parts_type()
 }
 
 
+ref<Object>
+make_time_zone_parts(
+  cron::TimeZoneParts const& parts)
+{
+  auto parts_obj = get_time_zone_parts_type()->New();
+  parts_obj->initialize(0, Long::from(parts.offset));
+  parts_obj->initialize(1, Unicode::from(parts.abbreviation));
+  parts_obj->initialize(2, Bool::from(parts.is_dst));
+  return std::move(parts_obj);
+}
+
+
 /**
  * Interprets 'obj' as a time zone.
  */
@@ -247,30 +259,48 @@ PyTimeZone::tp_as_number_ = {
 //------------------------------------------------------------------------------
 
 ref<Object>
-PyTimeZone::method_get(
-  PyTypeObject* const type,
+PyTimeZone::method_at(
+  PyTimeZone* const tz,
   Tuple* const args,
   Dict* const kw_args)
 {
-  static char const* const arg_names[] = {"name", nullptr};
-  char const* name;
-  Arg::ParseTupleAndKeywords(args, kw_args, "s", arg_names, &name);
+  static char const* const arg_names[] = {"time", nullptr};
+  Object* time;
+  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &time);
 
-  cron::TimeZone_ptr tz;
-  try {
-    tz = cron::get_time_zone(name);
-  }
-  catch (alxs::ValueError) {
-    throw Exception(PyExc_ValueError, "unknown time zone: "s + name);
-  }
-  return create(tz, type);
+  auto const api = PyTimeAPI::get(time);
+  if (api == nullptr)
+    throw py::TypeError("not a time: "s + *time->Repr());
+
+  return make_time_zone_parts(tz->tz_->get_parts(api->get_time_offset(time)));
+}
+
+
+ref<Object>
+PyTimeZone::method_at_local(
+  PyTimeZone* const tz,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] = {"date", "daytime", "first", nullptr};
+  Object* date;
+  Object* daytime;
+  int first = (int) true;
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "OO|p", arg_names, &date, &daytime, &first);
+
+  auto const datenum = to_datenum(date);
+  auto const daytick = to_daytick(daytime);
+  return 
+    make_time_zone_parts(tz->tz_->get_parts_local(datenum, daytick, first));
 }
 
 
 Methods<PyTimeZone>
 PyTimeZone::tp_methods_
   = Methods<PyTimeZone>()
-    .template add_class<method_get>             ("get")
+    .template add<method_at>                    ("at")
+    .template add<method_at_local>              ("at_local")
   ;
 
 

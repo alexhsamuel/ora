@@ -87,7 +87,8 @@ public:
   static PyNumberMethods tp_as_number_;
 
   // Methods.
-  static ref<Object> method_get     (PyTypeObject*, Tuple*, Dict*);
+  static ref<Object> method_at          (PyTimeZone*, Tuple*, Dict*);
+  static ref<Object> method_at_local    (PyTimeZone*, Tuple*, Dict*);
   static Methods<PyTimeZone> tp_methods_;
 
   // Getsets.

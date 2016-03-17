@@ -105,6 +105,7 @@ public:
     { return get(obj->ob_type);  }
 
   // API methods.
+  virtual cron::TimeOffset          get_time_offset(Object* time) const = 0;
   virtual cron::Timetick            get_timetick(Object* time) const = 0;
   virtual ref<Object>               from_local_datenum_daytick(cron::Datenum, cron::Daytick, cron::TimeZone const&, bool) const = 0;
   virtual ref<Object>               now() const = 0;
@@ -163,6 +164,9 @@ public:
   : public PyTimeAPI 
   {
   public:
+
+    virtual cron::TimeOffset get_time_offset(Object* const time) const
+      { return ((PyTime*) time)->time_.get_time_offset(); }
 
     virtual cron::Timetick get_timetick(Object* const time) const
       { return ((PyTime*) time)->time_.get_timetick(); }
