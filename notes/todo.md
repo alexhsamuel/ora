@@ -45,23 +45,21 @@
 
 ## PyTimeZone
 
-Create a separate zoneinfo object with a load method.
+- Create a separate zoneinfo object with a load method.
 
-```python
-zoneinfo = Zoneinfo("/usr/share/zoneinfo")
-tz = zoneinfo.load("US/Eastern")
-```
+  ```python
+  zoneinfo = Zoneinfo("/usr/share/zoneinfo")
+  tz = zoneinfo.load("US/Eastern")
+  ```
 
-but we also want a convenience method,
+  but we also want a convenience method,
 
-```python
-tz = get_time_zone("US/Eastern")
-```
+  ```python
+  tz = get_time_zone("US/Eastern")
+  ```
 
-While we're at it, we probably need to start using `std::shared_ptr` for time
-zone objects.
-
-Specify an alternate place to load default time zone.
+- Specify an alternate place to load default time zone.
+- Rename `TimeZoneParts` to something better, maybe `TimeZoneOffset`?
 
 
 
