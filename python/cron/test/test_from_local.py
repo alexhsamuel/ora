@@ -32,7 +32,14 @@ def test_nsec_time():
 
     
 def test_compare_datetime():
+    # Note: pytz time zones don't work correctly before 1901-12-13T15:45:42Z, 
+    # which is INT_MIN seconds before the UNIX epoch.
     for yr, mo, da, ho, mi, se, tz in (
+      # (1880,  1,  1, 12,  0,  0, "US/Eastern"),
+      # (1883, 11, 18, 12,  0,  0, "US/Eastern"),
+      # (1883, 11, 18, 12,  5,  0, "US/Eastern"),
+      # (1883, 11, 18, 13,  0,  0, "US/Eastern"),
+      # (1883, 11, 19,  0,  0,  0, "US/Eastern"),
         (1969,  7, 20, 15, 18,  4, "US/Central"),
     ):
         # Build localized times from parts, then convert to UTC.
@@ -53,4 +60,5 @@ def test_compare_datetime():
         assert p.daytime.hour   == dt.hour
         assert p.daytime.minute == dt.minute
         assert p.daytime.second == dt.second + 1e-6 * dt.microsecond
+
 
