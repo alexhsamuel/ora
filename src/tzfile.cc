@@ -77,7 +77,7 @@ to_asctime(
 {
   struct tm tm;
   gmtime_r(&time, &tm);
-  char time_str[26];
+  char time_str[26] = "??? ??? ?? ??:??:?? ????";
   asctime_r(&tm, time_str);
   return string(time_str, 24);
 }
@@ -228,7 +228,12 @@ operator<<(
      << "  transitions:\n";
   for (auto const& trans : tz_file.transitions_) {
     TzFile::Type const& type = tz_file.types_[trans.type_index_];
-    os << "    time:" << std::setw(10) << trans.time_ 
+    os << "    time:";
+    if (trans.time_ == -576460752303423488)
+      os << "         min";
+    else
+      os << std::setw(12) << trans.time_;
+    os
        << " = " << to_asctime((time_t) trans.time_)
        << " to '" << type.abbreviation_
        << "' offset:" << type.gmt_offset_

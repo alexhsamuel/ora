@@ -92,8 +92,8 @@ $(LIB):			$(OBJS)
 	ar -r $@ $^
 
 $(BINS): \
-src/bin/%:	   	src/bin/%.cc
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $< $(LDLIBS) $(LIB) -o $@
+src/bin/%:	   	src/bin/%.cc $(LIB)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $^ $(LDLIBS) -o $@
 
 $(TEST_DEPS): \
 %.dd: 			%.cc
