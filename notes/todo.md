@@ -25,9 +25,10 @@
 
 - Consider and test invalid vs. exception date classes.
 - `__format__()` method and support
+- Refactor date parts.  Date itself is iterable for ordinary date parts,
+  with ordinal and week date accessible through attributes.
 - shifts by year, month, hour, minute
 - "Thursday of the last week of the month"-style function
-- `today(tz)` function
 - docstrings
 - unit tests
 
