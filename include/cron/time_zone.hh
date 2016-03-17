@@ -46,7 +46,7 @@ public:
     const
    {
      return get_parts_local(
-       (datenum - DATENUM_UNIX_EPOCH) * SECS_PER_DAY 
+       ((long) datenum - DATENUM_UNIX_EPOCH) * SECS_PER_DAY 
          + (TimeOffset) (daytick / DAYTICK_PER_SEC),
        first);
    }
