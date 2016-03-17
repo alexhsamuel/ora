@@ -369,6 +369,7 @@ public:
 
   ref<py::Long> Long(bool check=true);
   long long_value();
+  unsigned long unsigned_long_value();
   /** If the object can be converted to a long, returns its value. */
   optional<long> maybe_long_value();
 
@@ -951,6 +952,13 @@ inline long
 Object::long_value()
 {
   return (long) *Long();
+}
+
+
+inline unsigned long
+Object::unsigned_long_value()
+{
+  return (unsigned long) *Long();
 }
 
 

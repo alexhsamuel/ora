@@ -75,9 +75,9 @@ to_daytick(
   // FIXME: Use API, or convert to daytime and then.
 
   // Otherwise, look for a daytick attribute or property.
-  auto daytick_attr = obj->maybe_get_attr("daytick");
-  if (daytick_attr)
-    return (*daytick_attr)->long_value();
+  auto daytick = obj->maybe_get_attr("daytick");
+  if (daytick)
+    return (*daytick)->unsigned_long_value();
 
   throw Exception(PyExc_TypeError, "not a time or SSM");
 }
