@@ -6,7 +6,7 @@
 
 ## Time zone
 
-- Rethink memory management for loaded `TimeZone` objects
+- Interpret and apply the "future transitions" field in tzinfo files.
 
 # Python API
 
