@@ -43,7 +43,7 @@ get_time_zone_parts_type()
 }
 
 
-ref<Object>
+inline ref<Object>
 make_time_zone_parts(
   cron::TimeZoneParts const& parts)
 {
@@ -147,14 +147,6 @@ PyTimeZone::tp_dealloc(
 
 
 ref<Unicode>
-PyTimeZone::tp_str(
-  PyTimeZone* const self)
-{
-  return Unicode::from(self->tz_->get_name());  
-}
-
-
-ref<Unicode>
 PyTimeZone::tp_repr(
   PyTimeZone* const self)
 {
@@ -162,6 +154,64 @@ PyTimeZone::tp_repr(
   string type_name = full_name.substr(full_name.rfind('.') + 1);
   auto const repr = type_name + "('" + self->tz_->get_name() + "')";
   return Unicode::from(repr);
+}
+
+
+ref<Object>
+PyTimeZone::tp_call(
+  PyTimeZone* const self,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  // We accept:
+  //   tz(time)             == tz.at(time)
+  //   tz((date, daytime)   == tz.at_local(date, daytime)
+  //   tz(date, daytime)    == tz.at_local(date, daytime)
+
+  static char const* const arg_names[] = {"arg", "daytime", "first", nullptr};
+  Object* arg;
+  Object* daytime = nullptr;
+  int first = true;
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "O|O$p", arg_names, &arg, &daytime, &first);
+
+  if (daytime == nullptr) {
+    // One arg.  Is it a local time?
+    if (Sequence::Check(arg)) {
+      auto const local = cast<Sequence>(arg);
+      if (local->Length() == 2) {
+        auto const datenum = to_datenum(local->GetItem(0));
+        auto const daytick = to_daytick(local->GetItem(1));
+        auto const parts = self->tz_->get_parts_local(datenum, daytick, first);
+        return make_time_zone_parts(parts);
+      }
+      else
+        throw TypeError("local time arg must be (date, daytime)");
+    }
+
+    // Is it a time object?
+    auto const api = PyTimeAPI::get(arg);
+    if (api != nullptr)
+      return make_time_zone_parts(
+        self->tz_->get_parts(api->get_time_offset(arg)));
+
+    throw TypeError("arg not a time or local time");
+  }    
+
+  else {
+    auto const datenum = to_datenum(arg);
+    auto const daytick = to_daytick(daytime);
+    auto const parts = self->tz_->get_parts_local(datenum, daytick, first);
+    return make_time_zone_parts(parts);
+  }
+}
+
+
+ref<Unicode>
+PyTimeZone::tp_str(
+  PyTimeZone* const self)
+{
+  return Unicode::from(self->tz_->get_name());  
 }
 
 
@@ -260,7 +310,7 @@ PyTimeZone::tp_as_number_ = {
 
 ref<Object>
 PyTimeZone::method_at(
-  PyTimeZone* const tz,
+  PyTimeZone* const self,
   Tuple* const args,
   Dict* const kw_args)
 {
@@ -272,13 +322,13 @@ PyTimeZone::method_at(
   if (api == nullptr)
     throw py::TypeError("not a time: "s + *time->Repr());
 
-  return make_time_zone_parts(tz->tz_->get_parts(api->get_time_offset(time)));
+  return make_time_zone_parts(self->tz_->get_parts(api->get_time_offset(time)));
 }
 
 
 ref<Object>
 PyTimeZone::method_at_local(
-  PyTimeZone* const tz,
+  PyTimeZone* const self,
   Tuple* const args,
   Dict* const kw_args)
 {
@@ -291,8 +341,8 @@ PyTimeZone::method_at_local(
 
   auto const datenum = to_datenum(date);
   auto const daytick = to_daytick(daytime);
-  return 
-    make_time_zone_parts(tz->tz_->get_parts_local(datenum, daytick, first));
+  auto const parts = self->tz_->get_parts_local(datenum, daytick, first);
+  return make_time_zone_parts(parts);
 }
 
 
@@ -347,7 +397,7 @@ PyTimeZone::build_type(
     (PySequenceMethods*)  nullptr,                        // tp_as_sequence
     (PyMappingMethods*)   nullptr,                        // tp_as_mapping
     (hashfunc)            nullptr,                        // tp_hash
-    (ternaryfunc)         nullptr,                        // tp_call
+    (ternaryfunc)         wrap<PyTimeZone, tp_call>,      // tp_call
     (reprfunc)            wrap<PyTimeZone, tp_str>,       // tp_str
     (getattrofunc)        nullptr,                        // tp_getattro
     (setattrofunc)        nullptr,                        // tp_setattro

@@ -98,8 +98,9 @@ public:
 private:
 
   static void           tp_dealloc  (PyTimeZone*);
-  static ref<Unicode>   tp_str      (PyTimeZone*);
   static ref<Unicode>   tp_repr     (PyTimeZone*);
+  static ref<Object>    tp_call     (PyTimeZone*, Tuple*, Dict*);
+  static ref<Unicode>   tp_str      (PyTimeZone*);
   static void           tp_init     (PyTimeZone*, Tuple*, Dict*);
 
   static Type build_type(string const& type_name);
