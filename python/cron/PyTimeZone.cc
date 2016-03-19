@@ -110,6 +110,26 @@ convert_to_time_zone(
 }
 
 
+// FIXME: This is a hack to translate C++ into Python exceptions.  Instead, wrap
+// excpetions comprehensively.
+
+inline cron::TimeZoneParts 
+get_parts_local(
+  cron::TimeZone_ptr const tz,
+  cron::Datenum const datenum,
+  cron::Daytick const daytick,
+  bool const first)
+{
+  try {
+    return tz->get_parts_local(datenum, daytick, first);
+  }
+  catch (cron::NonexistentLocalTime) {
+    // FIXME: Use a custom exception class.
+    throw py::ValueError("nonexistent local time");
+  }
+}
+
+
 //------------------------------------------------------------------------------
 
 void
@@ -168,7 +188,7 @@ PyTimeZone::tp_call(
   //   tz((date, daytime)   == tz.at_local(date, daytime)
   //   tz(date, daytime)    == tz.at_local(date, daytime)
 
-  static char const* const arg_names[] = {"arg", "daytime", "first", nullptr};
+  static char const* const arg_names[] = {"date", "daytime", "first", nullptr};
   Object* arg;
   Object* daytime = nullptr;
   int first = true;
@@ -182,7 +202,7 @@ PyTimeZone::tp_call(
       if (local->Length() == 2) {
         auto const datenum = to_datenum(local->GetItem(0));
         auto const daytick = to_daytick(local->GetItem(1));
-        auto const parts = self->tz_->get_parts_local(datenum, daytick, first);
+        auto const parts = get_parts_local(self->tz_, datenum, daytick, first);
         return make_time_zone_parts(parts);
       }
       else
@@ -201,7 +221,7 @@ PyTimeZone::tp_call(
   else {
     auto const datenum = to_datenum(arg);
     auto const daytick = to_daytick(daytime);
-    auto const parts = self->tz_->get_parts_local(datenum, daytick, first);
+    auto const parts = get_parts_local(self->tz_, datenum, daytick, first);
     return make_time_zone_parts(parts);
   }
 }
@@ -333,15 +353,35 @@ PyTimeZone::method_at_local(
   Dict* const kw_args)
 {
   static char const* const arg_names[] = {"date", "daytime", "first", nullptr};
-  Object* date;
-  Object* daytime;
-  int first = (int) true;
+  Object* arg;
+  Object* daytime = nullptr;
+  int first = true;
   Arg::ParseTupleAndKeywords(
-    args, kw_args, "OO|p", arg_names, &date, &daytime, &first);
+    args, kw_args, "O|O$p", arg_names, &arg, &daytime, &first);
 
-  auto const datenum = to_datenum(date);
-  auto const daytick = to_daytick(daytime);
-  auto const parts = self->tz_->get_parts_local(datenum, daytick, first);
+  cron::Datenum datenum;
+  cron::Daytick daytick;
+
+  if (daytime == nullptr) 
+    // One arg.  Is it a local time?
+    if (Sequence::Check(arg)) {
+      auto const local = cast<Sequence>(arg);
+      if (local->Length() == 2) {
+        datenum = to_datenum(local->GetItem(0));
+        daytick = to_daytick(local->GetItem(1));
+      }
+      else
+        throw TypeError("local time arg must be (date, daytime)");
+    }
+    else
+      throw TypeError("arg is not a local time");
+
+  else {
+    datenum = to_datenum(arg);
+    daytick = to_daytick(daytime);
+  }
+
+  auto const parts = get_parts_local(self->tz_, datenum, daytick, first);
   return make_time_zone_parts(parts);
 }
 
