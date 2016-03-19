@@ -20,12 +20,12 @@ The standard unit for measuring time periods is the **second**.  As one second i
 The [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) standard textual representation of a time looks like this:
 
     2016-03-15T09:09:17Z
-    
+
 This is actually the "extended" format, which includes extra punctuation to make it easier for humans to read.  The "basic" format for the same time is:
 
     20160315T090917Z
-    
-The representation consists of a date and daytime separated by 'T', and followed by a 'Z', which indicates that the date and daytime are interpreted in the UTC time zone.  These are discussed below.  The last two digits, the "seconds" component of the daytime, may include a decimal point and fractional digits.
+
+The representation consists of a date and daytime separated by 'T', and followed by a 'Z', which indicates that the date and daytime are interpreted in UTC time.  These are discussed below.  The last two digits, the "seconds" component of the daytime, may include a decimal point and fractional digits.
 
 
 ## Date
@@ -58,23 +58,23 @@ Dates are represented in a number of ways, using a complex numbering of time per
   - Further, days are partitioned into seven-day periods called **weeks**.  Weeks are always exactly seven days long and follow consecutively; they are not synchronized to months or years.  The seven **weekdays** (days of the week) have traditional names in each human language (in English, "Sunday", "Monday", ...).  
 
   There is no universally accepted convention for which weekday starts the week, which causes some confusion.  For example, in the United States, the week is usually considered to start on Sunday, while in many other countries, the week is considered to start on Monday.
-  
+
   The seven weekdays are also numbered.  Numberings 0 through 6 and 1 through 7 are both used, and the lowest-numbered weekday is not standard.  Check numbering conventions carefully when using weekday numbers.
-  
+
 Given these (somewhat arbitrary) definitions, a number of textual representations for dates are used.
 
   - In the most common representation, a date is given by a triple:
 
-    - a year number, 
-    - a month (either by name or number), and 
+    - a year number,
+    - a month (either by name or number), and
     - a day number within the month counting from 1 (_not zero!_).  
 
   This is the default representation for a date, unless otherwise indicated.  The ISO 8601 textual representation looks like this (note the zero padding, so that the representation is always 10 characters long):
-    
+
     ```
     2016-03-16
     ```
-        
+
     Many other textual representations are [commonly used](https://xkcd.com/1179/) in practice.
 
   - In the [**week date**](https://en.wikipedia.org/wiki/ISO_week_date) representation, the date is given by a year number, a week number in that year counting from 1 (_not zero!_), and a weekday.  _The year number in the week date is different than the year number in the common date representation,_ such that each numbered week falls entirely within a one year or another.  (Remember that weeks are not synchronized to years.)   
@@ -84,17 +84,17 @@ Given these (somewhat arbitrary) definitions, a number of textual representation
   ```
   2016-W11-2
   ```
-       
+
   The weekday is counted 1 through 7, starting on Monday.
-  
+
   - In the **ordinal date** representation, the date is specified as the same year number as the common date representation, but days within the year are numbered sequentially 1 (_not zero!_) through 365 or 366, rather than divided into months.
 
   The ISO 8601 textual representation of an ordinal date looks like this (note the zero padding, so that the representation is always 8 characters long):
-  
+
   ```
   2016-076
   ```
-  
+
 The default year, month, day components are often encoded in an eight-digit decimal integer, instead of a string, for example 20160316, called the **YMDI** (year-month-day integer) representation.  This representation is discouraged, but supported by Cron.
 
 
@@ -116,23 +116,58 @@ The ISO 8601 textual representation of a daytime looks like this (note the zero 
 As with times, the last component (seconds) may include a decimal point and fractional digits.  
 
 
-## Time Zone
+## Local Time and UTC
 
-A **time zone** is a sociopolitical designation of a geographic area in which
-the mapping of times to dates and daytimes is uniform over the area.  The set
-of time zones is a partition of the surface of the earth.
+Conventionally, different geographical regions of the world set their clocks and calendars differently.  The clocks (usually) tick forward at the same rate, so that between any two geographical points, there is a fixed time offset between the two dates and daytimes.
 
-For a given time zone, the mapping from times to dates and daytimes is not
-necessarily smooth and linear.  Some time zones institute **daylight savings
-time** (DST) (or "summer time" in some jurisdictions), during which the mapping
-is abruptly shifted forward or backward, in an attempt to encourage particular social and economic behavior.
+Instead of tracking all pairwise offsets, we can instead specify the offset between any geographical region and an arbitrary standard local time.  This standard local time is called **[UTC](https://en.wikipedia.org/wiki/Coordinated_Universal_Time)** (for Coordinated Universal Time).
 
-Most time zones are defined by statute as matters of social policy. [**UTC** ](https://en.wikipedia.org/wiki/Coordinated_Universal_Time), however, is not a political designation, uses no DST, and serves as a universal reference.  As such, times are represented most straightforwardly as dates and daytimes in UTC.  
+A (date, daytime) pair is a **local time**, and is meaningful only within a certain geographical region.
 
-Each time zone, _at any given time_, specifies a time offset from UTC.  This offset is used to adjust that particular time when representing it as date and daytime in that time zone.  Note that an offset from UTC is not a time zone and does not specify a time zone; nor does a time zone specify a unique offset from UTC.  Because of DST, a time zone may specify different offsets from UTC during different parts of the year.  For example, the time zone US/Eastern is five hours behind UTC during the winter months (known as Eastern Standard Time, or EST) but four hours behind UTC during the summer months (known as Eastern Daylight Time, or EDT).  There are various other time zones that specify the same offsets from UTC during various parts of the year.
 
-Note that in English, "time zone" is two words; so, not <del>timezone</del>.  Also note that UTC is _not_ technically the same as Greenwich Mean Time (GMT); GMT is used during winter months by the U.K. and happens to have a zero offset from UTC.  
+## Time Zones
 
+A **time zone** is a sociopolitical designation of a geographic area that fixes
+the mapping of times to local times.  A time zone specifies what all calendars and clocks within its borders should read at any specific physical time.  In effect, time zones together specify a function _to&#95;local_:
+
+> _to&#95;local_ : time, time zone &rarr; date, daytime
+
+A time zone maps time to local time by specifying, for any given time, a **UTC offset**, which is a positive or negative time shift between -12 hours and + 12 hours (but isn't necessarily a round number of hours).  Thus, _to&#95;local_ is equivalently given by another function _offset_:
+
+> _offset_ : time, time zone &rarr; UTC offset
+
+Note that in English, "time zone" is two words; so, not <del>timezone</del>.   
+
+
+## Localizing time
+
+Given a time and a time zone, the local time is obtained as follows:
+
+1. Look at the UTC calendar / clock at that time, and read off its date and daytime.
+1. Find the UTC offset corresponding to that time zone and time.
+1. Adjust the UTC daytime by the UTC offset, shifting the UTC date forward or backward if the daytime rolls backward or forward a day.
+
+For example, at time 2016-03-19T01:18:40Z, the offset in the US/Eastern time zone (a.k.a. America/New_York) is -14,400 seconds (_i.e._ 4 hours behind UTC).  The local time comprises the date 2016-03-18 and daytime 21:18:40.
+
+Time zones are defined by statute as matters of social policy. UTC, however, is not a political designation, and serves as a universal reference. As such, times are represented most straightforwardly as dates and daytimes in UTC.  
+
+
+## Daylight Saving Time
+
+A time zone's UTC offset is not necessarily constant over time. Some time zones institute **daylight saving time** (DST) (or "summer time" in some jurisdictions), during which the mapping is abruptly shifted forward or backward, in an attempt to encourage particular social and economic behavior. This is the reason that _to&#95;local_ and _offset_ are both functions of both time zone and time.
+
+
+## Time Zones _vs_ Offsets
+
+Note that a UTC offset (often appended as a +HH:MM suffix to rendered times), does _not_ specify a time zone.  A UTC offset may be specified by multiple time zones at a given time, and a time zone's UTC offset can be different for different times.
+
+For example, the US/Eastern time zone specifies a UTC offset of -5 hours during the winter months (during which it is known as "Eastern Standard Time", or "EST") but -4 hours during the summer months (when it is known as "Eastern Daylight Time", or "EDT"). As such, EST and EDT are not time zones! They are monickers for the UTC offset used for part of the year in the Eastern United States time zone.  
+
+Similarly, UTC-5 isn't a really time zone! It's a UTC offset that happens to be used in the Eastern United States in the winter months. But it also happens to be used in the Central United States during the summer months, and also in a number of countries and parts of countries, for example Colombia, year around.
+
+We can nevertheless imagine a time zone that is always five hours behind UTC, and always will be, regardless of the opinions of any particular government.  This is what the UTC-5 "time zone" would be&mdash;however, it is the time zone for no physical part of the earth.
+
+We can also, for convenience, think of UTC itself as a time zone whose UTC offset is always zero.  It too is not honored anywhere on earth. (The time zone comprising Iceland happens to have a UTC offset of zero all year, but the government of Iceland is free to change this at its whim, whereas UTC will not change by definition.)
 
 
 ## Localization
@@ -145,4 +180,3 @@ localization function, for valid dates and daytimes,
 is approximately bijective.  The bijection is
 violated only at transitions to and from DST, near which a given (date, daytime,
 time zone) triple may correspond to either zero or two times.
-
