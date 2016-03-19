@@ -12,6 +12,7 @@
 
 - Stop using setuptools; port make rules from fixfmt.
 - Rename `DayInterval` to `DayDuration`.
+- Make `first` a keyword-only argument everywhere.
 
 ## PyDate
 
