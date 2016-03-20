@@ -95,9 +95,7 @@
 
 - Investigate why `cal` doesn't agree for older dates
 
-- Use some type registration system for more efficient conversion from one
-  Python type template to another, e.g. in `convert_date_object()` (to replace
-  the "tp_print hack").
+- Replace tp_print hack with API for Python Date and Daytime.
 
 - Make a 'zoneinfo dir' abstraction; load time zones from there.
 
