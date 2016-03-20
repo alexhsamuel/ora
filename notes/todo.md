@@ -35,10 +35,6 @@
 
 ## PyDaytime
 
-- Core type:
-
-    - conversion from `datetime.time`
-
 - parsing strings
 
 ## Formatting
@@ -62,6 +58,7 @@
 
 - Specify an alternate place to load default time zone.
 - Rename `TimeZoneParts` to something better, maybe `TimeZoneOffset`?
+- System and display time zone abstractions.
 
 
 
