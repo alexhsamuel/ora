@@ -40,6 +40,13 @@ def test_compare_datetime():
       # (1883, 11, 18, 12,  5,  0, "US/Eastern"),
       # (1883, 11, 18, 13,  0,  0, "US/Eastern"),
       # (1883, 11, 19,  0,  0,  0, "US/Eastern"),
+        # First EST to EDT transition.
+        (1918,  3, 18,  1, 59, 59, "US/Eastern"),
+        (1918,  3, 18,  3,  0,  0, "US/Eastern"),
+        # First EDT to EST transition.
+        (1918, 10, 27,  0, 59, 59, "US/Eastern"),
+        (1918, 10, 27,  1,  0,  0, "US/Eastern"),
+
         (1969,  7, 20, 15, 18,  4, "US/Central"),
     ):
         # Build localized times from parts, then convert to UTC.
