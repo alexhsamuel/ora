@@ -72,6 +72,7 @@ using EnvironmentError      = ExceptionWrapper<&PyExc_EnvironmentError>;
 using FileExistsError       = ExceptionWrapper<&PyExc_FileExistsError>;
 using FileNotFoundError     = ExceptionWrapper<&PyExc_FileNotFoundError>;
 using IOError               = ExceptionWrapper<&PyExc_IOError>;
+using ImportError           = ExceptionWrapper<&PyExc_ImportError>;
 using IndexError            = ExceptionWrapper<&PyExc_IndexError>;
 using InterruptedError      = ExceptionWrapper<&PyExc_InterruptedError>;
 using IsADirectoryError     = ExceptionWrapper<&PyExc_IsADirectoryError>;
