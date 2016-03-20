@@ -1,5 +1,6 @@
 # Work List
 
+1. Port Python make rules from fixfmt.
 1. Move numpy stuff into a separate extension module.
 1. Build a reasonable template setup for Date.dtype.
 1. Merge nunpy onto master.
