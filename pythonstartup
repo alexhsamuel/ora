@@ -5,6 +5,11 @@ from   datetime import *
 import numpy as np
 import pytz
 
+try:
+    from supdoc import *
+except ImportError:
+    pass
+
 DAY = timedelta(1, 0)
 SEC = timedelta(0, 1)
 
