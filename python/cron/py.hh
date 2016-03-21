@@ -166,6 +166,15 @@ inline PyObject* incref(PyObject* obj)
 }
 
 
+inline PyTypeObject* 
+incref(
+  PyTypeObject* obj)
+{
+  Py_INCREF(obj);
+  return obj;
+}
+
+
 inline PyObject* decref(PyObject* obj)
 {
   Py_DECREF(obj);
@@ -507,6 +516,7 @@ public:
       return value;
   }
 
+  // FIXME: Add an rvalue variant that takes the ref?
   void SetItemString(char const* const key, PyObject* const value)
     { check_zero(PyDict_SetItemString(this, key, value)); }
 

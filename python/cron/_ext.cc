@@ -11,13 +11,17 @@ using namespace py;
 
 //------------------------------------------------------------------------------
 
-/** Adds functions from functions.cc.  */
+/* Adds functions from functions.cc.  */
 extern Methods<Module>& add_functions(Methods<Module>&);
+
+/* The numpy setup function in numpy.cc  */
+extern ref<Object> set_up_numpy(Module*, Tuple*, Dict*);
 
 namespace {
 
 Methods<Module> 
 methods;
+
 
 PyModuleDef
 module_def{
@@ -26,15 +30,13 @@ module_def{
   nullptr,
   -1,
   add_functions(methods)
+    .add<set_up_numpy>                ("set_up_numpy")
 };
 
 
 }  // anonymous namespace
 
 //------------------------------------------------------------------------------
-
-// FIXME
-extern void init_date_dtype(Module*);
 
 PyMODINIT_FUNC
 PyInit__ext(void)
@@ -69,10 +71,6 @@ PyInit__ext(void)
     module->AddObject("DATENUM_MAX" , Long::FromLong(cron::DATENUM_MAX));
     module->AddObject("MIDNIGHT"    , PyDaytimeDefault::create(PyDaytimeDefault::Daytime::MIDNIGHT));
     module->AddObject("UTC"         , PyTimeZone::create(cron::UTC));
-
-    std::cerr << "initializing dtypes\n";
-    init_date_dtype(module);
-    std::cerr << "done\n";
 
     return module.release();
   }

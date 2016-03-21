@@ -1,6 +1,7 @@
 # -*- python -*-
 
 from   cron import *
+import cron.numpy
 from   datetime import *
 import numpy as np
 import pytz
@@ -18,3 +19,4 @@ t = from_local((bd, Daytime.from_parts(12, 30, 0)), UTC)
 dt = pytz.UTC.localize(datetime(1973, 12, 3, 12, 30))
 
 tz = TimeZone("US/Eastern")
+
