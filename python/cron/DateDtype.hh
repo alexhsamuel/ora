@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <Python.h>
 
 #include "py.hh"
@@ -30,9 +31,11 @@ public:
 private:
 
   // FIXME: Wrap these.
-  static Object*        getitem(void*, void*);
-  static int            setitem(Object*, void*, void*);
-  static void           copyswap(void*, void*, int, void*);
+  static void           copyswap(Date*, Date const*, int, PyArrayObject*);
+  static void           fill(Date*, npy_intp, PyArrayObject*);
+  static void           fillwithscalar(Date*, npy_intp, Date const*, PyArrayObject*);
+  static Object*        getitem(Date const*, PyArrayObject*);
+  static int            setitem(Object*, Date*, PyArrayObject*);
 
   static PyArray_Descr* descr_;
 
@@ -47,9 +50,11 @@ DateDtype<PYDATE>::get()
     // Deliberately 'leak' this instance, as it has process lifetime.
     auto const arr_funcs = new PyArray_ArrFuncs;
     PyArray_InitArrFuncs(arr_funcs);
-    arr_funcs->getitem      = (PyArray_GetItemFunc*) getitem;
-    arr_funcs->setitem      = (PyArray_SetItemFunc*) setitem;
-    arr_funcs->copyswap     = (PyArray_CopySwapFunc*) copyswap;
+    arr_funcs->copyswap         = (PyArray_CopySwapFunc*) copyswap;
+    arr_funcs->fill             = (PyArray_FillFunc*) fill;
+    arr_funcs->fillwithscalar   = (PyArray_FillWithScalarFunc*) fillwithscalar;
+    arr_funcs->getitem          = (PyArray_GetItemFunc*) getitem;
+    arr_funcs->setitem          = (PyArray_SetItemFunc*) setitem;
 
     descr_ = PyObject_New(PyArray_Descr, &PyArrayDescr_Type);
     descr_->typeobj         = incref(&PYDATE::type_);
@@ -86,14 +91,65 @@ DateDtype<PYDATE>::add()
 }
 
 
+//------------------------------------------------------------------------------
+// numpy array functions
+
+template<typename PYDATE>
+void
+DateDtype<PYDATE>::copyswap(
+  Date* const dest,
+  Date const* const src,
+  int const swap,
+  PyArrayObject* const arr)
+{
+  std::cerr << "copyswap\n";
+  std::cerr << "PyArray_ISBEHAVED_RO = " << PyArray_ISBEHAVED_RO(arr) << "\n";
+  assert(!swap);  // FIXME
+  *dest = *src;
+}
+
+
+template<typename PYDATE>
+void 
+DateDtype<PYDATE>::fill(
+  Date* const data, 
+  npy_intp const length, 
+  PyArrayObject* arr)
+{
+  std::cerr << "fill\n";
+  std::cerr << "PyArray_ISBEHAVED_RO = " << PyArray_ISBEHAVED_RO(arr) << "\n";
+  assert(length > 1);
+  auto const offset = data[1] - data[0];
+  auto date = data[1];
+  for (npy_intp i = 2; i < length; ++i)
+    data[i] = date += offset;
+}
+
+
+template<typename PYDATE>
+void 
+DateDtype<PYDATE>::fillwithscalar(
+  Date* const buffer, 
+  npy_intp const length, 
+  Date const* const value, 
+  PyArrayObject* const arr)
+{
+  std::cerr << "fillwithscalar\n";
+  std::cerr << "PyArray_ISBEHAVED_RO = " << PyArray_ISBEHAVED_RO(arr) << "\n";
+  std::fill_n(buffer, length, *value);
+}
+
+
 template<typename PYDATE>
 Object*
 DateDtype<PYDATE>::getitem(
-  void* const data,
-  void* const /* arr */)
+  Date const* const data,
+  PyArrayObject* const arr)
 {
+  std::cerr << "getitem[" << data - (Date const*) PyArray_DATA(arr) << "]\n";
+  std::cerr << "PyArray_ISBEHAVED_RO = " << PyArray_ISBEHAVED_RO(arr) << "\n";
   // FIXME: Check PyArray_ISBEHAVED_RO(arr)?
-  return PYDATE::create(*reinterpret_cast<Date const*>(data)).release();
+  return PYDATE::create(*data).release();
 }
 
 
@@ -101,8 +157,8 @@ template<typename PYDATE>
 int
 DateDtype<PYDATE>::setitem(
   Object* const item,
-  void* const data,
-  void* const /* arr */)
+  Date* const data,
+  PyArrayObject* const arr)
 {
   Date date;
   try {
@@ -111,23 +167,14 @@ DateDtype<PYDATE>::setitem(
   catch (Exception) {
     return -1;
   }
-  *reinterpret_cast<Date*>(data) = date;
+  std::cerr << "setitem[" << data - (Date const*) PyArray_DATA(arr) << "] = "
+            << date << "\n";
+  *data = date;
   return 0;
 }
 
 
-template<typename PYDATE>
-void
-DateDtype<PYDATE>::copyswap(
-  void* const dest,
-  void* const src,
-  int const swap,
-  void* const /* arr */)
-{
-  assert(!swap);  // FIXME
-  *reinterpret_cast<Date*>(dest) = *reinterpret_cast<Date const*>(src);
-}
-
+//------------------------------------------------------------------------------
 
 template<typename PYDATE>
 PyArray_Descr*
