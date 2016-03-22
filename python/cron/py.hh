@@ -499,8 +499,25 @@ None;
 
 //------------------------------------------------------------------------------
 
-class Dict
+class Mapping
   : public Object
+{
+public:
+
+  static bool Check(PyObject* const obj)
+    { return PyMapping_Check(obj); }
+
+  void SetItemString(char const* const key, PyObject* const value)
+    { check_zero(PyMapping_SetItemString(this, key, value)); }
+
+
+};
+
+
+//------------------------------------------------------------------------------
+
+class Dict
+  : public Mapping
 {
 public:
 

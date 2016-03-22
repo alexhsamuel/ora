@@ -1,6 +1,14 @@
 #include <Python.h>
 #include <datetime.h>
 
+#define NPY_NO_DEPRECATED_API NPY_API_VERSION
+
+#include <Python.h>
+#include <numpy/arrayobject.h>
+#include <numpy/npy_math.h>
+#include <numpy/ufuncobject.h>
+#include <numpy/npy_3kcompat.h>
+
 #include "PyDate.hh"
 #include "PyDaytime.hh"
 #include "PyTime.hh"
@@ -41,6 +49,13 @@ module_def{
 PyMODINIT_FUNC
 PyInit__ext(void)
 {
+  // Import numpy stuff.
+  if (_import_array() < 0) 
+    throw ImportError("failed to import numpy.core.multiarray"); 
+  if (_import_umath() < 0) 
+    throw ImportError("failed to import numpy.core.umath");
+  std::cerr << "got numpy\n";
+
   // Set up the C API to the standard library datetime module.
   if (PyDateTimeAPI == nullptr) {
     PyDateTime_IMPORT;

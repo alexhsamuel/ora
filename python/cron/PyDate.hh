@@ -10,6 +10,14 @@
 #include <Python.h>
 #include <datetime.h>
 
+#define NPY_NO_DEPRECATED_API NPY_API_VERSION
+
+#include <Python.h>
+#include <numpy/arrayobject.h>
+#include <numpy/npy_math.h>
+#include <numpy/ufuncobject.h>
+#include <numpy/npy_3kcompat.h>
+
 #include "cron/date.hh"
 #include "cron/format.hh"
 #include "py.hh"
@@ -736,7 +744,7 @@ Type
 PyDate<DATE>::build_type(
   string const& type_name)
 {
-  return PyTypeObject{
+  auto t = PyTypeObject{
     PyVarObject_HEAD_INIT(nullptr, 0)
     (char const*)         strdup(type_name.c_str()),      // tp_name
     (Py_ssize_t)          sizeof(PyDate),                 // tp_basicsize
@@ -792,6 +800,9 @@ PyDate<DATE>::build_type(
     (unsigned int)        0,                              // tp_version_tag
     (destructor)          nullptr,                        // tp_finalize
   };
+  std::cerr << "setting generic arr type base\n";
+  t.tp_base = &PyGenericArrType_Type;
+  return t;
 }
 
 

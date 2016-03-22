@@ -61,6 +61,8 @@ DateDtype<PYDATE>::get()
     descr_->kind            = 'V';
     descr_->type            = 'j';
     descr_->byteorder       = '=';
+// FIXME
+//  descr_->hasobject       = NPY_NEEDS_PYAPI | NPY_USE_GETITEM | NPY_USE_SETITEM;
     descr_->type_num        = 0;
     descr_->elsize          = sizeof(Date);
     descr_->alignment       = alignof(Date);
@@ -85,9 +87,16 @@ DateDtype<PYDATE>::add()
   auto const dtype = DateDtype<PYDATE>::get();
 
   // Add the dtype as a class attribute.
-  auto const dict = (Dict*) dtype->typeobj->tp_dict;
-  assert(dict != nullptr);
-  dict->SetItemString("dtype", (Object*) dtype);
+  // FIXME
+  std::cerr << "adding dtype\n";
+
+  // auto const dict = (Mapping*) dtype->typeobj->tp_dict;
+  // assert(dict != nullptr);
+  // dict->SetItemString("dtype", (Object*) dtype);
+
+  // ((Object*) dtype->typeobj)->SetAttrString("dtype", (Object*) dtype);
+
+  // std::cerr << "adding dtype done\n";
 }
 
 
