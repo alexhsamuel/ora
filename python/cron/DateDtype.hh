@@ -11,6 +11,11 @@ using namespace py;
 
 //------------------------------------------------------------------------------
 
+bool constexpr
+PRINT_ARR_FUNCS
+  = true;
+
+
 template<typename PYDATE>
 class 
 DateDtype
@@ -101,6 +106,8 @@ DateDtype<PYDATE>::copyswap(
   int const swap,
   PyArrayObject* const arr)
 {
+  if (PRINT_ARR_FUNCS)
+    std::cerr << "copyswap\n";
   if (swap)
     copy_swapped<sizeof(Date)>(src, dst);
   else
@@ -119,6 +126,8 @@ DateDtype<PYDATE>::copyswapn(
   int const swap, 
   PyArrayObject* const arr)
 {
+  if (PRINT_ARR_FUNCS)
+    std::cerr << "copyswapn(" << n << ")\n";
   if (src_stride == 0) {
     // Swapper or unswapped fill.  Optimize this special case.
     Date date;
@@ -157,6 +166,8 @@ DateDtype<PYDATE>::getitem(
   Date const* const data,
   PyArrayObject* const arr)
 {
+  if (PRINT_ARR_FUNCS)
+    std::cerr << "getitem\n";
   return PYDATE::create(*data).release();
 }
 
@@ -168,7 +179,8 @@ DateDtype<PYDATE>::setitem(
   Date* const data,
   PyArrayObject* const arr)
 {
-  Date date;
+  if (PRINT_ARR_FUNCS)
+    std::cerr << "setitem\n";
   try {
     *data = convert_to_date<Date>(item);
   }

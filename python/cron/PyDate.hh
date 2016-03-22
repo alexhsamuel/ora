@@ -913,7 +913,7 @@ convert_to_date(
 
   // FIXME: Parse strings.
 
-  throw py::TypeError("can't convert to a date"s + *obj->Repr());
+  throw py::TypeError("can't convert to a date: "s + *obj->Repr());
 }
 
 
