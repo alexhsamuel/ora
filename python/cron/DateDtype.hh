@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <Python.h>
 
+#include "mem.hh"
 #include "py.hh"
 #include "PyDate.hh"
 
@@ -32,8 +33,7 @@ private:
 
   // FIXME: Wrap these.
   static void           copyswap(Date*, Date const*, int, PyArrayObject*);
-  static void           fill(Date*, npy_intp, PyArrayObject*);
-  static void           fillwithscalar(Date*, npy_intp, Date const*, PyArrayObject*);
+  static void           copyswapn(Date*, npy_intp, Date const*, npy_intp, npy_intp, int, PyArrayObject*);
   static Object*        getitem(Date const*, PyArrayObject*);
   static int            setitem(Object*, Date*, PyArrayObject*);
 
@@ -51,8 +51,7 @@ DateDtype<PYDATE>::get()
     auto const arr_funcs = new PyArray_ArrFuncs;
     PyArray_InitArrFuncs(arr_funcs);
     arr_funcs->copyswap         = (PyArray_CopySwapFunc*) copyswap;
-    arr_funcs->fill             = (PyArray_FillFunc*) fill;
-    arr_funcs->fillwithscalar   = (PyArray_FillWithScalarFunc*) fillwithscalar;
+    arr_funcs->copyswapn        = (PyArray_CopySwapNFunc*) copyswapn;
     arr_funcs->getitem          = (PyArray_GetItemFunc*) getitem;
     arr_funcs->setitem          = (PyArray_SetItemFunc*) setitem;
 
@@ -97,46 +96,58 @@ DateDtype<PYDATE>::add()
 template<typename PYDATE>
 void
 DateDtype<PYDATE>::copyswap(
-  Date* const dest,
+  Date* const dst,
   Date const* const src,
   int const swap,
   PyArrayObject* const arr)
 {
-  std::cerr << "copyswap\n";
-  std::cerr << "PyArray_ISBEHAVED_RO = " << PyArray_ISBEHAVED_RO(arr) << "\n";
-  assert(!swap);  // FIXME
-  *dest = *src;
+  if (swap)
+    copy_swapped<sizeof(Date)>(src, dst);
+  else
+    copy<sizeof(Date)>(src, dst);
 }
 
 
 template<typename PYDATE>
 void 
-DateDtype<PYDATE>::fill(
-  Date* const data, 
-  npy_intp const length, 
-  PyArrayObject* arr)
-{
-  std::cerr << "fill\n";
-  std::cerr << "PyArray_ISBEHAVED_RO = " << PyArray_ISBEHAVED_RO(arr) << "\n";
-  assert(length > 1);
-  auto const offset = data[1] - data[0];
-  auto date = data[1];
-  for (npy_intp i = 2; i < length; ++i)
-    data[i] = date += offset;
-}
-
-
-template<typename PYDATE>
-void 
-DateDtype<PYDATE>::fillwithscalar(
-  Date* const buffer, 
-  npy_intp const length, 
-  Date const* const value, 
+DateDtype<PYDATE>::copyswapn(
+  Date* const dst, 
+  npy_intp const dst_stride, 
+  Date const* const src, 
+  npy_intp const src_stride, 
+  npy_intp const n, 
+  int const swap, 
   PyArrayObject* const arr)
 {
-  std::cerr << "fillwithscalar\n";
-  std::cerr << "PyArray_ISBEHAVED_RO = " << PyArray_ISBEHAVED_RO(arr) << "\n";
-  std::fill_n(buffer, length, *value);
+  if (src_stride == 0) {
+    // Swapper or unswapped fill.  Optimize this special case.
+    Date date;
+    if (swap) 
+      copy_swapped<sizeof(Date)>(src, &date);
+    else
+      date = *src;
+    Date* d = dst;
+    for (npy_intp i = 0; i < n; ++i) {
+      *d = date;
+      d = (Date*) (((char*) d) + dst_stride);
+    }
+  }
+  else {
+    char const* s = (char const*) src;
+    char* d = (char*) dst;
+    if (swap) 
+      for (npy_intp i = 0; i < n; ++i) {
+        copy_swapped<sizeof(Date)>(s, d);
+        s += src_stride;
+        d += dst_stride;
+      }
+    else 
+      for (npy_intp i = 0; i < n; ++i) {
+        copy<sizeof(Date)>(s, d);
+        s += src_stride;
+        d += dst_stride;
+      }
+  }
 }
 
 
@@ -146,9 +157,6 @@ DateDtype<PYDATE>::getitem(
   Date const* const data,
   PyArrayObject* const arr)
 {
-  std::cerr << "getitem[" << data - (Date const*) PyArray_DATA(arr) << "]\n";
-  std::cerr << "PyArray_ISBEHAVED_RO = " << PyArray_ISBEHAVED_RO(arr) << "\n";
-  // FIXME: Check PyArray_ISBEHAVED_RO(arr)?
   return PYDATE::create(*data).release();
 }
 
@@ -162,14 +170,11 @@ DateDtype<PYDATE>::setitem(
 {
   Date date;
   try {
-    date = convert_to_date<Date>(item);
+    *data = convert_to_date<Date>(item);
   }
   catch (Exception) {
     return -1;
   }
-  std::cerr << "setitem[" << data - (Date const*) PyArray_DATA(arr) << "] = "
-            << date << "\n";
-  *data = date;
   return 0;
 }
 
