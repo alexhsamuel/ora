@@ -21,7 +21,9 @@ PRINT_ARR_FUNCS
 
 
 // Ufunc objects.
-UnaryUFunc ufunc_year("year", NPY_INT16);
+UnaryUFunc ufunc_year   ("year",    NPY_INT16);
+UnaryUFunc ufunc_month  ("month",   NPY_UINT8);
+UnaryUFunc ufunc_day    ("day",     NPY_UINT8);
 
 
 template<typename PYDATE>
@@ -49,9 +51,6 @@ private:
   static void           copyswapn(Date*, npy_intp, Date const*, npy_intp, npy_intp, int, PyArrayObject*);
   static Object*        getitem(Date const*, PyArrayObject*);
   static int            setitem(Object*, Date*, PyArrayObject*);
-
-  // Ufuncs loop functions.
-  static void           loop_year(char**, npy_intp*, npy_intp*, void*);
 
   static PyArray_Descr* descr_;
 
@@ -96,6 +95,35 @@ DateDtype<PYDATE>::get()
 }
 
 
+// FIXME: In date.hh!
+
+template<typename DATE>
+extern inline cron::Year
+year(
+  DATE const date)
+{
+  return date.get_parts().year;
+}
+
+
+template<typename DATE>
+extern inline cron::Month
+month(
+  DATE const date)
+{
+  return date.get_parts().month + 1;  // FIXME!
+}
+
+
+template<typename DATE>
+extern inline cron::Day
+day(
+  DATE const date)
+{
+  return date.get_parts().day + 1;  // FIXME!
+}
+
+
 template<typename PYDATE>
 void
 DateDtype<PYDATE>::add(
@@ -109,23 +137,14 @@ DateDtype<PYDATE>::add(
   assert(dict != nullptr);
   dict->SetItemString("dtype", (Object*) dtype);
 
-  ufunc_year.add_loop(dtype->type_num, loop_year);
+  ufunc_year.add_loop(dtype->type_num, unary_loop_fn<Date, int16_t, year>);
   ufunc_year.add_to_module(module);
 
-// FIXME
-#if 0
-  ref<Object> ufunc = module->GetAttrString("year", false);
-  if (ufunc == nullptr) {
-    ufunc = ref<Object>::take(PyUFunc_FromFuncAndData(
-      nullptr, nullptr, nullptr, 0, 1, 1, 
-      PyUFunc_None, "year", "year_docstring", 0));
-    module->AddObject("year", ufunc);
-  }
-  int arg_types[] = {dtype->type_num, NPY_INT16};
-  check_zero(PyUFunc_RegisterLoopForType(
-   (PyUFuncObject*) (PyObject*) ufunc, 
-   dtype->type_num, ufunc_year, arg_types, nullptr));
-#endif
+  ufunc_month.add_loop(dtype->type_num, unary_loop_fn<Date, uint8_t, month>);
+  ufunc_month.add_to_module(module);
+
+  ufunc_day.add_loop(dtype->type_num, unary_loop_fn<Date, uint8_t, day>);
+  ufunc_day.add_to_module(module);
 }
 
 
@@ -222,30 +241,6 @@ DateDtype<PYDATE>::setitem(
     return -1;
   }
   return 0;
-}
-
-
-//------------------------------------------------------------------------------
-
-template<typename PYDATE>
-void 
-DateDtype<PYDATE>::loop_year(
-  char** const args, 
-  npy_intp* const dimensions,
-  npy_intp* const steps, 
-  void* const /* data */)
-{
-  auto const n          = dimensions[0];
-  auto const ar0_step   = steps[0];
-  auto const res_step   = steps[1];
-  auto ar0              = (Date const*) args[0];
-  auto res              = (uint16_t*) args[1];
-
-  for (npy_intp i = 0; i < n; i++) {
-    *res = ar0->get_parts().year;
-    ar0 = step(ar0, ar0_step);
-    res = step(res, res_step);
-  }
 }
 
 

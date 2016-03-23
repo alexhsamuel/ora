@@ -6,7 +6,10 @@
 #include <numpy/ufuncobject.h>
 #include <numpy/npy_3kcompat.h>
 
+#include "mem.hh"
 #include "py.hh"
+
+using namespace alxs;
 
 namespace py {
 namespace np {
@@ -101,6 +104,32 @@ UnaryUFunc::ensure()
     // Increment the ref count to make sure the ufunc object isn't destroyed
     // even at shutdown; this happens too late to work correctly.  (?)
     incref(ufunc_);
+  }
+}
+
+
+template<typename ARG0, typename RET>
+using unary_fn_t = RET (*)(ARG0);
+
+
+template<typename ARG0, typename RET, unary_fn_t<ARG0, RET> FN>
+void
+unary_loop_fn(
+  char** const args,
+  npy_intp* const dimensions,
+  npy_intp* const steps,
+  void* const /* data */)
+{
+  auto const n          = dimensions[0];
+  auto const ar0_step   = steps[0];
+  auto const res_step   = steps[1];
+  auto ar0              = (ARG0 const*) args[0];
+  auto res              = (RET*) args[1];
+
+  for (npy_intp i = 0; i < n; i++) {
+    *res = FN(*ar0);
+    ar0 = step(ar0, ar0_step);
+    res = step(res, res_step);
   }
 }
 
