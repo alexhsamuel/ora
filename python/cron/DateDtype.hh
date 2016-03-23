@@ -65,6 +65,7 @@ DateDtype<PYDATE>::get()
     descr_->kind            = 'V';
     descr_->type            = 'j';
     descr_->byteorder       = '=';
+    descr_->flags           = 0;
     descr_->type_num        = 0;
     descr_->elsize          = sizeof(Date);
     descr_->alignment       = alignof(Date);
@@ -72,6 +73,9 @@ DateDtype<PYDATE>::get()
     descr_->fields          = nullptr;
     descr_->names           = nullptr;
     descr_->f               = arr_funcs;
+    descr_->metadata        = nullptr;
+    descr_->c_metadata      = nullptr;
+    descr_->hash            = -1;
 
     if (PyArray_RegisterDataType(descr_) < 0)
       throw py::Exception();
