@@ -20,12 +20,6 @@ PRINT_ARR_FUNCS
   = true;
 
 
-// Ufunc objects.
-UnaryUFunc ufunc_year   ("year",    NPY_INT16);
-UnaryUFunc ufunc_month  ("month",   NPY_UINT8);
-UnaryUFunc ufunc_day    ("day",     NPY_UINT8);
-
-
 template<typename PYDATE>
 class 
 DateDtype
@@ -137,14 +131,18 @@ DateDtype<PYDATE>::add(
   assert(dict != nullptr);
   dict->SetItemString("dtype", (Object*) dtype);
 
-  ufunc_year.add_loop(dtype->type_num, unary_loop_fn<Date, int16_t, year>);
-  ufunc_year.add_to_module(module);
+  auto const ufunc_year = create_or_get_ufunc(module, "year", 1, 1);
+  ufunc_year->add_loop_1(
+    dtype->type_num, NPY_INT16, ufunc_loop_1<Date, int16_t, year<Date>>);
 
-  ufunc_month.add_loop(dtype->type_num, unary_loop_fn<Date, uint8_t, month>);
-  ufunc_month.add_to_module(module);
+  auto const ufunc_month = create_or_get_ufunc(module, "month", 1, 1);
+  ufunc_month->add_loop_1(
+    dtype->type_num, NPY_UINT8, ufunc_loop_1<Date, uint8_t, month<Date>>);
 
-  ufunc_day.add_loop(dtype->type_num, unary_loop_fn<Date, uint8_t, day>);
-  ufunc_day.add_to_module(module);
+  auto const ufunc_day = create_or_get_ufunc(module, "day", 1, 1);
+  ufunc_day->add_loop_1(
+    dtype->type_num, NPY_UINT8, ufunc_loop_1<Date, uint8_t, day<Date>>);
+
 }
 
 
