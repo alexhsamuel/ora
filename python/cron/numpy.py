@@ -22,3 +22,4 @@ from   . import _ext
 # Adds
 _ext.set_up_numpy()
 
+from   ._ext import year

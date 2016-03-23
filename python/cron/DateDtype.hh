@@ -5,6 +5,8 @@
 #include "py.hh"
 #include "PyDate.hh"
 
+// FIXME: Check GIL flags.
+
 namespace alxs {
 
 using namespace py;
@@ -32,7 +34,7 @@ public:
   /*
    * Adds the dtype object to the Python type object as the 'dtype' attribute.
    */
-  static void           add();
+  static void           add(Module*);
 
 private:
 
@@ -41,6 +43,9 @@ private:
   static void           copyswapn(Date*, npy_intp, Date const*, npy_intp, npy_intp, int, PyArrayObject*);
   static Object*        getitem(Date const*, PyArrayObject*);
   static int            setitem(Object*, Date*, PyArrayObject*);
+
+  // Ufunc loop functions.
+  static void           ufunc_year(char**, npy_intp*, npy_intp*, void*);
 
   static PyArray_Descr* descr_;
 
@@ -87,7 +92,8 @@ DateDtype<PYDATE>::get()
 
 template<typename PYDATE>
 void
-DateDtype<PYDATE>::add()
+DateDtype<PYDATE>::add(
+  Module* const module)
 {
   // Build or get the dtype.
   auto const dtype = DateDtype<PYDATE>::get();
@@ -96,6 +102,20 @@ DateDtype<PYDATE>::add()
   auto const dict = (Dict*) dtype->typeobj->tp_dict;
   assert(dict != nullptr);
   dict->SetItemString("dtype", (Object*) dtype);
+
+  ref<Object> ufunc = module->GetAttrString("year", false);
+  if (ufunc == nullptr) {
+    ufunc = ref<Object>::take(PyUFunc_FromFuncAndData(
+      nullptr, nullptr, nullptr, 0, 1, 1, 
+      PyUFunc_None, "year", "year_docstring", 0));
+    module->AddObject("year", ufunc);
+    std::cerr << "added ufunc 'year'\n";
+  }
+  int arg_types[] = {dtype->type_num, NPY_INT16};
+  check_zero(PyUFunc_RegisterLoopForType(
+   (PyUFuncObject*) (PyObject*) ufunc, 
+   dtype->type_num, ufunc_year, arg_types, nullptr));
+  std::cerr << "registered ufunc loop for 'year'; rval=" << rval << "\n";
 }
 
 
@@ -192,6 +212,40 @@ DateDtype<PYDATE>::setitem(
     return -1;
   }
   return 0;
+}
+
+
+//------------------------------------------------------------------------------
+
+template<typename T>
+inline T*
+step(
+  T* const p,
+  npy_intp const step)
+{
+  return (T*) (((char*) p) + step);
+}
+
+
+template<typename PYDATE>
+void 
+DateDtype<PYDATE>::ufunc_year(
+  char** const args, 
+  npy_intp* const dimensions,
+  npy_intp* const steps, 
+  void* const /* data */)
+{
+  auto const n          = dimensions[0];
+  auto const ar0_step   = steps[0];
+  auto const res_step   = steps[1];
+  auto ar0              = (Date const*) args[0];
+  auto res              = (uint16_t*) args[1];
+
+  for (npy_intp i = 0; i < n; i++) {
+    *res = ar0->get_parts().year;
+    ar0 = step(ar0, ar0_step);
+    res = step(res, res_step);
+  }
 }
 
 

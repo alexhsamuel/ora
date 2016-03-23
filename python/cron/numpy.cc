@@ -31,8 +31,8 @@ set_up_numpy(
   if (_import_umath() < 0) 
     throw ImportError("failed to import numpy.core.umath");
 
-  DateDtype<PyDate<cron::Date>>::add();
-  DateDtype<PyDate<cron::SmallDate>>::add();
+  DateDtype<PyDate<cron::Date>>::add(module);
+  DateDtype<PyDate<cron::SmallDate>>::add(module);
 
   return none_ref();
 }
