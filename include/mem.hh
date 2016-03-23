@@ -6,6 +6,21 @@ namespace alxs {
 // Functions
 //------------------------------------------------------------------------------
 
+/* 
+ * Advances pointer `p` by `step` bytes. 
+ */
+template<typename T>
+inline T*
+step(
+  T* const p,
+  npy_intp const step)
+{
+  return (T*) (((char*) p) + step);
+}
+
+
+//------------------------------------------------------------------------------
+
 template<unsigned char SIZE>
 void
 copy(

@@ -3,6 +3,7 @@
 
 #include "mem.hh"
 #include "py.hh"
+#include "numpy.hh"
 #include "PyDate.hh"
 
 // FIXME: Check GIL flags.
@@ -10,12 +11,17 @@
 namespace alxs {
 
 using namespace py;
+using namespace py::np;
 
 //------------------------------------------------------------------------------
 
 bool constexpr
 PRINT_ARR_FUNCS
   = true;
+
+
+// Ufunc objects.
+UnaryUFunc ufunc_year("year", NPY_INT16);
 
 
 template<typename PYDATE>
@@ -32,7 +38,7 @@ public:
   static PyArray_Descr* get();
 
   /*
-   * Adds the dtype object to the Python type object as the 'dtype' attribute.
+   * Adds the dtype object to the Python type object as the `dtype` attribute.
    */
   static void           add(Module*);
 
@@ -44,8 +50,8 @@ private:
   static Object*        getitem(Date const*, PyArrayObject*);
   static int            setitem(Object*, Date*, PyArrayObject*);
 
-  // Ufunc loop functions.
-  static void           ufunc_year(char**, npy_intp*, npy_intp*, void*);
+  // Ufuncs loop functions.
+  static void           loop_year(char**, npy_intp*, npy_intp*, void*);
 
   static PyArray_Descr* descr_;
 
@@ -103,19 +109,23 @@ DateDtype<PYDATE>::add(
   assert(dict != nullptr);
   dict->SetItemString("dtype", (Object*) dtype);
 
+  ufunc_year.add_loop(dtype->type_num, loop_year);
+  ufunc_year.add_to_module(module);
+
+// FIXME
+#if 0
   ref<Object> ufunc = module->GetAttrString("year", false);
   if (ufunc == nullptr) {
     ufunc = ref<Object>::take(PyUFunc_FromFuncAndData(
       nullptr, nullptr, nullptr, 0, 1, 1, 
       PyUFunc_None, "year", "year_docstring", 0));
     module->AddObject("year", ufunc);
-    std::cerr << "added ufunc 'year'\n";
   }
   int arg_types[] = {dtype->type_num, NPY_INT16};
   check_zero(PyUFunc_RegisterLoopForType(
    (PyUFuncObject*) (PyObject*) ufunc, 
    dtype->type_num, ufunc_year, arg_types, nullptr));
-  std::cerr << "registered ufunc loop for 'year'; rval=" << rval << "\n";
+#endif
 }
 
 
@@ -217,19 +227,9 @@ DateDtype<PYDATE>::setitem(
 
 //------------------------------------------------------------------------------
 
-template<typename T>
-inline T*
-step(
-  T* const p,
-  npy_intp const step)
-{
-  return (T*) (((char*) p) + step);
-}
-
-
 template<typename PYDATE>
 void 
-DateDtype<PYDATE>::ufunc_year(
+DateDtype<PYDATE>::loop_year(
   char** const args, 
   npy_intp* const dimensions,
   npy_intp* const steps, 

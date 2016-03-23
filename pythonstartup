@@ -1,7 +1,7 @@
 # -*- python -*-
 
 from   cron import *
-import cron.numpy
+import cron.numpy as crnp
 from   datetime import *
 import numpy as np
 import pytz
