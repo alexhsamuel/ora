@@ -1,6 +1,7 @@
 *.dd
 *.o
 *.h.pump
+*.s
 *.a
 tmp/
 share/
