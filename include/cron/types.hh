@@ -102,7 +102,6 @@ Weekday constexpr   FRIDAY              = 4;
 Weekday constexpr   SATURDAY            = 5;
 Weekday constexpr   SUNDAY              = 6;
 
-
 // Internally, daytime computations are performed on "dayticks" per midnight.  A
 // daytick is defined by DAYTICKS_PER_SECOND.
 using Daytick = uint64_t;
@@ -132,6 +131,17 @@ Datenum constexpr   DATENUM_BOUND       = DATENUM_MAX + 1;
 Datenum constexpr   DATENUM_INVALID     = std::numeric_limits<Datenum>::max();
 Datenum constexpr   DATENUM_UNIX_EPOCH  =  719162;   // 1970-01-01
 inline bool constexpr datenum_is_valid(Datenum datenum) { return in_interval(DATENUM_MIN, datenum, DATENUM_BOUND); }
+
+/*
+ * YMDI, a year-month-day integer.
+ *
+ * A YMDI encodes year, month, day as eight decimal digits YYYYMMDD.  To avoid
+ * confusion with other integer representations, by convention we restrict a
+ * YMDI years from 1000 to 9999.
+ */
+int constexpr       YMDI_MIN            = 10000000;
+int constexpr       YMDI_MAX            = 99999999;
+int constexpr       YMDI_BOUND          = YMDI_MAX + 1;
 
 /**
  * Seconds since midnight.

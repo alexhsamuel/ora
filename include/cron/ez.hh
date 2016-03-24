@@ -23,7 +23,7 @@ private:
   public:
 
     constexpr YearMonthLiteral(Year year, Month month) : year_(year), month_(month) {}
-    Date operator/(Day day) const { return Date::from_parts(year_, month_ - 1, day - 1); }
+    Date operator/(Day day) const { return Date::from_ymd(year_, month_ - 1, day - 1); }
 
   private:
 

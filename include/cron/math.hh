@@ -133,6 +133,7 @@ inline bool add_overflow(         int       a,          int       b,          in
 inline bool add_overflow(         long      a,          long      b,          long     & r) { return __builtin_saddl_overflow (a, b, &r); }
 inline bool add_overflow(         long long a,          long long b,          long long& r) { return __builtin_saddll_overflow(a, b, &r); }
 
+inline bool sub_overflow(unsigned short     a, unsigned short     b, unsigned short    & r) { return a < b || ((r = a - b) && false); }
 inline bool sub_overflow(unsigned int       a, unsigned int       b, unsigned int      & r) { return __builtin_usub_overflow  (a, b, &r); }
 inline bool sub_overflow(unsigned long      a, unsigned long      b, unsigned long     & r) { return __builtin_usubl_overflow (a, b, &r); }
 inline bool sub_overflow(unsigned long long a, unsigned long long b, unsigned long long& r) { return __builtin_usubll_overflow(a, b, &r); }

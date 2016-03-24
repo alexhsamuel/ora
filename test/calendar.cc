@@ -31,15 +31,19 @@ TEST(AllCalendar, contains0) {
 
 TEST(AllCalendar, contains1) {
   AllCalendar const cal;
-  EXPECT_TRUE (cal.contains(SmallDate::from_parts(1970,  0, 0)));
-  EXPECT_TRUE (cal.contains(SmallDate::from_parts(1973, 11, 2)));
-  EXPECT_TRUE (cal.contains(SmallDate::from_parts(2013,  6, 10)));
-  EXPECT_TRUE (cal.contains(SmallDate::from_parts(2013,  6, 11)));
-  EXPECT_TRUE (cal.contains(SmallDate::from_parts(2013,  6, 12)));
-  EXPECT_TRUE (cal.contains(SmallDate::from_parts(2013,  6, 13)));
-  EXPECT_TRUE (cal.contains(SmallDate::from_parts(2013,  6, 14)));
-  EXPECT_TRUE (cal[SmallDate::from_parts(2013,  6, 13)]);
-  EXPECT_TRUE (cal[SmallDate::from_parts(2013,  6, 14)]);
+  EXPECT_TRUE (cal.contains(SmallDate::from_ymd(1970,  0, 0)));
+  std::cerr << "0\n";
+  EXPECT_TRUE (cal.contains(SmallDate::from_ymd(1973, 11, 2)));
+  std::cerr << "1\n";
+  EXPECT_TRUE (cal.contains(SmallDate::from_ymd(2013,  6, 10)));
+  std::cerr << "2\n";
+  EXPECT_TRUE (cal.contains(SmallDate::from_ymd(2013,  6, 11)));
+  std::cerr << "3\n";
+  EXPECT_TRUE (cal.contains(SmallDate::from_ymd(2013,  6, 12)));
+  EXPECT_TRUE (cal.contains(SmallDate::from_ymd(2013,  6, 13)));
+  EXPECT_TRUE (cal.contains(SmallDate::from_ymd(2013,  6, 14)));
+  EXPECT_TRUE (cal[SmallDate::from_ymd(2013,  6, 13)]);
+  EXPECT_TRUE (cal[SmallDate::from_ymd(2013,  6, 14)]);
   EXPECT_TRUE (cal[SmallDate::MIN]);
   EXPECT_TRUE (cal[SmallDate::MAX]);
   EXPECT_FALSE(cal.contains(SmallDate::INVALID));
@@ -99,8 +103,8 @@ TEST(WeekdaysCalendar, shift) {
   EXPECT_EQ(2013/JUN/28, date + cal.DAY *  -9);
   EXPECT_EQ(2013/JUN/28, date - 9 * cal.DAY);
 
-  EXPECT_TRUE((9900/JAN/ 1 + 600000 * cal.DAY).is_invalid());
-  EXPECT_TRUE((1600/DEC/ 1 - 600000 * cal.DAY).is_invalid());
+  EXPECT_THROW((9900/JAN/ 1 + 600000 * cal.DAY).is_invalid(), DateRangeError);
+  EXPECT_THROW((1600/DEC/ 1 - 600000 * cal.DAY).is_invalid(), DateRangeError);
 }
 
 TEST(WeekdaysCalendar, nearest) {
