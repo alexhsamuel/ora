@@ -9,7 +9,7 @@
 #include <numpy/npy_3kcompat.h>
 
 #include "py.hh"
-#include "DateDtype.hh"
+#include "np_date.hh"
 
 using namespace py;
 using namespace alxs;
