@@ -11,6 +11,8 @@ include_dirs = ["../include", ]
 
 #-------------------------------------------------------------------------------
 
+# FIXME: We should just require numpy to build, no?
+
 try:
     import numpy
 except ImportError:
@@ -28,7 +30,11 @@ setup(
     ext_modules=[
         Extension(
             "cron._ext",
-            extra_compile_args=["-std=c++14", ],
+            extra_compile_args=[
+                "-std=c++14", 
+                "-fdiagnostics-color=always", 
+                "-O0", 
+            ],
             include_dirs      =include_dirs,
             sources           =glob("cron/*.cc"),
             library_dirs      =["../lib",],
