@@ -44,7 +44,7 @@ days_per_month(
 
 
 extern inline bool constexpr
-ordinal_is_valid(
+ordinal_date_is_valid(
   Year year,
   Ordinal ordinal)
 {
@@ -178,7 +178,10 @@ ordinal_date_to_datenum(
   Year year,
   Ordinal ordinal)
 {
-  return jan1_datenum(year) + ordinal;
+  return
+      ordinal_date_is_valid(year, ordinal)
+    ? jan1_datenum(year) + ordinal
+    : DATENUM_INVALID;
 }
 
 
@@ -216,38 +219,46 @@ public:
 
   using Offset = typename TRAITS::Offset;
 
-  // These are declared const here but defined constexpr to work around a clang bug.
-  // http://stackoverflow.com/questions/11928089/static-constexpr-member-of-same-type-as-class-being-defined
+  // These are declared const here but defined constexpr to work around a clang
+  // bug.  http://stackoverflow.com/questions/11928089/static-constexpr-member-of-same-type-as-class-being-defined
   static DateTemplate const MIN;
   static DateTemplate const MAX;
   static DateTemplate const MISSING;
   static DateTemplate const INVALID;
-  static bool constexpr USE_INVALID = TRAITS::use_invalid;
 
   // Constructors.
 
-  constexpr DateTemplate()
-    : offset_(TRAITS::use_invalid ? TRAITS::invalid : TRAITS::min)
+  constexpr 
+  DateTemplate()
+  : offset_(TRAITS::invalid)
+  {
+  }
+
+  // FIXME: Should this really be public?
+  constexpr 
+  DateTemplate(
+    Offset offset) 
+  : offset_(offset) 
   {
   }
 
   DateTemplate(
     DateTemplate const& date)
-    : offset_(date.offset_)
+  : offset_(date.offset_)
   {
   }
 
   template<class OTHER_TRAITS> 
   DateTemplate(
     DateTemplate<OTHER_TRAITS> date)
-    : DateTemplate(
-          USE_INVALID && date.is_invalid() ? INVALID.get_offset()
-        : USE_INVALID && date.is_missing() ? MISSING.get_offset()
-        : datenum_to_offset(date.get_datenum()))
+  : DateTemplate(
+        date.is_invalid() ? INVALID.get_offset()
+      : date.is_missing() ? MISSING.get_offset()
+      : datenum_to_offset(date.get_datenum()))
   {
   }
 
-  // FIXME: Need DateTemplate(Year, Month, Date)?
+  // Assignment operators.
 
   DateTemplate
   operator=(
@@ -263,26 +274,29 @@ public:
     DateTemplate<OTHER_TRAITS> date)
   {
     offset_ = 
-        USE_INVALID && date.is_invalid() ? INVALID.get_offset()
-      : USE_INVALID && date.is_missing() ? MISSING.get_offset()
+        date.is_invalid() ? INVALID.get_offset()
+      : date.is_missing() ? MISSING.get_offset()
       : datenum_to_offset(date.get_datenum());
     return *this;
   }
 
   // Factory methods.  
 
-  static DateTemplate 
-  from_datenum(
-    Datenum datenum) 
-  { 
-    return DateTemplate(datenum_to_offset(datenum)); 
-  }
-
   static constexpr DateTemplate 
   from_offset(
-    Offset offset) 
+    Offset const offset) 
   { 
-    return DateTemplate(validate_offset(offset)); 
+    if (in_range(TRAITS::min, offset, TRAITS::max))
+      return DateTemplate(offset); 
+    else
+      throw DateRangeError();
+  }
+
+  static DateTemplate 
+  from_datenum(
+    Datenum const datenum) 
+  { 
+    return DateTemplate(datenum_to_offset(datenum)); 
   }
 
   static DateTemplate 
@@ -347,69 +361,46 @@ public:
 
 protected:
 
-  template<class EXC>
-  static Offset
-  on_error()
-  {
-    if (TRAITS::use_invalid)
-      return INVALID.get_offset();
-    else
-      throw EXC();
-  }
-
-  
-  static Offset 
-  validate_offset(
-    Offset offset)
-  {
-    return 
-      in_range(TRAITS::min, offset, TRAITS::max)
-      ? offset 
-      : on_error<DateRangeError>();
-  }
-
-  /**
+  /*
    * Does not handle DATENUM_INVALID.
    */
   static Offset 
   datenum_to_offset(
-    Datenum datenum)
+    Datenum const datenum)
   {
     if (! datenum_is_valid(datenum))
-      return on_error<InvalidDateError>();
+      throw InvalidDateError();
     Datenum const offset = datenum - (Datenum) TRAITS::base;
-    return 
-      in_range<Datenum>(TRAITS::min, offset, TRAITS::max) 
-      ? offset
-      : on_error<DateRangeError>();
+    if (in_range(TRAITS::min, offset, TRAITS::max))
+      return offset;
+    else
+      throw DateRangeError();
   }
 
   static Offset
   ordinal_date_to_offset(
-    Year year,
-    Ordinal ordinal)
+    Year const year,
+    Ordinal const ordinal)
   {
-    return
-      ordinal_is_valid(year, ordinal)
-      ? datenum_to_offset(ordinal_date_to_datenum(year, ordinal))
-      : on_error<InvalidDateError>();
+    if (ordinal_is_valid(year, ordinal))
+      return datenum_to_offset(ordinal_date_to_datenum(year, ordinal));
+    else
+      throw InvalidDateError();
   }
 
   static Offset 
   ymd_to_offset(
-    Year year, 
-    Month month, 
-    Day day)
+    Year const year, 
+    Month const month, 
+    Day const day)
   {
-    return 
-      ymd_is_valid(year, month, day)
-      ? datenum_to_offset(ymd_to_datenum(year, month, day))
-      : on_error<InvalidDateError>();
+    if (ymd_is_valid(year, month, day))
+      return datenum_to_offset(ymd_to_datenum(year, month, day));
+    else
+      throw InvalidDateError();
   }
 
 private:
-
-  constexpr DateTemplate(Offset offset) : offset_(offset) {}
 
   Offset offset_;
 
@@ -449,27 +440,9 @@ struct DateTraits
   static Offset  constexpr max      = 3652058;   // 9999-12-31.
   static Offset  constexpr missing  = std::numeric_limits<Offset>::max() - 1;
   static Offset  constexpr invalid  = std::numeric_limits<Offset>::max();
-  static bool    constexpr use_invalid = true;
 };
 
 using Date = DateTemplate<DateTraits>;
-
-
-// FIXME: Use a better name.
-
-struct SafeDateTraits
-{
-  using Offset = uint32_t;
-
-  static Datenum constexpr base     =       0;
-  static Offset  constexpr min      =       0;   // 0001-01-01.
-  static Offset  constexpr max      = 3652058;   // 9999-12-31.
-  static Offset  constexpr missing  = std::numeric_limits<Offset>::max() - 1;
-  static Offset  constexpr invalid  = std::numeric_limits<Offset>::max();
-  static bool    constexpr use_invalid = false;
-};
-
-using SafeDate = DateTemplate<SafeDateTraits>;
 
 struct SmallDateTraits
 {
@@ -481,7 +454,6 @@ struct SmallDateTraits
                                                  // 2149-06-04.
   static Offset  constexpr missing  = std::numeric_limits<Offset>::max() - 1;
   static Offset  constexpr invalid  = std::numeric_limits<Offset>::max();
-  static bool    constexpr use_invalid = true;
 };
 
 using SmallDate = DateTemplate<SmallDateTraits>;
@@ -522,9 +494,6 @@ operator-(
 {
   if (date0.is_valid() && date1.is_valid())
     return (ssize_t) date0.get_offset() - date1.get_offset();
-  else if (DateTemplate<TRAITS>::USE_INVALID)
-    // FIXME: What do we do with invalid/missing values?
-    return 0;
   else
     throw ValueError("can't subtract invalid dates");
 }
