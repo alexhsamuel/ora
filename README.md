@@ -22,7 +22,7 @@ Cron currently has the following limitations.
   Gregorian calendar only.
 - Support for years 1 &ndash; 9999 only; no support for B.C.E. dates.
 - No support for leap seconds or relativistic effects.
-- Support for C++14 and Python 3.4+ only.
+- Support for C++14 and Python 3.5 only.
 - Tested on Linux and OSX.  Not currently tested on Windows.
 - Support for LP64 architectures (so, x86-64 but not x86) only.
 
