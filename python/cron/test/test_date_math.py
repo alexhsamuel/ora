@@ -11,7 +11,8 @@ import data
 
 def test_date_add():
     d = 1973/Dec/3
-    assert(d + -720595).invalid
+    with pytest.raises(OverflowError):
+        d + -720595
     assert d + -720594 ==    1/Jan/ 1
     assert d + -100000 == 1700/Feb/17
     assert d +  -10000 == 1946/Jul/18
@@ -32,9 +33,11 @@ def test_date_add():
     assert d +  100000 == 2247/Sep/18
     assert d + 1000000 == 4711/Oct/31
     assert d + 2931464 == 9999/Dec/31
-    assert(d + 2931465).invalid
+    with pytest.raises(OverflowError):
+        d + 2931465
 
-    assert(-720595 + d).invalid
+    with pytest.raises(OverflowError):
+        -720595 + d
     assert -720594 + d ==    1/Jan/ 1
     assert -100000 + d == 1700/Feb/17
     assert      -1 + d == 1973/Dec/ 2
@@ -42,7 +45,8 @@ def test_date_add():
     assert       1 + d == 1973/Dec/ 4
     assert 1000000 + d == 4711/Oct/31
     assert 2931464 + d == 9999/Dec/31
-    assert(2931465 + d).invalid
+    with pytest.raises(OverflowError):
+        2931465 + d
 
     assert (d + 100) + -100 == d
     assert -100 + (d + 100) == d
@@ -51,7 +55,8 @@ def test_date_add():
 
 def test_date_sub():
     d = 1973/Dec/3
-    assert(d -  720595).invalid
+    with pytest.raises(OverflowError):
+        d - 720595
     assert d -  720594 ==    1/Jan/ 1
     assert d -  100000 == 1700/Feb/17
     assert d -   10000 == 1946/Jul/18
@@ -71,7 +76,8 @@ def test_date_sub():
     assert d -  -10000 == 2001/Apr/20
     assert d - -100000 == 2247/Sep/18
     assert d - -2931464 == 9999/Dec/31
-    assert(d - -2931465).invalid
+    with pytest.raises(OverflowError): 
+        d - -2931465
     assert (d - 100) - -100 == d
 
     with pytest.raises(TypeError):

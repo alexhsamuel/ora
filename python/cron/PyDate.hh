@@ -129,6 +129,7 @@ private:
   // Methods.
   static ref<Object> method_from_datenum        (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_ordinal_date   (PyTypeObject* type, Tuple* args, Dict* kw_args);
+  // FIXME: Rename to from_ymd().
   static ref<Object> method_from_parts          (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_week_date      (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_ymdi           (PyTypeObject* type, Tuple* args, Dict* kw_args);
@@ -320,9 +321,18 @@ PyDate<DATE>::nb_add(
 {
   auto offset = other->maybe_long_value();
   if (offset)
-    return 
-      *offset == 0 ? ref<PyDate>::of(self)
-      : create(self->date_ + *offset, self->ob_type);
+    if (*offset == 0)
+      return ref<PyDate>::of(self);
+    else {
+      DATE date;
+      try {
+        date = self->date_ + *offset;
+      }
+      catch (cron::DateRangeError) {
+        throw py::OverflowError("date out of range in addition");
+      }
+      return create(date, self->ob_type);
+    }
   else
     return not_implemented_ref();
 }
@@ -347,10 +357,18 @@ PyDate<DATE>::nb_subtract(
 
   auto offset = other->maybe_long_value();
   if (offset)
-    return 
-      *offset == 0 
-      ? ref<PyDate>::of(self)  // Optimization: same date.
-      : create(self->date_ - *offset, self->ob_type);
+    if (*offset == 0)
+      return ref<PyDate>::of(self);
+    else {
+      DATE date;
+      try {
+        date = self->date_ - *offset;
+      }
+      catch (cron::DateRangeError) {
+        throw py::OverflowError("date out of range in subtraction");
+      }
+      return create(date, self->ob_type);
+    }
 
   return not_implemented_ref();
 }
@@ -827,7 +845,7 @@ parts_to_date(
   long const year   = parts->GetItem(0)->long_value();
   long const month  = parts->GetItem(1)->long_value();
   long const day    = parts->GetItem(2)->long_value();
-  return DATE::from_parts(year, month - 1, day - 1);
+  return DATE::from_ymd(year, month - 1, day - 1);
 }
 
 
@@ -860,7 +878,7 @@ maybe_date(
   }
 
   if (PyDate_Check(obj)) 
-    return DATE::from_parts(
+    return DATE::from_ymd(
       PyDateTime_GET_YEAR(obj),
       PyDateTime_GET_MONTH(obj) - 1,
       PyDateTime_GET_DAY(obj) - 1);

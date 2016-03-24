@@ -124,7 +124,7 @@ ordinals_per_year(
   Arg::ParseTupleAndKeywords(args, kw_args, "H", arg_names, &year);
 
   if (cron::year_is_valid(year))
-    return Long::FromLong(cron::ordinals_per_year(year));
+    return Long::FromLong(cron::days_per_year(year));
   else
     throw py::ValueError("invalid year");
 }

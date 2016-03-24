@@ -384,15 +384,28 @@ using SmallDate = DateTemplate<SmallDateTraits>;
 // Functions.
 //------------------------------------------------------------------------------
 
+namespace {
+
+template<class TRAITS>
+void ensure_valid(
+  DateTemplate<TRAITS> const date)
+{
+  if (!date.is_valid())
+    throw InvalidDateError();
+}
+
+
+}  // anonymous namespace
+
+
 template<class TRAITS> 
 extern inline DateTemplate<TRAITS> 
 operator+(
   DateTemplate<TRAITS> date, 
-  signed int shift)
+  int shift)
 {
-  return 
-      date.is_invalid() || date.is_missing() ? date
-    : DateTemplate<TRAITS>::from_offset(date.get_offset() + shift);
+  ensure_valid(date);
+  return DateTemplate<TRAITS>::from_offset(date.get_offset() + shift);
 }
 
 
@@ -400,24 +413,22 @@ template<class TRAITS>
 extern inline DateTemplate<TRAITS> 
 operator-(
   DateTemplate<TRAITS> date, 
-  signed int shift)
+  int shift)
 {
-  return 
-      date.is_invalid() || date.is_missing() ? date
-    : DateTemplate<TRAITS>::from_offset(date.get_offset() - shift);
+  ensure_valid(date);
+  return DateTemplate<TRAITS>::from_offset(date.get_offset() - shift);
 }
 
 
 template<class TRAITS>
-extern inline ssize_t
+extern inline int
 operator-(
   DateTemplate<TRAITS> date0,
   DateTemplate<TRAITS> date1)
 {
-  if (date0.is_valid() && date1.is_valid())
-    return (ssize_t) date0.get_offset() - date1.get_offset();
-  else
-    throw ValueError("can't subtract invalid dates");
+  ensure_valid(date0);
+  ensure_valid(date1);
+  return (int) date0.get_offset() - date1.get_offset();
 }
 
 

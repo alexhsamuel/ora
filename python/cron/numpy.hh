@@ -53,8 +53,8 @@ UFunc::create_empty(
       num_args,             // number of arguments
       num_rets,             // number of return values
       identity,             // identity
-      name,                 // name
-      doc,                  // doc
+      (char*) name,         // name
+      (char*) doc,          // doc
       0));                  // check_return; unused
 }
 
