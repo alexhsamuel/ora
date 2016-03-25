@@ -108,6 +108,8 @@
 
 - Make a 'zoneinfo dir' abstraction; load time zones from there.
 
+- Fix .dd make rules to work generally.
+
 # Maybe / someday
 
 - Add an (upper) "bound" constant for time, date, daytime counts that is
