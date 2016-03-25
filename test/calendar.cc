@@ -32,13 +32,9 @@ TEST(AllCalendar, contains0) {
 TEST(AllCalendar, contains1) {
   AllCalendar const cal;
   EXPECT_TRUE (cal.contains(SmallDate::from_ymd(1970,  0, 0)));
-  std::cerr << "0\n";
   EXPECT_TRUE (cal.contains(SmallDate::from_ymd(1973, 11, 2)));
-  std::cerr << "1\n";
   EXPECT_TRUE (cal.contains(SmallDate::from_ymd(2013,  6, 10)));
-  std::cerr << "2\n";
   EXPECT_TRUE (cal.contains(SmallDate::from_ymd(2013,  6, 11)));
-  std::cerr << "3\n";
   EXPECT_TRUE (cal.contains(SmallDate::from_ymd(2013,  6, 12)));
   EXPECT_TRUE (cal.contains(SmallDate::from_ymd(2013,  6, 13)));
   EXPECT_TRUE (cal.contains(SmallDate::from_ymd(2013,  6, 14)));
