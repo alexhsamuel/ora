@@ -4,7 +4,7 @@ else
   UNAME	       := $(shell uname -s)
 endif
 
-TOP 	    	= $(shell pwd)
+TOP 	    	= .
 EXTDIR	    	= $(TOP)/external
 SHRDIR	    	= $(TOP)/share
 
