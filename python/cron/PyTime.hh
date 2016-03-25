@@ -73,7 +73,7 @@ template<typename TIME> inline TIME convert_to_time(Object*);
 // Virtual API
 //------------------------------------------------------------------------------
 
-/**
+/*
  * Provides an API with dynamic dispatch to PyTime objects.
  * 
  * The PyTime class, since it is a Python type, cannot be a C++ virtual class.
@@ -84,14 +84,14 @@ class PyTimeAPI
 {
 public:
 
-  /**
+  /*
    * Registers a virtual API for a Python type.
    */
   static void add(PyTypeObject* const type, std::unique_ptr<PyTimeAPI>&& api) 
     { apis_.emplace(type, std::move(api)); }
 
-  /**
-   * Returns the API for a Python object, or nullptr if there is none.
+  /*
+   * Returns the API for a Python object, or nullptr if it isn't a PyTime.
    */
   static PyTimeAPI const*
   get(
@@ -105,12 +105,12 @@ public:
     { return get(obj->ob_type);  }
 
   // API methods.
+  virtual ref<Object>               from_local_datenum_daytick(cron::Datenum, cron::Daytick, cron::TimeZone const&, bool) const = 0; 
   virtual cron::TimeOffset          get_time_offset(Object* time) const = 0;
   virtual cron::Timetick            get_timetick(Object* time) const = 0;
-  virtual ref<Object>               from_local_datenum_daytick(cron::Datenum, cron::Daytick, cron::TimeZone const&, bool) const = 0;
-  virtual ref<Object>               now() const = 0;
   virtual bool                      is_invalid(Object* time) const = 0;
   virtual bool                      is_missing(Object* time) const = 0;
+  virtual ref<Object>               now() const = 0;
   virtual cron::LocalDatenumDaytick to_local_datenum_daytick(Object* time, cron::TimeZone const& tz) const = 0;
 
 private:

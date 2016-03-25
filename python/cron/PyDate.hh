@@ -6,6 +6,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include <Python.h>
 #include <datetime.h>
@@ -65,6 +66,54 @@ template<typename DATE> inline DATE parts_to_date(Sequence*);
 template<typename DATE> inline DATE ordinal_parts_to_date(Sequence*);
 
 //------------------------------------------------------------------------------
+// Virtual API
+//------------------------------------------------------------------------------
+
+/*
+ * Provides an API with dynamic dispatch to PyDate objects.
+ *
+ * The PyDate class, since it is a Python type, cannot be a virtual C++ class.
+ * This mechanism interfaces the C++ virtual method mechanism with the Python
+ * type system by mapping the Python type to a stub virtual C++ class.
+ */
+class PyDateAPI
+{
+public:
+
+  /*
+   * Registers a virtual API for a Python type.
+   */
+  static void add(PyTypeObject* const type, std::unique_ptr<PyDateAPI>&& api)
+    { apis_.emplace(type, std::move(api)); }
+
+  /*
+   * Returns the API for a Python object, or nullptr if it isn't a PyDate.
+   */
+  static PyDateAPI const*
+  get(
+    PyTypeObject* const type)
+  {
+    auto api = apis_.find(type);
+    return api == apis_.end() ? nullptr : api->second.get();
+  }
+
+  static PyDateAPI const* get(PyObject* const obj)
+    { return get(obj->ob_type); }
+
+  // API methods.
+  virtual cron::Datenum             get_datenum(Object* date) const = 0;
+  virtual ref<Object>               from_datenum(cron::Datenum) const = 0;
+  virtual bool                      is_invalid(Object* time) const = 0;
+  virtual bool                      is_missing(Object* time) const = 0;
+
+private:
+
+  static std::unordered_map<PyTypeObject*, std::unique_ptr<PyDateAPI>> apis_;
+
+};
+
+
+//------------------------------------------------------------------------------
 // Type class
 //------------------------------------------------------------------------------
 
@@ -115,11 +164,27 @@ public:
 
 private:
 
-  static void tp_init(PyDate* self, Tuple* args, Dict* kw_args);
-  static void tp_dealloc(PyDate* self);
-  static ref<Unicode> tp_repr(PyDate* self);
-  static ref<Unicode> tp_str(PyDate* self);
-  static ref<Object> tp_richcompare(PyDate* self, Object* other, int comparison);
+  class API
+  : public PyDateAPI
+  {
+  public:
+    
+    virtual cron::Datenum get_datenum(Object* const date) const
+      { return ((PyDate*) date)->date_.get_datenum(); }
+    virtual ref<Object> from_datenum(cron::Datenum const datenum) const
+      { return PyDate::create(Date::from_datenum(datenum)); }
+    virtual bool is_invalid(Object* const date) const
+      { return ((PyDate*) date)->is_invalid(); }
+    virtual bool is_missing(Object* const date) const
+      { return ((PyDate*) date)->is_missing(); }
+
+  };
+
+  static void           tp_init(PyDate* self, Tuple* args, Dict* kw_args);
+  static void           tp_dealloc(PyDate* self);
+  static ref<Unicode>   tp_repr(PyDate* self);
+  static ref<Unicode>   tp_str(PyDate* self);
+  static ref<Object>    tp_richcompare(PyDate* self, Object* other, int comparison);
 
   // Number methods.
   static ref<Object> nb_add     (PyDate* self, Object* other, bool right);
@@ -710,25 +775,6 @@ PyDate<DATE>::repr_format_;
 // Type object
 //------------------------------------------------------------------------------
 
-namespace {
-
-/**
- * Assuming 'obj' is a PyDate<DATE>, returns its datenum.
- *
- * Used for the tp_print hack in 'build_type()' below.
- */
-template<typename DATE>
-cron::Datenum
-_get_datenum(
-  PyObject* obj)
-{
-  return static_cast<PyDate<DATE>*>(obj)->date_.get_datenum();
-}
-
-
-}  // anonymous namespace
-
-
 template<typename DATE>
 Type
 PyDate<DATE>::build_type(
@@ -740,12 +786,7 @@ PyDate<DATE>::build_type(
     (Py_ssize_t)          sizeof(PyDate),                 // tp_basicsize
     (Py_ssize_t)          0,                              // tp_itemsize
     (destructor)          wrap<PyDate, tp_dealloc>,       // tp_dealloc
-    // FIXME: Hack!  We'd like to provide a way for any PyDate instance to
-    // return its datenum, for efficient manipulation by other PyDate instances,
-    // without virtual methods.  PyTypeObject doesn't provide any slot for us to
-    // stash this, so we requisition the deprecated tp_print slot.  This may
-    // break in future Python versions, if that slot is reused.
-    (printfunc)           &_get_datenum<DATE>,            // tp_print
+    (printfunc)           nullptr,                        // tp_print
     (getattrfunc)         nullptr,                        // tp_getattr
     (setattrfunc)         nullptr,                        // tp_setattr
                           nullptr,                        // tp_reserved
@@ -809,11 +850,11 @@ make_date(
   cron::Datenum const datenum,
   Object* type=(Object*) &PyDateDefault::type_)
 {
-  // Special case fast path for the default date type.
-  if (type == (Object*) &PyDateDefault::type_)
-    return PyDateDefault::create(PyDateDefault::Date::from_datenum(datenum));
-  else 
-    return type->CallMethodObjArgs("from_datenum", Long::FromLong(datenum));
+  auto const api = PyDateAPI::get(type);
+  if (api == nullptr)
+    throw TypeError("not a date type"s + *type->Repr());
+  else
+    return api->from_datenum(datenum);
 }
 
 
@@ -845,33 +886,36 @@ inline optional<DATE>
 maybe_date(
   Object* const obj)
 {
+  // Try for an instance of the same PyDate.
   if (PyDate<DATE>::Check(obj)) 
-    // Exact wrapped type.
     return static_cast<PyDate<DATE>*>(obj)->date_;
 
-  if (obj->ob_type->tp_print != nullptr) {
-    // Each PyDate instantiation places the pointer to a function that returns
-    // its datenum into the tp_print slot; see 'build_type()'.
-    auto const get_datenum 
-      = reinterpret_cast<cron::Datenum (*)(Object*)>(obj->ob_type->tp_print);
-    return DATE::from_datenum(get_datenum(obj));
-  }
+  // Try for an instance of a different PyDate template instance.
+  auto const api = PyDateAPI::get(obj);
+  if (api != nullptr) 
+    return 
+        api->is_invalid(obj) ? DATE::INVALID
+      : api->is_missing(obj) ? DATE::MISSING
+      : DATE::from_datenum(api->get_datenum(obj));
 
+  // Try for datetime.date.
   if (PyDate_Check(obj)) 
     return DATE::from_ymd(
       PyDateTime_GET_YEAR(obj),
       PyDateTime_GET_MONTH(obj) - 1,
       PyDateTime_GET_DAY(obj) - 1);
 
-  // Try for a date type that has a 'datenum' attribute.
-  auto datenum = obj->GetAttrString("datenum", false);
-  if (datenum != nullptr) 
-    return DATE::from_datenum(datenum->long_value());
-
-  // Try for a date type that as a 'toordinal()' method.
+  // Try for a date type that as a toordinal() method, to handle duck typing
+  // for datetime.date.
   auto ordinal = obj->CallMethodObjArgs("toordinal", false);
   if (ordinal != nullptr)
     return DATE::from_datenum(ordinal->long_value() - 1);
+
+  // Try for a date type that has a datenum attribute, to handle duck typing
+  // for our PyDate.
+  auto datenum = obj->GetAttrString("datenum", false);
+  if (datenum != nullptr) 
+    return DATE::from_datenum(datenum->long_value());
 
   // No type match.
   return {};
