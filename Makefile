@@ -29,7 +29,7 @@ GTEST_LIB       = $(GTEST_DIR)/gtest_main.a
 # Compiler and linker
 CXX            += -std=c++14
 CPPFLAGS        = -I$(CXX_INCDIR)
-CXXFLAGS        = -fPIC -g -Wall
+CXXFLAGS        = -fPIC -g -Wall -pthread
 LDLIBS          = -lpthread
 
 # Unit tests
@@ -58,7 +58,7 @@ ifeq ($(UNAME),Darwin)
 else ifeq ($(UNAME),Linux)
   PY_LDFLAGS   += -shared
 endif
-PY_LDLIBS	= 
+PY_LDLIBS	= -lpython3.5m
 
 # Compiler and linker for numpy
 NPY_INCDIRS 	= $(shell $(PYTHON) -c 'from numpy.distutils.misc_util import get_numpy_include_dirs as g; print(" ".join(g()));')
@@ -127,7 +127,7 @@ $(CXX_SRCDIR)/bin/%:   	$(CXX_SRCDIR)/bin/%.cc $(CXX_LIB)
 $(CXX_TST_DEPS): \
 %.dd: 			%.cc
 	@echo "generating $@"; \
-	set -e; $(CXX) $(CPPFLAGS) -MM $(CXX_TST_CPPFLAGS) $< | sed -E 's#([^ ]+:)#test/\1#g' > $@
+	set -e; $(CXX) $(CPPFLAGS) -MM $(CXX_TST_CPPFLAGS) $< | sed -E 's#([^ ]+:)#c++/test/\1#g' > $@
 
 $(CXX_TST_OBJS): \
 %.o: 	    	    	%.cc
@@ -156,7 +156,7 @@ PY_SRCS   	= $(wildcard $(PY_PKGDIR)/*.cc)
 PY_DEPS	    	= $(PY_SRCS:%.cc=%.dd)
 PY_OBJS	    	= $(PY_SRCS:%.cc=%.o)
 PY_EXTMOD_SUFFIX= $(shell $(PYTHON) -c 'from importlib.machinery import EXTENSION_SUFFIXES as E; print(E[0]); ')
-PY_EXTMOD	= $(PY_PKGDIR)/_ext$(PY_EXTMOD_SUFFIX)
+PY_EXTMOD	= $(PY_PKGDIR)/ext$(PY_EXTMOD_SUFFIX)
 
 .PHONY: python
 python:			$(PY_DEPS) $(PY_EXTMOD)
@@ -168,7 +168,7 @@ clean-python:
 $(PY_DEPS): \
 %.dd: 		    	%.cc
 	@echo "generating $@"; \
-	set -e; $(CXX) -MM $(PY_CPPFLAGS) $< | sed 's,^\(.*\)\.o:,python/fixfmt/\1.o:,g' > $@
+	set -e; $(CXX) -MM $(PY_CPPFLAGS) $< | sed 's,^\(.*\)\.o:,python/cron/\1.o:,g' > $@
 
 $(PY_OBJS): \
 %.o:			%.cc

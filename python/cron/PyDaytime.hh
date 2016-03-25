@@ -710,6 +710,8 @@ maybe_daytime(
     return static_cast<PyDaytime<DAYTIME>*>(obj)->daytime_;
 
   // Try for a 'datetime.time' instance.
+  if (PyDateTimeAPI == nullptr)
+    PyDateTime_IMPORT;
   if (PyTime_Check(obj))
     return DAYTIME(
       PyDateTime_TIME_GET_HOUR(obj),

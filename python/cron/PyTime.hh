@@ -765,6 +765,8 @@ maybe_time(
       : TIME::from_timetick(api->get_timetick(obj));
 
   // A 'datetime.datetime'?
+  if (PyDateTimeAPI == nullptr)
+    PyDateTime_IMPORT;
   if (PyDateTime_Check(obj)) {
     // First, make sure it's localized.
     auto const tzinfo = obj->GetAttrString("tzinfo", false);

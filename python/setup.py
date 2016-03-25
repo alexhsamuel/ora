@@ -29,7 +29,7 @@ setup(
     name="test",
     ext_modules=[
         Extension(
-            "cron._ext",
+            "cron.ext",
             extra_compile_args=[
                 "-std=c++14", 
                 "-fdiagnostics-color=always", 

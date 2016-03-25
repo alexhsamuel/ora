@@ -898,7 +898,10 @@ maybe_date(
       : api->is_missing(obj) ? DATE::MISSING
       : DATE::from_datenum(api->get_datenum(obj));
 
-  // Try for datetime.date.
+  // Try for datetime.date.  Note that PyDateTimeAPI is declared to be static,
+  // so we have to initialize it in each compilation unit.
+  if (PyDateTimeAPI == nullptr)
+    PyDateTime_IMPORT;
   if (PyDate_Check(obj)) 
     return DATE::from_ymd(
       PyDateTime_GET_YEAR(obj),

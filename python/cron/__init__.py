@@ -2,7 +2,7 @@ import enum
 
 import pln.py
 
-from   ._ext import *
+from   .ext import *
 
 __all__ = (
     "Date",

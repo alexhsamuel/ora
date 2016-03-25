@@ -17,9 +17,9 @@ will have a `dtype` attribute.  For example:
 #-------------------------------------------------------------------------------
 
 import numpy
-from   . import _ext
+from   .ext import set_up_numpy as _set_up_numpy
 
-# Adds
-_ext.set_up_numpy()
+# Add all the numpy stuff to the extension module.
+_set_up_numpy()
 
-from   ._ext import year, month, day
+from   .ext import year, month, day

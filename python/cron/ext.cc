@@ -26,7 +26,7 @@ methods;
 PyModuleDef
 module_def{
   PyModuleDef_HEAD_INIT,
-  "cron._ext",
+  "cron.ext",
   nullptr,
   -1,
   add_functions(methods)
@@ -39,14 +39,8 @@ module_def{
 //------------------------------------------------------------------------------
 
 PyMODINIT_FUNC
-PyInit__ext(void)
+PyInit_ext(void)
 {
-  // Set up the C API to the standard library datetime module.
-  if (PyDateTimeAPI == nullptr) {
-    PyDateTime_IMPORT;
-    assert(PyDateTimeAPI != nullptr);
-  }
-
   auto module = Module::Create(&module_def);
 
   try {
@@ -75,6 +69,7 @@ PyInit__ext(void)
     TranslateException<cron::InvalidDateError>::to(PyExc_ValueError);
     TranslateException<cron::DateRangeError>::to(PyExc_OverflowError);
 
+    std::cerr << "ext PyDateTimeAPI=" << (void*) PyDateTimeAPI << "\n";
     return module.release();
   }
   catch (Exception) {
