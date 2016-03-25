@@ -63,6 +63,7 @@ NPY_INCDIRS 	= $(shell $(PYTHON) -c 'from numpy.distutils.misc_util import get_n
 PY_CPPFLAGS    += $(NPY_INCDIRS:%=-I%)
 
 #-------------------------------------------------------------------------------
+# Primary targets
 
 .PHONY: all
 all:			cxx python 
