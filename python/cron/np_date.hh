@@ -96,7 +96,7 @@ extern inline cron::Year
 year(
   DATE const date)
 {
-  return date.get_parts().year;
+  return date.get_ymd().year;
 }
 
 
@@ -105,7 +105,7 @@ extern inline cron::Month
 month(
   DATE const date)
 {
-  return date.get_parts().month + 1;  // FIXME!
+  return date.get_ymd().month + 1;  // FIXME!
 }
 
 
@@ -114,7 +114,7 @@ extern inline cron::Day
 day(
   DATE const date)
 {
-  return date.get_parts().day + 1;  // FIXME!
+  return date.get_ymd().day + 1;  // FIXME!
 }
 
 

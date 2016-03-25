@@ -192,8 +192,51 @@ Timetick const     TIMETICK_INVALID         = ((int128_t) -1) << 127;
 
 //------------------------------------------------------------------------------
 
-// FIXME: Pack fields better such that this fits in 64 bits.  For instance,
-// encode week_year as a delta from year, and stuff that into the week.
+/*
+ * Components of an ISO-8601 ordinal date.
+ */
+struct OrdinalDate
+{
+  Year      year;
+  Ordinal   ordinal;
+
+  static OrdinalDate get_invalid()
+    { return {YEAR_INVALID, ORDINAL_INVALID}; }
+
+};
+
+
+/* 
+ * Components of a conventional (year, month, day) date.
+ */
+struct YmdDate
+{
+  Year      year;
+  Month     month;
+  Day       day;
+
+  static YmdDate get_invalid()
+    { return {YEAR_INVALID, MONTH_INVALID, DAY_INVALID}; }
+
+};
+
+
+/*
+ * Components of an ISO-8601 week date.
+ */
+struct WeekDate
+{
+  Year      week_year;
+  Week      week;
+  Weekday   weekday;
+
+  static WeekDate get_invalid()
+    { return {YEAR_INVALID, WEEK_INVALID, WEEKDAY_INVALID}; }
+
+};
+
+
+// FIXME: Get rid of this by refactoring format.cc.
 
 struct DateParts
 {

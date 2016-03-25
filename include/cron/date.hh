@@ -296,10 +296,23 @@ public:
   bool      is_invalid()    const { return offset_ == TRAITS::invalid; }
   bool      is_missing()    const { return offset_ == TRAITS::missing; }
 
-  Offset    get_offset()    const { return valid_offset(); }
-  Datenum   get_datenum()   const { return offset_to_datenum<TRAITS>(valid_offset()); }
+  Offset get_offset() const 
+    { return valid_offset(); }
+  Datenum get_datenum() const 
+    { return offset_to_datenum<TRAITS>(valid_offset()); }
+  OrdinalDate get_ordinal_date() const 
+    { return cron::datenum_to_ordinal_date(get_datenum()); }
+  YmdDate get_ymd() const
+    { return cron::datenum_to_ymd(get_datenum()); }
+  Weekday get_weekday() const 
+    { return cron::get_weekday(get_datenum()); }
+  WeekDate get_week_date() const
+    { return cron::datenum_to_week_date(get_datenum()); }
+  int get_ymdi() const
+    { return cron::datenum_to_ymdi(get_datenum()); }
+
+  // FIXME: Remove this.
   DateParts get_parts()     const { return datenum_to_parts(get_datenum()); }
-  Weekday   get_weekday()   const { return cron::get_weekday(get_datenum()); }
 
   bool is(DateTemplate const& o) const { return offset_ == o.offset_; }
   bool operator==(DateTemplate const& o) const { return is_valid() && o.is_valid() && offset_ == o.offset_; }

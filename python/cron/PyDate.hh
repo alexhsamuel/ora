@@ -553,7 +553,7 @@ PyDate<DATE>::get_day(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(self->date_.get_parts().day + 1);
+  return Long::FromLong(self->date_.get_ymd().day + 1);
 }
 
 
@@ -583,7 +583,7 @@ PyDate<DATE>::get_month(
   PyDate* const self,
   void* /* closure */)
 {
-  return get_month_obj(self->date_.get_parts().month + 1);
+  return get_month_obj(self->date_.get_ymd().month + 1);
 }
 
 
@@ -593,7 +593,7 @@ PyDate<DATE>::get_ordinal(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(self->date_.get_parts().ordinal + 1);
+  return Long::FromLong(self->date_.get_ordinal_date().ordinal + 1);
 }
 
 
@@ -632,7 +632,7 @@ PyDate<DATE>::get_week(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(self->date_.get_parts().week);
+  return Long::FromLong(self->date_.get_week_date().week);
 }
 
 
@@ -642,7 +642,7 @@ PyDate<DATE>::get_week_year(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(self->date_.get_parts().week_year);
+  return Long::FromLong(self->date_.get_week_date().week_year);
 }
 
 
@@ -652,7 +652,7 @@ PyDate<DATE>::get_weekday(
   PyDate* const self,
   void* /* closure */)
 {
-  return get_weekday_obj(self->date_.get_parts().weekday);
+  return get_weekday_obj(self->date_.get_weekday());
 }
 
 
@@ -662,7 +662,7 @@ PyDate<DATE>::get_year(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(self->date_.get_parts().year);
+  return Long::FromLong(self->date_.get_ymd().year);
 }
 
 
@@ -672,9 +672,7 @@ PyDate<DATE>::get_ymdi(
   PyDate* const self,
   void* /* closure */)
 {
-  auto const parts = self->date_.get_parts();
-  int ymd = 10000 * parts.year + 100 * (parts.month + 1) + (parts.day + 1);
-  return Long::FromLong(ymd);
+  return Long::FromLong(self->date_.get_ymdi());
 }
 
 
@@ -688,6 +686,7 @@ PyDate<DATE>::tp_getsets_
     .template add_get<get_missing>      ("missing")
     .template add_get<get_month>        ("month")
     .template add_get<get_ordinal>      ("ordinal")
+    // FIXME: Remove this.
     .template add_get<get_parts>        ("parts")
     .template add_get<get_valid>        ("valid")
     .template add_get<get_week>         ("week")

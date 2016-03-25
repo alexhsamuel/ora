@@ -20,9 +20,22 @@ namespace cron {
 //------------------------------------------------------------------------------
 
 /*
+ * Returns ordinal date parts for a date.
+ */
+extern OrdinalDate datenum_to_ordinal_date(Datenum);
+
+/*
+ * Returns YMD date parts for a date.
+ */
+extern YmdDate datenum_to_ymd(Datenum, OrdinalDate);
+
+/*
+ * Returns week date parts for a date.
+ */
+extern WeekDate datenum_to_week_date(Datenum, OrdinalDate, Weekday);
+
+/*
  * Returns date parts for a date.
- *
- * FIXME: Split out the week date.
  */
 extern DateParts datenum_to_parts(Datenum);
 
@@ -242,6 +255,29 @@ week_date_to_datenum(
 
 
 /*
+ * Returns YMD date parts for a date.
+ */
+inline YmdDate
+datenum_to_ymd(
+  Datenum const datenum)
+{
+  return datenum_to_ymd(datenum, datenum_to_ordinal_date(datenum));
+}
+
+
+/*
+ * Returns week date parts for a date.
+ */
+inline WeekDate 
+datenum_to_week_date(
+  Datenum const datenum)
+{
+  return datenum_to_week_date(
+    datenum, datenum_to_ordinal_date(datenum), get_weekday(datenum));
+}
+
+
+/*
  * True if a YMDI is valid.
  *
  * By convention, a YMDI must be at least 10000000, so years before 1000 are
@@ -265,6 +301,15 @@ ymdi_to_datenum(
   int const ymdi)
 {
   return ymd_to_datenum(ymdi / 10000, ymdi / 100 % 100 - 1, ymdi % 100 - 1);
+}
+
+
+inline int
+datenum_to_ymdi(
+  Datenum const datenum)
+{
+  auto const ymd = datenum_to_ymd(datenum);
+  return 10000 * ymd.year + 100 * (ymd.month + 1) + (ymd.day + 1);
 }
 
 
