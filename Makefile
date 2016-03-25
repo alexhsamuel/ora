@@ -150,7 +150,8 @@ $(CXX_TST_OKS): export ZONEINFO = $(TOP)/share/zoneinfo
 PY_SRCS   	= $(wildcard $(PY_PKGDIR)/*.cc)
 PY_DEPS	    	= $(PY_SRCS:%.cc=%.dd)
 PY_OBJS	    	= $(PY_SRCS:%.cc=%.o)
-PY_EXTMOD	= $(PY_PKGDIR)/_ext.cpython-35m-x86_64-linux-gnu.so
+PY_EXTMOD_SUFFIX= $(shell $(PYTHON) -c 'from importlib.machinery import EXTENSION_SUFFIXES as E; print(E[0]); ')
+PY_EXTMOD	= $(PY_PKGDIR)/_ext$(PY_EXTMOD_SUFFIX)
 
 .PHONY: python
 python:			$(PY_DEPS) $(PY_EXTMOD)
