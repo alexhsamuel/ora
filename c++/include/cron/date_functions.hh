@@ -72,6 +72,64 @@ from_week_date(
 
 
 //------------------------------------------------------------------------------
+// Accessors
+//------------------------------------------------------------------------------
+
+template<class DATE>
+inline Datenum
+get_datenum(
+  DATE const date)
+{
+  return date.is_valid() ? date.get_datenum() : DATENUM_INVALID;
+}
+
+
+template<class DATE>
+inline OrdinalDate
+get_ordinal_date(
+  DATE const date)
+{
+  return date.is_valid() ? date.get_ordinal_date() : OrdinalDate::get_invalid();
+}
+
+
+template<class DATE>
+inline YmdDate
+get_ymd(
+  DATE const date)
+{
+  return date.is_valid() ? date.get_ymd() : YmdDate::get_invalid();
+}
+
+
+template<class DATE>
+inline Weekday
+get_weekday(
+  DATE const date)
+{
+  return date.is_valid() ? date.get_weekday() : WEEKDAY_INVALID;
+}
+
+
+template<class DATE>
+inline WeekDate
+get_week_date(
+  DATE const date)
+{
+  return date.is_valid() ? date.get_week_date() : WeekDate::get_invalid();
+}
+
+
+template<class DATE>
+inline int
+get_ymdi(
+  DATE const date)
+{
+  return date.is_valid() ? date.get_ymdi() : YMDI_INVALID;
+}
+
+
+//------------------------------------------------------------------------------
 // Arithmetic
 //------------------------------------------------------------------------------
 
