@@ -2,10 +2,12 @@
 
 1. Rename `InvalidDateError` -> `BadDateError` _et fils_.
 1. Basic string parsing for `convert_to_*()` functions.
+1. Function (not method) APIs for dates, daytimes, and times.
 1. Global display time zone in Python API.
 1. `format()` method and `tp_format` for Date, Daytime, Time.
 1. Replace `tp_print` with API for Python Daytime.
 1. Kill off DateParts.
+1. Fix auto dependency generation, per [here](http://make.mad-scientist.net/papers/advanced-auto-dependency-generation/).
 
 
 # C++ API
