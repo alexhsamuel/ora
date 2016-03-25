@@ -5,32 +5,51 @@ else
 endif
 
 TOP 	    	= $(shell pwd)
+EXTDIR	    	= $(TOP)/external
+SHRDIR	    	= $(TOP)/share
 
-GTEST_DIR       = ./test/gtest
+#-------------------------------------------------------------------------------
+# C++ configuration
+
+# Directories
+CXX_DIR	    	= $(TOP)/c++
+CXX_INCDIR 	= $(CXX_DIR)/include
+CXX_SRCDIR 	= $(CXX_DIR)/src
+CXX_LIBDIR 	= $(CXX_DIR)/lib
+CXX_BINDIR 	= $(CXX_DIR)/bin
+CXX_TSTDIR    	= $(CXX_DIR)/test
+
+# Gtest configuration
+GTEST_DIR       = $(EXTDIR)/gtest
 GTEST_INCDIR    = $(GTEST_DIR)/include
 GTEST_LIB       = $(GTEST_DIR)/gtest_main.a
 
+# Compiler and linker
 CXX            := $(CXX) -std=c++14
-CPPFLAGS        = -I./include
+CPPFLAGS        = -I$(CXX_INCDIR)
 CXXFLAGS        = -fPIC -g -Wall
 LDLIBS          = -lpthread
 
-SOURCES         = $(wildcard src/*.cc) 
-DEPS            = $(SOURCES:%.cc=%.dd)
-OBJS            = $(SOURCES:%.cc=%.o)
-LIB	    	= lib/libcron.a
-BIN_SOURCES 	= $(wildcard src/bin/*.cc)
-BINS            = $(BIN_SOURCES:%.cc=%)
+CXX_TST_CPPFLAGS= $(CPPFLAGS) -I$(GTEST_INCDIR) -DGTEST_HAS_TR1_TUPLE=0
+CXX_TST_LIBS    = $(GTEST_LIB) $(CXX_LIB)
 
-TEST_DIR    	= $(TOP)/test
-TEST_SOURCES    = $(wildcard $(TEST_DIR)/*.cc)
-TEST_DEPS       = $(TEST_SOURCES:%.cc=%.dd)
-TEST_OBJS       = $(TEST_SOURCES:%.cc=%.o)
-TEST_BINS       = $(TEST_SOURCES:%.cc=%.exe)
-TEST_OKS        = $(TEST_SOURCES:%.cc=%.ok)
+# Sources and outputs
+CXX_SRCS        = $(wildcard $(CXX_SRCDIR)/*.cc) 
+CXX_DEPS        = $(CXX_SRCS:%.cc=%.dd)
+CXX_OBJS        = $(CXX_SRCS:%.cc=%.o)
+CXX_LIB	    	= $(CXX_LIBDIR)/libcron.a
+CXX_BIN_SRCS	= $(wildcard $(CXX_SRCDIR)/bin/*.cc)
+CXX_BINS        = $(CXX_BIN_SRCS:%.cc=%)
 
-TEST_CPPFLAGS   = $(CPPFLAGS) -I$(GTEST_INCDIR) -DGTEST_HAS_TR1_TUPLE=0
-TEST_LIBS       = $(GTEST_LIB) $(LIB)
+# Unit tests sources and outputs
+CXX_TST_SRCS    = $(wildcard $(CXX_TSTDIR)/*.cc)
+CXX_TST_DEPS    = $(CXX_TST_SRCS:%.cc=%.dd)
+CXX_TST_OBJS    = $(CXX_TST_SRCS:%.cc=%.o)
+CXX_TST_BINS    = $(CXX_TST_SRCS:%.cc=%.exe)
+CXX_TST_OKS     = $(CXX_TST_SRCS:%.cc=%.ok)
+
+#-------------------------------------------------------------------------------
+# Python configuration
 
 PYTHON	    	= python3
 PYTEST	    	= py.test
@@ -45,9 +64,9 @@ else ifeq ($(UNAME),Linux)
   PY_LDFLAGS   += -shared
 endif
 PY_LDLIBS	= 
-PY_SOURCES   	= $(wildcard python/fixfmt/*.cc)
-PY_DEPS	    	= $(PY_SOURCES:%.cc=%.dd)
-PY_OBJS	    	= $(PY_SOURCES:%.cc=%.o)
+PY_SRCS   	= $(wildcard python/fixfmt/*.cc)
+PY_DEPS	    	= $(PY_SRCS:%.cc=%.dd)
+PY_OBJS	    	= $(PY_SRCS:%.cc=%.o)
 PY_EXTMOD	= python/fixfmt/_ext.so
 
 TZCODE_DIST 	= $(TOP)/dist/tzcode2013c.tar.gz
@@ -57,7 +76,7 @@ SOLAR_DIST  	= $(TOP)/dist/solar.tar.gz
 #-------------------------------------------------------------------------------
 
 .PHONY: all
-all:			$(LIB) test
+all:			$(CXX_LIB) test
 
 .PHONY: test
 test:			test-cxx 
@@ -71,51 +90,51 @@ testclean:		testclean-cxx
 #-------------------------------------------------------------------------------
 # C++
 
-$(DEPS): \
+$(CXX_DEPS): \
 %.dd: 		%.cc
 	@echo "generating $@"; set -e; \
 	$(CXX) -MM $(CPPFLAGS) $< | sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' > $@
 
 .PHONY: clean-cxx
 clean-cxx:
-	rm -f $(OBJS) $(LIB) $(BINS) $(DEPS) $(OKS)
+	rm -f $(CXX_OBJS) $(CXX_LIB) $(CXX_BINS) $(CXX_DEPS) $(OKS)
 
 .PHONY: testclean
 testclean-cxx:
-	rm -f $(TEST_DEPS) $(TEST_OBJS) $(TEST_BINS) $(TEST_OKS)
+	rm -f $(CXX_TST_DEPS) $(CXX_TST_OBJS) $(CXX_TST_BINS) $(CXX_TST_OKS)
 
 .PHONY: test-cxx
-test-cxx: $(TEST_OKS)
+test-cxx: $(CXX_TST_OKS)
 
-$(LIB):			$(OBJS)
+$(CXX_LIB):		$(CXX_OBJS)
 	mkdir -p $(shell dirname $@)
 	ar -r $@ $^
 
-$(BINS): \
-src/bin/%:	   	src/bin/%.cc $(LIB)
+$(CXX_BINS): \
+src/bin/%:	   	src/bin/%.cc $(CXX_LIB)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $^ $(LDLIBS) -o $@
 
-$(TEST_DEPS): \
+$(CXX_TST_DEPS): \
 %.dd: 			%.cc
 	@echo "generating $@"; \
-	set -e; $(CXX) $(CPPFLAGS) -MM $(TEST_CPPFLAGS) $< | sed -E 's#([^ ]+:)#test/\1#g' > $@
+	set -e; $(CXX) $(CPPFLAGS) -MM $(CXX_TST_CPPFLAGS) $< | sed -E 's#([^ ]+:)#test/\1#g' > $@
 
-$(TEST_OBJS): \
+$(CXX_TST_OBJS): \
 %.o: 	    	    	%.cc
-	$(CXX) $(TEST_CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXX_TST_CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-$(TEST_BINS): \
-%.exe: 	    	    	%.o $(TEST_LIBS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $< $(TEST_LIBS) $(LDLIBS) -o $@
+$(CXX_TST_BINS): \
+%.exe: 	    	    	%.o $(CXX_TST_LIBS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $< $(CXX_TST_LIBS) $(LDLIBS) -o $@
 
-$(TEST_OKS): \
+$(CXX_TST_OKS): \
 %.ok:    	    	%.exe
 	@rm -f $@
 	@echo testing $(shell basename $<) && \
-	  cd test && $< && touch $@
+	  cd $(CXX_TSTDIR) && $< && touch $@
 
 # Use our zoneinfo directory for running tests.
-$(TEST_OKS): export ZONEINFO = $(TOP)/share/zoneinfo
+$(CXX_TST_OKS): export ZONEINFO = $(TOP)/share/zoneinfo
 
 #-------------------------------------------------------------------------------
 # Python
@@ -135,7 +154,7 @@ $(PY_OBJS): \
 %.o:			%.cc
 	$(CXX) $(PY_CPPFLAGS) $(PY_CXXFLAGS) -c $< -o $@
 
-$(PY_EXTMOD):		$(PY_OBJS) $(LIB)
+$(PY_EXTMOD):		$(PY_OBJS) $(CXX_LIB)
 	$(CXX) $(PY_LDFLAGS) $^ $(PY_LDLIBS) -o $@
 
 .PHONY: test-python
@@ -144,10 +163,11 @@ test-python: 		$(PY_EXTMOD)
 
 .PHONY: testclean-python
 testclean-python:
+	:
 
 # For compatibility and testing.
 .PHONY: python-setuptools
-python-setuptools:	$(LIB)
+python-setuptools:	$(CXX_LIB)
 	cd python; $(PYTHON) setup.py build_ext --inplace
 
 #-------------------------------------------------------------------------------
@@ -155,12 +175,12 @@ python-setuptools:	$(LIB)
 
 .PHONY: zoneinfo
 zoneinfo:
-	mkdir -p $(TOP)/share
-	tar jxf $(TOP)/dist/zoneinfo-2016a.tar.bz2 -C $(TOP)/share
+	mkdir -p $(SHRDIR)
+	tar jxf $(EXTDIR)/zoneinfo/zoneinfo-2016a.tar.bz2 -C $(SHRDIR)
 
 #-------------------------------------------------------------------------------
 
-include $(DEPS) 
-include $(TEST_DEPS) 
+include $(CXX_DEPS) 
+include $(CXX_TST_DEPS) 
 include $(PY_DEPS)
 

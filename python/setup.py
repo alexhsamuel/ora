@@ -7,7 +7,7 @@ if sys.platform == "darwin":
     # No C++14 when building for earlier OSX versions.
     os.environ["MACOSX_DEPLOYMENT_TARGET"] = "10.9"
 
-include_dirs = ["../include", ]
+include_dirs = ["../c++/include", ]
 
 #-------------------------------------------------------------------------------
 
@@ -37,9 +37,9 @@ setup(
             ],
             include_dirs      =include_dirs,
             sources           =glob("cron/*.cc"),
-            library_dirs      =["../lib",],
+            library_dirs      =["../c++/lib",],
             libraries         =["cron",],
-            depends           =glob("cron/*.hh") + glob("../include/*.hh"),
+            depends           =glob("cron/*.hh") + glob("../c++/include/*.hh"),
         ),
 
   ]
