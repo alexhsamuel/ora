@@ -58,7 +58,7 @@ ifeq ($(UNAME),Darwin)
 else ifeq ($(UNAME),Linux)
   PY_LDFLAGS   += -shared
 endif
-PY_LDLIBS	= -lpython3.5m
+PY_LDLIBS	= 
 
 # Compiler and linker for numpy
 NPY_INCDIRS 	= $(shell $(PYTHON) -c 'from numpy.distutils.misc_util import get_numpy_include_dirs as g; print(" ".join(g()));')
@@ -107,11 +107,11 @@ $(CXX_DEPS): \
 
 .PHONY: clean-cxx
 clean-cxx:
-	rm -f $(CXX_OBJS) $(CXX_LIB) $(CXX_BINS) $(CXX_DEPS) $(OKS)
+	rm -f $(CXX_OBJS) $(CXX_LIB) $(CXX_BINS) $(OKS)
 
 .PHONY: testclean
 testclean-cxx:
-	rm -f $(CXX_TST_DEPS) $(CXX_TST_OBJS) $(CXX_TST_BINS) $(CXX_TST_OKS)
+	rm -f $(CXX_TST_OBJS) $(CXX_TST_BINS) $(CXX_TST_OKS)
 
 .PHONY: test-cxx
 test-cxx: $(CXX_TST_OKS)
@@ -162,7 +162,7 @@ python:			$(PY_DEPS) $(PY_EXTMOD)
 
 .PHONY: clean-python
 clean-python:
-	rm -rf $(PY_DEPS) $(PY_OBJS) $(PY_EXTMOD)
+	rm -rf $(PY_OBJS) $(PY_EXTMOD)
 
 $(PY_DEPS): \
 %.dd: 		    	%.cc
