@@ -134,12 +134,12 @@ TEST(Date, weekday) {
 
 TEST(Date, conversions) {
   Date const date0 = 1973/DEC/ 3;
-  EXPECT_EQ(SmallDate::from_ymd(1973, 11, 2), SmallDate(date0));
+  EXPECT_EQ(Date16::from_ymd(1973, 11, 2), Date16(date0));
 
-  EXPECT_TRUE(SmallDate(Date::INVALID).is(SmallDate::INVALID));
-  EXPECT_TRUE(SmallDate(Date::MISSING).is(SmallDate::MISSING));
-  EXPECT_TRUE(Date(SmallDate::INVALID).is(Date::INVALID));
-  EXPECT_TRUE(Date(SmallDate::MISSING).is(Date::MISSING));
+  EXPECT_TRUE(Date16(Date::INVALID).is(Date16::INVALID));
+  EXPECT_TRUE(Date16(Date::MISSING).is(Date16::MISSING));
+  EXPECT_TRUE(Date(Date16::INVALID).is(Date::INVALID));
+  EXPECT_TRUE(Date(Date16::MISSING).is(Date::MISSING));
 }
 
 TEST(Date, ostream) {
@@ -173,38 +173,38 @@ TEST(Date, to_string) {
 }
 
 //------------------------------------------------------------------------------
-// Class SmallDate
+// Class Date16
 //------------------------------------------------------------------------------
 
-TEST(SmallDate, default_ctor) {
-  SmallDate const date;
+TEST(Date16, default_ctor) {
+  Date16 const date;
   EXPECT_TRUE(date.is_invalid());
 }
 
-TEST(SmallDate, range) {
-  EXPECT_EQ(     0u, SmallDate::MIN.get_offset());
-  EXPECT_EQ(719162u, SmallDate::MIN.get_datenum());
+TEST(Date16, range) {
+  EXPECT_EQ(     0u, Date16::MIN.get_offset());
+  EXPECT_EQ(719162u, Date16::MIN.get_datenum());
 
-  EXPECT_EQ(SmallDate::from_ymd(1970, 0, 0), SmallDate::MIN);
-  EXPECT_EQ("1970-01-01", (string) DateFormat::ISO_CALENDAR_EXTENDED(SmallDate::MIN));
-  EXPECT_EQ(SmallDate::from_ymd(2149, 5, 3), SmallDate::MAX);
-  EXPECT_EQ("2149-06-04", (string) DateFormat::ISO_CALENDAR_EXTENDED(SmallDate::MAX));
+  EXPECT_EQ(Date16::from_ymd(1970, 0, 0), Date16::MIN);
+  EXPECT_EQ("1970-01-01", (string) DateFormat::ISO_CALENDAR_EXTENDED(Date16::MIN));
+  EXPECT_EQ(Date16::from_ymd(2149, 5, 3), Date16::MAX);
+  EXPECT_EQ("2149-06-04", (string) DateFormat::ISO_CALENDAR_EXTENDED(Date16::MAX));
 }
 
-TEST(SmallDate, is_valid) {
-  EXPECT_TRUE (SmallDate::MIN.is_valid());
-  EXPECT_TRUE (SmallDate::MAX.is_valid());
-  EXPECT_FALSE(SmallDate::MISSING.is_valid());
-  EXPECT_FALSE(SmallDate::INVALID.is_valid());
-  EXPECT_TRUE (SmallDate::from_ymd(1970,  0, 0).is_valid());
-  EXPECT_TRUE (SmallDate::from_ymd(1970,  0, 1).is_valid());
-  EXPECT_TRUE (SmallDate::from_ymd(1973, 11, 2).is_valid());
+TEST(Date16, is_valid) {
+  EXPECT_TRUE (Date16::MIN.is_valid());
+  EXPECT_TRUE (Date16::MAX.is_valid());
+  EXPECT_FALSE(Date16::MISSING.is_valid());
+  EXPECT_FALSE(Date16::INVALID.is_valid());
+  EXPECT_TRUE (Date16::from_ymd(1970,  0, 0).is_valid());
+  EXPECT_TRUE (Date16::from_ymd(1970,  0, 1).is_valid());
+  EXPECT_TRUE (Date16::from_ymd(1973, 11, 2).is_valid());
 }
 
-TEST(SmallDate, from_ymd) {
-  SmallDate const date0 = SmallDate::from_ymd(1970, 0, 0);
+TEST(Date16, from_ymd) {
+  Date16 const date0 = Date16::from_ymd(1970, 0, 0);
   EXPECT_EQ(0, date0.get_offset());
-  EXPECT_EQ(SmallDate(1970/JAN/ 1), date0);
+  EXPECT_EQ(Date16(1970/JAN/ 1), date0);
   EXPECT_TRUE(date0.is(1970/JAN/ 1));
   EXPECT_TRUE(date0.is({1970/JAN/ 1}));
   DateParts const parts0 = date0.get_parts();
@@ -212,7 +212,7 @@ TEST(SmallDate, from_ymd) {
   EXPECT_EQ(0,      parts0.month);
   EXPECT_EQ(0,      parts0.day);
 
-  SmallDate const date1 = SmallDate::from_ymd(1973, 11, 2);
+  Date16 const date1 = Date16::from_ymd(1973, 11, 2);
   DateParts const parts1 = date1.get_parts();
   EXPECT_EQ(1973,   parts1.year);
   EXPECT_EQ(11,     parts1.month);

@@ -8,7 +8,7 @@
 2016-03-15
 ```
 
-The `SmallDate` class is similar, but uses a 16-bit integer internally, and therefore has a narrower range of dates it can represent.
+The `Date16` class is similar, but uses a 16-bit integer internally, and therefore has a narrower range of dates it can represent.
 
 ### Date parts
 
@@ -71,7 +71,7 @@ The `Date` constructor makes an effort to convert reasonable date representation
 For example,
 
 ```py
->>> Date(SmallDate(2016, Mar, 15))
+>>> Date(Date16(2016, Mar, 15))
 Date(2016, Mar, 15)
 >>> Date(datetime.date(2016, 3, 15))
 Date(2016, Mar, 15)
@@ -92,7 +92,7 @@ Each date class provides `MIN` and `MAX` attributes, giving the earliest and lat
 ```py
 >>> print(Date.MIN, Date.MAX)
 0001-01-01 9999-12-31
->>> print(SmallDate.MIN, SmallDate.MAX)
+>>> print(Date16.MIN, Date16.MAX)
 1970-01-01 2149-06-04
 ```
 

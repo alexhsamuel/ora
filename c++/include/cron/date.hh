@@ -90,7 +90,7 @@ offset_to_datenum(
  *   raising an exception.
  * - Offset values used to represent `INVALID` and `MISSING` date values.
  *
- * For example, the <SmallDate> class, instantiated with the <SmallDateTraits>
+ * For example, the <Date16> class, instantiated with the <Date16Traits>
  * traits class, uses an unsigned 16-bit integer to store date offsets from
  * 1970-01-01, with a maximum date of 2149-06-04.
  */
@@ -380,7 +380,7 @@ struct DateTraits
 
 using Date = DateTemplate<DateTraits>;
 
-struct SmallDateTraits
+struct Date16Traits
 {
   using Offset = uint16_t;
 
@@ -392,7 +392,7 @@ struct SmallDateTraits
   static Offset  constexpr invalid  = std::numeric_limits<Offset>::max();
 };
 
-using SmallDate = DateTemplate<SmallDateTraits>;
+using Date16 = DateTemplate<Date16Traits>;
 
 //------------------------------------------------------------------------------
 // Functions.

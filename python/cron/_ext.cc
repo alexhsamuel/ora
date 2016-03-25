@@ -51,7 +51,7 @@ PyInit__ext(void)
 
   try {
     aslib::PyDate<cron::Date>            ::add_to(module, "Date");
-    aslib::PyDate<cron::SmallDate>       ::add_to(module, "SmallDate");
+    aslib::PyDate<cron::Date16>          ::add_to(module, "Date16");
 
     aslib::PyDaytime<cron::Daytime>      ::add_to(module, "Daytime");
     aslib::PyDaytime<cron::SmallDaytime> ::add_to(module, "SmallDaytime");

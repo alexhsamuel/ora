@@ -6,6 +6,7 @@ from   ._ext import *
 
 __all__ = (
     "Date",
+    "Date16",
     "DateParts",
     "Daytime",
     "DT",
@@ -13,7 +14,6 @@ __all__ = (
     "Month",
     "MonthOfYear",
     "NsecTime",
-    "SmallDate",
     "SmallDaytime",
     "SmallTime",
     "Time",
