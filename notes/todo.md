@@ -1,6 +1,5 @@
 # Work List
 
-1. Port Python make rules from fixfmt.
 1. Move `cron/math.hh` up one level.
 1. Take namespace `cron` out of `alxs` namespace.
 1. Rename `InvalidDateError` -> `BadDateError` _et fils_.
@@ -24,7 +23,6 @@
 
 # Python API
 
-- Stop using setuptools; port make rules from fixfmt.
 - Rename `DayInterval` to `DayDuration`.
 - Make `first` a keyword-only argument everywhere.
 
