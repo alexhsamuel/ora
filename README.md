@@ -34,7 +34,7 @@ Also, cron is not yet finished.
 To run tests, build Google's gtest (one time only):
 
 ```sh
-cd test/gtest
+cd external/gtest
 make gtest_main.a
 ```
 
