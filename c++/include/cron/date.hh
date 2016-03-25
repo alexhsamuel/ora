@@ -21,6 +21,8 @@ using namespace aslib;
 // Helper functions
 //------------------------------------------------------------------------------
 
+// FIXME: These should be members.
+
 template<class TRAITS>
 inline bool
 offset_is_valid(
@@ -45,12 +47,6 @@ valid_offset(
 }
 
 
-/*
- * Converts `datenum` to an offset if it is valid and in range.
- *
- * If `datenum` is not valid or the resulting offset is out of range, returns
- * the invalid offset.
- */
 template<class TRAITS>
 inline typename TRAITS::Offset
 datenum_to_offset(
@@ -101,6 +97,8 @@ public:
 
   using Offset = typename TRAITS::Offset;
 
+  static Offset constexpr DENOMINATOR = TRAITS::denominator;
+
   // These are declared const here but defined constexpr to work around a clang
   // bug.  http://stackoverflow.com/questions/11928089/static-constexpr-member-of-same-type-as-class-being-defined
   static DateTemplate const MIN;
@@ -108,7 +106,7 @@ public:
   static DateTemplate const MISSING;
   static DateTemplate const INVALID;
 
-  // Constructors.
+  // Constructors
 
   /*
    * Default constructor: an invalid date.
@@ -146,7 +144,7 @@ public:
   {
   }
 
-  // Assignment operators.
+  // Assignment operators
 
   /*
    * Copy assignment.
@@ -291,7 +289,7 @@ public:
       throw InvalidDateError();
   }
 
-  // Accessors.
+  // Accessors
 
   bool      is_valid()      const { return offset_is_valid<TRAITS>(offset_); }
   bool      is_invalid()    const { return offset_ == TRAITS::invalid; }
