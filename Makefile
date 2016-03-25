@@ -140,7 +140,6 @@ $(CXX_TST_BINS): \
 $(CXX_TST_OKS): \
 %.ok:    	    	%.exe
 	@rm -f $@
-	@echo ZONEINFO=$$ZONEINFO
 	@echo testing $(shell basename $<) \
 	&& (cd $(CXX_TSTDIR) && ./$(shell basename $<)) \
 	&& touch $@
