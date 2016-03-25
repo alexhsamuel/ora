@@ -14,10 +14,10 @@ namespace cron {
  *
  * Returns an invalid date if the offset is not valid.
  */
-template<typename DATE>
+template<class DATE>
 inline DATE
 from_offset(
-  typename DATE::Offset const offset)
+  class DATE::Offset const offset)
 {
   return 
       offset_is_valid<DATE::TRAITS>(offset)
@@ -26,7 +26,7 @@ from_offset(
 }
 
 
-template<typename DATE>
+template<class DATE>
 inline DATE
 from_datenum(
   Datenum const datenum)
@@ -35,7 +35,7 @@ from_datenum(
 }
 
 
-template<typename DATE>
+template<class DATE>
 inline DATE
 from_ordinal_date(
   Year const year,
@@ -45,7 +45,7 @@ from_ordinal_date(
 }
 
 
-template<typename DATE>
+template<class DATE>
 inline DATE
 from_ymd(
   Year const year,
@@ -56,7 +56,7 @@ from_ymd(
 }
 
 
-template<typename DATE>
+template<class DATE>
 inline DATE
 from_week_date(
   Year const week_year,
@@ -75,7 +75,7 @@ from_week_date(
 // Arithmetic
 //------------------------------------------------------------------------------
 
-template<typename DATE>
+template<class DATE>
 inline DATE
 add(
   DATE const date,
@@ -88,7 +88,7 @@ add(
 }  
 
 
-template<typename DATE>
+template<class DATE>
 inline DATE
 subtract(
   DATE const date,
@@ -98,7 +98,7 @@ subtract(
 }  
 
 
-template<typename DATE>
+template<class DATE>
 inline int
 subtract(
   DATE const date0,
