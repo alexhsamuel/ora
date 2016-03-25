@@ -1,9 +1,10 @@
 #pragma once
 
 #include <cstring>
+#include <sstream>
 #include <string>
 
-namespace alxs {
+namespace aslib {
 
 //------------------------------------------------------------------------------
 // Types
@@ -84,5 +85,6 @@ split1(
 
 //------------------------------------------------------------------------------
 
-}  // namespace alxs
+}  // namespace aslib
+
 

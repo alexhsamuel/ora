@@ -1,5 +1,4 @@
-#ifndef __FILENAME_HH__
-#define __FILENAME_HH__
+#pragma once
 
 #include <cassert>
 #include <climits>
@@ -15,7 +14,7 @@
 #include "exc.hh"
 #include "xsys.hh"
 
-namespace alxs {
+namespace aslib {
 namespace fs {
 
 //------------------------------------------------------------------------------
@@ -239,7 +238,5 @@ extern bool check(Filename const& filename, AccessMode mode=EXISTS, FileType typ
 //------------------------------------------------------------------------------
 
 }  // namespace fs
-}  // namespace alxs
-
-#endif  // #ifndef __FILENAME_HH__
+}  // namespace aslib
 

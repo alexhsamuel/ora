@@ -3,8 +3,8 @@
 #include "cron/time_interval.hh"
 #include "gtest/gtest.h"
 
-using namespace alxs;
-using namespace alxs::cron;
+using namespace aslib;
+using namespace cron;
 
 //------------------------------------------------------------------------------
 // Class TimeInterval

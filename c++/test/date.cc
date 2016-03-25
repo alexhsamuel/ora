@@ -5,9 +5,9 @@
 #include "cron/format.hh"
 #include "gtest/gtest.h"
 
-using namespace alxs;
-using namespace alxs::cron;
-using namespace alxs::cron::ez;
+using namespace aslib;
+using namespace cron;
+using namespace cron::ez;
 
 using std::string;
 
@@ -223,7 +223,6 @@ TEST(SmallDate, from_ymd) {
 // Easy literals.
 
 TEST(MonthLiteral, basic) {
-  using namespace alxs::cron::ez;
   EXPECT_EQ(Date::from_ymd(1973, 0, 2), 1973/JAN/3);
 }
 

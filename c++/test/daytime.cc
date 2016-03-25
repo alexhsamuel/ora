@@ -4,8 +4,8 @@
 #include "cron/daytime.hh"
 #include "cron/format.hh"
 
-using namespace alxs;
-using namespace alxs::cron;
+using namespace aslib;
+using namespace cron;
 
 using std::string;
 

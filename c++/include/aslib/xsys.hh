@@ -1,5 +1,4 @@
-#ifndef __XSYS_HH__
-#define __XSYS_HH__
+#pragma once
 
 #include <cassert>
 #include <fcntl.h>
@@ -10,7 +9,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include "exc.hh"
+#include "aslib/exc.hh"
 
 //------------------------------------------------------------------------------
 
@@ -46,7 +45,7 @@ inline void xclose(int fd)
 {
   int const rval = close(fd);
   if (rval == -1)
-    throw alxs::SystemError("close");
+    throw aslib::SystemError("close");
   assert(rval == 0);
 }
 
@@ -55,7 +54,7 @@ inline int xdup(int fd)
 {
   int const dup_fd = dup(fd);
   if (dup_fd == -1)
-    throw alxs::SystemError("dup");
+    throw aslib::SystemError("dup");
   return dup_fd;
 }
 
@@ -64,7 +63,7 @@ inline int xdup2(int old_fd, int new_fd)
 {
   int const fd = dup2(old_fd, new_fd);
   if (fd != new_fd)
-    throw alxs::SystemError("dup2");
+    throw aslib::SystemError("dup2");
   return fd;
 }
 
@@ -73,7 +72,7 @@ inline void xexecv(char const* filename, char* const argv[])
 {
   int const rval = execv(filename, argv);
   assert(rval == -1);
-  throw alxs::SystemError("execv");
+  throw aslib::SystemError("execv");
 }
 
 
@@ -81,7 +80,7 @@ inline void xexecve(char const* filename, char* const argv[], char* const envp[]
 {
   int const rval = execve(filename, argv, envp);
   assert(rval == -1);
-  throw alxs::SystemError("execve");
+  throw aslib::SystemError("execve");
 }
 
 
@@ -89,7 +88,7 @@ inline pid_t xfork()
 {
   pid_t const pid = fork();
   if (pid == -1)
-    throw alxs::SystemError("fork");
+    throw aslib::SystemError("fork");
   return pid;
 }
 
@@ -98,7 +97,7 @@ inline void xfstat(int fd, struct stat* buf)
 {
   int const rval = fstat(fd, buf);
   if (rval == -1)
-    throw alxs::SystemError("fstat");
+    throw aslib::SystemError("fstat");
   assert(rval == 0);
 }
 
@@ -107,7 +106,7 @@ inline char* xgetcwd(char* buf, size_t size)
 {
   char* const cwd = getcwd(buf, size);
   if (cwd == NULL)
-    throw alxs::SystemError("getcwd");
+    throw aslib::SystemError("getcwd");
   assert(cwd == buf);
   return cwd;
 }
@@ -118,7 +117,7 @@ inline void xgettimeofday(struct timeval* tv, struct timezone* tz=nullptr)
   int const rval = gettimeofday(tv, tz);
   if (rval != 0) {
     assert(rval == -1);
-    throw alxs::SystemError("gettimeofday");
+    throw aslib::SystemError("gettimeofday");
   }
 }
 
@@ -127,7 +126,7 @@ inline off_t xlseek(int fd, off_t offset, int whence)
 {
   off_t const off = lseek(fd, offset, whence);
   if (off == -1)
-    throw alxs::SystemError("lseek");
+    throw aslib::SystemError("lseek");
   return off;
 }
 
@@ -138,7 +137,7 @@ inline void xlstat(
 {
   int const rval = lstat(path, buf);
   if (rval == -1)
-    throw alxs::SystemError("lstat");
+    throw aslib::SystemError("lstat");
   assert(rval == 0);
 }
 
@@ -147,7 +146,7 @@ inline int xmkstemp(char* name_template)
 {
   int const fd = mkstemp(name_template);
   if (fd == -1)
-    throw alxs::SystemError("mkstemp");
+    throw aslib::SystemError("mkstemp");
   assert(fd >= 0);
   return fd;
 }
@@ -157,7 +156,7 @@ inline int xopen(const char* pathname, int flags, mode_t mode=0666)
 {
   int const fd = open(pathname, flags, mode);
   if (fd == -1)
-    throw alxs::SystemError("open");
+    throw aslib::SystemError("open");
   return fd;
 }
 
@@ -167,7 +166,7 @@ inline size_t xread(int fd, void* buf, size_t count)
   ssize_t const rval = read(fd, buf, count);
   if (rval == -1)
     // FIXME: Handel EINTR here?
-    throw alxs::SystemError("read");
+    throw aslib::SystemError("read");
   return (size_t) rval;
 }
 
@@ -176,7 +175,7 @@ inline char* xrealpath(char const* path, char* resolved_path)
 {
   char* const new_path = realpath(path, resolved_path);
   if (new_path == NULL)
-    throw alxs::SystemError("realpath");
+    throw aslib::SystemError("realpath");
   assert(resolved_path == NULL || new_path == resolved_path);
   return new_path;
 }
@@ -188,7 +187,7 @@ inline void xstat(
 {
   int const rval = stat(path, buf);
   if (rval == -1)
-    throw alxs::SystemError("stat");
+    throw aslib::SystemError("stat");
   assert(rval == 0);
 }
 
@@ -197,7 +196,7 @@ inline void xunlink(char const* pathname)
 {
   int const rval = unlink(pathname);
   if (rval == -1)
-    throw alxs::SystemError("unlink");
+    throw aslib::SystemError("unlink");
   assert(rval == 0);
 }
 
@@ -211,7 +210,7 @@ xwait4(
 {
   pid_t const rval = wait4(pid, status, options, usage);
   if (rval == -1)
-    throw alxs::SystemError("wait4");
+    throw aslib::SystemError("wait4");
   if (pid > 0)
     assert(rval == pid);
   return rval;
@@ -227,11 +226,11 @@ xwaitid(
 {
   int const rval = waitid(idtype, id, infop, options);
   if (rval != 0)
-    throw alxs::SystemError("waitid");
+    throw aslib::SystemError("waitid");
 }
 
 
 //------------------------------------------------------------------------------
 
-#endif  // #ifndef __XSYS_HH__
+
 

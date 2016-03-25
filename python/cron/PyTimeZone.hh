@@ -7,7 +7,7 @@
 #include "cron/time_zone.hh"
 #include "py.hh"
 
-namespace alxs {
+namespace aslib {
 
 using namespace py;
 
@@ -135,5 +135,5 @@ PyTimeZone::Check(
 
 //------------------------------------------------------------------------------
 
-}  // namespace alxs
+}  // namespace aslib
 

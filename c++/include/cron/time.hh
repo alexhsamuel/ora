@@ -7,18 +7,20 @@
 #ifdef __MACH__
 #include <mach/clock.h>
 #include <mach/mach.h>
+// I don't f***ing believe it.
 #undef TRUE
 #undef FALSE
 #endif
 
+#include "aslib/exc.hh"
+#include "aslib/printable.hh"
 #include "cron/date.hh"
 #include "cron/daytime.hh"
 #include "cron/time_zone.hh"
-#include "exc.hh"
-#include "printable.hh"
 
-namespace alxs {
 namespace cron {
+
+using namespace aslib;
 
 //------------------------------------------------------------------------------
 // Local time structs
@@ -666,5 +668,5 @@ to_local(
 //------------------------------------------------------------------------------
 
 }  // namespace cron
-}  // namespace alxs
+
 

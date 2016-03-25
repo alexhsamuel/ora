@@ -5,12 +5,13 @@
 #include <string>
 #include <vector>
 
-#include "filename.hh"
+#include "aslib/filename.hh"
+
+namespace cron {
+
+using namespace aslib;
 
 //------------------------------------------------------------------------------
-
-namespace alxs {
-namespace cron {
 
 class TzFile
 {
@@ -63,5 +64,5 @@ public:
 //------------------------------------------------------------------------------
 
 }  // namespace cron
-}  // namespace alxs
+
 

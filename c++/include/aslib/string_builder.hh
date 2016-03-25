@@ -1,9 +1,10 @@
 #pragma once
 
 #include <cassert>
+#include <cstring>
 #include <string>
 
-namespace alxs {
+namespace aslib {
 
 //------------------------------------------------------------------------------
 
@@ -124,5 +125,5 @@ private:
 
 //------------------------------------------------------------------------------
 
-}  // namespace alxs
+}  // namespace aslib
 

@@ -1,9 +1,8 @@
 #pragma once
 
-#include "cron/math.hh"
+#include "aslib/math.hh"
 #include "cron/types.hh"
 
-namespace alxs {
 namespace cron {
 
 //------------------------------------------------------------------------------
@@ -115,6 +114,5 @@ subtract(
 //------------------------------------------------------------------------------
 
 }  // namespace cron
-}  // namespace alxs
 
 

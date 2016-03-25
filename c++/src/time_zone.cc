@@ -5,17 +5,18 @@
 #include <map>
 #include <memory>
 
+#include "aslib/file.hh"
+#include "aslib/filename.hh"
 #include "cron/time_zone.hh"
 #include "cron/tzfile.hh"
-#include "file.hh"
-#include "filename.hh"
+
+namespace cron {
+
+using namespace aslib;
 
 using std::make_shared;
 using std::shared_ptr;
 using std::string;
-
-namespace alxs {
-namespace cron {
 
 //------------------------------------------------------------------------------
 // Local data
@@ -376,5 +377,5 @@ set_display_time_zone(
 //------------------------------------------------------------------------------
 
 }  // namespace cron
-}  // namespace alxs
+
 

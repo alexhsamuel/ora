@@ -1,14 +1,14 @@
 #include <algorithm>
 #include <Python.h>
 
-#include "mem.hh"
+#include "aslib/mem.hh"
 #include "py.hh"
 #include "numpy.hh"
 #include "PyDate.hh"
 
 // FIXME: Check GIL flags.
 
-namespace alxs {
+namespace aslib {
 
 using namespace py;
 using namespace py::np;
@@ -252,6 +252,6 @@ DateDtype<PYDATE>::descr_
 
 //------------------------------------------------------------------------------
 
-}  // namespace alxs
+}  // namespace aslib
 
 

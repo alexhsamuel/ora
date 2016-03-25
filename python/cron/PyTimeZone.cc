@@ -5,7 +5,7 @@
 #include "PyTime.hh"
 #include "PyTimeZone.hh"
 
-namespace alxs {
+namespace aslib {
 
 using std::string;
 using namespace std::literals;
@@ -73,7 +73,7 @@ maybe_time_zone(
     try {
       return cron::get_time_zone(tz_name);
     }
-    catch (alxs::ValueError) {
+    catch (aslib::ValueError) {
       throw py::ValueError(string("not a time zone: ") + tz_name);
     }
   }
@@ -100,7 +100,7 @@ convert_to_time_zone(
     try {
       return cron::get_time_zone(tz_name);
     }
-    catch (alxs::ValueError) {
+    catch (aslib::ValueError) {
       throw py::ValueError(string("not a time zone: ") + tz_name);
     }
   }
@@ -478,6 +478,6 @@ PyTimeZone::build_type(
 
 //------------------------------------------------------------------------------
 
-}  // namespace alxs
+}  // namespace aslib
 
 

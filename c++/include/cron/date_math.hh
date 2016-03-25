@@ -8,12 +8,13 @@
 
 #pragma once
 
-#include "cron/math.hh"
+#include "aslib/exc.hh"
+#include "aslib/math.hh"
 #include "cron/types.hh"
-#include "exc.hh"
 
-namespace alxs {
 namespace cron {
+
+using namespace aslib;
 
 //------------------------------------------------------------------------------
 // Declarations
@@ -315,7 +316,6 @@ datenum_to_ymdi(
 
 //------------------------------------------------------------------------------
 
-}  // namespace alxs
 }  // namespace cron
 
 

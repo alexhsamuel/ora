@@ -12,7 +12,7 @@
 
 //------------------------------------------------------------------------------
 
-using namespace alxs;
+using namespace aslib;
 using namespace py;
 
 namespace {

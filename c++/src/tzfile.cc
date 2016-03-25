@@ -6,19 +6,20 @@
 #define be64toh __builtin_bswap64
 #endif
 
-
 #include <iomanip>
 #include <iostream>
 
+#include "aslib/exc.hh"
+#include "aslib/file.hh"
+#include "aslib/filename.hh"
 #include "cron/tzfile.hh"
-#include "exc.hh"
-#include "file.hh"
-#include "filename.hh"
 
-using alxs::FormatError;
-using std::string;
+//------------------------------------------------------------------------------
 
 namespace {
+
+using aslib::FormatError;
+using std::string;
 
 class Scanner
 {
@@ -105,8 +106,10 @@ check_header(
 
 //------------------------------------------------------------------------------
 
-namespace alxs {
 namespace cron {
+
+using namespace aslib;
+
 
 TzFile
 TzFile::load(
@@ -255,6 +258,8 @@ operator<<(
 }
 
 
+//------------------------------------------------------------------------------
+
 }  // namespace cron
-}  // namespace alxs
+
 

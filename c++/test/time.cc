@@ -3,9 +3,9 @@
 #include "cron/time.hh"
 #include "gtest/gtest.h"
 
-using namespace alxs;
-using namespace alxs::cron;
-using namespace alxs::cron::ez;
+using namespace aslib;
+using namespace cron;
+using namespace cron::ez;
 
 //------------------------------------------------------------------------------
 // Class Time

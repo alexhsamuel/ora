@@ -6,10 +6,10 @@
 #include <numpy/ufuncobject.h>
 #include <numpy/npy_3kcompat.h>
 
-#include "mem.hh"
+#include "aslib/mem.hh"
 #include "py.hh"
 
-using namespace alxs;
+using namespace aslib;
 
 namespace py {
 namespace np {

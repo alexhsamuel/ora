@@ -9,7 +9,7 @@
 
 using namespace py;
 
-namespace alxs {
+namespace aslib {
 
 //------------------------------------------------------------------------------
 // Declarations
@@ -85,6 +85,6 @@ to_daytick(
 
 //------------------------------------------------------------------------------
 
-}  // namespace alxs
+}  // namespace aslib
 
 

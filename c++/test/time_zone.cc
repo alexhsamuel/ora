@@ -2,8 +2,8 @@
 #include "cron/time_zone.hh"
 #include "gtest/gtest.h"
 
-using namespace alxs;
-using namespace alxs::cron;
+using namespace aslib;
+using namespace cron;
 
 //------------------------------------------------------------------------------
 // Class TimeZone.

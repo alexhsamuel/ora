@@ -6,7 +6,6 @@
 
 #include "cron/types.hh"
 
-namespace alxs {
 namespace cron {
 
 //------------------------------------------------------------------------------
@@ -336,5 +335,5 @@ using SmallDaytime = DaytimeTemplate<SmallDaytimeTraits>;
 //------------------------------------------------------------------------------
 
 }  // namespace cron
-}  // namespace alxs
+
 

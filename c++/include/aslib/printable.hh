@@ -6,7 +6,7 @@
 
 // FIXME: Get rid of this whole module.
 
-namespace alxs {
+namespace aslib {
 
 //------------------------------------------------------------------------------
 
@@ -115,5 +115,5 @@ operator<<(
 
 //------------------------------------------------------------------------------
 
-}  // namespace alxs
+}  // namespace aslib
 

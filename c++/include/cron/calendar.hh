@@ -6,11 +6,12 @@
 #include <string>
 #include <vector>
 
+#include "aslib/filename.hh"
 #include "cron/date.hh"
-#include "filename.hh"
 
-namespace alxs {
 namespace cron {
+
+using namespace aslib;
 
 //------------------------------------------------------------------------------
 // Declarations
@@ -419,6 +420,5 @@ operator-(
 
 //------------------------------------------------------------------------------
 
-}  // namespace alxs
 }  // namespace cron
 

@@ -3,11 +3,12 @@
 #include <string>
 #include <vector>
 
+#include "aslib/string.hh"
 #include "cron/calendar.hh"
-#include "string.hh"
 
-namespace alxs {
 namespace cron {
+
+using namespace aslib;
 
 //------------------------------------------------------------------------------
 // Helper functions.
@@ -99,5 +100,5 @@ load_holiday_calendar(
 //------------------------------------------------------------------------------
 
 }  // namespace cron
-}  // namespace alxs
+
 

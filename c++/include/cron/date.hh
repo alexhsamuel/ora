@@ -8,13 +8,14 @@
 #include <limits>
 #include <string>
 
+#include "aslib/exc.hh"
+#include "aslib/math.hh"
 #include "cron/date_math.hh"
-#include "cron/math.hh"
 #include "cron/types.hh"
-#include "exc.hh"
 
-namespace alxs {
 namespace cron {
+
+using namespace aslib;
 
 //------------------------------------------------------------------------------
 // Helper functions
@@ -455,6 +456,5 @@ template<class TRAITS> DateTemplate<TRAITS> operator--(DateTemplate<TRAITS>& dat
 //------------------------------------------------------------------------------
 
 }  // namespace cron
-}  // namespace alxs
 
 

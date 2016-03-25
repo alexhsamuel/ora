@@ -1,12 +1,11 @@
-#ifndef __EXC_HH__
-#define __EXC_HH__
+#pragma once
 
 #include <cstring>
 #include <errno.h>
 #include <sstream>
 #include <string>
 
-namespace alxs {
+namespace aslib {
 
 //------------------------------------------------------------------------------
 
@@ -170,7 +169,6 @@ public:
 
 //------------------------------------------------------------------------------
 
-}  // namespace alxs
+}  // namespace aslib
 
-#endif  // #ifndef __EXC_HH__
 

@@ -3,7 +3,6 @@
 #include "cron/date.hh"
 #include "cron/types.hh"
 
-namespace alxs {
 namespace cron {
 
 //------------------------------------------------------------------------------
@@ -159,5 +158,5 @@ MonthInterval constexpr YEAR    = MonthInterval(12);
 //------------------------------------------------------------------------------
 
 }  // namespace cron
-}  // namespace alxs
+
 

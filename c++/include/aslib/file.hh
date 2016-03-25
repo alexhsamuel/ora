@@ -1,11 +1,8 @@
-#ifndef __FILE_HH__
-#define __FILE_HH__
-
 #include <string>
 
 #include "filename.hh"
 
-namespace alxs {
+namespace aslib {
 namespace fs {
 
 //------------------------------------------------------------------------------
@@ -20,7 +17,5 @@ extern std::string load_text_for_arg(std::string const& arg);
 //------------------------------------------------------------------------------
 
 }  // namespace fs
-}  // namespace alxs
-
-#endif  // #ifndef __FILE_HH__
+}  // namespace aslib
 

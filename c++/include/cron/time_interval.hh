@@ -1,10 +1,9 @@
 #pragma once
 
+#include "cron/daytime.hh"
+#include "cron/time.hh"
 #include "cron/types.hh"
-#include "daytime.hh"
-#include "time.hh"
 
-namespace alxs {
 namespace cron {
 
 //------------------------------------------------------------------------------
@@ -94,5 +93,5 @@ TimeInterval constexpr HOUR         = TimeInterval((double) SECS_PER_HOUR);
 //------------------------------------------------------------------------------
 
 }  // namespace cron
-}  // namespace alxs
+
 

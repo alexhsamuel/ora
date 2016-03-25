@@ -1,12 +1,12 @@
 #include <algorithm>
 #include <cassert>
 
-#include "filename.hh"
+#include "aslib/filename.hh"
+
+namespace aslib {
+namespace fs {
 
 using std::string;
-
-namespace alxs {
-namespace fs {
 
 //------------------------------------------------------------------------------
 
@@ -224,5 +224,6 @@ check(
 //------------------------------------------------------------------------------
 
 }  // namespace fs
-}  // namespace alxs
+}  // namespace aslib
+
 

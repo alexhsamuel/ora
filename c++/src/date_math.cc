@@ -5,13 +5,14 @@
 #include <memory>
 #include <sstream>
 
-#include "exc.hh"
+#include "aslib/exc.hh"
 #include "cron/date.hh"
+
+namespace cron {
 
 using std::string;
 
-namespace alxs {
-namespace cron {
+using namespace aslib;
 
 //------------------------------------------------------------------------------
 
@@ -219,5 +220,5 @@ iso_parse(
 //------------------------------------------------------------------------------
 
 }  // namespace cron
-}  // namespace alxs
+
 

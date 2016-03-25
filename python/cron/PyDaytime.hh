@@ -13,7 +13,7 @@
 #include "cron/time_zone.hh"
 #include "py.hh"
 
-namespace alxs {
+namespace aslib {
 
 using namespace py;
 using namespace std::literals;
@@ -757,5 +757,5 @@ convert_to_daytime(
 
 //------------------------------------------------------------------------------
 
-}  // namespace alxs
+}  // namespace aslib
 

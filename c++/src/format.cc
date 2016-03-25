@@ -4,14 +4,15 @@
 #include <iomanip>
 #include <iostream>
 
+#include "aslib/exc.hh"
+#include "aslib/string_builder.hh"
 #include "cron/format.hh"
-#include "exc.hh"
-#include "string_builder.hh"
+
+namespace cron {
+
+using namespace aslib;
 
 using std::string;
-
-namespace alxs {
-namespace cron {
 
 //------------------------------------------------------------------------------
 // Implementation helpers
@@ -261,7 +262,7 @@ format_daytime(
 
   case 'S':
     {
-      unsigned long const prec = std::max(0, mods.precision);
+      unsigned const prec = std::max(0, mods.precision);
       unsigned long long const digits = daytime.second * pow10(prec) + 0.5;
       // Integer part.
       sb.format(digits / pow10(prec), mods.get_width(2), mods.get_pad('0'));
@@ -607,5 +608,5 @@ parse_weekday_abbr(
 //------------------------------------------------------------------------------
 
 }  // namespace cron
-}  // namespace alxs
+
 

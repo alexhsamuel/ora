@@ -12,7 +12,7 @@
 #include "np_date.hh"
 
 using namespace py;
-using namespace alxs;
+using namespace aslib;
 
 //------------------------------------------------------------------------------
 

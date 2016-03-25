@@ -4,12 +4,13 @@
 #include <memory>
 #include <vector>
 
+#include "aslib/string.hh"
 #include "cron/types.hh"
 #include "cron/tzfile.hh"
-#include "string.hh"
 
-namespace alxs {
 namespace cron {
+
+using namespace aslib;
 
 //------------------------------------------------------------------------------
 
@@ -125,5 +126,5 @@ set_display_time_zone(
 //------------------------------------------------------------------------------
 
 }  // namespace cron
-}  // namespace alxs
+
 

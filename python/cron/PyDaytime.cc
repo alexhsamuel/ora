@@ -4,7 +4,7 @@
 
 #include "PyDaytime.hh"
 
-namespace alxs {
+namespace aslib {
 
 //------------------------------------------------------------------------------
 
@@ -37,5 +37,5 @@ get_daytime_parts_type()
 
 //------------------------------------------------------------------------------
 
-}  // namespace alxs
+}  // namespace aslib
 

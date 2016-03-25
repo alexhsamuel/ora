@@ -1,13 +1,13 @@
 #pragma GCC diagnostic ignored "-Wparentheses"
 
+#include "aslib/filename.hh"
 #include "cron/calendar.hh"
 #include "cron/ez.hh"
 #include "gtest/gtest.h"
-#include "filename.hh"
 
-using namespace alxs;
-using namespace alxs::cron;
-using namespace alxs::cron::ez;
+using namespace aslib;
+using namespace cron;
+using namespace cron::ez;
 
 //------------------------------------------------------------------------------
 // Class AllCalendar.

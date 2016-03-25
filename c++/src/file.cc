@@ -2,14 +2,14 @@
 #include <cstring>
 #include <string>
 
-#include "file.hh"
-#include "filename.hh"
-#include "xsys.hh"
+#include "aslib/file.hh"
+#include "aslib/filename.hh"
+#include "aslib/xsys.hh"
+
+namespace aslib {
+namespace fs {
 
 using std::string;
-
-namespace alxs {
-namespace fs {
 
 //------------------------------------------------------------------------------
 
@@ -89,5 +89,6 @@ load_text_for_arg(
 //------------------------------------------------------------------------------
 
 }  // namespace fs
-}  // namespace alxs
+}  // namespace aslib
+
 

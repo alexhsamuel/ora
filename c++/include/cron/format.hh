@@ -6,17 +6,18 @@
 #include <stack>
 #include <string>
 
+#include "aslib/exc.hh"
+#include "aslib/ptr.hh"
+#include "aslib/string_builder.hh"
 #include "cron/date.hh"
 #include "cron/daytime.hh"
 #include "cron/time.hh"
 #include "cron/time_zone.hh"
 #include "cron/types.hh"
-#include "exc.hh"
-#include "ptr.hh"
-#include "string_builder.hh"
 
-namespace alxs {
 namespace cron {
+
+using namespace aslib;
 
 //------------------------------------------------------------------------------
 
@@ -325,5 +326,5 @@ extern Weekday parse_weekday_abbr(std::string const& str);
 //------------------------------------------------------------------------------
 
 }  // namespace cron
-}  // namespace alxs
+
 

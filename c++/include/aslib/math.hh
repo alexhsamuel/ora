@@ -3,7 +3,7 @@
 #include <cassert>
 #include <experimental/optional>
 
-namespace alxs {
+namespace aslib {
 
 //------------------------------------------------------------------------------
 
@@ -12,10 +12,6 @@ using uint128_t = unsigned __int128;
 
 static_assert(sizeof(int128_t) == 16, "int128_t isn't 128 bits");
 static_assert(sizeof(uint128_t) == 16, "uint128_t isn't 128 bits");
-
-//------------------------------------------------------------------------------
-
-namespace cron {
 
 //------------------------------------------------------------------------------
 
@@ -194,6 +190,5 @@ mul_overflow(
 
 //------------------------------------------------------------------------------
 
-}  // namespace cron
-}  // namespace alxs
+}  // namespace aslib
 

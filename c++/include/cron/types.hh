@@ -4,12 +4,13 @@
 #include <limits>
 #include <unistd.h>
 
-#include "cron/math.hh"
-#include "exc.hh"
-#include "ranged.hh"
+#include "aslib/exc.hh"
+#include "aslib/math.hh"
+#include "aslib/ranged.hh"
 
-namespace alxs {
 namespace cron {
+
+using namespace aslib;
 
 //------------------------------------------------------------------------------
 // Constants
@@ -396,5 +397,5 @@ public:
 //------------------------------------------------------------------------------
 
 }  // namespace cron
-}  // namespace alxs
+
 

@@ -8,8 +8,8 @@
 #include <Python.h>
 #include <datetime.h>
 
+#include "aslib/math.hh"
 #include "cron/format.hh"
-#include "cron/math.hh"
 #include "cron/time.hh"
 #include "cron/time_zone.hh"
 #include "py.hh"
@@ -19,7 +19,7 @@
 #include "PyTimeZone.hh"
 #include "util.hh"
 
-namespace alxs {
+namespace aslib {
 
 using namespace py;
 using namespace std::literals;
@@ -825,6 +825,6 @@ convert_to_time(
 
 //------------------------------------------------------------------------------
 
-}  // namespace alxs
+}  // namespace aslib
 
 

@@ -1,9 +1,9 @@
 #include <string>
 
+#include "aslib/string_builder.hh"
 #include "gtest/gtest.h"
-#include "string_builder.hh"
 
-using namespace alxs;
+using namespace aslib;
 
 using std::string;
 

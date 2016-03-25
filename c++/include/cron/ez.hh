@@ -3,7 +3,6 @@
 #include "cron/date.hh"
 #include "cron/types.hh"
 
-namespace alxs {
 namespace cron {
 namespace ez {
 
@@ -75,5 +74,5 @@ MonthLiteral constexpr DEC = MonthLiteral(12);
 
 }  // namespace ez
 }  // namespace cron
-}  // namespace alxs
+
 

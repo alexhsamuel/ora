@@ -5,6 +5,8 @@ else
 endif
 
 TOP 	    	= .
+# FIXME: Hack.  But we don't have realpath on OSX, do we?
+ABSTOP	    	= $(shell pwd)
 EXTDIR	    	= $(TOP)/external
 SHRDIR	    	= $(TOP)/share
 
@@ -138,11 +140,13 @@ $(CXX_TST_BINS): \
 $(CXX_TST_OKS): \
 %.ok:    	    	%.exe
 	@rm -f $@
-	@echo testing $(shell basename $<) && \
-	  cd $(CXX_TSTDIR) && $< && touch $@
+	@echo ZONEINFO=$$ZONEINFO
+	@echo testing $(shell basename $<) \
+	&& (cd $(CXX_TSTDIR) && ./$(shell basename $<)) \
+	&& touch $@
 
 # Use our zoneinfo directory for running tests.
-$(CXX_TST_OKS): export ZONEINFO = $(TOP)/share/zoneinfo
+$(CXX_TST_OKS): export ZONEINFO = $(ABSTOP)/share/zoneinfo
 
 #-------------------------------------------------------------------------------
 # Python
