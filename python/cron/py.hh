@@ -1592,7 +1592,15 @@ PyObject* wrap_get(PyObject* self, void* closure)
 {
   ref<Object> result;
   try {
-    result = METHOD(reinterpret_cast<CLASS*>(self), closure); 
+    try {
+      result = METHOD(reinterpret_cast<CLASS*>(self), closure); 
+    }
+    catch (Exception) {
+      return nullptr;
+    }
+    catch (...) {
+      ExceptionTranslator::translate();
+    }
   }
   catch (Exception) {
     return nullptr;
