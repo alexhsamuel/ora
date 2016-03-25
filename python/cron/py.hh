@@ -1126,6 +1126,114 @@ Object::CallObject(Tuple* args)
 }
 
 
+//------------------------------------------------------------------------------
+// Exception translation
+//------------------------------------------------------------------------------
+// Inspired by exception translation in boost::python.
+
+/*
+ * Common base class for <TranslateException>.  Don't use directly.
+ */
+class ExceptionTranslator
+{
+public:
+
+  static void 
+  translate()
+  {
+    if (head_ == nullptr)
+      // No translations registerd.
+      throw;
+    else
+      // Start at the head of the list.
+      head_->translate1();
+  }
+
+private:
+
+  ExceptionTranslator() = default;
+
+  // Head of the list of registered translations.
+  static ExceptionTranslator* head_;
+
+  // Next registered translation, i.e. link field in the list of translations.
+  ExceptionTranslator* next_ = nullptr;
+
+  virtual void translate1() const = 0;
+
+  template<class EXCEPTION>
+  friend class TranslateException;
+
+};
+
+
+template<class EXCEPTION>
+class TranslateException
+: ExceptionTranslator
+{
+public:
+
+  /*
+   * Registers an exception translation.
+   *
+   * Registers translation from C++ exception class `EXCEPTION` to Python 
+   * exception class `exception`.
+   *
+   * The `EXCEPTION` class must have a `what()` method that returns the
+   * exception message.
+   */
+  static void
+  to(
+    PyObject* const exception)
+  {
+    // Register an instance of ourselves at the front of the list.
+    auto const translator = new TranslateException(exception);
+    translator->next_ = head_;
+    head_ = translator;
+  }
+
+private:
+
+  /*
+   * Translates the current C++ exception.
+   * 
+   * - If the exception matches `EXCEPTION`, throw <Exception> to raise the
+   *   registered Python exception class.
+   * - Otherwise, call <translate1()> on the next exception translator in the
+   *   list, with the previous C++ exception still in flight.
+   * - If this is the last exception translator on the list, translate to
+   *   a Python `RuntimeError`.
+   */
+  virtual void 
+  translate1()
+    const
+  {
+    try {
+      throw;
+    }
+    catch (EXCEPTION exc) {
+      throw Exception(exception_, exc.what());
+    }
+    catch (...) {
+      if (next_ == nullptr)
+        throw Exception(PyExc_RuntimeError, "untranslated C++ exception");
+      else
+        next_->translate1();
+    }
+  }
+
+  TranslateException(
+    PyObject* exception)
+  : exception_(exception)
+  {
+  }
+
+  // The Python exception type into which to translate `EXCEPTION` instances.
+  PyObject* const exception_;
+
+};
+
+
 //==============================================================================
 
 template<typename CLASS>
@@ -1172,14 +1280,22 @@ wrap(
 {
   ref<Object> result;
   try {
-    if (CLASS::Check(lhs)) 
-      result 
-        = FUNCTION(static_cast<CLASS*>(lhs), static_cast<Object*>(rhs), false);
-    else if (CLASS::Check(rhs))
-      result 
-        = FUNCTION(static_cast<CLASS*>(rhs), static_cast<Object*>(lhs), true);
-    else
-      result = not_implemented_ref();
+    try {
+      if (CLASS::Check(lhs)) 
+        result = FUNCTION(
+          static_cast<CLASS*>(lhs), static_cast<Object*>(rhs), false);
+      else if (CLASS::Check(rhs))
+        result = FUNCTION(
+          static_cast<CLASS*>(rhs), static_cast<Object*>(lhs), true);
+      else
+        result = not_implemented_ref();
+    }
+    catch (Exception) {
+      return nullptr;
+    }
+    catch (...) {
+      ExceptionTranslator::translate();
+    }
   }
   catch (Exception) {
     return nullptr;
@@ -1200,7 +1316,15 @@ wrap(
   // tp_dealloc should preserve exception state; maybe wrap with PyErr_Fetch()
   // and PyErr_restore()?
   try {
-    FUNCTION(static_cast<CLASS*>(self));
+    try {
+      FUNCTION(static_cast<CLASS*>(self));
+    }
+    catch (Exception) {
+      return;
+    }
+    catch (...) {
+      ExceptionTranslator::translate();
+    }
   }
   catch (Exception exc) {
     // Eat it.
@@ -1219,10 +1343,18 @@ wrap(
   PyObject* kw_args)
 {
   try {
-    FUNCTION(
-      static_cast<CLASS*>(self),
-      static_cast<Tuple*>(args),
-      static_cast<Dict*>(kw_args));
+    try {
+      FUNCTION(
+        static_cast<CLASS*>(self),
+        static_cast<Tuple*>(args),
+        static_cast<Dict*>(kw_args));
+    }
+    catch (Exception) {
+      return -1;
+    }
+    catch (...) {
+      ExceptionTranslator::translate();
+    }
   }
   catch (Exception) {
     return -1;
@@ -1241,7 +1373,15 @@ wrap(
 {
   ref<Unicode> result;
   try {
-    result = FUNCTION(static_cast<CLASS*>(self));
+    try {
+      result = FUNCTION(static_cast<CLASS*>(self));
+    }
+    catch (Exception) {
+      return nullptr;
+    }
+    catch (...) {
+      ExceptionTranslator::translate();
+    }
   }
   catch (Exception) {
     return nullptr;
@@ -1263,10 +1403,18 @@ wrap(
 {
   ref<Object> result;
   try {
-    result = FUNCTION(
-      static_cast<CLASS*>(self), 
-      static_cast<Object*>(other), 
-      comparison);
+    try {
+      result = FUNCTION(
+        static_cast<CLASS*>(self), 
+        static_cast<Object*>(other), 
+        comparison);
+    }
+    catch (Exception) {
+      return nullptr;
+    }
+    catch (...) {
+      ExceptionTranslator::translate();
+    }
   }
   catch (Exception) {
     return nullptr;
@@ -1284,10 +1432,18 @@ PyObject* wrap(PyObject* self, PyObject* args, PyObject* kw_args)
 {
   ref<Object> result;
   try {
-    result = METHOD(
-      reinterpret_cast<CLASS*>(self),
-      reinterpret_cast<Tuple*>(args),
-      reinterpret_cast<Dict*>(kw_args));
+    try {
+      result = METHOD(
+        reinterpret_cast<CLASS*>(self),
+        reinterpret_cast<Tuple*>(args),
+        reinterpret_cast<Dict*>(kw_args));
+    }
+    catch (Exception) {
+      return nullptr;
+    }
+    catch (...) {
+      ExceptionTranslator::translate();
+    }
   }
   catch (Exception) {
     return nullptr;
@@ -1306,9 +1462,17 @@ wrap_static_method(
 {
   ref<Object> result;
   try {
-    result = METHOD(
-      reinterpret_cast<Tuple*>(args),
-      reinterpret_cast<Dict*>(kw_args));
+    try {
+      result = METHOD(
+        reinterpret_cast<Tuple*>(args),
+        reinterpret_cast<Dict*>(kw_args));
+    }
+    catch (Exception) {
+      return nullptr;
+    }
+    catch (...) {
+      ExceptionTranslator::translate();
+    }
   }
   catch (Exception) {
     return nullptr;
@@ -1327,10 +1491,18 @@ wrap_class_method(
 {
   ref<Object> result;
   try {
-    result = METHOD(
-      reinterpret_cast<PyTypeObject*>(class_),
-      reinterpret_cast<Tuple*>(args),
-      reinterpret_cast<Dict*>(kw_args));
+    try {
+      result = METHOD(
+        reinterpret_cast<PyTypeObject*>(class_),
+        reinterpret_cast<Tuple*>(args),
+        reinterpret_cast<Dict*>(kw_args));
+    }
+    catch (Exception) {
+      return nullptr;
+    }
+    catch (...) {
+      ExceptionTranslator::translate();
+    }
   }
   catch (Exception) {
     return nullptr;
@@ -1339,6 +1511,8 @@ wrap_class_method(
   return result.release();
 }
 
+
+//------------------------------------------------------------------------------
 
 template<typename CLASS>
 class Methods

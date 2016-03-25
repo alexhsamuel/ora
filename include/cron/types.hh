@@ -252,11 +252,11 @@ struct TimeParts
 //------------------------------------------------------------------------------
 
 class DateError
-  : public ValueError
+  : public Error
 {
 public:
 
-  DateError(std::string const& message) : ValueError(message) {}
+  DateError(std::string const& message) : Error(message) {}
   virtual ~DateError() throw () {}
 
 };
@@ -285,22 +285,22 @@ public:
 
 
 class DaytimeError
-  : public ValueError
+  : public Error
 {
 public:
 
-  DaytimeError(std::string const& message) : ValueError(message) {}
+  DaytimeError(std::string const& message) : Error(message) {}
   virtual ~DaytimeError() throw () {}
 
 };
 
 
 class TimeError
-  : public ValueError
+  : public Error
 {
 public:
 
-  TimeError(std::string const& message) : ValueError(message) {}
+  TimeError(std::string const& message) : Error(message) {}
   virtual ~TimeError() throw () {}
 
 };
@@ -329,11 +329,11 @@ public:
 
 
 class NonexistentLocalTime
-  : public ValueError
+  : public Error
 {
 public:
 
-  NonexistentLocalTime() : ValueError("local time does not exist") {}
+  NonexistentLocalTime() : Error("local time does not exist") {}
   virtual ~NonexistentLocalTime() throw () {}
 
 };

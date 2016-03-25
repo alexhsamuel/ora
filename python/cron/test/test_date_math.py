@@ -99,16 +99,25 @@ def test_date_date_sub():
 
 
 def test_date_math_invalid():
-    assert (Date.INVALID +        100).invalid
-    assert (Date.MISSING +        100).missing
-    assert (Date.INVALID -          1).invalid
-    assert (Date.MISSING -          1).missing
-    assert (Date.INVALID - 4294967294).invalid
-    assert (Date.MISSING - 4294967294).missing
+    with pytest.raises(ValueError):
+        Date.INVALID + 100
+    with pytest.raises(ValueError):
+        Date.MISSING + 100
+    with pytest.raises(ValueError):
+        Date.INVALID - 1
+    with pytest.raises(ValueError):
+        Date.MISSING - 1
+    with pytest.raises(ValueError):
+        Date.INVALID - 4294967294
+    with pytest.raises(ValueError):
+        Date.MISSING - 4294967294
 
-    assert Date.INVALID - 1973/Dec/3   is None
-    assert 1973/Dec/3   - Date.MISSING is None
-    assert Date.INVALID - Date.MISSING is None
+    with pytest.raises(ValueError):
+        Date.INVALID - 1973/Dec/3
+    with pytest.raises(ValueError):
+        1973/Dec/3 - Date.MISSING
+    with pytest.raises(ValueError):
+        Date.INVALID - Date.MISSING
 
 
 

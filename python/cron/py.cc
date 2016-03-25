@@ -19,6 +19,10 @@ Bool::FALSE
 Tuple::Builder<0> const
 Tuple::builder;
 
+ExceptionTranslator*
+ExceptionTranslator::head_
+  = nullptr;
+
 //------------------------------------------------------------------------------
 
 }  // namespace py

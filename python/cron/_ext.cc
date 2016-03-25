@@ -72,6 +72,9 @@ PyInit__ext(void)
     module->AddObject("MIDNIGHT"    , PyDaytimeDefault::create(PyDaytimeDefault::Daytime::MIDNIGHT));
     module->AddObject("UTC"         , PyTimeZone::create(cron::UTC));
 
+    TranslateException<cron::InvalidDateError>::to(PyExc_ValueError);
+    TranslateException<cron::DateRangeError>::to(PyExc_OverflowError);
+
     return module.release();
   }
   catch (Exception) {

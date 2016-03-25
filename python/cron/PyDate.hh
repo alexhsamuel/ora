@@ -323,16 +323,8 @@ PyDate<DATE>::nb_add(
   if (offset)
     if (*offset == 0)
       return ref<PyDate>::of(self);
-    else {
-      DATE date;
-      try {
-        date = self->date_ + *offset;
-      }
-      catch (cron::DateRangeError) {
-        throw py::OverflowError("date out of range in addition");
-      }
-      return create(date, self->ob_type);
-    }
+    else 
+      return create(self->date_ + *offset, self->ob_type);
   else
     return not_implemented_ref();
 }
@@ -350,25 +342,14 @@ PyDate<DATE>::nb_subtract(
 
   auto const other_date = maybe_date<Date>(other);
   if (other_date)
-    if (self->date_.is_valid() && other_date->is_valid())
-      return Long::FromLong(self->date_ - *other_date);
-    else
-      return none_ref();
+    return Long::FromLong(self->date_ - *other_date);
 
   auto offset = other->maybe_long_value();
   if (offset)
-    if (*offset == 0)
-      return ref<PyDate>::of(self);
-    else {
-      DATE date;
-      try {
-        date = self->date_ - *offset;
-      }
-      catch (cron::DateRangeError) {
-        throw py::OverflowError("date out of range in subtraction");
-      }
-      return create(date, self->ob_type);
-    }
+    return 
+        *offset == 0 
+      ? ref<PyDate>::of(self) 
+      : create(self->date_ - *offset, self->ob_type);
 
   return not_implemented_ref();
 }
