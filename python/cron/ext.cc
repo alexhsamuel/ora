@@ -69,7 +69,6 @@ PyInit_ext(void)
     TranslateException<cron::InvalidDateError>::to(PyExc_ValueError);
     TranslateException<cron::DateRangeError>::to(PyExc_OverflowError);
 
-    std::cerr << "ext PyDateTimeAPI=" << (void*) PyDateTimeAPI << "\n";
     return module.release();
   }
   catch (Exception) {
