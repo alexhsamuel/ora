@@ -5,7 +5,6 @@
 1. Global display time zone in Python API.
 1. `format()` method and `tp_format` for Date, Daytime, Time.
 1. Replace `tp_print` with API for Python Daytime.
-1. Rename `alxs` namespace.
 1. Kill off DateParts.
 
 
