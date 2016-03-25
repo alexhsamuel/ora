@@ -1,6 +1,5 @@
 # Work List
 
-1. Split out week date from DateParts.
 1. Port Python make rules from fixfmt.
 1. Move `cron/math.hh` up one level.
 1. Take namespace `cron` out of `alxs` namespace.
@@ -8,8 +7,9 @@
 1. Basic string parsing for `convert_to_*()` functions.
 1. Global display time zone in Python API.
 1. `format()` method and `tp_format` for Date, Daytime, Time.
-1. Replace `tp_print` with API for Python Date and Daytime.
+1. Replace `tp_print` with API for Python Daytime.
 1. Rename `alxs` namespace.
+1. Kill off DateParts.
 
 
 # C++ API
