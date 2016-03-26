@@ -17,8 +17,6 @@ SHRDIR	    	= $(TOP)/share
 CXX_DIR	    	= $(TOP)/c++
 CXX_INCDIR 	= $(CXX_DIR)/include
 CXX_SRCDIR 	= $(CXX_DIR)/src
-CXX_LIBDIR 	= $(CXX_DIR)/lib
-CXX_BINDIR 	= $(CXX_DIR)/bin
 CXX_TSTDIR    	= $(CXX_DIR)/test
 
 # Gtest configuration
@@ -29,13 +27,81 @@ GTEST_LIB       = $(GTEST_DIR)/gtest_main.a
 # Compiler and linker
 CXX            += -std=c++14
 CPPFLAGS        = -I$(CXX_INCDIR)
-# FIXME: Do we really need -pthread?
-CXXFLAGS        = -fPIC -g -Wall -pthread
-LDLIBS          = -lpthread
+CXXFLAGS        = -fPIC -g -Wall
+LDFLAGS	    	= 
+LDLIBS          = 
 
-# Unit tests
-CXX_TST_CPPFLAGS= $(CPPFLAGS) -I$(GTEST_INCDIR) -DGTEST_HAS_TR1_TUPLE=0
-CXX_TST_LIBS    = $(GTEST_LIB) $(CXX_LIB)
+#-------------------------------------------------------------------------------
+# C++ building and linking
+
+# Sources and outputs
+CXX_SRCS        = $(wildcard $(CXX_SRCDIR)/*.cc) 
+CXX_DEPS        = $(CXX_SRCS:%.cc=%.d)
+CXX_OBJS        = $(CXX_SRCS:%.cc=%.o)
+CXX_LIB	    	= $(CXX_SRCDIR)/libcron.a
+CXX_BIN_SRCS	= $(wildcard $(CXX_SRCDIR)/bin/*.cc)
+CXX_BINS        = $(CXX_BIN_SRCS:%.cc=%)
+
+$(CXX_DEPS): \
+%.d: 		%.cc
+	@echo "generating $@"; set -e; \
+	$(CXX) -MM $(CPPFLAGS) $< | sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' > $@
+
+# How to link an executable. 
+%:  	    	    	%.o
+%:  	    	    	%.o 
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
+# How to build a static library.  
+%.a:
+%.a:
+	@mkdir -p $(shell dirname $@)
+	ar -r $@ $^
+
+ifeq ($(UNAME),Darwin)
+  SO_LDFLAGS = -bundle -undefined dynamic_lookup
+else ifeq ($(UNAME),Linux)
+  SO_LDFLAGS = -shared
+endif
+
+# How to build a shared library.
+%.so:
+%.so:
+	$(CXX) $(LDFLAGS) $(SO_LDFLAGS) $^ $(LDLIBS) -o $@
+
+# The static library includes these objects.
+$(CXX_LIB): $(CXX_OBJS)
+
+# Binaries link the static library.
+$(CXX_BINS): $(CXX_LIB)
+$(CXX_BINS): LDLIBS += $(CXX_LIB)
+
+#-------------------------------------------------------------------------------
+# C++ unit tests
+
+# Unit tests sources and outputs
+CXX_TST_SRCS    = $(wildcard $(CXX_TSTDIR)/*.cc)
+CXX_TST_DEPS    = $(CXX_TST_SRCS:%.cc=%.d)
+CXX_TST_OBJS    = $(CXX_TST_SRCS:%.cc=%.o)
+CXX_TST_BINS    = $(CXX_TST_SRCS:%.cc=%)
+CXX_TST_OKS     = $(CXX_TST_SRCS:%.cc=%.ok)
+
+# Use gtest and cron to build tests.
+$(CXX_TST_OBJS): CPPFLAGS += -I$(GTEST_INCDIR) -DGTEST_HAS_TR1_TUPLE=0
+$(CXX_TST_BINS): $(CXX_LIB)
+$(CXX_TST_BINS): LDLIBS += $(GTEST_LIB) $(CXX_LIB)
+
+$(CXX_TST_DEPS): \
+%.d: 			%.cc
+	@echo "generating $@"; \
+	set -e; $(CXX) $(CPPFLAGS) -MM $(CXX_TST_CPPFLAGS) $< | sed -E 's#([^ ]+:)#c++/test/\1#g' > $@
+
+# Running tests.
+%.ok:    	    	%
+	@rm -f $@
+	@echo testing $(shell basename $<) \
+	&& (cd $(CXX_TSTDIR) && ./$(shell basename $<)) \
+	&& touch $@
 
 #-------------------------------------------------------------------------------
 # Python configuration
@@ -50,139 +116,34 @@ PY_DIR	    	= $(TOP)/python
 PY_PKGDIR   	= $(PY_DIR)/cron
 PY_PFXDIR    	= $(shell $(PYTHON_CONFIG) --prefix)
 
-# Compiler and linker for Python extensions
-PY_CPPFLAGS  	= $(CPPFLAGS) $(shell $(PYTHON_CONFIG) --includes)
-PY_CXXFLAGS  	= $(CXXFLAGS) -DNDEBUG -fno-strict-aliasing -fwrapv
-PY_LDFLAGS   	= -L$(PY_PFXDIR)/lib
-ifeq ($(UNAME),Darwin)
-  PY_LDFLAGS   += -bundle -undefined dynamic_lookup
-else ifeq ($(UNAME),Linux)
-  PY_LDFLAGS   += -shared
-endif
-PY_LDLIBS	= 
-
-# Compiler and linker for numpy
+# Numpy
 NPY_INCDIRS 	= $(shell $(PYTHON) -c 'from numpy.distutils.misc_util import get_numpy_include_dirs as g; print(" ".join(g()));')
-PY_CPPFLAGS    += $(NPY_INCDIRS:%=-I%)
 
 #-------------------------------------------------------------------------------
-# Primary targets
-
-.PHONY: all
-all:			cxx python 
-
-.PHONY: test
-test:			test-cxx test-python
-
-.PHONY: clean
-clean:			clean-cxx clean-python testclean
-
-.PHONY: testclean
-testclean:		testclean-cxx testclean-python
-
-#-------------------------------------------------------------------------------
-# C++
-
-# Sources and outputs
-CXX_SRCS        = $(wildcard $(CXX_SRCDIR)/*.cc) 
-CXX_DEPS        = $(CXX_SRCS:%.cc=%.dd)
-CXX_OBJS        = $(CXX_SRCS:%.cc=%.o)
-CXX_LIB	    	= $(CXX_LIBDIR)/libcron.a
-CXX_BIN_SRCS	= $(wildcard $(CXX_SRCDIR)/bin/*.cc)
-CXX_BINS        = $(CXX_BIN_SRCS:%.cc=%)
-
-# Unit tests sources and outputs
-CXX_TST_SRCS    = $(wildcard $(CXX_TSTDIR)/*.cc)
-CXX_TST_DEPS    = $(CXX_TST_SRCS:%.cc=%.dd)
-CXX_TST_OBJS    = $(CXX_TST_SRCS:%.cc=%.o)
-CXX_TST_BINS    = $(CXX_TST_SRCS:%.cc=%.exe)
-CXX_TST_OKS     = $(CXX_TST_SRCS:%.cc=%.ok)
-
-.PHONY: cxx
-cxx:	    	    	$(CXX_LIB)
-
-$(CXX_DEPS): \
-%.dd: 		%.cc
-	@echo "generating $@"; set -e; \
-	$(CXX) -MM $(CPPFLAGS) $< | sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' > $@
-
-.PHONY: clean-cxx
-clean-cxx:
-	rm -f $(CXX_OBJS) $(CXX_LIB) $(CXX_BINS) $(OKS)
-
-.PHONY: testclean
-testclean-cxx:
-	rm -f $(CXX_TST_OBJS) $(CXX_TST_BINS) $(CXX_TST_OKS)
-
-.PHONY: test-cxx
-test-cxx: $(CXX_TST_OKS)
-
-$(CXX_LIB):		$(CXX_OBJS)
-	mkdir -p $(shell dirname $@)
-	ar -r $@ $^
-
-$(CXX_BINS): \
-$(CXX_SRCDIR)/bin/%:   	$(CXX_SRCDIR)/bin/%.cc $(CXX_LIB)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $^ $(LDLIBS) -o $@
-
-$(CXX_TST_DEPS): \
-%.dd: 			%.cc
-	@echo "generating $@"; \
-	set -e; $(CXX) $(CPPFLAGS) -MM $(CXX_TST_CPPFLAGS) $< | sed -E 's#([^ ]+:)#c++/test/\1#g' > $@
-
-$(CXX_TST_OBJS): \
-%.o: 	    	    	%.cc
-	$(CXX) $(CXX_TST_CPPFLAGS) $(CXXFLAGS) -c $< -o $@
-
-$(CXX_TST_BINS): \
-%.exe: 	    	    	%.o $(CXX_TST_LIBS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $< $(CXX_TST_LIBS) $(LDLIBS) -o $@
-
-$(CXX_TST_OKS): \
-%.ok:    	    	%.exe
-	@rm -f $@
-	@echo testing $(shell basename $<) \
-	&& (cd $(CXX_TSTDIR) && ./$(shell basename $<)) \
-	&& touch $@
-
-# Use our zoneinfo directory for running tests.
-$(CXX_TST_OKS): export ZONEINFO = $(ABSTOP)/share/zoneinfo
-
-#-------------------------------------------------------------------------------
-# Python
+# Python building extension code
 
 # Sources and outputs
 PY_SRCS   	= $(wildcard $(PY_PKGDIR)/*.cc)
-PY_DEPS	    	= $(PY_SRCS:%.cc=%.dd)
+PY_DEPS	    	= $(PY_SRCS:%.cc=%.d)
 PY_OBJS	    	= $(PY_SRCS:%.cc=%.o)
-PY_EXTMOD_SUFFIX= $(shell $(PYTHON) -c 'from importlib.machinery import EXTENSION_SUFFIXES as E; print(E[0]); ')
-PY_EXTMOD	= $(PY_PKGDIR)/ext$(PY_EXTMOD_SUFFIX)
+PY_EXTMOD_SFX   = $(shell $(PYTHON) -c 'from importlib.machinery import EXTENSION_SUFFIXES as E; print(E[0]); ')
+PY_EXTMOD	= $(PY_PKGDIR)/ext$(PY_EXTMOD_SFX)
 
-.PHONY: python
-python:			$(PY_DEPS) $(PY_EXTMOD)
+# Compiling Python extension code.
+$(PY_OBJS): CPPFLAGS += $(shell $(PYTHON_CONFIG) --includes)
+$(PY_OBJS): CXXFLAGS += -fno-strict-aliasing -fwrapv
+# FIXME: Remove this.
+$(PY_OBJS): CXXFLAGS += -DNDEBUG
+$(PY_OBJS): CPPFLAGS += $(NPY_INCDIRS:%=-I%)
 
-.PHONY: clean-python
-clean-python:
-	rm -rf $(PY_OBJS) $(PY_EXTMOD)
+# Linking Python exension modules.
+$(PY_EXTMOD): $(PY_OBJS) $(CXX_LIB)
+$(PY_EXTMOD): LDFLAGS += -L$(PY_PFXDIR)/lib
 
 $(PY_DEPS): \
-%.dd: 		    	%.cc
+%.d: 		    	%.cc
 	@echo "generating $@"; \
 	set -e; $(CXX) -MM $(PY_CPPFLAGS) $< | sed 's,^\(.*\)\.o:,python/cron/\1.o:,g' > $@
-
-$(PY_OBJS): \
-%.o:			%.cc
-	$(CXX) $(PY_CPPFLAGS) $(PY_CXXFLAGS) -c $< -o $@
-
-$(PY_EXTMOD):		$(PY_OBJS) $(CXX_LIB)
-	$(CXX) $(PY_LDFLAGS) $^ $(PY_LDLIBS) -o $@
-
-.PHONY: test-python
-test-python: 		$(PY_EXTMOD)
-	$(PYTEST) python
-
-.PHONY: testclean-python
-testclean-python:
 
 # For compatibility and testing.
 .PHONY: python-setuptools
@@ -196,6 +157,48 @@ python-setuptools:	$(CXX_LIB)
 zoneinfo:
 	mkdir -p $(SHRDIR)
 	tar jxf $(EXTDIR)/zoneinfo/zoneinfo-2016a.tar.bz2 -C $(SHRDIR)
+
+# Use our zoneinfo directory for running tests.
+export ZONEINFO = $(ABSTOP)/share/zoneinfo
+
+#-------------------------------------------------------------------------------
+# Phony targets
+
+.PHONY: all
+all:			cxx python 
+
+.PHONY: test
+test:			test-cxx test-python
+
+.PHONY: clean
+clean:			clean-cxx clean-python 
+
+.PHONY: cxx
+cxx:	    	    	$(CXX_LIB)
+
+.PHONY: clean-cxx
+clean-cxx:
+	rm -f $(CXX_OBJS) $(CXX_LIB) $(CXX_BINS) $(OKS)
+
+.PHONY: test-cxx-bins
+test-cxx-bins:	    	$(CXX_TST_BINS)
+
+.PHONY: test-cxx
+test-cxx:   	    	$(CXX_TST_OKS)
+
+.PHONY: python
+python:			$(PY_DEPS) $(PY_EXTMOD)
+
+.PHONY: clean-python
+clean-python:
+	rm -rf $(PY_OBJS) $(PY_EXTMOD)
+
+.PHONY: test-python
+test-python: 		$(PY_EXTMOD)
+	$(PYTEST) python
+
+.PHONY: testclean-python
+testclean-python:
 
 #-------------------------------------------------------------------------------
 
