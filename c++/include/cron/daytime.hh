@@ -159,7 +159,7 @@ public:
     };
   }
 
-  // Comparisons
+  // Comparisons  --------------------------------------------------------------
 
   bool is(DaytimeTemplate const& o)         const { return offset_ == o.offset_; }
   bool operator==(DaytimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ == o.offset_; }
@@ -171,7 +171,10 @@ public:
 
 private:
 
-  // Helper functions
+  static Offset constexpr INVALID_OFFSET = std::numeric_limits<Offset>::max();
+  static Offset constexpr MISSING_OFFSET = INVALID_OFFSET - 1;
+
+  // Helper methods  -----------------------------------------------------------
 
   static bool
   offset_is_valid(
@@ -222,6 +225,8 @@ private:
       throw InvalidDaytimeError();
   }
 
+  // State  --------------------------------------------------------------------
+
   constexpr 
   DaytimeTemplate(
     Offset offset) 
@@ -230,9 +235,6 @@ private:
   }
 
   Offset offset_;
-
-  static Offset constexpr INVALID_OFFSET = std::numeric_limits<Offset>::max();
-  static Offset constexpr MISSING_OFFSET = INVALID_OFFSET - 1;
 
 };
 
