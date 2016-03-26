@@ -10,6 +10,9 @@ ABSTOP	    	= $(shell pwd)
 EXTDIR	    	= $(TOP)/external
 SHRDIR	    	= $(TOP)/share
 
+# Default target.
+all:
+
 #-------------------------------------------------------------------------------
 # C++ configuration
 
@@ -28,6 +31,7 @@ GTEST_LIB       = $(GTEST_DIR)/gtest_main.a
 CXX            += -std=c++14
 CPPFLAGS        = -I$(CXX_INCDIR)
 CXXFLAGS        = -fPIC -g -Wall
+CXX_DEPFLAGS	= -MT $@ -MMD -MP -MF $<.d
 LDFLAGS	    	= 
 LDLIBS          = 
 
@@ -36,16 +40,16 @@ LDLIBS          =
 
 # Sources and outputs
 CXX_SRCS        = $(wildcard $(CXX_SRCDIR)/*.cc) 
-CXX_DEPS        = $(CXX_SRCS:%.cc=%.d)
+DEPS	       += $(CXX_SRCS:%.cc=%.cc.d)
 CXX_OBJS        = $(CXX_SRCS:%.cc=%.o)
 CXX_LIB	    	= $(CXX_SRCDIR)/libcron.a
 CXX_BIN_SRCS	= $(wildcard $(CXX_SRCDIR)/bin/*.cc)
 CXX_BINS        = $(CXX_BIN_SRCS:%.cc=%)
 
-$(CXX_DEPS): \
-%.d: 		%.cc
-	@echo "generating $@"; set -e; \
-	$(CXX) -MM $(CPPFLAGS) $< | sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' > $@
+# How to compile a C++ file, and generate automatic dependencies.
+%.o:	    	    	%.cc
+%.o:	    	    	%.cc %.cc.d
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CXX_DEPFLAGS) $< -c -o $@
 
 # How to link an executable. 
 %:  	    	    	%.o
@@ -81,7 +85,7 @@ $(CXX_BINS): LDLIBS += $(CXX_LIB)
 
 # Unit tests sources and outputs
 CXX_TST_SRCS    = $(wildcard $(CXX_TSTDIR)/*.cc)
-CXX_TST_DEPS    = $(CXX_TST_SRCS:%.cc=%.d)
+DEPS           += $(CXX_TST_SRCS:%.cc=%.cc.d)
 CXX_TST_OBJS    = $(CXX_TST_SRCS:%.cc=%.o)
 CXX_TST_BINS    = $(CXX_TST_SRCS:%.cc=%)
 CXX_TST_OKS     = $(CXX_TST_SRCS:%.cc=%.ok)
@@ -90,11 +94,6 @@ CXX_TST_OKS     = $(CXX_TST_SRCS:%.cc=%.ok)
 $(CXX_TST_OBJS): CPPFLAGS += -I$(GTEST_INCDIR) -DGTEST_HAS_TR1_TUPLE=0
 $(CXX_TST_BINS): $(CXX_LIB)
 $(CXX_TST_BINS): LDLIBS += $(GTEST_LIB) $(CXX_LIB)
-
-$(CXX_TST_DEPS): \
-%.d: 			%.cc
-	@echo "generating $@"; \
-	set -e; $(CXX) $(CPPFLAGS) -MM $(CXX_TST_CPPFLAGS) $< | sed -E 's#([^ ]+:)#c++/test/\1#g' > $@
 
 # Running tests.
 %.ok:    	    	%
@@ -124,7 +123,7 @@ NPY_INCDIRS 	= $(shell $(PYTHON) -c 'from numpy.distutils.misc_util import get_n
 
 # Sources and outputs
 PY_SRCS   	= $(wildcard $(PY_PKGDIR)/*.cc)
-PY_DEPS	    	= $(PY_SRCS:%.cc=%.d)
+DEPS           += $(PY_SRCS:%.cc=%.cc.d)
 PY_OBJS	    	= $(PY_SRCS:%.cc=%.o)
 PY_EXTMOD_SFX   = $(shell $(PYTHON) -c 'from importlib.machinery import EXTENSION_SUFFIXES as E; print(E[0]); ')
 PY_EXTMOD	= $(PY_PKGDIR)/ext$(PY_EXTMOD_SFX)
@@ -139,11 +138,6 @@ $(PY_OBJS): CPPFLAGS += $(NPY_INCDIRS:%=-I%)
 # Linking Python exension modules.
 $(PY_EXTMOD): $(PY_OBJS) $(CXX_LIB)
 $(PY_EXTMOD): LDFLAGS += -L$(PY_PFXDIR)/lib
-
-$(PY_DEPS): \
-%.d: 		    	%.cc
-	@echo "generating $@"; \
-	set -e; $(CXX) -MM $(PY_CPPFLAGS) $< | sed 's,^\(.*\)\.o:,python/cron/\1.o:,g' > $@
 
 # For compatibility and testing.
 .PHONY: python-setuptools
@@ -187,7 +181,7 @@ test-cxx-bins:	    	$(CXX_TST_BINS)
 test-cxx:   	    	$(CXX_TST_OKS)
 
 .PHONY: python
-python:			$(PY_DEPS) $(PY_EXTMOD)
+python:			$(PY_EXTMOD)
 
 .PHONY: clean-python
 clean-python:
@@ -202,7 +196,8 @@ testclean-python:
 
 #-------------------------------------------------------------------------------
 
-include $(CXX_DEPS) 
-include $(CXX_TST_DEPS) 
-include $(PY_DEPS)
+# Include autodependency makefles.
+%.d: ;
+.PRECIOUS: $(DEPS)
+-include $(DEPS) 
 
