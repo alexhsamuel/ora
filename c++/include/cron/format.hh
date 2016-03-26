@@ -40,7 +40,7 @@ public:
     : pattern_(pattern)
   {
     static DateParts const date_parts{0, 0, 0, 0, 0, 0, 0};
-    static DaytimeParts const daytime_parts{0, 0, 0};
+    static HmsDaytime const daytime_parts{0, 0, 0};
     static TimeZoneParts const time_zone_parts{0, "", false};
     size_t const width = format(&date_parts, &daytime_parts, &time_zone_parts).length();
     invalid_ = std::string(width, ' ');
@@ -58,7 +58,7 @@ protected:
   std::string 
   format(
     DateParts const*     date_parts, 
-    DaytimeParts const*  daytime_parts, 
+    HmsDaytime const*    daytime_parts, 
     TimeZoneParts const* time_zone_parts)
     const
   {
@@ -69,7 +69,7 @@ protected:
 
 private:
 
-  void format(StringBuilder&, DateParts const*, DaytimeParts const*, TimeZoneParts const*) const;
+  void format(StringBuilder&, DateParts const*, HmsDaytime const*, TimeZoneParts const*) const;
 
   std::string pattern_;
   std::string invalid_;
@@ -268,7 +268,7 @@ public:
 
   std::string 
   operator()(
-    DaytimeParts const& parts) 
+    HmsDaytime const& parts) 
     const 
   { 
     return format(nullptr, &parts, nullptr); 
@@ -281,7 +281,7 @@ public:
     const 
   { 
     return 
-        daytime.is_valid() ? operator()(daytime.get_parts())
+        daytime.is_valid() ? operator()(daytime.get_hms())
       : daytime.is_missing() ? get_missing()
       : get_invalid();
   }

@@ -48,7 +48,7 @@ PyInit_ext(void)
     aslib::PyDate<cron::Date16>          ::add_to(module, "Date16");
 
     aslib::PyDaytime<cron::Daytime>      ::add_to(module, "Daytime");
-    aslib::PyDaytime<cron::SmallDaytime> ::add_to(module, "SmallDaytime");
+    aslib::PyDaytime<cron::Daytime32>    ::add_to(module, "Daytime32");
 
     aslib::PyTime<cron::Time>            ::add_to(module, "Time");
     aslib::PyTime<cron::SmallTime>       ::add_to(module, "SmallTime");
@@ -67,6 +67,7 @@ PyInit_ext(void)
     module->AddObject("UTC"         , PyTimeZone::create(cron::UTC));
 
     TranslateException<cron::InvalidDateError>::to(PyExc_ValueError);
+    TranslateException<cron::InvalidDaytimeError>::to(PyExc_ValueError);
     TranslateException<cron::DateRangeError>::to(PyExc_OverflowError);
 
     return module.release();

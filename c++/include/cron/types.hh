@@ -143,6 +143,7 @@ inline bool constexpr datenum_is_valid(Datenum datenum) { return in_interval(DAT
 int constexpr       YMDI_MIN            = 10000000;
 int constexpr       YMDI_MAX            = 99999999;
 int constexpr       YMDI_BOUND          = YMDI_MAX + 1;
+int constexpr       YMDI_INVALID        = std::numeric_limits<int>::min();
 
 /**
  * Seconds since midnight.
@@ -255,13 +256,13 @@ struct DateParts
 };
 
 
-struct DaytimeParts
+struct HmsDaytime
 {
   Hour      hour;
   Minute    minute;
   Second    second;
 
-  static DaytimeParts get_invalid()
+  static HmsDaytime get_invalid()
     { return {HOUR_INVALID, MINUTE_INVALID, SECOND_INVALID}; }
 
 };
@@ -282,11 +283,11 @@ struct TimeZoneParts
 struct TimeParts
 {
   DateParts date;
-  DaytimeParts daytime;
+  HmsDaytime daytime;
   TimeZoneParts time_zone;
 
   static TimeParts get_invalid()
-    { return {DateParts::get_invalid(), DaytimeParts::get_invalid(), TimeZoneParts::get_invalid()}; }
+    { return {DateParts::get_invalid(), HmsDaytime::get_invalid(), TimeZoneParts::get_invalid()}; }
 
 };
 

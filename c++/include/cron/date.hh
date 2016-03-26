@@ -97,8 +97,6 @@ public:
 
   using Offset = typename TRAITS::Offset;
 
-  static Offset constexpr DENOMINATOR = TRAITS::denominator;
-
   // These are declared const here but defined constexpr to work around a clang
   // bug.  http://stackoverflow.com/questions/11928089/static-constexpr-member-of-same-type-as-class-being-defined
   static DateTemplate const MIN;
@@ -106,7 +104,7 @@ public:
   static DateTemplate const MISSING;
   static DateTemplate const INVALID;
 
-  // Constructors
+  // Constructors  -------------------------------------------------------------
 
   /*
    * Default constructor: an invalid date.
@@ -144,7 +142,7 @@ public:
   {
   }
 
-  // Assignment operators
+  // Assignment operators  -----------------------------------------------------
 
   /*
    * Copy assignment.
@@ -154,7 +152,7 @@ public:
    */
   DateTemplate
   operator=(
-    DateTemplate const& date)
+    DateTemplate const date)
   {
     offset_ = date.offset_;
     return *this;
@@ -183,7 +181,7 @@ public:
     return *this;
   }
 
-  // Factory methods.  
+  // Factory methods  ----------------------------------------------------------
 
   /*
    * Creates a date object from an offset, which must be valid and in range.
@@ -289,7 +287,7 @@ public:
       throw InvalidDateError();
   }
 
-  // Accessors
+  // Accessors  ----------------------------------------------------------------
 
   bool      is_valid()      const { return offset_is_valid<TRAITS>(offset_); }
   bool      is_invalid()    const { return offset_ == TRAITS::invalid; }
@@ -313,6 +311,8 @@ public:
   // FIXME: Remove this.
   DateParts get_parts()     const { return datenum_to_parts(get_datenum()); }
 
+  // Comparisons  --------------------------------------------------------------
+
   bool is(DateTemplate const& o) const { return offset_ == o.offset_; }
   bool operator==(DateTemplate const& o) const { return is_valid() && o.is_valid() && offset_ == o.offset_; }
   bool operator!=(DateTemplate const& o) const { return is_valid() && o.is_valid() && offset_ != o.offset_; }
@@ -322,8 +322,6 @@ public:
   bool operator>=(DateTemplate const& o) const { return is_valid() && o.is_valid() && offset_ >= o.offset_; }
 
 private:
-
-  // Helper functions
 
   Offset valid_offset() const { return cron::valid_offset<TRAITS>(offset_); }
 

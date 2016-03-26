@@ -22,44 +22,45 @@ format(
   return (string) DaytimeFormat(pattern)(daytime);
 }
 
+TEST(Daytime, get_hms) {
+  auto hms = Daytime::from_offset(0).get_hms();
+  EXPECT_EQ(0, hms.hour);
+  EXPECT_EQ(0, hms.minute);
+  EXPECT_EQ(0, hms.second);
 
-TEST(Daytime, get_parts) {
-  DaytimeParts parts = Daytime::from_offset(0).get_parts();
-  EXPECT_EQ(0, parts.hour);
-  EXPECT_EQ(0, parts.minute);
-  EXPECT_EQ(0, parts.second);
+  hms = Daytime::from_ssm(60012.25).get_hms();
+  EXPECT_EQ(16, hms.hour);
+  EXPECT_EQ(40, hms.minute);
+  EXPECT_EQ(12.25, hms.second);
 
-  parts = Daytime::from_ssm(60012.25).get_parts();
-  EXPECT_EQ(16, parts.hour);
-  EXPECT_EQ(40, parts.minute);
-  EXPECT_EQ(12.25, parts.second);
+  hms = Daytime(16, 40, 12.25).get_hms();
+  EXPECT_EQ(16, hms.hour);
+  EXPECT_EQ(40, hms.minute);
+  EXPECT_EQ(12.25, hms.second);
+}
 
-  parts = Daytime(16, 40, 12.25).get_parts();
-  EXPECT_EQ(16, parts.hour);
-  EXPECT_EQ(40, parts.minute);
-  EXPECT_EQ(12.25, parts.second);
-
-  parts = Daytime::INVALID.get_parts();
-  EXPECT_FALSE(hour_is_valid(parts.hour));
-  EXPECT_FALSE(minute_is_valid(parts.minute));
-  EXPECT_FALSE(second_is_valid(parts.second));
+TEST(Daytime, get_hms_invalid) {
+  EXPECT_THROW(Daytime::INVALID.get_hms(), InvalidDaytimeError);
+  EXPECT_THROW(Daytime::MISSING.get_hms(), InvalidDaytimeError);
 }
 
 TEST(Daytime, from_hms) {
-  Daytime daytime = Daytime(0, 0, 0);
+  Daytime daytime = Daytime::from_hms(0, 0, 0);
   EXPECT_EQ(0u, daytime.get_offset());
   EXPECT_EQ(0u, daytime.get_ssm());
 
-  daytime = Daytime(16, 40, 12.25);
+  daytime = Daytime::from_hms(16, 40, 12.25);
   EXPECT_EQ(8445973335552032768ull, daytime.get_offset());
   EXPECT_EQ(60012.25, daytime.get_ssm());
+}
 
-  EXPECT_TRUE(Daytime(-1, 10, 10).is_invalid());
-  EXPECT_TRUE(Daytime(24, 10, 10).is_invalid());
-  EXPECT_TRUE(Daytime(12, -1, 10).is_invalid());
-  EXPECT_TRUE(Daytime(12, 60, 10).is_invalid());
-  EXPECT_TRUE(Daytime(12, 10, 60).is_invalid());
-  EXPECT_TRUE(Daytime(12, 10, -1).is_invalid());
+TEST(Daytime, from_hms_invalid) {
+  EXPECT_THROW(Daytime(-1, 10, 10), InvalidDaytimeError);
+  EXPECT_THROW(Daytime(24, 10, 10), InvalidDaytimeError);
+  EXPECT_THROW(Daytime(12, -1, 10), InvalidDaytimeError);
+  EXPECT_THROW(Daytime(12, 60, 10), InvalidDaytimeError);
+  EXPECT_THROW(Daytime(12, 10, 60), InvalidDaytimeError);
+  EXPECT_THROW(Daytime(12, 10, -1), InvalidDaytimeError);
 }
 
 TEST(Daytime, from_ssm) {
@@ -69,10 +70,12 @@ TEST(Daytime, from_ssm) {
   EXPECT_EQ(Daytime( 1,  0,  0), Daytime::from_ssm( 3600));
   EXPECT_EQ(Daytime(23, 59, 59), Daytime::from_ssm(86399));
   EXPECT_EQ(Daytime( 0,  0,  0.001), Daytime::from_ssm(0.001));
+}
 
-  EXPECT_TRUE(Daytime::from_ssm(86400).is_invalid());
-  EXPECT_TRUE(Daytime::from_ssm(-1).is_invalid());
-  EXPECT_TRUE(Daytime::from_ssm(NaN).is_invalid());
+TEST(Daytime, from_ssm_invalid) {
+  EXPECT_THROW(Daytime::from_ssm(86400), InvalidDaytimeError);
+  EXPECT_THROW(Daytime::from_ssm(-1), InvalidDaytimeError);
+  EXPECT_THROW(Daytime::from_ssm(NaN), InvalidDaytimeError);
 }
 
 TEST(Daytime, get_ssm) {
@@ -83,9 +86,11 @@ TEST(Daytime, get_ssm) {
   EXPECT_EQ(86399, Daytime(23, 59, 59).get_ssm());
 
   EXPECT_NEAR(0.001, Daytime( 0,  0,  0.001).get_ssm(), 1e-8);
+}
 
-  EXPECT_FALSE(ssm_is_valid(Daytime::INVALID.get_ssm()));
-  EXPECT_FALSE(ssm_is_valid(Daytime::MISSING.get_ssm()));
+TEST(Daytime, get_ssm_invalid) {
+  EXPECT_THROW(Daytime::INVALID.get_ssm(), InvalidDaytimeError);
+  EXPECT_THROW(Daytime::MISSING.get_ssm(), InvalidDaytimeError);
 }
 
 TEST(Daytime, format) {
@@ -95,7 +100,7 @@ TEST(Daytime, format) {
 }
 
 TEST(Daytime, ostream) {
-  Daytime const daytime(15, 32, 0.7);
+  auto const daytime = Daytime(15, 32, 0.7);
   {
     std::stringstream ss;
     ss << daytime;
@@ -110,41 +115,43 @@ TEST(Daytime, ostream) {
 }
 
 TEST(Daytime, to_string) {
-  Daytime const daytime(15, 32, 0.7);
+  auto const daytime = Daytime(15, 32, 0.7);
   EXPECT_EQ("15:32:01", to_string(daytime));
   EXPECT_EQ("3:32:00.70000 pm", to_string(DaytimeFormat("%0h:%M:%.5S %_p")(daytime)));
   EXPECT_EQ("3:32:00.70000 pm", (std::string) DaytimeFormat("%0h:%M:%.5S %_p")(daytime));
 }
 
 //------------------------------------------------------------------------------
-// Class SmallDaytime
+// Class Daytime32
 //------------------------------------------------------------------------------
 
 // FIXME: Template tests?
 
-TEST(SmallDaytime, get_parts) {
-  auto parts = SmallDaytime::from_offset(0).get_parts();
-  EXPECT_EQ(0, parts.hour);
-  EXPECT_EQ(0, parts.minute);
-  EXPECT_EQ(0, parts.second);
+TEST(Daytime32, get_hms) {
+  auto hms = Daytime32::from_offset(0).get_hms();
+  EXPECT_EQ(0, hms.hour);
+  EXPECT_EQ(0, hms.minute);
+  EXPECT_EQ(0, hms.second);
 
-  parts = SmallDaytime::from_ssm(60012.25).get_parts();
-  EXPECT_EQ(16, parts.hour);
-  EXPECT_EQ(40, parts.minute);
-  EXPECT_EQ(12.25, parts.second);
+  hms = Daytime32::from_ssm(60012.25).get_hms();
+  EXPECT_EQ(16, hms.hour);
+  EXPECT_EQ(40, hms.minute);
+  EXPECT_EQ(12.25, hms.second);
 }
 
-TEST(SmallDaytime, from_hms) {
-  SmallDaytime daytime = SmallDaytime(0, 0, 0);
+TEST(Daytime32, from_hms) {
+  Daytime32 daytime = Daytime32(0, 0, 0);
   EXPECT_EQ(0u, daytime.get_offset());
   EXPECT_EQ(0.0, daytime.get_ssm());
 
-  daytime = SmallDaytime(16, 40, 12.25);
+  daytime = Daytime32(16, 40, 12.25);
   EXPECT_EQ(1966481408u, daytime.get_offset());
   EXPECT_EQ(60012.25, daytime.get_ssm());
+}
 
-  EXPECT_TRUE(SmallDaytime(24, 10, 10).is_invalid());
-  EXPECT_TRUE(SmallDaytime(12, 60, 10).is_invalid());
-  EXPECT_TRUE(SmallDaytime(12, 10, 60).is_invalid());
+TEST(Daytime32, from_hms_invalid) {
+  EXPECT_THROW(Daytime32(24, 10, 10), InvalidDaytimeError);
+  EXPECT_THROW(Daytime32(12, 60, 10), InvalidDaytimeError);
+  EXPECT_THROW(Daytime32(12, 10, 60), InvalidDaytimeError);
 }
 

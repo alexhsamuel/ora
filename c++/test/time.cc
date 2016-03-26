@@ -101,11 +101,12 @@ TEST(Time, from_parts_invalid) {
   EXPECT_THROW(Time(Date::INVALID, Daytime(0, 0, 0), *tz), InvalidDateError);
   EXPECT_THROW(Time(Date::MISSING, Daytime(0, 0, 0), *tz), InvalidDateError);
 
-  EXPECT_TRUE(Time(2013/JUL/28, Daytime::INVALID, *tz).is_invalid());
-  EXPECT_TRUE(Time(2013/JUL/28, Daytime(24, 0, 0), *tz).is_invalid());
-  EXPECT_TRUE(Time(2013/JUL/28, Daytime(0, 60, 0), *tz).is_invalid());
-  EXPECT_TRUE(Time(2013/JUL/28, Daytime(0, 0, 60), *tz).is_invalid());
+  EXPECT_THROW(Time(2013/JUL/28, Daytime::INVALID , *tz), InvalidDaytimeError);
+  EXPECT_THROW(Time(2013/JUL/28, Daytime(24, 0, 0), *tz), InvalidDaytimeError);
+  EXPECT_THROW(Time(2013/JUL/28, Daytime(0, 60, 0), *tz), InvalidDaytimeError);
+  EXPECT_THROW(Time(2013/JUL/28, Daytime(0, 0, 60), *tz), InvalidDaytimeError);
 
+  // FIXME: These should throw.
   EXPECT_TRUE(Time(10000,  0,  0,  0,  0,  0, *tz).is_invalid());
   EXPECT_TRUE(Time( 2013, 12,  0,  0,  0,  0, *tz).is_invalid());
   EXPECT_TRUE(Time( 2013,  0, 31,  0,  0,  0, *tz).is_invalid());
@@ -113,6 +114,7 @@ TEST(Time, from_parts_invalid) {
   EXPECT_TRUE(Time( 2013,  0,  0,  0, 60,  0, *tz).is_invalid());
   EXPECT_TRUE(Time( 2013,  0,  0,  0,  0, 60, *tz).is_invalid());
 
+  // FIXME: Invalid times should throw.
   EXPECT_TRUE(Time( 2013,  2,  9,  1, 59, 59, *tz).is_valid());
   EXPECT_TRUE(Time( 2013,  2,  9,  2,  0,  0, *tz).is_invalid());
   EXPECT_TRUE(Time( 2013,  2,  9,  2, 59, 59, *tz).is_invalid());
@@ -203,9 +205,9 @@ TEST(Unix32Time, zero) {
   EXPECT_EQ(21, date_parts.day);
 
   auto const daytime = time.get_utc_daytime<Daytime>();
-  auto const daytime_parts = daytime.get_parts();
-  EXPECT_EQ(19, daytime_parts.hour);
-  EXPECT_EQ(43, daytime_parts.minute);
-  EXPECT_EQ(52.0, daytime_parts.second);
+  auto const hms = daytime.get_hms();
+  EXPECT_EQ(19, hms.hour);
+  EXPECT_EQ(43, hms.minute);
+  EXPECT_EQ(52.0, hms.second);
 }
 

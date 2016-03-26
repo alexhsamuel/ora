@@ -52,5 +52,6 @@ def test_zero():
     assert p.time_zone.offset       == 0
     assert p.time_zone.is_dst       == False
 
-    midnight = Daytime.from_parts(0, 0, 0)
-    assert t == from_local((1/Jan/1, midnight), UTC)
+    assert t == from_local((1/Jan/1, MIDNIGHT), UTC)
+
+

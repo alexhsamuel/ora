@@ -29,6 +29,7 @@ GTEST_LIB       = $(GTEST_DIR)/gtest_main.a
 # Compiler and linker
 CXX            += -std=c++14
 CPPFLAGS        = -I$(CXX_INCDIR)
+# FIXME: Do we really need -pthread?
 CXXFLAGS        = -fPIC -g -Wall -pthread
 LDLIBS          = -lpthread
 

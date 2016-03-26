@@ -115,7 +115,7 @@ private:
 
   // Methods.
   static ref<Object> method_from_daytick        (PyTypeObject* type, Tuple* args, Dict* kw_args);
-  static ref<Object> method_from_parts          (PyTypeObject* type, Tuple* args, Dict* kw_args);
+  static ref<Object> method_from_hms          (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_ssm            (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_is_same             (PyDaytime*    self, Tuple* args, Dict* kw_args);
   static Methods<PyDaytime> tp_methods_;
@@ -126,7 +126,7 @@ private:
   static ref<Object> get_invalid                (PyDaytime* self, void*);
   static ref<Object> get_minute                 (PyDaytime* self, void*);
   static ref<Object> get_missing                (PyDaytime* self, void*);
-  static ref<Object> get_parts                  (PyDaytime* self, void*);
+  static ref<Object> get_hms                    (PyDaytime* self, void*);
   static ref<Object> get_second                 (PyDaytime* self, void*);
   static ref<Object> get_ssm                    (PyDaytime* self, void*);
   static ref<Object> get_valid                  (PyDaytime* self, void*);
@@ -404,13 +404,13 @@ PyDaytime<DAYTIME>::method_from_daytick(
 
 template<typename DAYTIME>
 ref<Object>
-PyDaytime<DAYTIME>::method_from_parts(
+PyDaytime<DAYTIME>::method_from_hms(
   PyTypeObject* const type,
   Tuple* const args,
   Dict* const kw_args)
 {
   if (kw_args != nullptr)
-    throw TypeError("from_parts() takes no keyword arguments");
+    throw TypeError("from_hms() takes no keyword arguments");
 
   Sequence* parts;
   // Accept either a single two- or three-element sequence, or three args.
@@ -422,13 +422,13 @@ PyDaytime<DAYTIME>::method_from_parts(
   else if (args->Length() == 2 || args->Length() == 3)
     parts = args;
   else
-    throw TypeError("from_parts() takes one or three arguments");
+    throw TypeError("from_hms() takes one or three arguments");
 
   long   const hour   = parts->GetItem(0)->long_value();
   long   const minute = parts->GetItem(1)->long_value();
   double const second
     = args->Length() == 3 ? parts->GetItem(2)->double_value() : 0;
-  return create(Daytime::from_parts(hour, minute, second), type);
+  return create(Daytime::from_hms(hour, minute, second), type);
 }
 
 
@@ -469,7 +469,7 @@ Methods<PyDaytime<DAYTIME>>
 PyDaytime<DAYTIME>::tp_methods_
   = Methods<PyDaytime>()
     .template add_class<method_from_daytick>        ("from_daytick")
-    .template add_class<method_from_parts>          ("from_parts")
+    .template add_class<method_from_hms>            ("from_hms")
     .template add_class<method_from_ssm>            ("from_ssm")
     .template add      <method_is_same>             ("is_same")
   ;
@@ -495,7 +495,7 @@ PyDaytime<DAYTIME>::get_hour(
   PyDaytime* self,
   void* /* closure */)
 {
-  return Long::FromLong(self->daytime_.get_parts().hour);
+  return Long::FromLong(self->daytime_.get_hms().hour);
 }
 
 
@@ -515,7 +515,7 @@ PyDaytime<DAYTIME>::get_minute(
   PyDaytime* self,
   void* /* closure */)
 {
-  return Long::FromLong(self->daytime_.get_parts().minute);
+  return Long::FromLong(self->daytime_.get_hms().minute);
 }
 
 
@@ -531,16 +531,16 @@ PyDaytime<DAYTIME>::get_missing(
 
 template<typename DAYTIME>
 ref<Object>
-PyDaytime<DAYTIME>::get_parts(
+PyDaytime<DAYTIME>::get_hms(
   PyDaytime* self,
   void* /* closure */)
 {
-  auto parts = self->daytime_.get_parts();
-  auto parts_obj = get_daytime_parts_type()->New();
-  parts_obj->initialize(0, Long::FromLong(parts.hour));
-  parts_obj->initialize(1, Long::FromLong(parts.minute));
-  parts_obj->initialize(2, Float::FromDouble(parts.second));
-  return std::move(parts_obj);
+  auto hms = self->daytime_.get_hms();
+  auto hms_obj = get_daytime_parts_type()->New();
+  hms_obj->initialize(0, Long::FromLong(hms.hour));
+  hms_obj->initialize(1, Long::FromLong(hms.minute));
+  hms_obj->initialize(2, Float::FromDouble(hms.second));
+  return std::move(hms_obj);
 }
 
 
@@ -550,7 +550,7 @@ PyDaytime<DAYTIME>::get_second(
   PyDaytime* self,
   void* /* closure */)
 {
-  return Float::FromDouble(self->daytime_.get_parts().second);
+  return Float::FromDouble(self->daytime_.get_hms().second);
 }
 
 
@@ -583,7 +583,7 @@ PyDaytime<DAYTIME>::tp_getsets_
     .template add_get<get_invalid>              ("invalid")
     .template add_get<get_minute>               ("minute")
     .template add_get<get_missing>              ("missing")
-    .template add_get<get_parts>                ("parts")
+    .template add_get<get_hms>                  ("hms")
     .template add_get<get_second>               ("second")
     .template add_get<get_ssm>                  ("ssm")
     .template add_get<get_valid>                ("valid")
@@ -696,7 +696,7 @@ parts_to_daytime(
   long   const minute   = parts->GetItem(1)->long_value();
   double const second
     = parts->Length() > 2 ? parts->GetItem(2)->double_value() : 0;
-  return DAYTIME::from_parts(hour, minute, second);
+  return DAYTIME(hour, minute, second);
 }
 
 
@@ -713,10 +713,10 @@ maybe_daytime(
   if (PyDateTimeAPI == nullptr)
     PyDateTime_IMPORT;
   if (PyTime_Check(obj))
-    return DAYTIME(
+    return DAYTIME::from_hms(
       PyDateTime_TIME_GET_HOUR(obj),
       PyDateTime_TIME_GET_MINUTE(obj),
-      PyDateTime_TIME_GET_SECOND(obj)
+        PyDateTime_TIME_GET_SECOND(obj)
       + 1e-6 * PyDateTime_TIME_GET_MICROSECOND(obj));
 
   // Try for a daytime type that has a 'daytick' attribute.

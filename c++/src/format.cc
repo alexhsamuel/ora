@@ -210,7 +210,7 @@ format_daytime(
   size_t& pos,
   StringBuilder& sb,
   Modifiers const& mods,
-  DaytimeParts const& daytime)
+  HmsDaytime const& daytime)
 {
   switch (pattern[pos]) {
   case 'h':
@@ -351,7 +351,7 @@ format_time(
   StringBuilder& /*sb*/,
   Modifiers     const& /*mods*/,
   DateParts     const& /*date_parts*/,
-  DaytimeParts  const& /*daytime_parts*/,
+  HmsDaytime  const& /*daytime_parts*/,
   TimeZoneParts const& /*time_zone_parts*/)
 {
   switch (pattern[pos]) {
@@ -381,7 +381,7 @@ void
 Format::format(
   StringBuilder& sb,
   DateParts const* date_parts,
-  DaytimeParts const* daytime_parts,
+  HmsDaytime const* daytime_parts,
   TimeZoneParts const* time_zone_parts)
   const
 {

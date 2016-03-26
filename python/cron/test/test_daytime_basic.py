@@ -83,8 +83,8 @@ def test_from_daytick1():
     assert not a.missing
 
 
-def test_from_parts0():
-    a = Daytime.from_parts(0, 0, 0)
+def test_from_hms0():
+    a = Daytime.from_hms(0, 0, 0)
     assert a.hour       ==  0
     assert a.minute     ==  0
     assert a.second     ==  0
@@ -95,8 +95,8 @@ def test_from_parts0():
     assert not a.missing
 
 
-def test_from_parts1():
-    a = Daytime.from_parts(12, 34, 56.75)
+def test_from_hms1():
+    a = Daytime.from_hms(12, 34, 56.75)
     assert a.hour       == 12
     assert a.minute     == 34
     assert a.second     == 56.75
@@ -106,8 +106,8 @@ def test_from_parts1():
     assert not a.missing
 
 
-def test_from_parts1():
-    a = Daytime.from_parts(23, 59, 59.999)
+def test_from_hms1():
+    a = Daytime.from_hms(23, 59, 59.999)
     assert a.hour       == 23
     assert a.minute     == 59
     assert_float_equal(a.second, 59.999)
@@ -152,15 +152,15 @@ def test_from_ssm2():
 
 
 def test_parts0():
-    assert Daytime.MIN.parts == (0, 0, 0)
+    assert Daytime.MIN.hms == (0, 0, 0)
 
-    p = Daytime.from_parts(12, 34, 56.5).parts
+    p = Daytime(12, 34, 56.5).hms
     assert p.hour == 12
     assert p.minute == 34
     assert p.second == 56.5
     assert p == (12, 34, 56.5)
 
-    p = Daytime.MAX.parts
+    p = Daytime.MAX.hms
     assert p.hour == 23
     assert p.minute == 59
     assert (60 - p.second) < 2 * Daytime.EPSILON
@@ -168,9 +168,12 @@ def test_parts0():
 
 def test_invalid():
     a = Daytime.INVALID
-    assert not (0 <= a.hour < 24)
-    assert not (0 <= a.minute < 60)
-    assert not (0 <= a.second < 60)
+    with pytest.raises(ValueError):
+        a.hour
+    with pytest.raises(ValueError):
+        a.minute
+    with pytest.raises(ValueError):
+        a.second
     assert not a.valid
     assert a.invalid
     assert not a.missing
@@ -178,9 +181,12 @@ def test_invalid():
 
 def test_missing():
     a = Daytime.MISSING
-    assert not (0 <= a.hour < 24)
-    assert not (0 <= a.minute < 60)
-    assert not (0 <= a.second < 60)
+    with pytest.raises(ValueError):
+        a.hour
+    with pytest.raises(ValueError):
+        a.minute
+    with pytest.raises(ValueError):
+        a.second
     assert not a.valid
     assert not a.invalid
     assert a.missing
@@ -209,7 +215,7 @@ def test_max():
 
 
 def test_is_same():
-    a = Daytime.from_parts(12, 34, 56.78)
+    a = Daytime(12, 34, 56.78)
     assert     a.is_same(a)
     assert not a.is_same(Daytime.MISSING)
     assert not a.is_same(Daytime.INVALID)
@@ -241,9 +247,9 @@ def test_comparison0():
 
 
 def test_comparison1():
-    a0 = Daytime.from_parts( 0,  0, 30)
-    a1 = Daytime.from_parts( 0, 30,  0)
-    a2 = Daytime.from_parts(12,  0,  0)
+    a0 = Daytime( 0,  0, 30)
+    a1 = Daytime( 0, 30,  0)
+    a2 = Daytime(12,  0,  0)
 
     assert     a0.is_same(a0)
     assert     a1.is_same(a1)
@@ -283,54 +289,54 @@ def test_comparison1():
 
 
 def test_add0():
-    a = Daytime.from_parts( 0,  0,  0)
-    assert a +      1 == Daytime.from_parts( 0,  0,  1)
-    assert a +     10 == Daytime.from_parts( 0,  0, 10)
-    assert a +    100 == Daytime.from_parts( 0,  1, 40)
-    assert a +   1000 == Daytime.from_parts( 0, 16, 40)
-    assert a +  10000 == Daytime.from_parts( 2, 46, 40)
-    assert a + 100000 == Daytime.from_parts( 3, 46, 40)
+    a = Daytime( 0,  0,  0)
+    assert a +      1 == Daytime( 0,  0,  1)
+    assert a +     10 == Daytime( 0,  0, 10)
+    assert a +    100 == Daytime( 0,  1, 40)
+    assert a +   1000 == Daytime( 0, 16, 40)
+    assert a +  10000 == Daytime( 2, 46, 40)
+    assert a + 100000 == Daytime( 3, 46, 40)
 
 
 def test_add1():
-    a = Daytime.from_parts(23, 50, 30)
-    assert a +      1 == Daytime.from_parts(23, 50, 31)
-    assert a +    100 == Daytime.from_parts(23, 52, 10)
-    assert a +  10000 == Daytime.from_parts( 2, 37, 10)
+    a = Daytime(23, 50, 30)
+    assert a +      1 == Daytime(23, 50, 31)
+    assert a +    100 == Daytime(23, 52, 10)
+    assert a +  10000 == Daytime( 2, 37, 10)
 
 
 def test_add2():
-    a = Daytime.from_parts(23, 59, 59.999)
-    assert near(a + 0.0001, Daytime.from_parts(23, 59, 59.9991))
-    assert near(a + 0.0005, Daytime.from_parts(23, 59, 59.9995))
-    assert near(a + 0.0010, Daytime.from_parts( 0,  0,  0.0000))
-    assert near(a + 0.0100, Daytime.from_parts( 0,  0,  0.0090))
-    assert near(a + 1     , Daytime.from_parts( 0,  0,  0.9990))
+    a = Daytime(23, 59, 59.999)
+    assert near(a + 0.0001, Daytime(23, 59, 59.9991))
+    assert near(a + 0.0005, Daytime(23, 59, 59.9995))
+    assert near(a + 0.0010, Daytime( 0,  0,  0.0000))
+    assert near(a + 0.0100, Daytime( 0,  0,  0.0090))
+    assert near(a + 1     , Daytime( 0,  0,  0.9990))
 
 
 def test_subtract0():
-    a = Daytime.from_parts( 0,  0,  0)
-    assert a -      1 == Daytime.from_parts(23, 59, 59)
-    assert a -     10 == Daytime.from_parts(23, 59, 50)
-    assert a -    100 == Daytime.from_parts(23, 58, 20)
-    assert a -   1000 == Daytime.from_parts(23, 43, 20)
-    assert a -  10000 == Daytime.from_parts(21, 13, 20)
-    assert a - 100000 == Daytime.from_parts(20, 13, 20)
+    a = Daytime( 0,  0,  0)
+    assert a -      1 == Daytime(23, 59, 59)
+    assert a -     10 == Daytime(23, 59, 50)
+    assert a -    100 == Daytime(23, 58, 20)
+    assert a -   1000 == Daytime(23, 43, 20)
+    assert a -  10000 == Daytime(21, 13, 20)
+    assert a - 100000 == Daytime(20, 13, 20)
 
 
 def test_subtract1():
-    a = Daytime.from_parts(23, 50, 30)
-    assert a -      1 == Daytime.from_parts(23, 50, 29)
-    assert a -    100 == Daytime.from_parts(23, 48, 50)
-    assert a -  10000 == Daytime.from_parts(21,  3, 50)
+    a = Daytime(23, 50, 30)
+    assert a -      1 == Daytime(23, 50, 29)
+    assert a -    100 == Daytime(23, 48, 50)
+    assert a -  10000 == Daytime(21,  3, 50)
 
 
 def test_subtract2():
-    a = Daytime.from_parts(23, 59, 59.999)
-    assert near(a - 0.0001, Daytime.from_parts(23, 59, 59.9989))
-    assert near(a - 0.0005, Daytime.from_parts(23, 59, 59.9985))
-    assert near(a - 0.0010, Daytime.from_parts(23, 59, 59.9980))
-    assert near(a - 0.0100, Daytime.from_parts(23, 59, 59.9890))
-    assert near(a - 1     , Daytime.from_parts(23, 59, 58.9990))
+    a = Daytime(23, 59, 59.999)
+    assert near(a - 0.0001, Daytime(23, 59, 59.9989))
+    assert near(a - 0.0005, Daytime(23, 59, 59.9985))
+    assert near(a - 0.0010, Daytime(23, 59, 59.9980))
+    assert near(a - 0.0100, Daytime(23, 59, 59.9890))
+    assert near(a - 1     , Daytime(23, 59, 58.9990))
     
 
