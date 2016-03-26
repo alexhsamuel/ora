@@ -4,14 +4,19 @@ else
   UNAME	       := $(shell uname -s)
 endif
 
+# Default target.
+all:
+
+#-------------------------------------------------------------------------------
+# Locations
+
 TOP 	    	= .
 # FIXME: Hack.  But we don't have realpath on OSX, do we?
 ABSTOP	    	= $(shell pwd)
 EXTDIR	    	= $(TOP)/external
 SHRDIR	    	= $(TOP)/share
 
-# Default target.
-all:
+ZONEINFO_DIR 	= $(SHRDIR)/zoneinfo
 
 #-------------------------------------------------------------------------------
 # C++ configuration
@@ -34,6 +39,34 @@ CXXFLAGS        = -fPIC -g -Wall
 CXX_DEPFLAGS	= -MT $@ -MMD -MP -MF $<.d
 LDFLAGS	    	= 
 LDLIBS          = 
+
+#-------------------------------------------------------------------------------
+# Python configuration
+
+# Python and tools
+PYTHON	    	= python3
+PYTEST	    	= py.test
+PYTHON_CONFIG	= python3-config
+
+# Directories
+PY_DIR	    	= $(TOP)/python
+PY_PKGDIR   	= $(PY_DIR)/cron
+PY_PFXDIR    	= $(shell $(PYTHON_CONFIG) --prefix)
+NPY_INCDIRS 	= $(shell $(PYTHON) -c 'from numpy.distutils.misc_util import get_numpy_include_dirs as g; print(" ".join(g()));')
+
+#-------------------------------------------------------------------------------
+# gtest
+
+$(GTEST_LIB):	    $(GTEST_DIR)
+	$(MAKE) -C $< $(notdir $@)
+
+#-------------------------------------------------------------------------------
+# zoneinfo
+
+$(ZONEINFO_DIR):
+	rm -rf $@
+	mkdir -p $(dir $@)
+	tar jxf $(EXTDIR)/zoneinfo/zoneinfo-2016a.tar.bz2 -C $(dir $@)
 
 #-------------------------------------------------------------------------------
 # C++ building and linking
@@ -92,8 +125,12 @@ CXX_TST_OKS     = $(CXX_TST_SRCS:%.cc=%.ok)
 
 # Use gtest and cron to build tests.
 $(CXX_TST_OBJS): CPPFLAGS += -I$(GTEST_INCDIR) -DGTEST_HAS_TR1_TUPLE=0
-$(CXX_TST_BINS): $(CXX_LIB)
+$(CXX_TST_BINS): $(GTEST_LIB) $(CXX_LIB)
 $(CXX_TST_BINS): LDLIBS += $(GTEST_LIB) $(CXX_LIB)
+
+# Use our zoneinfo directory for running tests.
+$(CXX_TST_OKS):	    	$(ZONEINFO_DIR)
+$(CXX_TST_OKS): export ZONEINFO = $(ABSTOP)/$(ZONEINFO_DIR)
 
 # Running tests.
 %.ok:    	    	%
@@ -101,22 +138,6 @@ $(CXX_TST_BINS): LDLIBS += $(GTEST_LIB) $(CXX_LIB)
 	@echo testing $(shell basename $<) \
 	&& (cd $(CXX_TSTDIR) && ./$(shell basename $<)) \
 	&& touch $@
-
-#-------------------------------------------------------------------------------
-# Python configuration
-
-# Python and tools
-PYTHON	    	= python3
-PYTEST	    	= py.test
-PYTHON_CONFIG	= python3-config
-
-# Directories
-PY_DIR	    	= $(TOP)/python
-PY_PKGDIR   	= $(PY_DIR)/cron
-PY_PFXDIR    	= $(shell $(PYTHON_CONFIG) --prefix)
-
-# Numpy
-NPY_INCDIRS 	= $(shell $(PYTHON) -c 'from numpy.distutils.misc_util import get_numpy_include_dirs as g; print(" ".join(g()));')
 
 #-------------------------------------------------------------------------------
 # Python building extension code
@@ -136,24 +157,13 @@ $(PY_OBJS): CXXFLAGS += -DNDEBUG
 $(PY_OBJS): CPPFLAGS += $(NPY_INCDIRS:%=-I%)
 
 # Linking Python exension modules.
-$(PY_EXTMOD): $(PY_OBJS) $(CXX_LIB)
+$(PY_EXTMOD): 	    	$(PY_OBJS) $(CXX_LIB)
 $(PY_EXTMOD): LDFLAGS += -L$(PY_PFXDIR)/lib
 
 # For compatibility and testing.
 .PHONY: python-setuptools
 python-setuptools:	$(CXX_LIB)
 	cd python; $(PYTHON) setup.py build_ext --inplace
-
-#-------------------------------------------------------------------------------
-# zoneinfo
-
-.PHONY: zoneinfo
-zoneinfo:
-	mkdir -p $(SHRDIR)
-	tar jxf $(EXTDIR)/zoneinfo/zoneinfo-2016a.tar.bz2 -C $(SHRDIR)
-
-# Use our zoneinfo directory for running tests.
-export ZONEINFO = $(ABSTOP)/share/zoneinfo
 
 #-------------------------------------------------------------------------------
 # Phony targets
@@ -167,12 +177,17 @@ test:			test-cxx test-python
 .PHONY: clean
 clean:			clean-cxx clean-python 
 
+.PHONY: depclean
+depclean:   	    	
+	rm -f $(DEPS)
+
 .PHONY: cxx
 cxx:	    	    	$(CXX_LIB)
 
 .PHONY: clean-cxx
 clean-cxx:
-	rm -f $(CXX_OBJS) $(CXX_LIB) $(CXX_BINS) $(OKS)
+	rm -f $(CXX_OBJS) $(CXX_LIB) $(CXX_BINS) $(CXX_TST_OBJS) \
+	      $(CXX_TST_BINS) $(CXX_TST_OKS) 
 
 .PHONY: test-cxx-bins
 test-cxx-bins:	    	$(CXX_TST_BINS)
