@@ -727,7 +727,7 @@ PyDate<DATE>::get_year(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(self->date_.get_ymd().year);
+  return Long::FromLong(self->date_.get_ordinal_date().year);
 }
 
 
@@ -852,7 +852,7 @@ make_date(
 {
   auto const api = PyDateAPI::get(type);
   if (api == nullptr)
-    throw TypeError("not a date type"s + *type->Repr());
+    throw TypeError("not a date type: "s + *type->Repr());
   else
     return api->from_datenum(datenum);
 }
