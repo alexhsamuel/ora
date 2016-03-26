@@ -61,3 +61,5 @@ make zoneinfo
   fixed offset, which means decomposition into components is more expensive, but
   other operations are cheaper.
 
+- `datetime.datetime` can be "localized", with a time zone, in which case it _almost_ specifies a physical instant; or it can be "unlocalized", in which case it doesn't specify a physical instant at all.  Cron's `Time` always represents a unique physical instant, but can be rendered in any time zone.
+
