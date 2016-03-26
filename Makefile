@@ -85,6 +85,10 @@ CXX_BINS        = $(CXX_BIN_SRCS:%.cc=%)
 %.o:	    	    	%.cc %.cc.d
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CXX_DEPFLAGS) $< -c -o $@
 
+# How to generate assember for C++ files.
+%.s:	    	    	%.cc
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CXX_DEPFLAGS) $< -S -o $@
+
 # How to link an executable. 
 %:  	    	    	%.o
 %:  	    	    	%.o 
