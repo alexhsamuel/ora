@@ -827,6 +827,15 @@ convert_to_time(
 
 //------------------------------------------------------------------------------
 
+// Use explicit instantiation for the main instances.
+extern template class PyTime<cron::Time>;
+extern template class PyTime<cron::SmallTime>;
+extern template class PyTime<cron::NsecTime>;
+extern template class PyTime<cron::Unix32Time>;
+extern template class PyTime<cron::Unix64Time>;
+
+//------------------------------------------------------------------------------
+
 }  // namespace aslib
 
 

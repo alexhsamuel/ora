@@ -759,5 +759,11 @@ convert_to_daytime(
 
 //------------------------------------------------------------------------------
 
+// Use explicit instantiation for the main instances.
+extern template class PyDaytime<cron::Daytime>;
+extern template class PyDaytime<cron::Daytime32>;
+
+//------------------------------------------------------------------------------
+
 }  // namespace aslib
 

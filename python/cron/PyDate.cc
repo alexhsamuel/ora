@@ -67,6 +67,12 @@ std::unordered_map<PyTypeObject*, std::unique_ptr<PyDateAPI>>
 PyDateAPI::apis_;
 
 //------------------------------------------------------------------------------
+// Excplicit template instances
+
+template class PyDate<cron::Date>;
+template class PyDate<cron::Date16>;
+
+//------------------------------------------------------------------------------
 
 }  // namespace aslib
 

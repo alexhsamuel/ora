@@ -36,6 +36,12 @@ get_daytime_parts_type()
 
 
 //------------------------------------------------------------------------------
+// Explicit template instances
+
+template class PyDaytime<cron::Daytime>;
+template class PyDaytime<cron::Daytime32>;
+
+//------------------------------------------------------------------------------
 
 }  // namespace aslib
 

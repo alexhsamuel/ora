@@ -174,9 +174,9 @@ private:
     virtual ref<Object> from_datenum(cron::Datenum const datenum) const
       { return PyDate::create(Date::from_datenum(datenum)); }
     virtual bool is_invalid(Object* const date) const
-      { return ((PyDate*) date)->is_invalid(); }
+      { return ((PyDate*) date)->date_.is_invalid(); }
     virtual bool is_missing(Object* const date) const
-      { return ((PyDate*) date)->is_missing(); }
+      { return ((PyDate*) date)->date_.is_missing(); }
 
   };
 
@@ -961,6 +961,12 @@ convert_to_date(
   throw py::TypeError("can't convert to a date: "s + *obj->Repr());
 }
 
+
+//------------------------------------------------------------------------------
+
+// Use explicit instantiation for the main instances.
+extern template class PyDate<cron::Date>;
+extern template class PyDate<cron::Date16>;
 
 //------------------------------------------------------------------------------
 

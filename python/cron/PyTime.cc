@@ -41,6 +41,15 @@ std::unordered_map<PyTypeObject*, std::unique_ptr<PyTimeAPI>>
 PyTimeAPI::apis_;
 
 //------------------------------------------------------------------------------
+// Explicit template instances
+
+template class PyTime<cron::Time>;
+template class PyTime<cron::SmallTime>;
+template class PyTime<cron::NsecTime>;
+template class PyTime<cron::Unix32Time>;
+template class PyTime<cron::Unix64Time>;
+
+//------------------------------------------------------------------------------
 
 }  // namespace aslib
 
