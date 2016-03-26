@@ -35,7 +35,8 @@ GTEST_LIB       = $(GTEST_DIR)/gtest_main.a
 # Compiler and linker
 CXX            += -std=c++14
 CPPFLAGS        = -I$(CXX_INCDIR)
-CXXFLAGS        = -fPIC -g -Wall
+CXXFLAGS    	= -g -Wall
+override CXXFLAGS += -fPIC
 CXX_DEPFLAGS	= -MT $@ -MMD -MP -MF $<.d
 LDFLAGS	    	= 
 LDLIBS          = 
