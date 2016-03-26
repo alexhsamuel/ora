@@ -3,8 +3,11 @@
 
 #include "cron/tzfile.hh"
 
-using namespace alxs::cron;
-using alxs::fs::Filename;
+using namespace cron;
+
+using aslib::fs::Filename;
+
+//------------------------------------------------------------------------------
 
 int
 main(
