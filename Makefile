@@ -206,9 +206,6 @@ clean-python:
 test-python: 		$(PY_EXTMOD)
 	$(PYTEST) python
 
-.PHONY: testclean-python
-testclean-python:
-
 #-------------------------------------------------------------------------------
 
 # Include autodependency makefles.
