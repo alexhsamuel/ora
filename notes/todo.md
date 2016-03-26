@@ -7,7 +7,6 @@
 1. `format()` method and `tp_format` for Date, Daytime, Time.
 1. Replace `tp_print` with API for Python Daytime.
 1. Kill off DateParts.
-1. Fix auto dependency generation, per [here](http://make.mad-scientist.net/papers/advanced-auto-dependency-generation/).
 
 
 # C++ API
@@ -109,8 +108,6 @@
 - Replace tp_print hack with API for Python Date and Daytime.
 
 - Make a 'zoneinfo dir' abstraction; load time zones from there.
-
-- Fix .dd make rules to work generally.
 
 # Maybe / someday
 
