@@ -321,6 +321,7 @@ struct DaytimeTraits
   static Offset constexpr denominator = (Offset) 1 << (8 * sizeof(Offset) - SECS_PER_DAY_BITS);
 };
 
+extern template class DaytimeTemplate<DaytimeTraits>;
 using Daytime = DaytimeTemplate<DaytimeTraits>;
 
 
@@ -331,6 +332,7 @@ struct Daytime32Traits
   static Offset constexpr denominator = (Offset) 1 << (8 * sizeof(Offset) - SECS_PER_DAY_BITS);
 };
 
+extern template class DaytimeTemplate<Daytime32Traits>;
 using Daytime32 = DaytimeTemplate<Daytime32Traits>;
 
 

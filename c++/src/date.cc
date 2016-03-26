@@ -1,11 +1,11 @@
-#include "cron/daytime.hh"
+#include "cron/date.hh"
 
 namespace cron {
 
 //------------------------------------------------------------------------------
 
-template class DaytimeTemplate<DaytimeTraits>;
-template class DaytimeTemplate<Daytime32Traits>;
+template class DateTemplate<DateTraits>;
+template class DateTemplate<Date16Traits>;
 
 //------------------------------------------------------------------------------
 

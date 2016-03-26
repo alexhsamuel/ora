@@ -484,6 +484,7 @@ struct TimeTraits
   static bool    constexpr use_invalid  = true;
 };
 
+extern template class TimeTemplate<TimeTraits>;
 using Time =  TimeTemplate<TimeTraits>;
 
 
@@ -501,6 +502,7 @@ struct SmallTimeTraits
   static bool    constexpr use_invalid  = true;
 };
 
+extern template class TimeTemplate<SmallTimeTraits>;
 using SmallTime = TimeTemplate<SmallTimeTraits>;
 
 
@@ -518,6 +520,7 @@ struct NsecTimeTraits
   static bool    constexpr use_invalid  = true;
 };
 
+extern template class TimeTemplate<NsecTimeTraits>;
 using NsecTime = TimeTemplate<NsecTimeTraits>;
 
 
@@ -535,6 +538,7 @@ struct Unix32TimeTraits
   static bool    constexpr use_invalid  = true;
 };
 
+extern template class TimeTemplate<Unix32TimeTraits>;
 using Unix32Time = TimeTemplate<Unix32TimeTraits>;
 
 
@@ -552,6 +556,7 @@ struct Unix64TimeTraits
   static bool    constexpr use_invalid  = true;
 };
 
+extern template class TimeTemplate<Unix64TimeTraits>;
 using Unix64Time = TimeTemplate<Unix64TimeTraits>;
 
 
@@ -560,7 +565,7 @@ using Unix64Time = TimeTemplate<Unix64TimeTraits>;
 //------------------------------------------------------------------------------
 
 template<typename TRAITS>
-extern inline TimeTemplate<TRAITS>
+inline TimeTemplate<TRAITS>
 operator+(
   TimeTemplate<TRAITS> time,
   double shift)
@@ -575,7 +580,7 @@ operator+(
 
 
 template<typename TRAITS>
-extern inline TimeTemplate<TRAITS>
+inline TimeTemplate<TRAITS>
 operator-(
   TimeTemplate<TRAITS> time,
   double shift)
@@ -590,7 +595,7 @@ operator-(
 
 
 template<typename TRAITS>
-extern inline double
+inline double
 operator-(
   TimeTemplate<TRAITS> time0,
   TimeTemplate<TRAITS> time1)

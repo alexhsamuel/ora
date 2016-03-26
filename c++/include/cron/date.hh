@@ -387,7 +387,9 @@ struct DateTraits
   static Offset  constexpr invalid  = std::numeric_limits<Offset>::max();
 };
 
+extern template class DateTemplate<DateTraits>;
 using Date = DateTemplate<DateTraits>;
+
 
 struct Date16Traits
 {
@@ -401,7 +403,9 @@ struct Date16Traits
   static Offset  constexpr invalid  = std::numeric_limits<Offset>::max();
 };
 
+extern template class DateTemplate<Date16Traits>;
 using Date16 = DateTemplate<Date16Traits>;
+
 
 //------------------------------------------------------------------------------
 // Functions.
