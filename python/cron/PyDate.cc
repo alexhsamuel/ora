@@ -45,9 +45,19 @@ ref<Object>
 get_month_obj(
   int month)
 {
-  static auto month_type = import("cron", "Month");
-  ref<Tuple> args = Tuple::builder << Long::FromLong(month);
-  return month_type->CallObject(args);
+  static ref<Object> months[12];
+  static bool initialized = false;
+  if (!initialized) {
+    // Do a lazy one-time load of the 12 month constants.
+    static auto month_type = import("cron", "Month");
+    for (int m = 0; m < 12; ++m) {
+      ref<Tuple> args = Tuple::builder << Long::FromLong(m + 1);
+      months[m] = month_type->CallObject(args);
+    }
+    initialized = true;
+  }
+
+  return months[month - 1].inc();
 }
 
 
@@ -55,9 +65,19 @@ ref<Object>
 get_weekday_obj(
   int weekday)
 {
-  static auto weekday_type = import("cron", "Weekday");
-  ref<Tuple> args = Tuple::builder << Long::FromLong(weekday);
-  return weekday_type->CallObject(args);
+  static ref<Object> weekdays[7];
+  static bool initialized = false;
+  if (!initialized) {
+    // Do a lazy one-time load of the seven weekday constants.
+    static auto weekday_type = import("cron", "Weekday");
+    for (int w = 0; w < 7; ++w) {
+      ref<Tuple> args = Tuple::builder << Long::FromLong(w);
+      weekdays[w] = weekday_type->CallObject(args);
+    }
+    initialized = true;
+  }
+
+  return weekdays[weekday].inc();
 }
 
 
