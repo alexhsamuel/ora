@@ -22,4 +22,4 @@ from   .ext import set_up_numpy as _set_up_numpy
 # Add all the numpy stuff to the extension module.
 _set_up_numpy()
 
-from   .ext import year, month, day
+from   .ext import day, month, year, ymdi

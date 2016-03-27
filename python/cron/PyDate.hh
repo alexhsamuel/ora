@@ -850,6 +850,7 @@ make_date(
   cron::Datenum const datenum,
   Object* type=(Object*) &PyDateDefault::type_)
 {
+  std::cerr << "type=" << (void*) type << "\n";
   auto const api = PyDateAPI::get(type);
   if (api == nullptr)
     throw TypeError("not a date type: "s + *type->Repr());
