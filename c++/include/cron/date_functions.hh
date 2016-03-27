@@ -1,6 +1,7 @@
 #pragma once
 
 #include "aslib/math.hh"
+#include "cron/date.hh"
 #include "cron/types.hh"
 
 namespace cron {
@@ -52,7 +53,8 @@ from_ymd(
   Month const month,
   Day const day)
 {
-  return DATE(datenum_to_offset<TRAITS>(ymd_to_datenum(year, month, day)));
+  return DATE(datenum_to_offset<DATE::TRAITS>(
+    ymd_to_datenum(year, month, day)));
 }
 
 
@@ -65,7 +67,7 @@ from_week_date(
 {
   return
       week_date_is_valid(week_year, week, weekday)
-    ? DATE(datenum_to_offset<TRAITS>(
+    ? DATE(datenum_to_offset<DATE::TRAITS>(
         week_date_to_datenum(week_year, week, weekday)))
     : DATE::INVALID;
 }
@@ -84,6 +86,24 @@ get_datenum(
 }
 
 
+template<typename DATE>
+inline cron::Day
+get_day(
+  DATE const date)
+{
+  return date.is_valid() ? date.get_ymd().day + 1 : cron::DAY_INVALID;
+}
+
+
+template<typename DATE>
+inline cron::Month
+get_month(
+  DATE const date)
+{
+  return date.is_valid() ? date.get_ymd().month + 1 : cron::MONTH_INVALID;
+}
+
+
 template<class DATE>
 inline OrdinalDate
 get_ordinal_date(
@@ -93,21 +113,21 @@ get_ordinal_date(
 }
 
 
+template<typename DATE>
+inline cron::Year
+get_year(
+  DATE const date)
+{
+  return date.is_valid() ? date.get_ymd().year : cron::YEAR_INVALID;
+}
+
+
 template<class DATE>
 inline YmdDate
 get_ymd(
   DATE const date)
 {
   return date.is_valid() ? date.get_ymd() : YmdDate::get_invalid();
-}
-
-
-template<class DATE>
-inline Weekday
-get_weekday(
-  DATE const date)
-{
-  return date.is_valid() ? date.get_weekday() : WEEKDAY_INVALID;
 }
 
 
@@ -126,6 +146,15 @@ get_ymdi(
   DATE const date)
 {
   return date.is_valid() ? date.get_ymdi() : YMDI_INVALID;
+}
+
+
+template<class DATE>
+inline Weekday
+get_weekday(
+  DATE const date)
+{
+  return date.is_valid() ? date.get_weekday() : WEEKDAY_INVALID;
 }
 
 

@@ -2,6 +2,7 @@
 #include <Python.h>
 
 #include "aslib/mem.hh"
+#include "cron/date_functions.hh"
 #include "py.hh"
 #include "numpy.hh"
 #include "PyDate.hh"
@@ -89,47 +90,6 @@ DateDtype<PYDATE>::get()
 }
 
 
-// FIXME: In date.hh!
-
-template<typename DATE>
-inline cron::Day
-day(
-  DATE const date)
-{
-  return date.is_valid() ? date.get_ymd().day + 1 : cron::DAY_INVALID;
-}
-
-
-template<typename DATE>
-inline cron::Month
-month(
-  DATE const date)
-{
-  return date.is_valid() ? date.get_ymd().month + 1 : cron::MONTH_INVALID;
-}
-
-
-template<typename DATE>
-inline cron::Year
-year(
-  DATE const date)
-{
-  return date.is_valid() ? date.get_ymd().year : cron::YEAR_INVALID;
-}
-
-
-template<typename DATE>
-inline int32_t
-ymdi(
-  DATE const date)
-{
-  return 
-      date.is_valid() 
-    ? cron::datenum_to_ymdi(date.get_datenum()) 
-    : cron::YMDI_INVALID;
-}
-
-
 template<typename PYDATE>
 void
 DateDtype<PYDATE>::add(
@@ -145,19 +105,23 @@ DateDtype<PYDATE>::add(
 
   auto const ufunc_day = create_or_get_ufunc(module, "day", 1, 1);
   ufunc_day->add_loop_1(
-    dtype->type_num, NPY_UINT8, ufunc_loop_1<Date, uint8_t, day<Date>>);
+    dtype->type_num, NPY_UINT8, ufunc_loop_1<Date, uint8_t, 
+    cron::get_day<Date>>);
 
   auto const ufunc_month = create_or_get_ufunc(module, "month", 1, 1);
   ufunc_month->add_loop_1(
-    dtype->type_num, NPY_UINT8, ufunc_loop_1<Date, uint8_t, month<Date>>);
+    dtype->type_num, NPY_UINT8, ufunc_loop_1<Date, uint8_t, 
+    cron::get_month<Date>>);
 
   auto const ufunc_year = create_or_get_ufunc(module, "year", 1, 1);
   ufunc_year->add_loop_1(
-    dtype->type_num, NPY_INT16, ufunc_loop_1<Date, int16_t, year<Date>>);
+    dtype->type_num, NPY_INT16, ufunc_loop_1<Date, int16_t, 
+    cron::get_year<Date>>);
 
   auto const ufunc_ymdi = create_or_get_ufunc(module, "ymdi", 1, 1);
   ufunc_ymdi->add_loop_1(
-    dtype->type_num, NPY_INT32, ufunc_loop_1<Date, int32_t, ymdi<Date>>);
+    dtype->type_num, NPY_INT32, ufunc_loop_1<Date, int32_t, 
+    cron::get_ymdi<Date>>);
 }
 
 

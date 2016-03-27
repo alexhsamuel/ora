@@ -18,7 +18,38 @@ namespace cron {
 using namespace aslib;
 
 //------------------------------------------------------------------------------
-// Generic date type.
+// Helper functions
+//------------------------------------------------------------------------------
+
+template<class TRAITS>
+inline typename TRAITS::Offset
+datenum_to_offset(
+  Datenum const datenum)
+{
+  return (typename TRAITS::Offset) ((long) datenum - (long) TRAITS::base);
+}
+
+
+template<class TRAITS>
+inline bool
+offset_is_valid(
+  typename TRAITS::Offset const offset)
+{
+  return in_range(TRAITS::min, offset, TRAITS::max);
+}
+
+
+template<class TRAITS>
+inline Datenum
+offset_to_datenum(
+  typename TRAITS::Offset const offset)
+{
+  return (Datenum) ((int64_t) TRAITS::base + (int64_t) offset);
+}
+
+
+//------------------------------------------------------------------------------
+// Generic date type
 //------------------------------------------------------------------------------
 
 /*
@@ -89,7 +120,8 @@ public:
   : DateTemplate(
         date.is_invalid() ? TRAITS::invalid
       : date.is_missing() ? TRAITS::missing
-      : valid_offset<DateRangeError>(datenum_to_offset(date.get_datenum())))
+      : valid_offset<DateRangeError>(
+          datenum_to_offset<TRAITS>(date.get_datenum())))
   {
   }
 
@@ -138,7 +170,8 @@ public:
     offset_ = 
         date.is_invalid() ? TRAITS::invalid
       : date.is_missing() ? TRAITS::missing
-      : valid_offset<DateRangeError>(datenum_to_offset(date.get_datenum()));
+      : valid_offset<DateRangeError>(
+          datenum_to_offset<TRAITS>(date.get_datenum()));
     return *this;
   }
 
@@ -167,7 +200,7 @@ public:
     Datenum const datenum) 
   { 
     if (datenum_is_valid(datenum))
-      return from_offset(datenum_to_offset(datenum));
+      return from_offset(datenum_to_offset<TRAITS>(datenum));
     else
       throw InvalidDateError();
   }
@@ -247,14 +280,14 @@ public:
 
   // Accessors  ----------------------------------------------------------------
 
-  bool      is_valid()      const { return offset_is_valid(offset_); }
+  bool      is_valid()      const { return offset_is_valid<TRAITS>(offset_); }
   bool      is_invalid()    const { return offset_ == TRAITS::invalid; }
   bool      is_missing()    const { return offset_ == TRAITS::missing; }
 
   Offset get_offset() const 
     { return valid_offset(); }
   Datenum get_datenum() const 
-    { return offset_to_datenum(valid_offset()); }
+    { return offset_to_datenum<TRAITS>(valid_offset()); }
   OrdinalDate get_ordinal_date() const 
     { return cron::datenum_to_ordinal_date(get_datenum()); }
   YmdDate get_ymd() const
@@ -283,13 +316,6 @@ private:
 
   // Helper methods  -----------------------------------------------------------
 
-  static bool
-  offset_is_valid(
-    Offset const offset)
-  {
-    return in_range(TRAITS::min, offset, TRAITS::max);
-  }
-
   /*
    * Returns `offset` if it is valid; else throws EXCEPTION.
    */
@@ -298,24 +324,10 @@ private:
   valid_offset(
     Offset const offset)
   {
-    if (offset_is_valid(offset))
+    if (offset_is_valid<TRAITS>(offset))
       return offset;
     else
       throw EXCEPTION();
-  }
-
-  static Offset
-  datenum_to_offset(
-    Datenum const datenum)
-  {
-    return (Offset) ((long) datenum - (long) TRAITS::base);
-  }
-
-  static Datenum
-  offset_to_datenum(
-    Offset const offset)
-  {
-    return (Datenum) ((int64_t) TRAITS::base + (int64_t) offset);
   }
 
   static Offset 
@@ -325,7 +337,7 @@ private:
     Day const day)
   {
     if (ymd_is_valid(year, month, day))
-      return datenum_to_offset(ymd_to_datenum(year, month, day));
+      return datenum_to_offset<TRAITS>(ymd_to_datenum(year, month, day));
     else
       throw InvalidDateError();
   }
