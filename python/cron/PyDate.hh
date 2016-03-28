@@ -965,9 +965,12 @@ convert_to_date(
 
 //------------------------------------------------------------------------------
 
+#ifdef __clang__
 // Use explicit instantiation for the main instances.
+// FIXME: GCC 5.2.1 generates PyDate<>::type_ in BSS, which breaks linking.
 extern template class PyDate<cron::Date>;
 extern template class PyDate<cron::Date16>;
+#endif
 
 //------------------------------------------------------------------------------
 

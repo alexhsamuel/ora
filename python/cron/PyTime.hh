@@ -827,12 +827,15 @@ convert_to_time(
 
 //------------------------------------------------------------------------------
 
+#ifdef __clang__
 // Use explicit instantiation for the main instances.
+// FIXME: GCC 5.2.1 generates PyTime<>::type_ in BSS, which breaks linking.
 extern template class PyTime<cron::Time>;
 extern template class PyTime<cron::SmallTime>;
 extern template class PyTime<cron::NsecTime>;
 extern template class PyTime<cron::Unix32Time>;
 extern template class PyTime<cron::Unix64Time>;
+#endif
 
 //------------------------------------------------------------------------------
 

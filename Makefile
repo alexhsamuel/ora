@@ -41,6 +41,11 @@ CXX_DEPFLAGS	= -MT $@ -MMD -MP -MF $<.d
 LDFLAGS	    	= 
 LDLIBS          = 
 
+ifeq ($(UNAME),Linux)
+  CXXFLAGS     += -pthread
+  LDLIBS       += -lpthread
+endif
+
 #-------------------------------------------------------------------------------
 # Python configuration
 
