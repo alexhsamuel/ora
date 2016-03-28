@@ -1,7 +1,8 @@
 # -*- python -*-
 
+import cron
+import cron.numpy
 from   cron import *
-import cron.numpy as crnp
 from   datetime import *
 import numpy as np
 import pytz
@@ -17,6 +18,10 @@ SEC = timedelta(0, 1)
 bd = 1973/Dec/3
 t = from_local((bd, Daytime(12, 30, 0)), UTC)
 dt = pytz.UTC.localize(datetime(1973, 12, 3, 12, 30))
+
+da = np.zeros(16, dtype=Date.dtype)
+da[1] = bd
+da[-1] = Date.MAX - 100000
 
 tz = TimeZone("US/Eastern")
 
