@@ -1,5 +1,6 @@
 # Work List
 
+1. Offset month, day by one.
 1. Rename `InvalidDateError` -> `BadDateError` _et fils_.
 1. Basic string parsing for `convert_to_*()` functions.
 1. Function (not method) APIs for dates, daytimes, and times.
