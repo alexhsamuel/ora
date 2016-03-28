@@ -21,9 +21,17 @@ PRINT_ARR_FUNCS
   = true;
 
 
+class DateDtypeAPI
+{
+public:
+
+  virtual ref<Object> function_date_from_ymdi(Array*) = 0;
+
+};
+
+
 template<typename PYDATE>
-class 
-DateDtype
+class DateDtype
 {
 public:
 
@@ -46,6 +54,15 @@ private:
   static void           copyswapn(Date*, npy_intp, Date const*, npy_intp, npy_intp, int, PyArrayObject*);
   static Object*        getitem(Date const*, PyArrayObject*);
   static int            setitem(Object*, Date*, PyArrayObject*);
+
+  class API
+  : public DateDtypeAPI
+  {
+  public:
+
+    virtual ref<Object> function_date_from_ymdi(Array*);
+
+  };
 
   static PyArray_Descr* descr_;
 
@@ -79,7 +96,7 @@ DateDtype<PYDATE>::get()
     descr_->names           = nullptr;
     descr_->f               = arr_funcs;
     descr_->metadata        = nullptr;
-    descr_->c_metadata      = nullptr;
+    descr_->c_metadata      = (NpyAuxData*) new API();
     descr_->hash            = -1;
 
     if (PyArray_RegisterDataType(descr_) < 0)
@@ -220,6 +237,28 @@ DateDtype<PYDATE>::setitem(
 //------------------------------------------------------------------------------
 
 template<typename PYDATE>
+ref<Object>
+DateDtype<PYDATE>::API::function_date_from_ymdi(
+  Array* const ymdi_arr)
+{
+  using Date = typename PYDATE::Date;
+
+  // Create the output array.
+  auto const size = ymdi_arr->size();
+  auto date_arr = Array::SimpleNew1D(size, descr_->type_num);
+  // Fill it.
+  auto const y = ymdi_arr->get_const_ptr<int>();
+  auto const d = date_arr->get_ptr<Date>();
+  for (npy_intp i = 0; i < size; ++i)
+    d[i] = cron::from_ymdi<Date>(y[i]);
+
+  return std::move(date_arr);
+}
+
+
+//------------------------------------------------------------------------------
+
+template<typename PYDATE>
 PyArray_Descr*
 DateDtype<PYDATE>::descr_
   = nullptr;
@@ -228,5 +267,4 @@ DateDtype<PYDATE>::descr_
 //------------------------------------------------------------------------------
 
 }  // namespace aslib
-
 

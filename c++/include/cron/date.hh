@@ -242,7 +242,7 @@ public:
   from_ymdi(
     int const ymdi) 
   { 
-    if (ymdi_is_valid(ymdi))
+    if (ymdi_is_valid(ymdi)) 
       return from_datenum(ymdi_to_datenum(ymdi));
     else
       throw InvalidDateError();
@@ -290,7 +290,8 @@ public:
   datenum_to_offset(
     Datenum const datenum)
   {
-    return (Offset) ((long) datenum - (long) TRAITS::base);
+    auto offset = (long) datenum - (long) TRAITS::base;
+    return overflows<Offset>(offset) ? TRAITS::invalid : (Offset) offset;
   }
 
   static bool

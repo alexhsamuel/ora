@@ -22,4 +22,6 @@ from   .ext import set_up_numpy as _set_up_numpy
 # Add all the numpy stuff to the extension module.
 _set_up_numpy()
 
+# FIXME: Should we put this all in a submodule?
 from   .ext import day, month, year, ymdi
+from   .ext import date_from_ymdi

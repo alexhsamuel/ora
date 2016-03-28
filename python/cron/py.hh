@@ -664,12 +664,15 @@ public:
     { return PyModule_Check(obj); }
   static auto Create(PyModuleDef* def)
     { return ref<Module>::take(PyModule_Create(def)); }
+  static ref<Module> ImportModule(char const* const name)
+    { return ref<Module>::take(check_not_null(PyImport_ImportModule(name))); }
+
+  void AddFunctions(PyMethodDef* functions) 
+    { check_zero(PyModule_AddFunctions(this, functions)); }
   void AddObject(char const* name, PyObject* val)
     { check_zero(PyModule_AddObject(this, name, incref(val))); }
   char const* GetName()
     { return PyModule_GetName(this); }
-  static ref<Module> ImportModule(char const* const name)
-    { return ref<Module>::take(check_not_null(PyImport_ImportModule(name))); }
 
   void add(PyTypeObject* type)
   {

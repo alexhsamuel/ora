@@ -16,6 +16,41 @@ namespace np {
 
 //------------------------------------------------------------------------------
 
+class Array
+: public Object
+{
+public:
+
+  static bool Check(PyObject* const obj)
+    { return PyArray_Check(obj); }
+  static ref<Array> FromAny(PyObject* const obj, PyArray_Descr* const dtype, int const dims_min, int const dims_max, int const requirements, PyObject* const context=nullptr)
+    { return take_not_null<Array>(PyArray_FromAny(obj, dtype, dims_min, dims_max, requirements, context)); }
+  static ref<Array> FromAny(PyObject* const obj, int const dtype, int const dims_min, int const dims_max, int const requirements, PyObject* const context=nullptr)
+    { return FromAny(obj, PyArray_DescrFromType(dtype), dims_min, dims_max, requirements, context); }
+  static ref<Array> SimpleNew(int const nd, npy_intp* const dims, int const typenum)
+    { return take_not_null<Array>(PyArray_SimpleNew(nd, dims, typenum)); }
+  static ref<Array> SimpleNew1D(npy_intp const size, int const typenum)
+    { return SimpleNew(1, const_cast<npy_intp*>(&size), typenum); }
+
+  npy_intp size()
+    { return PyArray_SIZE(array_this()); }
+  template<typename T> T const* get_const_ptr()
+    { return reinterpret_cast<T*>(PyArray_DATA(array_this())); }
+  template<typename T> T* get_ptr()
+    { return reinterpret_cast<T*>(PyArray_DATA(array_this())); }
+
+private:
+
+  // The way we have things set up right now, we can't have Array derive both
+  // Object and PyArrayObject.
+  // FIXME: Hackamoley.
+  PyArrayObject* array_this() { return reinterpret_cast<PyArrayObject*>(this); }
+
+};
+
+
+//------------------------------------------------------------------------------
+
 class UFunc
 : public Object
 {

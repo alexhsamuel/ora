@@ -75,6 +75,34 @@ in_interval(
 }
 
 
+/*
+ * True if `val` overflows when conveted from integer types `FROM` to `TO`.
+ */
+template<typename TO, typename FROM>
+inline bool constexpr
+overflows(
+  FROM val) 
+{
+  static_assert(
+    std::numeric_limits<FROM>::is_integer, 
+    "overflows() for integer types only");
+  static_assert(
+    std::numeric_limits<TO>::is_integer, 
+    "overflows() for integer types only");
+
+  return
+    std::numeric_limits<TO>::is_signed
+    ? 
+       (   !std::numeric_limits<FROM>::is_signed 
+        && (uintmax_t) val > (uintmax_t) INTMAX_MAX) 
+    || (intmax_t) val < (intmax_t) std::numeric_limits<TO>::min() 
+    || (intmax_t) val > (intmax_t) std::numeric_limits<TO>::max()
+    : 
+       val < 0
+    || (uintmax_t) val > (uintmax_t) std::numeric_limits<TO>::max();
+}
+
+
 template<typename T>
 inline T
 round_div(
