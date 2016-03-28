@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cassert>
-#include <experimental/optional>
+#include <limits>
 
 namespace aslib {
 
@@ -173,48 +173,6 @@ inline bool mul_overflow(unsigned long long a, unsigned long long b, unsigned lo
 inline bool mul_overflow(         int       a,          int       b,          int      & r) { return __builtin_smul_overflow  (a, b, &r); }
 inline bool mul_overflow(         long      a,          long      b,          long     & r) { return __builtin_smull_overflow (a, b, &r); }
 inline bool mul_overflow(         long long a,          long long b,          long long& r) { return __builtin_smulll_overflow(a, b, &r); }
-
-template<typename T>
-std::experimental::optional<T>
-add_overflow(
-  T a,
-  T b)
-{
-  T r;
-  if (add_overflow(a, b, r))
-    return {};
-  else
-    return r;
-}
-
-
-template<typename T>
-std::experimental::optional<T>
-sub_overflow(
-  T a,
-  T b)
-{
-  T r;
-  if (sub_overflow(a, b, r))
-    return {};
-  else
-    return r;
-}
-
-
-template<typename T>
-std::experimental::optional<T>
-mul_overflow(
-  T a,
-  T b)
-{
-  T r;
-  if (mul_overflow(a, b, r))
-    return {};
-  else
-    return r;
-}
-
 
 //------------------------------------------------------------------------------
 
