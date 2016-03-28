@@ -18,10 +18,10 @@ namespace cron {
 template<class DATE>
 inline DATE
 from_offset(
-  class DATE::Offset const offset)
+  typename DATE::Offset const offset)
 {
   return 
-      offset_is_valid<DATE::TRAITS>(offset)
+      DATE::offset_is_valid(offset)
     ? DATE::from_offset(offset)
     : DATE::INVALID;
 }
@@ -32,7 +32,7 @@ inline DATE
 from_datenum(
   Datenum const datenum)
 {
-  return DATE(datenum_to_offset<DATE::TRAITS>(datenum));
+  return from_offset<DATE>(DATE::datenum_to_offset(datenum));
 }
 
 
@@ -42,7 +42,10 @@ from_ordinal_date(
   Year const year,
   Ordinal const ordinal)
 {
-  return from_datenum<DATE>(ordinal_date_to_datenum(year, ordinal));
+  return 
+      ordinal_date_is_valid(year, ordinal)
+    ? from_datenum<DATE>(ordinal_date_to_datenum(year, ordinal))
+    : DATE::INVALID;
 }
 
 
@@ -53,8 +56,22 @@ from_ymd(
   Month const month,
   Day const day)
 {
-  return DATE(datenum_to_offset<DATE::TRAITS>(
-    ymd_to_datenum(year, month, day)));
+  return 
+      ymd_is_valid(year, month, day) 
+    ? from_datenum<DATE>(ymd_to_datenum(year, month, day))
+    : DATE::INVALID;
+}
+
+
+template<class DATE>
+inline DATE
+from_ymdi(
+  int const ymdi)
+{
+  return 
+      ymdi_is_valid(ymdi)
+    ? from_datenum<DATE>(ymdi_to_datenum(ymdi))
+    : DATE::INVALID;
 }
 
 
@@ -67,8 +84,7 @@ from_week_date(
 {
   return
       week_date_is_valid(week_year, week, weekday)
-    ? DATE(datenum_to_offset<DATE::TRAITS>(
-        week_date_to_datenum(week_year, week, weekday)))
+    ? from_datenum<DATE>(week_date_to_datenum(week_year, week, weekday))
     : DATE::INVALID;
 }
 

@@ -103,25 +103,21 @@ DateDtype<PYDATE>::add(
   assert(dict != nullptr);
   dict->SetItemString("dtype", (Object*) dtype);
 
-  auto const ufunc_day = create_or_get_ufunc(module, "day", 1, 1);
-  ufunc_day->add_loop_1(
-    dtype->type_num, NPY_UINT8, ufunc_loop_1<Date, uint8_t, 
-    cron::get_day<Date>>);
+  create_or_get_ufunc(module, "day", 1, 1)->add_loop_1(
+    dtype->type_num, NPY_UINT8, 
+    ufunc_loop_1<Date, uint8_t, cron::get_day<Date>>);
+  
+  create_or_get_ufunc(module, "month", 1, 1)->add_loop_1(
+    dtype->type_num, NPY_UINT8, 
+    ufunc_loop_1<Date, uint8_t, cron::get_month<Date>>);
 
-  auto const ufunc_month = create_or_get_ufunc(module, "month", 1, 1);
-  ufunc_month->add_loop_1(
-    dtype->type_num, NPY_UINT8, ufunc_loop_1<Date, uint8_t, 
-    cron::get_month<Date>>);
+  create_or_get_ufunc(module, "year", 1, 1)->add_loop_1(
+    dtype->type_num, NPY_INT16, 
+    ufunc_loop_1<Date, int16_t, cron::get_year<Date>>);
 
-  auto const ufunc_year = create_or_get_ufunc(module, "year", 1, 1);
-  ufunc_year->add_loop_1(
-    dtype->type_num, NPY_INT16, ufunc_loop_1<Date, int16_t, 
-    cron::get_year<Date>>);
-
-  auto const ufunc_ymdi = create_or_get_ufunc(module, "ymdi", 1, 1);
-  ufunc_ymdi->add_loop_1(
-    dtype->type_num, NPY_INT32, ufunc_loop_1<Date, int32_t, 
-    cron::get_ymdi<Date>>);
+  create_or_get_ufunc(module, "ymdi", 1, 1)->add_loop_1(
+    dtype->type_num, NPY_INT32, 
+    ufunc_loop_1<Date, int32_t, cron::get_ymdi<Date>>);
 }
 
 
