@@ -86,7 +86,7 @@ CXX_BINS        = $(CXX_BIN_SRCS:%.cc=%)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CXX_DEPFLAGS) $< -c -o $@
 
 # How to generate assember for C++ files.
-%.s:	    	    	%.cc
+%.s:	    	    	%.cc force
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $< -S -o $@
 
 # How to link an executable. 
@@ -210,6 +210,10 @@ clean-python:
 .PHONY: test-python
 test-python: 		$(PY_EXTMOD)
 	$(PYTEST) python
+
+# Use this target as a dependency to force another target to be rebuilt.
+.PHONY: force
+force: ;
 
 #-------------------------------------------------------------------------------
 
