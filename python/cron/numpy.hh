@@ -1,5 +1,9 @@
 #pragma once
 
+#define PY_ARRAY_UNIQUE_SYMBOL cron_numpy
+#define NO_IMPORT_ARRAY
+#define NPY_NO_DEPRECATED_API NPY_API_VERSION
+
 #include <Python.h>
 #include <numpy/arrayobject.h>
 #include <numpy/npy_math.h>
@@ -9,10 +13,10 @@
 #include "aslib/mem.hh"
 #include "py.hh"
 
-using namespace aslib;
-
 namespace py {
 namespace np {
+
+using namespace aslib;
 
 //------------------------------------------------------------------------------
 
@@ -67,6 +71,7 @@ public:
    * Adds a loop function with one argument and one return.
    */
   void add_loop_1(int arg0_type, int ret0_type, PyUFuncGenericFunction);
+  void add_loop_1(PyArray_Descr*, PyArray_Descr*, PyUFuncGenericFunction);
 
 };
 
@@ -109,6 +114,25 @@ UFunc::add_loop_1(
       arg0_type,
       fn,
       arg_types,
+      nullptr));
+}
+
+
+inline void
+UFunc::add_loop_1(
+  PyArray_Descr* const arg0_dtype,
+  PyArray_Descr* const ret0_dtype,
+  PyUFuncGenericFunction const fn)
+{
+  // FIXME: Check that num_args == 1 and num_rets == 1.
+
+  PyArray_Descr* dtypes[] = {arg0_dtype, ret0_dtype};
+  check_zero(
+    PyUFunc_RegisterLoopForDescr(
+      (PyUFuncObject*) this,
+      arg0_dtype,
+      fn,
+      dtypes,
       nullptr));
 }
 

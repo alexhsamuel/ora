@@ -104,6 +104,19 @@ inline void check_zero(int value)
 }
 
 
+/*
+ * Raises 'Exception' if value is not one.
+ */
+inline void
+check_one(
+  int const value)
+{
+  assert(value == 0 || value == 1);
+  if (value != 1)
+    throw Exception();
+}
+
+
 /**
  * Raises 'Exception' if 'value' is -1; returns it otherwise.
  */
@@ -825,6 +838,24 @@ public:
   }
 
   void initialize(PyObject* tuple) const {}
+
+};
+
+
+//------------------------------------------------------------------------------
+
+class List
+: public Sequence
+{
+public:
+
+  static bool Check(PyObject* const obj)
+    { return PyList_Check(obj); }
+  static ref<List> New(Py_ssize_t const len)
+    { return take_not_null<List>(PyList_New(len)); }
+
+  void initialize(Py_ssize_t const index, Object* const obj)
+    { PyList_SET_ITEM(this, index, incref(obj)); }
 
 };
 

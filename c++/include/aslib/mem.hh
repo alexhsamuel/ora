@@ -13,7 +13,7 @@ template<typename T>
 inline T*
 step(
   T* const p,
-  npy_intp const step)
+  int const step)
 {
   return (T*) (((char*) p) + step);
 }

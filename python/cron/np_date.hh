@@ -4,6 +4,7 @@
 #include "aslib/mem.hh"
 #include "cron/date_functions.hh"
 #include "py.hh"
+#include "np_types.hh"
 #include "numpy.hh"
 #include "PyDate.hh"
 
@@ -107,6 +108,28 @@ DateDtype<PYDATE>::get()
 }
 
 
+// FIXME: Remove this once Month, Day are 1-indexed.
+namespace {
+
+template<typename DATE>
+inline cron::YmdDate
+get_ymd_(
+  DATE const date)
+{
+  if (date.is_valid()) {
+    cron::YmdDate ymd = date.get_ymd();
+    ymd.month++;
+    ymd.day++;
+    return ymd;
+  }
+  else
+    return cron::YmdDate::get_invalid();
+}
+
+
+}  // anonymous namespace
+
+
 template<typename PYDATE>
 void
 DateDtype<PYDATE>::add(
@@ -120,19 +143,23 @@ DateDtype<PYDATE>::add(
   assert(dict != nullptr);
   dict->SetItemString("dtype", (Object*) dtype);
 
-  create_or_get_ufunc(module, "day", 1, 1)->add_loop_1(
+  create_or_get_ufunc(module, "get_day", 1, 1)->add_loop_1(
     dtype->type_num, NPY_UINT8, 
     ufunc_loop_1<Date, uint8_t, cron::get_day<Date>>);
   
-  create_or_get_ufunc(module, "month", 1, 1)->add_loop_1(
+  create_or_get_ufunc(module, "get_month", 1, 1)->add_loop_1(
     dtype->type_num, NPY_UINT8, 
     ufunc_loop_1<Date, uint8_t, cron::get_month<Date>>);
 
-  create_or_get_ufunc(module, "year", 1, 1)->add_loop_1(
+  create_or_get_ufunc(module, "get_year", 1, 1)->add_loop_1(
     dtype->type_num, NPY_INT16, 
     ufunc_loop_1<Date, int16_t, cron::get_year<Date>>);
 
-  create_or_get_ufunc(module, "ymdi", 1, 1)->add_loop_1(
+  create_or_get_ufunc(module, "get_ymd", 1, 1)->add_loop_1(
+    dtype, get_ymd_dtype(),
+    ufunc_loop_1<Date, cron::YmdDate, cron::get_ymd_<Date>>);
+
+  create_or_get_ufunc(module, "get_ymdi", 1, 1)->add_loop_1(
     dtype->type_num, NPY_INT32, 
     ufunc_loop_1<Date, int32_t, cron::get_ymdi<Date>>);
 }

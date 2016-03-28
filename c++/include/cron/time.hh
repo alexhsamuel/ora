@@ -610,7 +610,7 @@ operator-(
     // FIXME: What do we do with invalid/missing values?
     return 0;
   else
-    throw ValueError("can't subtract invalid times");
+    throw cron::ValueError("can't subtract invalid times");
 }
 
 

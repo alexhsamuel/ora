@@ -23,5 +23,5 @@ from   .ext import set_up_numpy as _set_up_numpy
 _set_up_numpy()
 
 # FIXME: Should we put this all in a submodule?
-from   .ext import day, month, year, ymdi
+from   .ext import get_day, get_month, get_year, get_ymd, get_ymdi
 from   .ext import date_from_ymdi

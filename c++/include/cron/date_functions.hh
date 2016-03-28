@@ -139,20 +139,20 @@ get_year(
 
 
 template<class DATE>
-inline YmdDate
-get_ymd(
-  DATE const date)
-{
-  return date.is_valid() ? date.get_ymd() : YmdDate::get_invalid();
-}
-
-
-template<class DATE>
 inline WeekDate
 get_week_date(
   DATE const date)
 {
   return date.is_valid() ? date.get_week_date() : WeekDate::get_invalid();
+}
+
+
+template<class DATE>
+inline YmdDate
+get_ymd(
+  DATE const date)
+{
+  return date.is_valid() ? date.get_ymd() : YmdDate::get_invalid();
 }
 
 

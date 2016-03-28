@@ -1,8 +1,18 @@
 #include <cassert>
 
-#define NPY_NO_DEPRECATED_API NPY_API_VERSION
-
 #include <Python.h>
+
+// Note: Order is important here!
+//
+// In this, and only this, compilation unit, we need to #include the numpy
+// headers without NO_IMPORT_ARRAY #defined.  In all other compilation units,
+// this macro is defined, to make sure a single shared copy of the API is used.
+// 
+// See http://docs.scipy.org/doc/numpy/reference/c-api.array.html#importing-the-api.
+//
+// FIXME: Encapsulate this so that no human ever ever has to deal with it again.
+#define PY_ARRAY_UNIQUE_SYMBOL cron_numpy
+#define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include <numpy/arrayobject.h>
 #include <numpy/npy_math.h>
 #include <numpy/ufuncobject.h>
@@ -10,6 +20,7 @@
 
 #include "py.hh"
 #include "np_date.hh"
+#include "numpy.hh"
 
 using namespace py;
 using namespace aslib;
