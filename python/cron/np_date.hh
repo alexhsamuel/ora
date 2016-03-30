@@ -146,19 +146,18 @@ DateDtype<PYDATE>::add(
   create_or_get_ufunc(module, "get_day", 1, 1)->add_loop_1(
     dtype->type_num, NPY_UINT8, 
     ufunc_loop_1<Date, uint8_t, cron::get_day<Date>>);
-  
   create_or_get_ufunc(module, "get_month", 1, 1)->add_loop_1(
     dtype->type_num, NPY_UINT8, 
     ufunc_loop_1<Date, uint8_t, cron::get_month<Date>>);
-
+  create_or_get_ufunc(module, "get_weekday", 1, 1)->add_loop_1(
+    dtype->type_num, NPY_UINT8,
+    ufunc_loop_1<Date, uint8_t, cron::get_weekday<Date>>);
   create_or_get_ufunc(module, "get_year", 1, 1)->add_loop_1(
     dtype->type_num, NPY_INT16, 
     ufunc_loop_1<Date, int16_t, cron::get_year<Date>>);
-
   create_or_get_ufunc(module, "get_ymd", 1, 1)->add_loop_1(
     dtype, get_ymd_dtype(),
     ufunc_loop_1<Date, cron::YmdDate, cron::get_ymd_<Date>>);
-
   create_or_get_ufunc(module, "get_ymdi", 1, 1)->add_loop_1(
     dtype->type_num, NPY_INT32, 
     ufunc_loop_1<Date, int32_t, cron::get_ymdi<Date>>);
