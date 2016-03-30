@@ -13,6 +13,8 @@ using namespace py;
 
 //------------------------------------------------------------------------------
 
+extern PyArray_Descr* get_ordinal_date_dtype();
+extern PyArray_Descr* get_week_date_dtype();
 extern PyArray_Descr* get_ymd_dtype();
 
 //------------------------------------------------------------------------------

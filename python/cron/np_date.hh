@@ -108,8 +108,38 @@ DateDtype<PYDATE>::get()
 }
 
 
-// FIXME: Remove this once Month, Day are 1-indexed.
+// FIXME: Remove these once Month, Day, Ordinal, Week are 1-indexed.
 namespace {
+
+template<typename DATE>
+inline cron::OrdinalDate
+get_ordinal_date_(
+  DATE const date)
+{
+  if (date.is_valid()) {
+    cron::OrdinalDate od = date.get_ordinal_date();
+    od.ordinal++;
+    return od;
+  }
+  else
+    return cron::OrdinalDate::get_invalid();
+}
+
+
+template<typename DATE>
+inline cron::WeekDate
+get_week_date_(
+  DATE const date)
+{
+  if (date.is_valid()) {
+    cron::WeekDate wd = date.get_week_date();
+    wd.week++;
+    return wd;
+  }
+  else
+    return cron::WeekDate::get_invalid();
+}
+
 
 template<typename DATE>
 inline cron::YmdDate
@@ -149,6 +179,12 @@ DateDtype<PYDATE>::add(
   create_or_get_ufunc(module, "get_month", 1, 1)->add_loop_1(
     dtype->type_num, NPY_UINT8, 
     ufunc_loop_1<Date, uint8_t, cron::get_month<Date>>);
+  create_or_get_ufunc(module, "get_ordinal_date", 1, 1)->add_loop_1(
+    dtype, get_ordinal_date_dtype(),
+    ufunc_loop_1<Date, cron::OrdinalDate, get_ordinal_date_<Date>>);
+  create_or_get_ufunc(module, "get_week_date", 1, 1)->add_loop_1(
+    dtype, get_week_date_dtype(),
+    ufunc_loop_1<Date, cron::WeekDate, get_week_date_<Date>>);
   create_or_get_ufunc(module, "get_weekday", 1, 1)->add_loop_1(
     dtype->type_num, NPY_UINT8,
     ufunc_loop_1<Date, uint8_t, cron::get_weekday<Date>>);
