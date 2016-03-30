@@ -30,6 +30,32 @@ using namespace aslib;
 namespace {
 
 ref<Object>
+date_from_ymd(
+  Module* /* module */,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* arg_names[] = {"year", "month", "day", "dtype", nullptr};
+  PyObject* year_arg;
+  PyObject* month_arg;
+  PyObject* day_arg;
+  PyArray_Descr* dtype = DateDtype<PyDateDefault>::get();
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "OOO|$O!", arg_names,
+    &year_arg, &month_arg, &day_arg, &PyArrayDescr_Type, &dtype);
+  auto year_arr  = Array::FromAny(year_arg,  aslib::np::YEAR_TYPE,  1, 1, NPY_ARRAY_CARRAY_RO);
+  auto month_arr = Array::FromAny(month_arg, aslib::np::MONTH_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO);
+  auto day_arr   = Array::FromAny(day_arg,   aslib::np::DAY_TYPE,   1, 1, NPY_ARRAY_CARRAY_RO);
+
+  // FIXME: Encapsulate this.
+  auto const api = (DateDtypeAPI*) dtype->c_metadata;
+  assert(api != nullptr);
+
+  return api->function_date_from_ymd(year_arr, month_arr, day_arr);
+}
+
+
+ref<Object>
 date_from_ymdi(
   Module* /* module */,
   Tuple* const args,
@@ -42,10 +68,10 @@ date_from_ymdi(
     args, kw_args, "O|$O!", arg_names,
     &ymdi_arg, &PyArrayDescr_Type, &dtype);
   auto ymdi_arr
-    = Array::FromAny(ymdi_arg, NPY_INT32, 1, 1, NPY_ARRAY_CARRAY_RO);
+    = Array::FromAny(ymdi_arg, aslib::np::YMDI_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO);
   // OK, we have an aligned 1D int32 array.
   // FIXME: Encapsulate this, and check that it is a cron date dtype.
-  auto api = (DateDtypeAPI*) dtype->c_metadata;
+  auto const api = (DateDtypeAPI*) dtype->c_metadata;
   assert(api != nullptr);
 
   return api->function_date_from_ymdi(ymdi_arr);
@@ -55,6 +81,7 @@ date_from_ymdi(
 auto
 functions 
   = Methods<Module>()
+    .add<date_from_ymd>             ("date_from_ymd")
     .add<date_from_ymdi>            ("date_from_ymdi")
   ;
   

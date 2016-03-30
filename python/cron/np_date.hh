@@ -26,6 +26,8 @@ class DateDtypeAPI
 {
 public:
 
+  virtual ~DateDtypeAPI() {}
+  virtual ref<Object> function_date_from_ymd(Array*, Array*, Array*) = 0;
   virtual ref<Object> function_date_from_ymdi(Array*) = 0;
 
 };
@@ -61,6 +63,8 @@ private:
   {
   public:
 
+    virtual ~API() {}
+    virtual ref<Object> function_date_from_ymd(Array*, Array*, Array*);
     virtual ref<Object> function_date_from_ymdi(Array*);
 
   };
@@ -297,6 +301,33 @@ DateDtype<PYDATE>::setitem(
 
 
 //------------------------------------------------------------------------------
+
+template<typename PYDATE>
+ref<Object>
+DateDtype<PYDATE>::API::function_date_from_ymd(
+  Array* const year_arr,
+  Array* const month_arr,
+  Array* const day_arr)
+{
+  using Date = typename PYDATE::Date;
+
+  // Create the output array.
+  auto const size = year_arr->size();
+  if (month_arr->size() != size || day_arr->size() != size)
+    throw py::ValueError("year, month, day must be the same size");
+  auto date_arr = Array::SimpleNew1D(size, descr_->type_num);
+
+  // Fill it.
+  auto const y = year_arr->get_const_ptr<cron::Year>();
+  auto const m = month_arr->get_const_ptr<cron::Month>();
+  auto const d = day_arr->get_const_ptr<cron::Day>();
+  auto const r = date_arr->get_ptr<Date>();
+  for (npy_intp i = 0; i < size; ++i)
+    r[i] = cron::from_ymd<Date>(y[i], m[i] - 1, d[i] - 1);
+
+  return std::move(date_arr);
+}
+
 
 template<typename PYDATE>
 ref<Object>
