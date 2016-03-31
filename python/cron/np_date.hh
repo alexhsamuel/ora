@@ -17,9 +17,10 @@ using namespace py::np;
 
 //------------------------------------------------------------------------------
 
+// FIXME: Remove this, eventually.
 bool constexpr
 PRINT_ARR_FUNCS
-  = true;
+  = false;
 
 
 class DateDtypeAPI
@@ -27,6 +28,8 @@ class DateDtypeAPI
 public:
 
   virtual ~DateDtypeAPI() {}
+  virtual ref<Object> function_date_from_ordinal_date(Array*, Array*) = 0;
+  virtual ref<Object> function_date_from_week_date(Array*, Array*, Array*) = 0;
   virtual ref<Object> function_date_from_ymd(Array*, Array*, Array*) = 0;
   virtual ref<Object> function_date_from_ymdi(Array*) = 0;
 
@@ -64,8 +67,10 @@ private:
   public:
 
     virtual ~API() {}
-    virtual ref<Object> function_date_from_ymd(Array*, Array*, Array*);
-    virtual ref<Object> function_date_from_ymdi(Array*);
+    virtual ref<Object> function_date_from_ordinal_date(Array*, Array*) override;
+    virtual ref<Object> function_date_from_week_date(Array*, Array*, Array*) override;
+    virtual ref<Object> function_date_from_ymd(Array*, Array*, Array*) override;
+    virtual ref<Object> function_date_from_ymdi(Array*) override;
 
   };
 
@@ -301,6 +306,58 @@ DateDtype<PYDATE>::setitem(
 
 
 //------------------------------------------------------------------------------
+
+template<typename PYDATE>
+ref<Object>
+DateDtype<PYDATE>::API::function_date_from_ordinal_date(
+  Array* const year_arr,
+  Array* const ordinal_arr)
+{
+  using Date = typename PYDATE::Date;
+
+  // Create the output array.
+  auto const size = year_arr->size();
+  if (ordinal_arr->size() != size)
+    throw py::ValueError("year, ordinal be the same size");
+  auto date_arr = Array::SimpleNew1D(size, descr_->type_num);
+
+  // Fill it.
+  auto const y = year_arr->get_const_ptr<cron::Year>();
+  auto const o = ordinal_arr->get_const_ptr<cron::Ordinal>();
+  auto const r = date_arr->get_ptr<Date>();
+  for (npy_intp i = 0; i < size; ++i)
+    r[i] = cron::from_ordinal_date<Date>(y[i], o[i] - 1);
+
+  return std::move(date_arr);
+}
+
+
+template<typename PYDATE>
+ref<Object>
+DateDtype<PYDATE>::API::function_date_from_week_date(
+  Array* const week_year_arr,
+  Array* const week_arr,
+  Array* const weekday_arr)
+{
+  using Date = typename PYDATE::Date;
+
+  // Create the output array.
+  auto const size = week_year_arr->size();
+  if (week_arr->size() != size || weekday_arr->size() != size)
+    throw py::ValueError("week_year, week, weekday be the same size");
+  auto date_arr = Array::SimpleNew1D(size, descr_->type_num);
+
+  // Fill it.
+  auto const y = week_year_arr->get_const_ptr<cron::Year>();
+  auto const w = week_arr->get_const_ptr<cron::Week>();
+  auto const e = weekday_arr->get_const_ptr<cron::Weekday>();
+  auto const r = date_arr->get_ptr<Date>();
+  for (npy_intp i = 0; i < size; ++i)
+    r[i] = cron::from_week_date<Date>(y[i], w[i] - 1, e[i]);
+
+  return std::move(date_arr);
+}
+
 
 template<typename PYDATE>
 ref<Object>

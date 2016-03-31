@@ -30,6 +30,62 @@ using namespace aslib;
 namespace {
 
 ref<Object>
+date_from_ordinal_date(
+  Module* /* module */,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* arg_names[] = {"year", "ordinal", nullptr};
+  PyObject* year_arg;
+  PyObject* ordinal_arg;
+  PyArray_Descr* dtype = DateDtype<PyDateDefault>::get();
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "OO|$O!", arg_names,
+    &year_arg, &ordinal_arg, &PyArrayDescr_Type, &dtype);
+
+  // FIXME: Encapsulate this.
+  auto const api = (DateDtypeAPI*) dtype->c_metadata;
+  assert(api != nullptr);
+
+  return api->function_date_from_ordinal_date(
+    Array::FromAny(
+      year_arg, aslib::np::YEAR_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO),
+    Array::FromAny(
+      ordinal_arg, aslib::np::ORDINAL_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO));
+}
+
+
+ref<Object>
+date_from_week_date(
+  Module* /* module */,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* arg_names[] 
+    = {"week_year", "week", "weekday", "dtype", nullptr};
+  PyObject* week_year_arg;
+  PyObject* week_arg;
+  PyObject* weekday_arg;
+  PyArray_Descr* dtype = DateDtype<PyDateDefault>::get();
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "OOO|$O!", arg_names,
+    &week_year_arg, &week_arg, &weekday_arg, &PyArrayDescr_Type, &dtype);
+
+  // FIXME: Encapsulate this.
+  auto const api = (DateDtypeAPI*) dtype->c_metadata;
+  assert(api != nullptr);
+
+  return api->function_date_from_week_date(
+    Array::FromAny(
+      week_year_arg, aslib::np::YEAR_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO),
+    Array::FromAny(
+      week_arg, aslib::np::WEEK_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO),
+    Array::FromAny(
+      weekday_arg, aslib::np::WEEKDAY_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO));
+}
+
+
+ref<Object>
 date_from_ymd(
   Module* /* module */,
   Tuple* const args,
@@ -43,15 +99,15 @@ date_from_ymd(
   Arg::ParseTupleAndKeywords(
     args, kw_args, "OOO|$O!", arg_names,
     &year_arg, &month_arg, &day_arg, &PyArrayDescr_Type, &dtype);
-  auto year_arr  = Array::FromAny(year_arg,  aslib::np::YEAR_TYPE,  1, 1, NPY_ARRAY_CARRAY_RO);
-  auto month_arr = Array::FromAny(month_arg, aslib::np::MONTH_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO);
-  auto day_arr   = Array::FromAny(day_arg,   aslib::np::DAY_TYPE,   1, 1, NPY_ARRAY_CARRAY_RO);
 
   // FIXME: Encapsulate this.
   auto const api = (DateDtypeAPI*) dtype->c_metadata;
   assert(api != nullptr);
 
-  return api->function_date_from_ymd(year_arr, month_arr, day_arr);
+  return api->function_date_from_ymd(
+    Array::FromAny(year_arg, aslib::np::YEAR_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO),
+    Array::FromAny(month_arg, aslib::np::MONTH_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO),
+    Array::FromAny(day_arg, aslib::np::DAY_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO));
 }
 
 
@@ -81,6 +137,8 @@ date_from_ymdi(
 auto
 functions 
   = Methods<Module>()
+    .add<date_from_ordinal_date>    ("date_from_ordinal_date")
+    .add<date_from_week_date>       ("date_from_week_date")
     .add<date_from_ymd>             ("date_from_ymd")
     .add<date_from_ymdi>            ("date_from_ymdi")
   ;
