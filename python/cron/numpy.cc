@@ -170,9 +170,11 @@ set_up_numpy(
   DateDtype<PyDate<cron::Date16>>::add(sub);
 
   sub->AddFunctions(functions);
+
   sub->AddObject("ORDINAL_DATE_DTYPE",  (Object*) get_ordinal_date_dtype());
   sub->AddObject("WEEK_DATE_DTYPE",     (Object*) get_week_date_dtype());
   sub->AddObject("YMD_DTYPE",           (Object*) get_ymd_dtype());
+
   module->AddObject("numpy", sub);
 
   return none_ref();
