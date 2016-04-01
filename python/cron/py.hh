@@ -678,7 +678,9 @@ public:
   static auto Create(PyModuleDef* def)
     { return ref<Module>::take(PyModule_Create(def)); }
   static ref<Module> ImportModule(char const* const name)
-    { return ref<Module>::take(check_not_null(PyImport_ImportModule(name))); }
+    { return take_not_null<Module>(PyImport_ImportModule(name)); }
+  static ref<Module> New(char const* name)
+    { return take_not_null<Module>(PyModule_New(name)); }
 
   void AddFunctions(PyMethodDef* functions) 
     { check_zero(PyModule_AddFunctions(this, functions)); }

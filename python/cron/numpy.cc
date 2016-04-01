@@ -163,10 +163,17 @@ set_up_numpy(
   if (_import_umath() < 0) 
     throw ImportError("failed to import numpy.core.umath");
 
-  DateDtype<PyDate<cron::Date>>::add(module);
-  DateDtype<PyDate<cron::Date16>>::add(module);
+  // Put everything in a submodule `numpy` (even though this is not a package).
+  auto const sub = Module::New("cron.ext.numpy");
 
-  module->AddFunctions(functions);
+  DateDtype<PyDate<cron::Date>>::add(sub);
+  DateDtype<PyDate<cron::Date16>>::add(sub);
+
+  sub->AddFunctions(functions);
+  sub->AddObject("ORDINAL_DATE_DTYPE",  (Object*) get_ordinal_date_dtype());
+  sub->AddObject("WEEK_DATE_DTYPE",     (Object*) get_week_date_dtype());
+  sub->AddObject("YMD_DTYPE",           (Object*) get_ymd_dtype());
+  module->AddObject("numpy", sub);
 
   return none_ref();
 }

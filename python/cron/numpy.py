@@ -17,24 +17,16 @@ will have a `dtype` attribute.  For example:
 #-------------------------------------------------------------------------------
 
 import numpy
-from   .ext import set_up_numpy as _set_up_numpy
+from   . import ext
 
 # Add all the numpy stuff to the extension module.
-_set_up_numpy()
+ext.set_up_numpy()
 
-# FIXME: Should we put this all in a submodule?
-from   .ext import (
-    date_from_ordinal_date, 
-    date_from_week_date, 
-    date_from_ymd, 
-    date_from_ymdi,
-    get_day, 
-    get_month, 
-    get_ordinal_date, 
-    get_week_date, 
-    get_weekday, 
-    get_year, 
-    get_ymd, 
-    get_ymdi,
-)
+# We can't "from .ext.numpy import *" since .ext isn't a package.
+globals().update({ 
+    n: o 
+    for n, o in ext.numpy.__dict__.items() 
+    if not n.startswith("_") 
+})
 
+del ext
