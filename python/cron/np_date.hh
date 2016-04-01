@@ -60,6 +60,7 @@ private:
   static void           copyswapn(Date*, npy_intp, Date const*, npy_intp, npy_intp, int, PyArrayObject*);
   static Object*        getitem(Date const*, PyArrayObject*);
   static int            setitem(Object*, Date*, PyArrayObject*);
+  static int            compare(Date const*, Date const*, PyArrayObject*);
 
   class API
   : public DateDtypeAPI
@@ -91,6 +92,7 @@ DateDtype<PYDATE>::get()
     arr_funcs->copyswapn        = (PyArray_CopySwapNFunc*) copyswapn;
     arr_funcs->getitem          = (PyArray_GetItemFunc*) getitem;
     arr_funcs->setitem          = (PyArray_SetItemFunc*) setitem;
+    arr_funcs->compare          = (PyArray_CompareFunc*) compare;
 
     descr_ = PyObject_New(PyArray_Descr, &PyArrayDescr_Type);
     descr_->typeobj         = incref(&PYDATE::type_);
@@ -302,6 +304,25 @@ DateDtype<PYDATE>::setitem(
     return -1;
   }
   return 0;
+}
+
+
+template<typename PYDATE>
+int 
+DateDtype<PYDATE>::compare(
+  Date const* const d0, 
+  Date const* const d1, 
+  PyArrayObject* const /* arr */)
+{
+  // Invalid compares least, then missing, then other dates.
+  return 
+      d0->is_invalid() ? -1
+    : d1->is_invalid() ?  1
+    : d0->is_missing() ? -1
+    : d1->is_missing() ?  1
+    : *d0 < *d1        ? -1 
+    : *d0 > *d1        ?  1 
+    : 0;
 }
 
 
