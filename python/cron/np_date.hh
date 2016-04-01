@@ -315,6 +315,8 @@ DateDtype<PYDATE>::compare(
   Date const* const d1, 
   PyArrayObject* const /* arr */)
 {
+  if (PRINT_ARR_FUNCS)
+    std::cerr << "compare\n";
   // Invalid compares least, then missing, then other dates.
   return 
       d0->is_invalid() ? -1
