@@ -53,7 +53,7 @@ def test_get_ordinal_date():
     arr = np.array(dates, dtype=Date.dtype)
     od_arr = cron.numpy.get_ordinal_date(arr)
     assert od_arr.dtype == cron.numpy.ORDINAL_DATE_DTYPE
-    assert od_arr.dtype.fields == ("year", "ordinal", )
+    assert od_arr.dtype.names == ("year", "ordinal", )
     
     for d, (y, o) in zip(dates, od_arr):
         if d.valid:
