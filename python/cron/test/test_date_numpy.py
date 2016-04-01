@@ -50,8 +50,9 @@ def test_arr():
 
 
 def test_get_ordinal_date():
-    arr = np.array(dates, dtype=Date.dtype)
-    od_arr = cron.numpy.get_ordinal_date(arr)
+    arr     = np.array(dates, dtype=Date.dtype)
+    od_arr  = cron.numpy.get_ordinal_date(arr)
+
     assert od_arr.dtype == cron.numpy.ORDINAL_DATE_DTYPE
     assert od_arr.dtype.names == ("year", "ordinal", )
     
@@ -63,5 +64,29 @@ def test_get_ordinal_date():
             assert y == cron.YEAR_INVALID
             assert o == cron.ORDINAL_INVALID
 
+
+def test_date_from_ordinal_date0():
+    year    = np.array([ d.year for d in valid_dates ], dtype="int16")
+    ordinal = np.array([ d.ordinal for d in valid_dates ], dtype="uint16")
+    arr     = cron.numpy.date_from_ordinal_date(year, ordinal)
+
+    assert len(arr) == len(valid_dates)
+    for d0, d1 in zip(valid_dates, arr):
+        assert d0 == d1
+
+
+def test_date_from_ordinal_date1():
+    year, ordinal = zip(*(
+        (2016,   0),
+        (2016,   1),
+        (2016,   2),
+        (2016, 338),
+        (2016, 365),
+        (2016, 366),
+        (2016, 367),
+    ))
+    arr = cron.numpy.date_from_ordinal_date(year, ordinal)
+
+    assert cron.numpy.is_same(arr, np.array(dates, dtype=Date.dtype))
 
 
