@@ -596,6 +596,10 @@ public:
     { return FromLong(val); }
   static ref<Long> from(unsigned long const val)
     { return FromUnsignedLong(val); }
+  static ref<Long> from(long long const val)
+    { return FromLong(val); }
+  static ref<Long> from(unsigned long long const val)
+    { return FromUnsignedLong(val); }
   static ref<Long> from(__int128 const val);
   static ref<Long> from(unsigned __int128 const val);
 

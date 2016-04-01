@@ -41,36 +41,48 @@ module_def{
 PyMODINIT_FUNC
 PyInit_ext(void)
 {
-  auto module = Module::Create(&module_def);
+  auto mod = Module::Create(&module_def);
 
   try {
-    aslib::PyDate<cron::Date>            ::add_to(module, "Date");
-    aslib::PyDate<cron::Date16>          ::add_to(module, "Date16");
+    aslib::PyDate<cron::Date>            ::add_to(mod, "Date");
+    aslib::PyDate<cron::Date16>          ::add_to(mod, "Date16");
 
-    aslib::PyDaytime<cron::Daytime>      ::add_to(module, "Daytime");
-    aslib::PyDaytime<cron::Daytime32>    ::add_to(module, "Daytime32");
+    aslib::PyDaytime<cron::Daytime>      ::add_to(mod, "Daytime");
+    aslib::PyDaytime<cron::Daytime32>    ::add_to(mod, "Daytime32");
 
-    aslib::PyTime<cron::Time>            ::add_to(module, "Time");
-    aslib::PyTime<cron::SmallTime>       ::add_to(module, "SmallTime");
-    aslib::PyTime<cron::NsecTime>        ::add_to(module, "NsecTime");
-    aslib::PyTime<cron::Unix32Time>      ::add_to(module, "Unix32Time");
-    aslib::PyTime<cron::Unix64Time>      ::add_to(module, "Unix64Time");
+    aslib::PyTime<cron::Time>            ::add_to(mod, "Time");
+    aslib::PyTime<cron::SmallTime>       ::add_to(mod, "SmallTime");
+    aslib::PyTime<cron::NsecTime>        ::add_to(mod, "NsecTime");
+    aslib::PyTime<cron::Unix32Time>      ::add_to(mod, "Unix32Time");
+    aslib::PyTime<cron::Unix64Time>      ::add_to(mod, "Unix64Time");
 
-    aslib::PyTimeZone                    ::add_to(module, "TimeZone");
+    aslib::PyTimeZone                    ::add_to(mod, "TimeZone");
 
     StructSequenceType* const parts_type = get_date_parts_type();
-    module->AddObject(parts_type->tp_name, (PyObject*) parts_type);
+    mod->AddObject(parts_type->tp_name, (PyObject*) parts_type);
 
-    module->AddObject("DATENUM_MIN" , Long::FromLong(cron::DATENUM_MIN));
-    module->AddObject("DATENUM_MAX" , Long::FromLong(cron::DATENUM_MAX));
-    module->AddObject("MIDNIGHT"    , PyDaytimeDefault::create(PyDaytimeDefault::Daytime::MIDNIGHT));
-    module->AddObject("UTC"         , PyTimeZone::create(cron::UTC));
+    mod->AddObject("SECOND_INVALID",    Float::from(cron::SECOND_INVALID));
+    mod->AddObject("MINUTE_INVALID",    Long::from(cron::MINUTE_INVALID));
+    mod->AddObject("HOUR_INVALID",      Long::from(cron::HOUR_INVALID));
+    mod->AddObject("DAY_INVALID",       Long::from(cron::DAY_INVALID));
+    mod->AddObject("MONTH_INVALID",     Long::from(cron::MONTH_INVALID));
+    mod->AddObject("YEAR_INVALID",      Long::from(cron::YEAR_INVALID));
+    mod->AddObject("ORDINAL_INVALID",   Long::from(cron::ORDINAL_INVALID));
+    mod->AddObject("WEEK_INVALID",      Long::from(cron::WEEK_INVALID));
+    mod->AddObject("WEEKDAY_INVALID",   Long::from(cron::WEEKDAY_INVALID));
+    mod->AddObject("DAYTICK_INVALID",   Long::from(cron::DAYTICK_INVALID));
+    mod->AddObject("DATENUM_INVALID",   Long::from(cron::DATENUM_INVALID));
+    mod->AddObject("SSM_INVALID",       Float::from(cron::SSM_INVALID));
+    mod->AddObject("DATENUM_MIN" , Long::from(cron::DATENUM_MIN));
+    mod->AddObject("DATENUM_MAX" , Long::from(cron::DATENUM_MAX));
+    mod->AddObject("MIDNIGHT"    , PyDaytimeDefault::create(PyDaytimeDefault::Daytime::MIDNIGHT));
+    mod->AddObject("UTC"         , PyTimeZone::create(cron::UTC));
 
     TranslateException<cron::InvalidDateError>::to(PyExc_ValueError);
     TranslateException<cron::InvalidDaytimeError>::to(PyExc_ValueError);
     TranslateException<cron::DateRangeError>::to(PyExc_OverflowError);
 
-    return module.release();
+    return mod.release();
   }
   catch (Exception) {
     return nullptr;
