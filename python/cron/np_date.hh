@@ -28,6 +28,7 @@ class DateDtypeAPI
 public:
 
   virtual ~DateDtypeAPI() {}
+  // FIXME: Add date_from_iso_date().
   virtual ref<Object> function_date_from_ordinal_date(Array*, Array*) = 0;
   virtual ref<Object> function_date_from_week_date(Array*, Array*, Array*) = 0;
   virtual ref<Object> function_date_from_ymd(Array*, Array*, Array*) = 0;
