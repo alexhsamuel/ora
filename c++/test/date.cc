@@ -172,6 +172,53 @@ TEST(Date, to_string) {
   EXPECT_EQ("MISSING   ", to_string(Date::MISSING));
 }
 
+TEST(Date, from_iso_date) {
+  EXPECT_EQ(Date::from_iso_date("0001-01-01"),    1/JAN/ 1);
+  EXPECT_EQ(Date::from_iso_date("00010101"  ),    1/JAN/ 1);
+  EXPECT_EQ(Date::from_iso_date("1973-12-03"), 1973/DEC/ 3);
+  EXPECT_EQ(Date::from_iso_date("19731203"  ), 1973/DEC/ 3);
+  EXPECT_EQ(Date::from_iso_date("2016-02-29"), 2016/FEB/29);
+  EXPECT_EQ(Date::from_iso_date("20160229"  ), 2016/FEB/29);
+  EXPECT_EQ(Date::from_iso_date("9999-12-31"), 9999/DEC/31);
+  EXPECT_EQ(Date::from_iso_date("99991231"  ), 9999/DEC/31);
+}
+
+TEST(Date, from_iso_date_format_error) {
+  EXPECT_THROW(Date::from_iso_date(""), DateFormatError);
+  EXPECT_THROW(Date::from_iso_date("foobar"), DateFormatError);
+  EXPECT_THROW(Date::from_iso_date("2000-01-1"), DateFormatError);
+  EXPECT_THROW(Date::from_iso_date("2000-1-01"), DateFormatError);
+  EXPECT_THROW(Date::from_iso_date("500-1-1"), DateFormatError);
+  EXPECT_THROW(Date::from_iso_date("2000011"), DateFormatError);
+  EXPECT_THROW(Date::from_iso_date("2000101"), DateFormatError);
+  EXPECT_THROW(Date::from_iso_date("50011"), DateFormatError);
+  EXPECT_THROW(Date::from_iso_date("10000-01-01"), DateFormatError);
+  EXPECT_THROW(
+    Date::from_iso_date("The quick brown fox jumped over the lazy dogs."), 
+    DateFormatError);
+}
+
+TEST(Date, from_iso_date_invalid_error) {
+  EXPECT_THROW(Date::from_iso_date("2015-02-29"), InvalidDateError);
+  EXPECT_THROW(Date::from_iso_date("2015-03-32"), InvalidDateError);
+  EXPECT_THROW(Date::from_iso_date("2015-04-00"), InvalidDateError);
+  EXPECT_THROW(Date::from_iso_date("2015-13-01"), InvalidDateError);
+}
+
+TEST(Date16, from_iso_date) {
+  EXPECT_EQ(Date16::from_iso_date("1970-01-01"), Date16(1970, 0, 0));
+  EXPECT_EQ(Date16::from_iso_date("19700101"  ), Date16(1970, 0, 0));
+  EXPECT_EQ(Date16::from_iso_date("2149-06-04"), Date16(2149, 5, 3));
+  EXPECT_EQ(Date16::from_iso_date("21490604"  ), Date16(2149, 5, 3));
+}
+
+TEST(Date16, from_iso_date_range_error) {
+  EXPECT_THROW(Date16::from_iso_date("0001-01-01"), DateRangeError);
+  EXPECT_THROW(Date16::from_iso_date("9999-12-31"), DateRangeError);
+  EXPECT_THROW(Date16::from_iso_date("00010101"), DateRangeError);
+  EXPECT_THROW(Date16::from_iso_date("99991231"), DateRangeError);
+}
+
 //------------------------------------------------------------------------------
 // Class Date16
 //------------------------------------------------------------------------------

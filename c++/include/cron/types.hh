@@ -307,6 +307,17 @@ public:
 };
 
 
+class DateFormatError
+: public DateError
+{
+public:
+
+  DateFormatError(std::string const& message): DateError(message) {}
+  virtual ~DateFormatError() {}
+
+};
+
+
 class DateRangeError
   : public DateError
 {

@@ -1,10 +1,19 @@
 #pragma once
 
+#include <string>
+
 #include "aslib/math.hh"
 #include "cron/date.hh"
+#include "cron/date_math.hh"
 #include "cron/types.hh"
 
 namespace cron {
+
+//------------------------------------------------------------------------------
+// Forward declarations
+//------------------------------------------------------------------------------
+
+template<class DATE> inline DATE from_ymd(YmdDate);
 
 //------------------------------------------------------------------------------
 // Construction functions
@@ -38,6 +47,20 @@ from_datenum(
 
 template<class DATE>
 inline DATE
+from_iso_date(
+  std::string const& date)
+{
+  try {
+    return from_ymd<DATE>(parse_iso_date(date));
+  }
+  catch (DateFormatError) {
+    return DATE::INVALID;
+  }
+}
+
+
+template<class DATE>
+inline DATE
 from_ordinal_date(
   Year const year,
   Ordinal const ordinal)
@@ -60,6 +83,15 @@ from_ymd(
       ymd_is_valid(year, month, day) 
     ? from_datenum<DATE>(ymd_to_datenum(year, month, day))
     : DATE::INVALID;
+}
+
+
+template<class DATE>
+inline DATE
+from_ymd(
+  YmdDate const date)
+{
+  return from_ymd<DATE>(date.year, date.month, date.day);
 }
 
 

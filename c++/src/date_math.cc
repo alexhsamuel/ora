@@ -167,6 +167,48 @@ datenum_to_week_date(
 }
 
 
+YmdDate
+parse_iso_date(
+  std::string const& text)
+{
+  auto const len = text.length();
+  if (
+       len == 8
+    && isdigit(text[0])
+    && isdigit(text[1])
+    && isdigit(text[2])
+    && isdigit(text[3])
+    && isdigit(text[4])
+    && isdigit(text[5])
+    && isdigit(text[6])
+    && isdigit(text[7])) 
+    return {
+      (Year)   atoi(text.substr(0, 4).c_str()),
+      (Month) (atoi(text.substr(4, 2).c_str()) - 1),
+      (Day)   (atoi(text.substr(6, 2).c_str()) - 1),
+    };
+  else if (
+       len == 10
+    && isdigit(text[0])
+    && isdigit(text[1])
+    && isdigit(text[2])
+    && isdigit(text[3])
+    && text[4] == '-'
+    && isdigit(text[5])
+    && isdigit(text[6])
+    && text[7] == '-'
+    && isdigit(text[8])
+    && isdigit(text[9])) 
+    return {
+      (Year)   atoi(text.substr(0, 4).c_str()),
+      (Month) (atoi(text.substr(5, 2).c_str()) - 1),
+      (Day)   (atoi(text.substr(8, 2).c_str()) - 1),
+    };
+  else
+    throw DateFormatError("not ISO date format");
+}
+
+
 //------------------------------------------------------------------------------
 
 // FIXME: Remove, eventually.
@@ -185,35 +227,6 @@ datenum_to_parts(
 
   return DateParts{
     ymd.year, ymd.month, ymd.day, ord.ordinal, wdt.week_year, wdt.week, wdy};
-}
-
-
-DateParts 
-iso_parse(
-  std::string const& text)
-{
-  if (text.length() == 10
-      && isdigit(text[0])
-      && isdigit(text[1])
-      && isdigit(text[2])
-      && isdigit(text[3])
-      && text[4] == '-'
-      && isdigit(text[5])
-      && isdigit(text[6])
-      && text[7] == '-'
-      && isdigit(text[8])
-      && isdigit(text[9])) {
-    DateParts parts;
-    parts.year  = atoi(text.substr(0, 4).c_str());
-    parts.month = atoi(text.substr(5, 2).c_str()) - 1;
-    parts.day   = atoi(text.substr(8, 2).c_str()) - 1;
-    if (ymd_is_valid(parts.year, parts.month, parts.day))
-      return parts;
-    else
-      throw ValueError("invalid date");
-  }
-  else
-    throw ValueError("not ISO date format");
 }
 
 

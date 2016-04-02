@@ -42,10 +42,8 @@ extern DateParts datenum_to_parts(Datenum);
 
 /*
  * Parses an ISO-8601 extended date ("YYYY-MM-DD" format) into parts.
- *
- * FIXME: Remove this and use DateFormat.
  */
-extern DateParts iso_parse(std::string const& text);  
+extern YmdDate parse_iso_date(std::string const&);
 
 //------------------------------------------------------------------------------
 // Inline functions

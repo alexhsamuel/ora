@@ -176,6 +176,20 @@ public:
   }
 
   /*
+   * Creates a date by parsing an ISO date.
+   *
+   * Throws <DateFormatError> if the date is not formatted correctly.
+   * Throws <InvalidDateError> if the year, month, and day are invalid.
+   * Throws <DateRangeError> if the date is out of range.
+   */
+  static DateTemplate
+  from_iso_date(
+    std::string const& date)
+  {
+    return from_ymd(parse_iso_date(date));
+  }
+
+  /*
    * Creates a date from an ordinal date.
    *
    * Throws <InvalidDateError> if the ordinal date is invalid.
@@ -209,9 +223,9 @@ public:
 
   static DateTemplate
   from_ymd(
-    DateParts const& parts) 
+    YmdDate const& date) 
   {
-    return from_ymd(parts.year, parts.month, parts.day);
+    return from_ymd(date.year, date.month, date.day);
   }
 
   /*
