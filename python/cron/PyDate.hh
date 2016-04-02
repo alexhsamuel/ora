@@ -956,8 +956,23 @@ convert_to_date(
   if (date)
     return *date;
 
-  if (Sequence::Check(obj)) {
-    auto seq = static_cast<Sequence*>(obj);
+  if (Unicode::Check(obj)) {
+    auto const str = static_cast<Unicode*>(obj)->as_utf8_string();
+    if (str == "MIN")
+      return DATE::MIN;
+    else if (str == "MAX")
+      return DATE::MAX;
+
+    try {
+      return DATE::from_iso_date(str);
+    }
+    catch (cron::DateError) {
+      throw py::ValueError("can't parse as date: '"s + str + "'");
+    }
+  }
+
+  if (Sequence::Check(obj) && !Unicode::Check(obj)) {
+    auto const seq = static_cast<Sequence*>(obj);
     if (seq->Length() == 3) 
       // Interpret a three-element sequence as date parts.
       return parts_to_date<DATE>(seq);
@@ -973,8 +988,6 @@ convert_to_date(
     if (10000000 <= ymdi && ymdi <= 99999999) 
       return DATE::from_ymdi(ymdi);
   }
-
-  // FIXME: Parse strings.
 
   throw py::TypeError("can't convert to a date: "s + *obj->Repr());
 }
