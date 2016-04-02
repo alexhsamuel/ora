@@ -86,8 +86,10 @@ def test_init_iso_date():
     assert Date("20160401") == 2016/Apr/1
     assert Date("MAX") == Date.MAX
 
-    with pytest.raises(ValueError, Date("201641"))
-    with pytest.raises(ValueError, Date("foobar"))
+    with pytest.raises(ValueError):
+        Date("201641")
+    with pytest.raises(ValueError):
+        Date("foobar")
 
 
 def test_from_iso_date():
