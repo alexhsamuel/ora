@@ -192,29 +192,30 @@ private:
   static PyNumberMethods tp_as_number_;
 
   // Methods.
-  static ref<Object> method_from_datenum        (PyTypeObject* type, Tuple* args, Dict* kw_args);
-  static ref<Object> method_from_ordinal_date   (PyTypeObject* type, Tuple* args, Dict* kw_args);
+  static ref<Object> method_from_datenum        (PyTypeObject*, Tuple*, Dict*);
+  static ref<Object> method_from_iso_date       (PyTypeObject*, Tuple*, Dict*);
+  static ref<Object> method_from_ordinal_date   (PyTypeObject*, Tuple*, Dict*);
   // FIXME: Rename to from_ymd().
-  static ref<Object> method_from_parts          (PyTypeObject* type, Tuple* args, Dict* kw_args);
-  static ref<Object> method_from_week_date      (PyTypeObject* type, Tuple* args, Dict* kw_args);
-  static ref<Object> method_from_ymdi           (PyTypeObject* type, Tuple* args, Dict* kw_args);
-  static ref<Object> method_is_same             (PyDate*       self, Tuple* args, Dict* kw_args);
+  static ref<Object> method_from_parts          (PyTypeObject*, Tuple*, Dict*);
+  static ref<Object> method_from_week_date      (PyTypeObject*, Tuple*, Dict*);
+  static ref<Object> method_from_ymdi           (PyTypeObject*, Tuple*, Dict*);
+  static ref<Object> method_is_same             (PyDate*, Tuple*, Dict*);
   static Methods<PyDate> tp_methods_;
 
   // Getsets.
-  static ref<Object> get_datenum                (PyDate* self, void*);
-  static ref<Object> get_day                    (PyDate* self, void*);
-  static ref<Object> get_invalid                (PyDate* self, void*);
-  static ref<Object> get_missing                (PyDate* self, void*);
-  static ref<Object> get_month                  (PyDate* self, void*);
-  static ref<Object> get_ordinal                (PyDate* self, void*);
-  static ref<Object> get_parts                  (PyDate* self, void*);
-  static ref<Object> get_valid                  (PyDate* self, void*);
-  static ref<Object> get_week                   (PyDate* self, void*);
-  static ref<Object> get_week_year              (PyDate* self, void*);
-  static ref<Object> get_weekday                (PyDate* self, void*);
-  static ref<Object> get_year                   (PyDate* self, void*);
-  static ref<Object> get_ymdi                   (PyDate* self, void*);
+  static ref<Object> get_datenum                (PyDate*, void*);
+  static ref<Object> get_day                    (PyDate*, void*);
+  static ref<Object> get_invalid                (PyDate*, void*);
+  static ref<Object> get_missing                (PyDate*, void*);
+  static ref<Object> get_month                  (PyDate*, void*);
+  static ref<Object> get_ordinal                (PyDate*, void*);
+  static ref<Object> get_parts                  (PyDate*, void*);
+  static ref<Object> get_valid                  (PyDate*, void*);
+  static ref<Object> get_week                   (PyDate*, void*);
+  static ref<Object> get_week_year              (PyDate*, void*);
+  static ref<Object> get_weekday                (PyDate*, void*);
+  static ref<Object> get_year                   (PyDate*, void*);
+  static ref<Object> get_ymdi                   (PyDate*, void*);
   static GetSets<PyDate> tp_getsets_;
 
   /** Date format used to generate the repr.  */
@@ -488,6 +489,21 @@ PyDate<DATE>::method_from_datenum(
 
 template<typename DATE>
 ref<Object>
+PyDate<DATE>::method_from_iso_date(
+  PyTypeObject* const type,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] = {"iso_date", nullptr};
+  char* iso_date;
+  Arg::ParseTupleAndKeywords(args, kw_args, "s", arg_names, &iso_date);
+
+  return create(Date::from_iso_date(iso_date), type);
+}
+
+
+template<typename DATE>
+ref<Object>
 PyDate<DATE>::method_from_ordinal_date(
   PyTypeObject* const type,
   Tuple* const args,
@@ -590,6 +606,7 @@ Methods<PyDate<DATE>>
 PyDate<DATE>::tp_methods_
   = Methods<PyDate>()
     .template add_class<method_from_datenum>        ("from_datenum")
+    .template add_class<method_from_iso_date>       ("from_iso_date")
     .template add_class<method_from_ordinal_date>   ("from_ordinal_date")
     .template add_class<method_from_parts>          ("from_parts")
     .template add_class<method_from_week_date>      ("from_week_date")

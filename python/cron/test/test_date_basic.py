@@ -79,3 +79,23 @@ def test_order():
     assert not Date.MISSING >= Date.MISSING
     assert not Date.MISSING >  Date.MISSING
 
+
+def test_from_iso_date():
+    assert Date.from_iso_date("0001-01-01") == Date.MIN
+    assert Date.from_iso_date("9999-12-31") == Date.MAX
+
+    with pytest.raises(TypeError):
+        Date.from_iso_date(None)
+    with pytest.raises(TypeError):
+        Date.from_iso_date(19731203)
+
+    with pytest.raises(ValueError):
+        Date.from_iso_date("1-1-1")
+    with pytest.raises(ValueError):
+        Date.from_iso_date("foobar")
+
+    with pytest.raises(ValueError):
+        Date.from_iso_date("1973-02-31")
+
+
+

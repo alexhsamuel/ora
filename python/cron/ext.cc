@@ -80,6 +80,7 @@ PyInit_ext(void)
 
     TranslateException<cron::InvalidDateError>::to(PyExc_ValueError);
     TranslateException<cron::InvalidDaytimeError>::to(PyExc_ValueError);
+    TranslateException<cron::DateFormatError>::to(PyExc_ValueError);  // FIXME
     TranslateException<cron::DateRangeError>::to(PyExc_OverflowError);
 
     return mod.release();
