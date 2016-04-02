@@ -98,7 +98,7 @@ DateDtype<PYDATE>::get()
     descr_ = PyObject_New(PyArray_Descr, &PyArrayDescr_Type);
     descr_->typeobj         = incref(&PYDATE::type_);
     descr_->kind            = 'V';
-    descr_->type            = 'j';
+    descr_->type            = 'j';  // FIXME
     descr_->byteorder       = '=';
     descr_->flags           = 0;
     descr_->type_num        = 0;
@@ -245,6 +245,7 @@ DateDtype<PYDATE>::copyswapn(
 {
   if (PRINT_ARR_FUNCS)
     std::cerr << "copyswapn(" << n << ")\n";
+  // FIXME: Abstract this out.
   if (src_stride == 0) {
     // Swapper or unswapped fill.  Optimize this special case.
     Date date;

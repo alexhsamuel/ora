@@ -20,6 +20,7 @@
 
 #include "py.hh"
 #include "np_date.hh"
+#include "np_daytime.hh"
 #include "numpy.hh"
 
 using namespace py;
@@ -168,6 +169,8 @@ set_up_numpy(
 
   DateDtype<PyDate<cron::Date>>::add(sub);
   DateDtype<PyDate<cron::Date16>>::add(sub);
+  DaytimeDtype<PyDaytime<cron::Daytime>>::add(sub);
+  DaytimeDtype<PyDaytime<cron::Daytime32>>::add(sub);
 
   sub->AddFunctions(functions);
 
