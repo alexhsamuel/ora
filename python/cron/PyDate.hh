@@ -971,7 +971,7 @@ convert_to_date(
     }
   }
 
-  if (Sequence::Check(obj) && !Unicode::Check(obj)) {
+  if (Sequence::Check(obj)) {
     auto const seq = static_cast<Sequence*>(obj);
     if (seq->Length() == 3) 
       // Interpret a three-element sequence as date parts.
