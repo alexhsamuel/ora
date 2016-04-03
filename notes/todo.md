@@ -1,5 +1,9 @@
 # Work List
 
+1. Rename get_date_parts_type() and encapsulate building an instance.
+1. Make hms_daytime dtype.
+1. Add it to the global module.
+1. Add date_is_same() or whatever to shut up the test.
 1. Offset month, day by one.
 1. Rename `InvalidDateError` -> `BadDateError` _et fils_.
 1. Basic string parsing for `convert_to_*()` functions.
