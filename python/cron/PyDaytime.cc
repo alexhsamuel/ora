@@ -9,7 +9,7 @@ namespace aslib {
 //------------------------------------------------------------------------------
 
 StructSequenceType*
-get_daytime_parts_type()
+get_hms_daytime_type()
 {
   static StructSequenceType type;
 
@@ -22,7 +22,7 @@ get_daytime_parts_type()
       {nullptr, nullptr}
     };
     static PyStructSequence_Desc desc{
-      (char*) "DaytimeParts",                               // name
+      (char*) "HmsDaytime",                                 // name
       nullptr,                                              // doc
       fields,                                               // fields
       3                                                     // n_in_sequence
@@ -32,6 +32,18 @@ get_daytime_parts_type()
   }
 
   return &type;
+}
+
+
+ref<Object>
+make_hms_daytime(
+  cron::HmsDaytime const hms)
+{
+  auto hms_obj = get_hms_daytime_type()->New();
+  hms_obj->initialize(0, Long::FromLong(hms.hour));
+  hms_obj->initialize(1, Long::FromLong(hms.minute));
+  hms_obj->initialize(2, Float::FromDouble(hms.second));
+  return std::move(hms_obj);
 }
 
 

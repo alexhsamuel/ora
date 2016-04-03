@@ -27,7 +27,8 @@ using std::unique_ptr;
 // Declarations
 //------------------------------------------------------------------------------
 
-StructSequenceType* get_daytime_parts_type();
+StructSequenceType* get_hms_daytime_type();
+ref<Object> make_hms_daytime(cron::HmsDaytime);
 
 /**
  * Attempts to convert various kinds of Python daytime object to 'DAYTIME'.
@@ -535,12 +536,7 @@ PyDaytime<DAYTIME>::get_hms(
   PyDaytime* self,
   void* /* closure */)
 {
-  auto hms = self->daytime_.get_hms();
-  auto hms_obj = get_daytime_parts_type()->New();
-  hms_obj->initialize(0, Long::FromLong(hms.hour));
-  hms_obj->initialize(1, Long::FromLong(hms.minute));
-  hms_obj->initialize(2, Float::FromDouble(hms.second));
-  return std::move(hms_obj);
+  return make_hms_daytime(self->daytime_.get_hms());
 }
 
 

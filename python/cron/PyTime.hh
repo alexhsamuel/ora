@@ -508,10 +508,7 @@ PyTime<TIME>::method_get_parts(
   date_parts->initialize(5, Long::FromLong(parts.date.week + 1));
   date_parts->initialize(6, get_weekday_obj(parts.date.weekday));
 
-  auto daytime_parts = get_daytime_parts_type()->New();
-  daytime_parts->initialize(0, Long::FromLong(parts.daytime.hour));
-  daytime_parts->initialize(1, Long::FromLong(parts.daytime.minute));
-  daytime_parts->initialize(2, Float::FromDouble(parts.daytime.second));
+  auto hms_daytime = make_hms_daytime(parts.daytime);
 
   auto time_zone_parts = get_time_zone_parts_type()->New();
   time_zone_parts->initialize(0, Long::FromLong(parts.time_zone.offset));
@@ -520,7 +517,7 @@ PyTime<TIME>::method_get_parts(
 
   auto time_parts = get_time_parts_type()->New();
   time_parts->initialize(0, std::move(date_parts));
-  time_parts->initialize(1, std::move(daytime_parts));
+  time_parts->initialize(1, std::move(hms_daytime));
   time_parts->initialize(2, std::move(time_zone_parts));
 
   return std::move(time_parts);
