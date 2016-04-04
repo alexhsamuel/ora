@@ -72,6 +72,8 @@ public:
    */
   void add_loop_1(int arg0_type, int ret0_type, PyUFuncGenericFunction);
   void add_loop_1(PyArray_Descr*, PyArray_Descr*, PyUFuncGenericFunction);
+  void add_loop_2(int arg0_type, int arg1_type, int ret0_type, PyUFuncGenericFunction);
+  void add_loop_2(PyArray_Descr*, PyArray_Descr*, PyArray_Descr*, PyUFuncGenericFunction);
 
 };
 
@@ -137,6 +139,46 @@ UFunc::add_loop_1(
 }
 
 
+inline void
+UFunc::add_loop_2(
+  int const arg0_type,
+  int const arg1_type,
+  int const ret0_type,
+  PyUFuncGenericFunction const fn)
+{
+  // FIXME: Check that num_args == 2 and num_rets == 1.
+
+  int arg_types[] = {arg0_type, arg1_type, ret0_type};
+  check_zero(
+    PyUFunc_RegisterLoopForType(
+      (PyUFuncObject*) this,
+      arg0_type,
+      fn,
+      arg_types,
+      nullptr));
+}
+
+
+inline void
+UFunc::add_loop_2(
+  PyArray_Descr* const arg0_dtype,
+  PyArray_Descr* const arg1_dtype,
+  PyArray_Descr* const ret0_dtype,
+  PyUFuncGenericFunction const fn)
+{
+  // FIXME: Check that num_args == 2 and num_rets == 1.
+
+  PyArray_Descr* dtypes[] = {arg0_dtype, arg1_dtype, ret0_dtype};
+  check_zero(
+    PyUFunc_RegisterLoopForDescr(
+      (PyUFuncObject*) this,
+      arg0_dtype,
+      fn,
+      dtypes,
+      nullptr));
+}
+
+
 /*
  * Gets a ufunc from a module; if not found, creates it.
  *
@@ -184,6 +226,34 @@ ufunc_loop_1(
   for (npy_intp i = 0; i < n; i++) {
     *ret0 = FN(*arg0);
     arg0 = step(arg0, arg0_step);
+    ret0 = step(ret0, ret0_step);
+  }
+}
+
+
+/*
+ * Wraps a unary function `FN(ARG0, ARG1) -> RET0` in a ufunc loop function
+ */
+template<typename ARG0, typename ARG1, typename RET0, RET0 (*FN)(ARG0, ARG1)>
+void
+ufunc_loop_2(
+  char** const args,
+  npy_intp* const dimensions,
+  npy_intp* const steps,
+  void* const /* data */)
+{
+  auto const n          = dimensions[0];
+  auto const arg0_step  = steps[0];
+  auto const arg1_step  = steps[1];
+  auto const ret0_step  = steps[2];
+  auto arg0             = (ARG0 const*) args[0];
+  auto arg1             = (ARG1 const*) args[1];
+  auto ret0             = (RET0*) args[2];
+
+  for (npy_intp i = 0; i < n; i++) {
+    *ret0 = FN(*arg0, *arg1);
+    arg0 = step(arg0, arg0_step);
+    arg1 = step(arg1, arg1_step);
     ret0 = step(ret0, ret0_step);
   }
 }

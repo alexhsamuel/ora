@@ -126,6 +126,7 @@ date_from_ymdi(
     &ymdi_arg, &PyArrayDescr_Type, &dtype);
   auto ymdi_arr
     = Array::FromAny(ymdi_arg, aslib::np::YMDI_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO);
+
   // OK, we have an aligned 1D int32 array.
   // FIXME: Encapsulate this, and check that it is a cron date dtype.
   auto const api = (DateDtypeAPI*) dtype->c_metadata;

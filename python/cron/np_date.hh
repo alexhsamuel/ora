@@ -169,6 +169,16 @@ get_ymd_(
 }
 
 
+template<typename DATE>
+inline npy_bool
+is_(
+  DATE const date0,
+  DATE const date1)
+{
+  return is(date0, date1) ? 1 : 0;
+}
+
+
 }  // anonymous namespace
 
 
@@ -209,6 +219,9 @@ DateDtype<PYDATE>::add(
   create_or_get_ufunc(module, "get_ymdi", 1, 1)->add_loop_1(
     dtype->type_num, NPY_INT32, 
     ufunc_loop_1<Date, int32_t, cron::get_ymdi<Date>>);
+  create_or_get_ufunc(module, "is_same", 2, 1)->add_loop_2(
+    dtype->type_num, dtype->type_num, NPY_BOOL,
+    ufunc_loop_2<Date, Date, npy_bool, is_<Date>>);
 }
 
 

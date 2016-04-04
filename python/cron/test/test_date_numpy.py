@@ -1,4 +1,5 @@
 import datetime
+import sys
 
 import numpy as np
 import pytest
@@ -76,17 +77,10 @@ def test_date_from_ordinal_date0():
 
 
 def test_date_from_ordinal_date1():
-    year, ordinal = zip(*(
-        (2016,   0),
-        (2016,   1),
-        (2016,   2),
-        (2016, 338),
-        (2016, 365),
-        (2016, 366),
-        (2016, 367),
-    ))
+    year, ordinal = zip(*( (d.year, d.ordinal) for d in valid_dates ))
     arr = cron.numpy.date_from_ordinal_date(year, ordinal)
-
-    assert cron.numpy.is_same(arr, np.array(dates, dtype=Date.dtype))
+    assert cron.numpy.is_same(
+        arr, 
+        np.array(valid_dates, dtype=Date.dtype)).all()
 
 
