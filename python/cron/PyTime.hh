@@ -499,15 +499,8 @@ PyTime<TIME>::method_get_parts(
 
   auto parts = self->time_.get_parts(*convert_to_time_zone(tz));
 
-  auto date_parts = get_date_parts_type()->New();
-  date_parts->initialize(0, Long::FromLong(parts.date.year));
-  date_parts->initialize(1, get_month_obj(parts.date.month + 1));
-  date_parts->initialize(2, Long::FromLong(parts.date.day + 1));
-  date_parts->initialize(3, Long::FromLong(parts.date.ordinal + 1));
-  date_parts->initialize(4, Long::FromLong(parts.date.week_year));
-  date_parts->initialize(5, Long::FromLong(parts.date.week + 1));
-  date_parts->initialize(6, get_weekday_obj(parts.date.weekday));
-
+  auto ymd_date = make_ymd_date(
+    cron::YmdDate{parts.date.year, parts.date.month, parts.date.day});  // FIXME
   auto hms_daytime = make_hms_daytime(parts.daytime);
 
   auto time_zone_parts = get_time_zone_parts_type()->New();
@@ -516,7 +509,7 @@ PyTime<TIME>::method_get_parts(
   time_zone_parts->initialize(2, Bool::from(parts.time_zone.is_dst));
 
   auto time_parts = get_time_parts_type()->New();
-  time_parts->initialize(0, std::move(date_parts));
+  time_parts->initialize(0, std::move(ymd_date));
   time_parts->initialize(1, std::move(hms_daytime));
   time_parts->initialize(2, std::move(time_zone_parts));
 

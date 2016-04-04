@@ -27,8 +27,8 @@ using std::unique_ptr;
 // Declarations
 //------------------------------------------------------------------------------
 
-StructSequenceType* get_hms_daytime_type();
-ref<Object> make_hms_daytime(cron::HmsDaytime);
+extern StructSequenceType* get_hms_daytime_type();
+extern ref<Object> make_hms_daytime(cron::HmsDaytime);
 
 /**
  * Attempts to convert various kinds of Python daytime object to 'DAYTIME'.

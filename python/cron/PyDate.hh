@@ -29,7 +29,8 @@ using std::unique_ptr;
 // Declarations
 //------------------------------------------------------------------------------
 
-StructSequenceType* get_date_parts_type();
+extern StructSequenceType* get_ymd_date_type();
+extern ref<Object> make_ymd_date(cron::YmdDate);
 
 ref<Object> get_month_obj(int month);
 ref<Object> get_weekday_obj(int weekday);
@@ -685,16 +686,7 @@ PyDate<DATE>::get_parts(
   PyDate* const self,
   void* /* closure */)
 {
-  auto parts = self->date_.get_parts();
-  auto parts_obj = get_date_parts_type()->New();
-  parts_obj->initialize(0, Long::FromLong(parts.year));
-  parts_obj->initialize(1, get_month_obj(parts.month + 1));
-  parts_obj->initialize(2, Long::FromLong(parts.day + 1));
-  parts_obj->initialize(3, Long::FromLong(parts.ordinal + 1));
-  parts_obj->initialize(4, Long::FromLong(parts.week_year));
-  parts_obj->initialize(5, Long::FromLong(parts.week + 1));
-  parts_obj->initialize(6, get_weekday_obj(parts.weekday));
-  return std::move(parts_obj);
+  return make_ymd_date(self->date_.get_ymd());
 }
 
 

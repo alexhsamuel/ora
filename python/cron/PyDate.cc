@@ -11,7 +11,7 @@ namespace aslib {
 //------------------------------------------------------------------------------
 
 StructSequenceType*
-get_date_parts_type()
+get_ymd_date_type()
 {
   static StructSequenceType type;
 
@@ -28,7 +28,7 @@ get_date_parts_type()
       {nullptr, nullptr}
     };
     static PyStructSequence_Desc desc{
-      (char*) "DateParts",                                  // name
+      (char*) "YmdDate",                                    // name
       nullptr,                                              // doc
       fields,                                               // fields
       3                                                     // n_in_sequence
@@ -38,6 +38,18 @@ get_date_parts_type()
   }
 
   return &type;
+}
+
+
+ref<Object>
+make_ymd_date(
+  cron::YmdDate const ymd)
+{
+  auto ymd_obj = get_ymd_date_type()->New();
+  ymd_obj->initialize(0, Long::FromLong(ymd.year));
+  ymd_obj->initialize(1, get_month_obj(ymd.month + 1));
+  ymd_obj->initialize(2, Long::FromLong(ymd.day + 1));
+  return std::move(ymd_obj);
 }
 
 

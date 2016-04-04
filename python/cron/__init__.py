@@ -7,10 +7,10 @@ from   .ext import *
 __all__ = (
     "Date",
     "Date16",
-    "DateParts",
     "Daytime",
     "Daytime32",
     "DT",
+    "HmsDaytime",
     "MIDNIGHT",
     "Month",
     "MonthOfYear",
@@ -22,6 +22,7 @@ __all__ = (
     "Unix64Time",
     "UTC",
     "Weekday",
+    "YmdDate",
 
     "days_per_month",
     "is_leap_year",

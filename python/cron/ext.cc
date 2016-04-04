@@ -58,8 +58,10 @@ PyInit_ext(void)
 
     aslib::PyTimeZone                    ::add_to(mod, "TimeZone");
 
-    StructSequenceType* const parts_type = get_date_parts_type();
-    mod->AddObject(parts_type->tp_name, (PyObject*) parts_type);
+    StructSequenceType* const ymd_date_type = get_ymd_date_type();
+    mod->AddObject(ymd_date_type->tp_name, (PyObject*) ymd_date_type);
+    StructSequenceType* const hms_daytime_type = get_hms_daytime_type();
+    mod->AddObject(hms_daytime_type->tp_name, (PyObject*) hms_daytime_type);
 
     mod->AddObject("SECOND_INVALID"   , Float::from(cron::SECOND_INVALID));
     mod->AddObject("MINUTE_INVALID"   , Long::from(cron::MINUTE_INVALID));

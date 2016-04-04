@@ -1,6 +1,5 @@
 # Work List
 
-1. Rename get_date_parts_type() and encapsulate building an instance.
 1. Make hms_daytime dtype.
 1. Add it to the global module.
 1. Add date_is_same() or whatever to shut up the test.
