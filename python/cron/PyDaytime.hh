@@ -153,6 +153,10 @@ PyDaytime<DAYTIME>::add_to(
   // Hand it to Python.
   type_.Ready();
 
+  // Set up the API.
+  // FIXME
+  // PyDaytimeAPI::add(&type_, std::make_unique<API>());
+
   // Build the repr format.
   repr_format_ = make_unique<cron::DaytimeFormat>(
     name + "(%0H, %0M, %0S)",
@@ -670,14 +674,14 @@ using PyDaytimeDefault = PyDaytime<cron::Daytime>;
 inline ref<Object>
 make_daytime(
   cron::Daytick const daytick,
-  Object* type=(Object*) &PyDaytimeDefault::type_)
+  PyTypeObject* type=&PyDaytimeDefault::type_)
 {
   // Special case fast path for the default daytime type.
-  if (type == (Object*) &PyDaytimeDefault::type_)
+  if (type == &PyDaytimeDefault::type_)
     return PyDaytimeDefault::create(
       PyDaytimeDefault::Daytime::from_daytick(daytick));
   else
-    return type->CallMethodObjArgs(
+    return ((Object*) type)->CallMethodObjArgs(
       "from_daytick", Long::FromUnsignedLong(daytick));
 }
 

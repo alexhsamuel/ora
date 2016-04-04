@@ -242,6 +242,9 @@ PyDate<DATE>::add_to(
   // Hand it to Python.
   type_.Ready();
 
+  // Set up the API.
+  PyDateAPI::add(&type_, std::make_unique<API>());
+
   // Build the repr format.
   repr_format_ = make_unique<cron::DateFormat>(
     name + "(%0Y, %~b, %0d)",
@@ -857,12 +860,11 @@ using PyDateDefault = PyDate<cron::Date>;
 inline ref<Object>
 make_date(
   cron::Datenum const datenum,
-  Object* type=(Object*) &PyDateDefault::type_)
+  PyTypeObject* type=&PyDateDefault::type_)
 {
-  std::cerr << "type=" << (void*) type << "\n";
   auto const api = PyDateAPI::get(type);
   if (api == nullptr)
-    throw TypeError("not a date type: "s + *type->Repr());
+    throw TypeError("not a date type: "s + *(((Object*) type)->Repr()));
   else
     return api->from_datenum(datenum);
 }

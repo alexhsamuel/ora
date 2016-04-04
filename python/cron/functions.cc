@@ -138,14 +138,14 @@ to_local(
 {
   Object* time;
   Object* tz_arg;
-  Object* date_type = (Object*) &PyDateDefault::type_;
-  Object* daytime_type = (Object*) &PyDaytimeDefault::type_;
+  PyTypeObject* date_type = &PyDateDefault::type_;
+  PyTypeObject* daytime_type = &PyDaytimeDefault::type_;
   static char const* const arg_names[] 
     = {"time", "time_zone", "Date", "Daytime", nullptr};
   Arg::ParseTupleAndKeywords(
     args, kw_args, 
-    "OO|OO", arg_names, 
-    &time, &tz_arg, &date_type, &daytime_type);
+    "OO|O!O!", arg_names, 
+    &time, &tz_arg, &PyType_Type, &date_type, &PyType_Type, &daytime_type);
   
   auto const tz = convert_to_time_zone(tz_arg);
 

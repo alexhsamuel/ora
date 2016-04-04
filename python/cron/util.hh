@@ -22,8 +22,8 @@ StructSequenceType* get_local_time_type();
 inline ref<Object>
 make_local(
   cron::LocalDatenumDaytick const local,
-  Object* date_type=(Object*) &PyDateDefault::type_,
-  Object* daytime_type=(Object*) &PyDaytimeDefault::type_)
+  PyTypeObject* date_type=&PyDateDefault::type_,
+  PyTypeObject* daytime_type=&PyDaytimeDefault::type_)
 {
   auto result = get_local_time_type()->New();
   result->initialize(0, make_date(local.datenum, date_type));
