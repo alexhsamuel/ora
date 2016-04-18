@@ -108,8 +108,6 @@
 
 - Investigate why `cal` doesn't agree for older dates
 
-- Replace tp_print hack with API for Python Date and Daytime.
-
 - Make a 'zoneinfo dir' abstraction; load time zones from there.
 
 # Maybe / someday
