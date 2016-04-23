@@ -1,5 +1,6 @@
 # Work List
 
+1. Add hash functions for all Python types.
 1. Make hms_daytime dtype.
 1. Add it to the global module.
 1. Offset month, day by one.
