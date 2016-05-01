@@ -40,7 +40,7 @@ get_line(
 // Functions
 //------------------------------------------------------------------------------
 
-HolidayCalendar
+std::unique_ptr<HolidayCalendar>
 parse_holiday_calendar(
   std::istream& in)
 {
@@ -81,14 +81,14 @@ parse_holiday_calendar(
   assert(!max.is_missing());
 
   // Now construct the calendar.
-  HolidayCalendar cal(min, max);
+  auto cal = std::make_unique<HolidayCalendar>(min, max);
   for (auto const date : dates)
-    cal.add(date);
-  return cal;
+    cal->add(date);
+  return std::move(cal);
 }
 
 
-HolidayCalendar
+std::unique_ptr<HolidayCalendar>
 load_holiday_calendar(
   fs::Filename const& filename)
 {

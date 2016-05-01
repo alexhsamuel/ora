@@ -126,21 +126,23 @@ TEST(WeekdaysCalendar, nearest) {
 // Class HolidayCalendar.
 
 TEST(HolidayCalendar, load) {
-  HolidayCalendar cal = load_holiday_calendar(fs::Filename("holidays.cal"));
-  EXPECT_EQ(cal.get_min(), 2010/JAN/ 1);
-  EXPECT_EQ(cal.get_max(), 2021/JAN/ 1);
-  EXPECT_FALSE(cal[2012/JUL/ 3]);
-  EXPECT_TRUE (cal[2012/JUL/ 4]);
-  EXPECT_FALSE(cal[2012/JUL/ 5]);
+  auto const cal = load_holiday_calendar(fs::Filename("holidays.cal"));
+  EXPECT_EQ(cal->get_min(), 2010/JAN/ 1);
+  EXPECT_EQ(cal->get_max(), 2021/JAN/ 1);
+  EXPECT_FALSE((*cal)[2012/JUL/ 3]);
+  EXPECT_TRUE ((*cal)[2012/JUL/ 4]);
+  EXPECT_FALSE((*cal)[2012/JUL/ 5]);
 }
 
 //------------------------------------------------------------------------------
 // Class WorkdayCalendar.
 
 TEST(WorkdayCalendar, contains) {
-  WorkdayCalendar cal(
+  auto const cal_ptr = make_workday_calendar(
     {MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY},
-    fs::Filename("holidays.cal"));
+    load_holiday_calendar(fs::Filename("holidays.cal")));
+  auto const& cal = *cal_ptr;
+
   EXPECT_FALSE(cal[2012/JUL/ 1]);  // Sunday
   EXPECT_TRUE (cal[2012/JUL/ 2]);
   EXPECT_TRUE (cal[2012/JUL/ 3]);
