@@ -19,8 +19,8 @@ using namespace aslib;
 class Calendar;
 class HolidayCalendar;
 
-extern HolidayCalendar parse_holiday_calendar(std::istream& in);
-extern HolidayCalendar load_holiday_calendar(fs::Filename const& filename);
+extern std::unique_ptr<HolidayCalendar> parse_holiday_calendar(std::istream& in);
+extern std::unique_ptr<HolidayCalendar> load_holiday_calendar(fs::Filename const& filename);
 
 //------------------------------------------------------------------------------
 
@@ -55,6 +55,10 @@ class Calendar
 public:
 
   Calendar() : DAY(*this, 1) {}
+  Calendar(Calendar const&) = delete;
+  Calendar(Calendar&&) = delete;
+  Calendar& operator=(Calendar const&) = delete;
+  Calendar& operator=(Calendar&&) = delete;
   virtual ~Calendar() {}
 
   virtual inline Date 
@@ -282,47 +286,89 @@ private:
 
 
 //------------------------------------------------------------------------------
-// Class WorkdayCalendar.
 
-class WorkdayCalendar
+class NegationCalendar
   : public Calendar
 {
 public:
-
-  WorkdayCalendar(
-    WeekdaysCalendar const& workdays, 
-    HolidayCalendar const& holidays)
-    : workdays_(workdays),
-      holidays_(holidays)
-  {
-  }
-
-  WorkdayCalendar(
-    std::vector<Weekday> const& weekdays,
-    fs::Filename const& holidays)
-    : WorkdayCalendar(weekdays, load_holiday_calendar(holidays))
-  {
-  }
-
-  virtual ~WorkdayCalendar() {}
   
+  NegationCalendar(
+    std::unique_ptr<Calendar>&& calendar)
+  : calendar_(std::move(calendar))
+  {
+  }
+  
+  NegationCalendar& operator=(NegationCalendar const&) = delete;
+  NegationCalendar& operator=(NegationCalendar&&) = delete;
+  virtual ~NegationCalendar() = default;
+
 protected:
 
-  virtual inline bool 
+  virtual inline bool
   contains_(
-    Date date) 
+    Date const date)
     const
   {
-    return workdays_.contains(date) && ! holidays_.contains(date);
+    return !calendar_->contains(date);
   }
 
 private:
 
-  WeekdaysCalendar workdays_;
-  HolidayCalendar holidays_;
+  std::unique_ptr<Calendar> const calendar_;
 
 };
 
+
+class UnionCalendar
+  : public Calendar
+{
+public:
+
+  UnionCalendar(
+    std::unique_ptr<Calendar>&& calendar0,
+    std::unique_ptr<Calendar>&& calendar1)
+  : calendar0_(std::move(calendar0)),
+    calendar1_(std::move(calendar1))
+  {
+  }
+
+  UnionCalendar& operator=(UnionCalendar const&) = delete;
+  UnionCalendar& operator=(UnionCalendar&&) = delete;
+  virtual ~UnionCalendar() = default;
+
+protected:
+
+  virtual inline bool
+  contains_(
+    Date const date)
+    const
+  {
+    return calendar0_->contains(date) && calendar1_->contains(date);
+  }
+
+private:
+
+  std::unique_ptr<Calendar> calendar0_;
+  std::unique_ptr<Calendar> calendar1_;
+
+};
+
+
+/*
+ * Creates a working calendar, including workdays but with holidays removed.
+ *
+ * Returns a new calendar which contains all weekdays specified by `weekdays`
+ * but with all days in `holidays` removed.
+ */
+inline std::unique_ptr<Calendar>
+make_workday_calendar(
+  std::vector<Weekday> weekdays,
+  std::unique_ptr<Calendar>&& holidays)
+{
+  return std::make_unique<UnionCalendar>(
+    std::make_unique<WeekdaysCalendar>(weekdays),
+    std::make_unique<NegationCalendar>(std::move(holidays)));
+}
 
 
 //------------------------------------------------------------------------------
