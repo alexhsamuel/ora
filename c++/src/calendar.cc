@@ -9,6 +9,7 @@
 namespace cron {
 
 using namespace aslib;
+using date::Date;
 
 //------------------------------------------------------------------------------
 // Helper functions.

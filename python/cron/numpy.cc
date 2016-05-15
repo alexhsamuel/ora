@@ -168,8 +168,8 @@ set_up_numpy(
   // Put everything in a submodule `numpy` (even though this is not a package).
   auto const sub = Module::New("cron.ext.numpy");
 
-  DateDtype<PyDate<cron::Date>>::add(sub);
-  DateDtype<PyDate<cron::Date16>>::add(sub);
+  DateDtype<PyDate<cron::date::Date>>::add(sub);
+  DateDtype<PyDate<cron::date::Date16>>::add(sub);
   DaytimeDtype<PyDaytime<cron::Daytime>>::add(sub);
   DaytimeDtype<PyDaytime<cron::Daytime32>>::add(sub);
 

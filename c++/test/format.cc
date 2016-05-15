@@ -4,6 +4,7 @@
 
 using namespace aslib;
 using namespace cron;
+using namespace cron::date;
 using namespace cron::ez;
 
 using std::string;

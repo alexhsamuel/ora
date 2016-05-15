@@ -17,7 +17,7 @@ using namespace py::np;
 
 //------------------------------------------------------------------------------
 
-// FIXME: Remove this, eventually.
+// FIXME: For debugging; remove this, eventually.
 bool constexpr
 PRINT_ARR_FUNCS
   = false;
@@ -197,10 +197,10 @@ DateDtype<PYDATE>::add(
 
   create_or_get_ufunc(module, "get_day", 1, 1)->add_loop_1(
     dtype->type_num, NPY_UINT8, 
-    ufunc_loop_1<Date, uint8_t, cron::get_day<Date>>);
+    ufunc_loop_1<Date, uint8_t, cron::date::get_day<Date>>);
   create_or_get_ufunc(module, "get_month", 1, 1)->add_loop_1(
     dtype->type_num, NPY_UINT8, 
-    ufunc_loop_1<Date, uint8_t, cron::get_month<Date>>);
+    ufunc_loop_1<Date, uint8_t, cron::date::get_month<Date>>);
   create_or_get_ufunc(module, "get_ordinal_date", 1, 1)->add_loop_1(
     dtype, get_ordinal_date_dtype(),
     ufunc_loop_1<Date, cron::OrdinalDate, get_ordinal_date_<Date>>);
@@ -209,16 +209,16 @@ DateDtype<PYDATE>::add(
     ufunc_loop_1<Date, cron::WeekDate, get_week_date_<Date>>);
   create_or_get_ufunc(module, "get_weekday", 1, 1)->add_loop_1(
     dtype->type_num, NPY_UINT8,
-    ufunc_loop_1<Date, uint8_t, cron::get_weekday<Date>>);
+    ufunc_loop_1<Date, uint8_t, cron::date::get_weekday<Date>>);
   create_or_get_ufunc(module, "get_year", 1, 1)->add_loop_1(
     dtype->type_num, NPY_INT16, 
-    ufunc_loop_1<Date, int16_t, cron::get_year<Date>>);
+    ufunc_loop_1<Date, int16_t, cron::date::get_year<Date>>);
   create_or_get_ufunc(module, "get_ymd", 1, 1)->add_loop_1(
     dtype, get_ymd_dtype(),
-    ufunc_loop_1<Date, cron::YmdDate, cron::get_ymd_<Date>>);
+    ufunc_loop_1<Date, cron::YmdDate, get_ymd_<Date>>);
   create_or_get_ufunc(module, "get_ymdi", 1, 1)->add_loop_1(
     dtype->type_num, NPY_INT32, 
-    ufunc_loop_1<Date, int32_t, cron::get_ymdi<Date>>);
+    ufunc_loop_1<Date, int32_t, cron::date::get_ymdi<Date>>);
   create_or_get_ufunc(module, "is_same", 2, 1)->add_loop_2(
     dtype->type_num, dtype->type_num, NPY_BOOL,
     ufunc_loop_2<Date, Date, npy_bool, is_<Date>>);
@@ -364,7 +364,7 @@ DateDtype<PYDATE>::API::function_date_from_ordinal_date(
   auto const o = ordinal_arr->get_const_ptr<cron::Ordinal>();
   auto const r = date_arr->get_ptr<Date>();
   for (npy_intp i = 0; i < size; ++i)
-    r[i] = cron::from_ordinal_date<Date>(y[i], o[i] - 1);
+    r[i] = cron::date::from_ordinal_date<Date>(y[i], o[i] - 1);
 
   return std::move(date_arr);
 }
@@ -391,7 +391,7 @@ DateDtype<PYDATE>::API::function_date_from_week_date(
   auto const e = weekday_arr->get_const_ptr<cron::Weekday>();
   auto const r = date_arr->get_ptr<Date>();
   for (npy_intp i = 0; i < size; ++i)
-    r[i] = cron::from_week_date<Date>(y[i], w[i] - 1, e[i]);
+    r[i] = cron::date::from_week_date<Date>(y[i], w[i] - 1, e[i]);
 
   return std::move(date_arr);
 }
@@ -418,7 +418,7 @@ DateDtype<PYDATE>::API::function_date_from_ymd(
   auto const d = day_arr->get_const_ptr<cron::Day>();
   auto const r = date_arr->get_ptr<Date>();
   for (npy_intp i = 0; i < size; ++i)
-    r[i] = cron::from_ymd<Date>(y[i], m[i] - 1, d[i] - 1);
+    r[i] = cron::date::from_ymd<Date>(y[i], m[i] - 1, d[i] - 1);
 
   return std::move(date_arr);
 }
@@ -438,7 +438,7 @@ DateDtype<PYDATE>::API::function_date_from_ymdi(
   auto const y = ymdi_arr->get_const_ptr<int>();
   auto const d = date_arr->get_ptr<Date>();
   for (npy_intp i = 0; i < size; ++i)
-    d[i] = cron::from_ymdi<Date>(y[i]);
+    d[i] = cron::date::from_ymdi<Date>(y[i]);
 
   return std::move(date_arr);
 }

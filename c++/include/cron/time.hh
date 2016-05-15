@@ -204,9 +204,10 @@ public:
   {
   }
 
+// FIXME: Remove this.
   template<class DTRAITS, class YTRAITS>
   TimeTemplate(
-    DateTemplate<DTRAITS> date,
+    date::DateTemplate<DTRAITS> date,
     DaytimeTemplate<YTRAITS> daytime,
     TimeZone const& tz,
     bool first=true)

@@ -6,6 +6,8 @@
 namespace cron {
 namespace ez {
 
+using date::Date;
+
 //------------------------------------------------------------------------------
 // Syntactic sugar for date literals.
 

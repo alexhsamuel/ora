@@ -8,6 +8,7 @@
 #include "cron/types.hh"
 
 namespace cron {
+namespace date {
 
 //------------------------------------------------------------------------------
 // Forward declarations
@@ -262,6 +263,6 @@ is(
 
 //------------------------------------------------------------------------------
 
+}  // namespace date
 }  // namespace cron
-
 

@@ -61,9 +61,9 @@ public:
   Calendar& operator=(Calendar&&) = delete;
   virtual ~Calendar() {}
 
-  virtual inline Date 
+  virtual inline date::Date 
   shift(
-    Date date, 
+    date::Date date, 
     ssize_t shift) 
     const
   {
@@ -79,9 +79,9 @@ public:
     return date;
   }
 
-  virtual inline Date 
+  virtual inline date::Date 
   nearest(
-    Date date, 
+    date::Date date, 
     bool forward=true) 
     const
   {
@@ -90,9 +90,9 @@ public:
     return date;
   }
 
-  template<class DATE> bool contains(DATE date) const { return contains_(Date(date)); }
-  template<class DATE> DATE shift(DATE date, ssize_t shift) const { return DATE(this->shift(Date(date), shift)); }
-  template<class DATE> DATE nearest(DATE date, bool forward=true) const { return DATE(nearest(Date(date), forward)); }
+  template<class DATE> bool contains(DATE date) const { return contains_(date::Date(date)); }
+  template<class DATE> DATE shift(DATE date, ssize_t shift) const { return DATE(this->shift(date::Date(date), shift)); }
+  template<class DATE> DATE nearest(DATE date, bool forward=true) const { return DATE(nearest(date::Date(date), forward)); }
 
   template<class DATE> bool operator[](DATE date) const { return contains<DATE>(date); }
   
@@ -100,15 +100,15 @@ public:
 
 protected:
 
-  virtual bool contains_(Date date) const = 0;
+  virtual bool contains_(date::Date date) const = 0;
 
 };
 
 
 template<>
 inline bool 
-Calendar::contains<Date>(
-  Date date) 
+Calendar::contains<date::Date>(
+  date::Date date) 
   const 
 { 
   return contains_(date); 
@@ -166,11 +166,11 @@ public:
   AllCalendar() {}
   virtual ~AllCalendar() {}
 
-  virtual Date shift(Date date, ssize_t days) const { return shift(date, days); }
+  virtual date::Date shift(date::Date date, ssize_t days) const { return shift(date, days); }
 
 protected:
 
-  virtual bool contains_(Date date) const { return date.is_valid(); }
+  virtual bool contains_(date::Date date) const { return date.is_valid(); }
 
 };
 
@@ -200,7 +200,7 @@ protected:
 
   virtual inline bool 
   contains_(
-    Date date) 
+    date::Date date) 
     const
   {
     return mask_[date.get_weekday()];
@@ -222,8 +222,8 @@ class HolidayCalendar
 public:
 
   HolidayCalendar(
-    Date min, 
-    Date max)
+    date::Date min, 
+    date::Date max)
     : min_(min),
       holidays_(max - min, false)
   {
@@ -232,12 +232,12 @@ public:
 
   ~HolidayCalendar() {}
 
-  Date get_min() const { return min_; }
-  Date get_max() const { return min_ + holidays_.size(); }
+  date::Date get_min() const { return min_; }
+  date::Date get_max() const { return min_ + holidays_.size(); }
 
-  Date 
+  date::Date 
   shift(
-    Date date, 
+    date::Date date, 
     ssize_t shift) 
     const
   {
@@ -254,7 +254,7 @@ public:
 
   inline void
   set(
-    Date date,
+    date::Date date,
     bool contained)
   {
     ssize_t const index = date - min_;
@@ -263,14 +263,14 @@ public:
     holidays_[index] = contained;
   }
 
-  void add(Date date)       { set(date, true); }
-  void remove(Date date)    { set(date, false); }
+  void add(date::Date date)       { set(date, true); }
+  void remove(date::Date date)    { set(date, false); }
 
 protected:
 
   inline bool
   contains_(
-    Date date)
+    date::Date date)
     const
   {
     return holidays_[date - min_];
@@ -279,7 +279,7 @@ protected:
 
 private:
 
-  Date min_;
+  date::Date min_;
   std::vector<bool> holidays_;
 
 };
@@ -306,7 +306,7 @@ protected:
 
   virtual inline bool
   contains_(
-    Date const date)
+    date::Date const date)
     const
   {
     return !calendar_->contains(date);
@@ -340,7 +340,7 @@ protected:
 
   virtual inline bool
   contains_(
-    Date const date)
+    date::Date const date)
     const
   {
     return calendar0_->contains(date) && calendar1_->contains(date);

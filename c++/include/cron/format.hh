@@ -202,10 +202,10 @@ public:
     return format(&parts, nullptr, nullptr); 
   }
 
-  template<class TRAITS> 
+  template<class DATE> 
   std::string
   operator()(
-    DateTemplate<TRAITS> date) 
+    DATE const date) 
     const 
   { 
     return 
@@ -220,7 +220,7 @@ public:
 template<class TRAITS>
 inline std::string
 to_string(
-  DateTemplate<TRAITS> date)
+  date::DateTemplate<TRAITS> date)
 {
   return DateFormat::get_default()(date);
 }
@@ -230,7 +230,7 @@ template<class TRAITS>
 inline std::ostream&
 operator<<(
   std::ostream& os,
-  DateTemplate<TRAITS> date)
+  date::DateTemplate<TRAITS> date)
 {
   os << to_string(date);
   return os;

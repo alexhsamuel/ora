@@ -4,6 +4,7 @@
 #include "cron/types.hh"
 
 namespace cron {
+namespace date {
 
 //------------------------------------------------------------------------------
 
@@ -157,6 +158,7 @@ MonthInterval constexpr YEAR    = MonthInterval(12);
 
 //------------------------------------------------------------------------------
 
+}  // namespace date
 }  // namespace cron
 
 

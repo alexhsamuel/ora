@@ -855,7 +855,7 @@ PyDate<DATE>::type_;
 // Helper functions
 //------------------------------------------------------------------------------
 
-using PyDateDefault = PyDate<cron::Date>;
+using PyDateDefault = PyDate<cron::date::Date>;
 
 inline ref<Object>
 make_date(
@@ -992,8 +992,8 @@ convert_to_date(
 #ifdef __clang__
 // Use explicit instantiation for the main instances.
 // FIXME: GCC 5.2.1 generates PyDate<>::type_ in BSS, which breaks linking.
-extern template class PyDate<cron::Date>;
-extern template class PyDate<cron::Date16>;
+extern template class PyDate<cron::date::Date>;
+extern template class PyDate<cron::date::Date16>;
 #endif
 
 //------------------------------------------------------------------------------

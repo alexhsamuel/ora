@@ -101,8 +101,8 @@ PyDateAPI::apis_;
 //------------------------------------------------------------------------------
 // Excplicit template instances
 
-template class PyDate<cron::Date>;
-template class PyDate<cron::Date16>;
+template class PyDate<cron::date::Date>;
+template class PyDate<cron::date::Date16>;
 
 //------------------------------------------------------------------------------
 
