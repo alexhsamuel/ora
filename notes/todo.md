@@ -1,5 +1,7 @@
 # Work List
 
+1. C++ namespace reorg.
+1. Replace operator+ and operator- with interval types.
 1. Add hash functions for all Python types.
 1. Make hms_daytime dtype.
 1. Add it to the global module.
