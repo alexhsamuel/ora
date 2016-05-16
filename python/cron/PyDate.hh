@@ -502,7 +502,7 @@ PyDate<DATE>::method_from_iso_date(
   char* iso_date;
   Arg::ParseTupleAndKeywords(args, kw_args, "s", arg_names, &iso_date);
 
-  return create(Date::from_iso_date(iso_date), type);
+  return create(cron::date::from_iso_date<DATE>(iso_date), type);
 }
 
 
@@ -520,7 +520,7 @@ PyDate<DATE>::method_from_ordinal_date(
   static_assert(sizeof(cron::Ordinal) == sizeof(short), "ordinal is not a short");
   Arg::ParseTupleAndKeywords(args, kw_args, "HH", arg_names, &year, &ordinal);
 
-  return create(Date::from_ordinal_date(year, ordinal - 1), type);
+  return create(cron::date::from_ordinal_date<DATE>(year, ordinal - 1), type);
 }
 
 
@@ -569,7 +569,8 @@ PyDate<DATE>::method_from_week_date(
   Arg::ParseTupleAndKeywords(
     args, kw_args, "Hbb", arg_names, &week_year, &week, &weekday);
 
-  return create(Date::from_week_date(week_year, week - 1, weekday), type);
+  return create(
+    cron::date::from_week_date<DATE>(week_year, week - 1, weekday), type);
 }
 
 
@@ -584,7 +585,7 @@ PyDate<DATE>::method_from_ymdi(
   int ymdi;
   Arg::ParseTupleAndKeywords(args, kw_args, "i", arg_names, &ymdi);
 
-  return create(Date::from_ymdi(ymdi), type);
+  return create(cron::date::from_ymdi<DATE>(ymdi), type);
 }
 
 
@@ -639,7 +640,7 @@ PyDate<DATE>::get_day(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(self->date_.get_ymd().day + 1);
+  return Long::FromLong(get_ymd(self->date_).day + 1);
 }
 
 
@@ -669,7 +670,7 @@ PyDate<DATE>::get_month(
   PyDate* const self,
   void* /* closure */)
 {
-  return get_month_obj(self->date_.get_ymd().month + 1);
+  return get_month_obj(get_ymd(self->date_).month + 1);
 }
 
 
@@ -679,7 +680,7 @@ PyDate<DATE>::get_ordinal(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(self->date_.get_ordinal_date().ordinal + 1);
+  return Long::FromLong(get_ordinal_date(self->date_).ordinal + 1);
 }
 
 
@@ -689,7 +690,7 @@ PyDate<DATE>::get_parts(
   PyDate* const self,
   void* /* closure */)
 {
-  return make_ymd_date(self->date_.get_ymd());
+  return make_ymd_date(get_ymd(self->date_));
 }
 
 
@@ -709,7 +710,7 @@ PyDate<DATE>::get_week(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(self->date_.get_week_date().week);
+  return Long::FromLong(get_week_date(self->date_).week);
 }
 
 
@@ -719,7 +720,7 @@ PyDate<DATE>::get_week_year(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(self->date_.get_week_date().week_year);
+  return Long::FromLong(get_week_date(self->date_).week_year);
 }
 
 
@@ -729,7 +730,7 @@ PyDate<DATE>::get_weekday(
   PyDate* const self,
   void* /* closure */)
 {
-  return get_weekday_obj(self->date_.get_weekday());
+  return get_weekday_obj(cron::date::get_weekday(self->date_));
 }
 
 
@@ -739,7 +740,7 @@ PyDate<DATE>::get_year(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(self->date_.get_ordinal_date().year);
+  return Long::FromLong(get_ordinal_date(self->date_).year);
 }
 
 
@@ -749,7 +750,7 @@ PyDate<DATE>::get_ymdi(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(self->date_.get_ymdi());
+  return Long::FromLong(cron::date::get_ymdi(self->date_));
 }
 
 
@@ -878,7 +879,7 @@ parts_to_date(
   long const year   = parts->GetItem(0)->long_value();
   long const month  = parts->GetItem(1)->long_value();
   long const day    = parts->GetItem(2)->long_value();
-  return DATE::from_ymd(year, month - 1, day - 1);
+  return cron::date::from_ymd<DATE>(year, month - 1, day - 1);
 }
 
 
@@ -889,7 +890,7 @@ ordinal_parts_to_date(
 {
   long const year       = parts->GetItem(0)->long_value();
   long const ordinal    = parts->GetItem(1)->long_value();
-  return DATE::from_ordinal_date(year, ordinal - 1);
+  return cron::date::from_ordinal_date<DATE>(year, ordinal - 1);
 }
 
 
@@ -915,7 +916,7 @@ maybe_date(
   if (PyDateTimeAPI == nullptr)
     PyDateTime_IMPORT;
   if (PyDate_Check(obj)) 
-    return DATE::from_ymd(
+    return DATE(
       PyDateTime_GET_YEAR(obj),
       PyDateTime_GET_MONTH(obj) - 1,
       PyDateTime_GET_DAY(obj) - 1);
@@ -958,7 +959,7 @@ convert_to_date(
       return DATE::MAX;
 
     try {
-      return DATE::from_iso_date(str);
+      return cron::date::from_iso_date<DATE>(str);
     }
     catch (cron::DateError) {
       throw py::ValueError("can't parse as date: '"s + str + "'");
@@ -980,7 +981,7 @@ convert_to_date(
     // Interpret eight-digit values as YMDI.
     long const ymdi = (long) *long_obj;
     if (10000000 <= ymdi && ymdi <= 99999999) 
-      return DATE::from_ymdi(ymdi);
+      return cron::date::from_ymdi<DATE>(ymdi);
   }
 
   throw py::TypeError("can't convert to a date: "s + *obj->Repr());

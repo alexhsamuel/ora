@@ -203,7 +203,7 @@ protected:
     date::Date date) 
     const
   {
-    return mask_[date.get_weekday()];
+    return mask_[get_weekday(date)];
   }
 
 private:

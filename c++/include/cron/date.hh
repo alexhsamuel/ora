@@ -7,15 +7,14 @@
 #include "aslib/exc.hh"
 #include "aslib/math.hh"
 #include "cron/date_math.hh"
-#include "cron/types.hh"
-
+#include "cron/date_functions.hh"
+#include "cron/date_safe.hh"
 #include "cron/date_tmpl.hh"
+#include "cron/types.hh"
 
 namespace cron {
 namespace date {
 
-//------------------------------------------------------------------------------
-// Functions.
 //------------------------------------------------------------------------------
 
 namespace {
@@ -31,6 +30,9 @@ void ensure_valid(
 
 }  // anonymous namespace
 
+//------------------------------------------------------------------------------
+// Day arithmetic
+//------------------------------------------------------------------------------
 
 template<class TRAITS> 
 extern inline DateTemplate<TRAITS> 

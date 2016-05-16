@@ -1,8 +1,5 @@
 #pragma once
 
-#include <string>
-
-#include "aslib/math.hh"
 #include "cron/date.hh"
 #include "cron/date_math.hh"
 #include "cron/types.hh"
@@ -14,250 +11,163 @@ namespace date {
 // Forward declarations
 //------------------------------------------------------------------------------
 
-template<class DATE> inline DATE from_ymd(YmdDate);
+template<class DATE> DATE from_ymd(YmdDate const&);
 
-//------------------------------------------------------------------------------
-// Construction functions
 //------------------------------------------------------------------------------
 
 /*
- * Creates a date from its (date class-specific) offset.
+ * Creates a date by parsing an ISO date.
  *
- * Returns an invalid date if the offset is not valid.
+ * Throws <DateFormatError> if the date is not formatted correctly.
+ * Throws <InvalidDateError> if the year, month, and day are invalid.
+ * Throws <DateRangeError> if the date is out of range.
  */
 template<class DATE>
-inline DATE
-from_offset(
-  typename DATE::Offset const offset)
-{
-  return 
-      DATE::offset_is_valid(offset)
-    ? DATE::from_offset(offset)
-    : DATE::INVALID;
-}
-
-
-template<class DATE>
-inline DATE
-from_datenum(
-  Datenum const datenum)
-{
-  return from_offset<DATE>(DATE::datenum_to_offset(datenum));
-}
-
-
-template<class DATE>
-inline DATE
+DATE
 from_iso_date(
   std::string const& date)
 {
-  try {
-    return from_ymd<DATE>(parse_iso_date(date));
-  }
-  catch (DateFormatError) {
-    return DATE::INVALID;
-  }
+  return from_ymd<DATE>(parse_iso_date(date));
 }
 
 
+/*
+ * Creates a date from an ordinal date.
+ *
+ * Throws <InvalidDateError> if the ordinal date is invalid.
+ * Throws <DateRangeError> if the ordinal date is out of range.
+ */
 template<class DATE>
-inline DATE
+DATE
 from_ordinal_date(
-  Year const year,
-  Ordinal const ordinal)
-{
-  return 
-      ordinal_date_is_valid(year, ordinal)
-    ? from_datenum<DATE>(ordinal_date_to_datenum(year, ordinal))
-    : DATE::INVALID;
+  Year const year, 
+  Ordinal const ordinal) 
+{ 
+  if (ordinal_date_is_valid(year, ordinal))
+    return DATE::from_datenum(ordinal_date_to_datenum(year, ordinal));
+  else
+    throw InvalidDateError();
 }
 
 
+/*
+ * Creates a date from a week date.
+ *
+ * Throws <InvalidDateError> if the week date is invalid.
+ * Throws <DateRangeError> if the week date is out of range.
+ */
 template<class DATE>
-inline DATE
-from_ymd(
-  Year const year,
-  Month const month,
-  Day const day)
-{
-  return 
-      ymd_is_valid(year, month, day) 
-    ? from_datenum<DATE>(ymd_to_datenum(year, month, day))
-    : DATE::INVALID;
-}
-
-
-template<class DATE>
-inline DATE
-from_ymd(
-  YmdDate const date)
-{
-  return from_ymd<DATE>(date.year, date.month, date.day);
-}
-
-
-template<class DATE>
-inline DATE
-from_ymdi(
-  int const ymdi)
-{
-  return 
-      ymdi_is_valid(ymdi)
-    ? from_datenum<DATE>(ymdi_to_datenum(ymdi))
-    : DATE::INVALID;
-}
-
-
-template<class DATE>
-inline DATE
+DATE
 from_week_date(
   Year const week_year,
   Week const week,
   Weekday const weekday)
 {
-  return
-      week_date_is_valid(week_year, week, weekday)
-    ? from_datenum<DATE>(week_date_to_datenum(week_year, week, weekday))
-    : DATE::INVALID;
+  if (week_date_is_valid(week_year, week, weekday))
+    return DATE::from_datenum(week_date_to_datenum(week_year, week, weekday));
+  else
+    throw InvalidDateError();
 }
 
 
-//------------------------------------------------------------------------------
-// Accessors
-//------------------------------------------------------------------------------
-
+/*
+ * Creates a date from year, month, and day.
+ *
+ * Throws <InvalidDateError> if the year, month, and day are invalid.
+ * Throws <DateRangeError> if the date is out of range.
+ */
 template<class DATE>
-inline Datenum
-get_datenum(
-  DATE const date)
+DATE
+from_ymd(
+  Year const year, 
+  Month const month, 
+  Day const day) 
 {
-  return date.is_valid() ? date.get_datenum() : DATENUM_INVALID;
-}
-
-
-template<typename DATE>
-inline cron::Day
-get_day(
-  DATE const date)
-{
-  return date.is_valid() ? date.get_ymd().day + 1 : cron::DAY_INVALID;
-}
-
-
-template<typename DATE>
-inline cron::Month
-get_month(
-  DATE const date)
-{
-  return date.is_valid() ? date.get_ymd().month + 1 : cron::MONTH_INVALID;
+  if (ymd_is_valid(year, month, day))
+    return DATE::from_datenum(ymd_to_datenum(year, month, day));
+  else
+    throw InvalidDateError();
 }
 
 
 template<class DATE>
-inline OrdinalDate
+DATE
+from_ymd(
+  YmdDate const& date) 
+{
+  return from_ymd<DATE>(date.year, date.month, date.day);
+}
+
+
+/*
+ * Creates a date from a YMDI.
+ *
+ * Throws <InvalidDateError> if the YMDI is invalid.
+ * Throws <DateRangeError> if the YMDI is out of range.
+ */
+template<class DATE>
+DATE
+from_ymdi(
+  int const ymdi) 
+{ 
+  if (ymdi_is_valid(ymdi)) 
+    return DATE::from_datenum(ymdi_to_datenum(ymdi));
+  else
+    throw InvalidDateError();
+}
+
+
+template<class DATE>
+OrdinalDate 
 get_ordinal_date(
   DATE const date)
-{
-  return date.is_valid() ? date.get_ordinal_date() : OrdinalDate::get_invalid();
-}
-
-
-template<typename DATE>
-inline cron::Year
-get_year(
-  DATE const date)
-{
-  return date.is_valid() ? date.get_ymd().year : cron::YEAR_INVALID;
+{ 
+  return datenum_to_ordinal_date(date.get_datenum()); 
 }
 
 
 template<class DATE>
-inline WeekDate
-get_week_date(
+DateParts 
+get_parts(
   DATE const date)
-{
-  return date.is_valid() ? date.get_week_date() : WeekDate::get_invalid();
+{ 
+  return datenum_to_parts(date.get_datenum()); 
 }
 
 
 template<class DATE>
-inline YmdDate
+YmdDate 
 get_ymd(
   DATE const date)
-{
-  return date.is_valid() ? date.get_ymd() : YmdDate::get_invalid();
+{ 
+  return datenum_to_ymd(date.get_datenum()); 
 }
 
 
 template<class DATE>
-inline int
-get_ymdi(
-  DATE const date)
-{
-  return date.is_valid() ? date.get_ymdi() : YMDI_INVALID;
-}
-
-
-template<class DATE>
-inline Weekday
+Weekday 
 get_weekday(
   DATE const date)
-{
-  return date.is_valid() ? date.get_weekday() : WEEKDAY_INVALID;
+{ 
+  return cron::get_weekday(date.get_datenum()); 
 }
 
 
-//------------------------------------------------------------------------------
-// Arithmetic
-//------------------------------------------------------------------------------
-
 template<class DATE>
-inline DATE
-add(
-  DATE const date,
-  int shift)
-{
-  return 
-      date.is_valid()
-    ? from_offset<DATE>(date.get_offset() + shift)
-    : date;
-}  
-
-
-template<class DATE>
-inline DATE
-subtract(
-  DATE const date,
-  int shift)
-{
-  return add(date, -shift);
-}  
-
-
-template<class DATE>
-inline int
-subtract(
-  DATE const date0,
-  DATE const date1)
-{
-  return
-      date0.is_valid() && date1.is_valid()
-    ? (int) date0.get_offset() - date1.get_offset()
-    : std::numeric_limits<int>::min();
+WeekDate 
+get_week_date(
+  DATE const date)
+{ 
+  return cron::datenum_to_week_date(date.get_datenum()); 
 }
 
 
-//------------------------------------------------------------------------------
-// Comparisons
-//------------------------------------------------------------------------------
-
 template<class DATE>
-inline bool
-is(
-  DATE const date0,
-  DATE const date1)
-{
-  return date0.is(date1);
+int 
+get_ymdi(
+  DATE const date)
+{ 
+  return cron::datenum_to_ymdi(date.get_datenum()); 
 }
 
 

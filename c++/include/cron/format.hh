@@ -209,7 +209,7 @@ public:
     const 
   { 
     return 
-      date.is_valid() ? operator()(date.get_parts())
+      date.is_valid() ? operator()(get_parts(date))
       : date.is_missing() ? get_missing()
       : get_invalid();
   }

@@ -199,7 +199,7 @@ TEST(Unix32Time, zero) {
   auto const time = Unix32Time::from_offset(1374522232);
 
   auto const date = time.get_utc_date<Date>();
-  auto const date_parts = date.get_parts();
+  auto const date_parts = get_parts(date);
   EXPECT_EQ(2013, date_parts.year);
   EXPECT_EQ(6, date_parts.month);
   EXPECT_EQ(21, date_parts.day);
