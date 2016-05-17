@@ -199,10 +199,10 @@ TEST(Unix32Time, zero) {
   auto const time = Unix32Time::from_offset(1374522232);
 
   auto const date = time.get_utc_date<Date>();
-  auto const date_parts = get_parts(date);
-  EXPECT_EQ(2013, date_parts.year);
-  EXPECT_EQ(6, date_parts.month);
-  EXPECT_EQ(21, date_parts.day);
+  auto const ymd = get_ymd(date);
+  EXPECT_EQ(2013, ymd.year);
+  EXPECT_EQ(6, ymd.month);
+  EXPECT_EQ(21, ymd.day);
 
   auto const daytime = time.get_utc_daytime<Daytime>();
   auto const hms = daytime.get_hms();

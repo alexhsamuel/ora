@@ -27,11 +27,10 @@ TEST(Date, range) {
 }
 
 TEST(Date, from_ymd) {
-  Date const date0 = Date(1973, 11, 2);
-  DateParts const parts0 = get_parts(date0);
-  EXPECT_EQ(1973, parts0.year);
-  EXPECT_EQ(11, parts0.month);
-  EXPECT_EQ(2, parts0.day);
+  auto const ymd = get_ymd(Date(1973, 11, 2));
+  EXPECT_EQ(1973, ymd.year);
+  EXPECT_EQ(11, ymd.month);
+  EXPECT_EQ(2, ymd.day);
 }
 
 TEST(Date, offsets) {
@@ -51,12 +50,12 @@ TEST(Date, offsets) {
 }
 
 TEST(Date, shift) {
-  Date const date0 = Date(1973, 11, 2);
-  Date const date1 = date0 + 1;
-  DateParts const parts1 = get_parts(date1);
-  EXPECT_EQ(parts1.year, 1973);
-  EXPECT_EQ(parts1.month, 11);
-  EXPECT_EQ(parts1.day, 3);
+  Date const date0(1973, 11, 2);
+  auto const date1 = date0 + 1;
+  auto const ymd = get_ymd(date1);
+  EXPECT_EQ(ymd.year, 1973);
+  EXPECT_EQ(ymd.month, 11);
+  EXPECT_EQ(ymd.day, 3);
 }
 
 TEST(Date, is_valid) {
@@ -113,13 +112,13 @@ TEST(Date, range_error) {
   EXPECT_THROW(Date::MAX  + 1000000, DateRangeError);
 }
 
-TEST(Date, invalid_parts) {
-  EXPECT_THROW(get_parts(Date::INVALID), InvalidDateError);
+TEST(Date, invalid_ymd) {
+  EXPECT_THROW(get_ymd(Date::INVALID), InvalidDateError);
   EXPECT_THROW(Date::INVALID.get_datenum(), InvalidDateError);
 }
 
-TEST(Date, missing_parts) {
-  EXPECT_THROW(get_parts(Date::MISSING), InvalidDateError);
+TEST(Date, missing_ymd) {
+  EXPECT_THROW(get_ymd(Date::MISSING), InvalidDateError);
   EXPECT_THROW(Date::MISSING.get_datenum(), InvalidDateError);
 }
 
@@ -249,22 +248,25 @@ TEST(Date16, is_valid) {
   EXPECT_TRUE (Date16(1973, 11, 2).is_valid());
 }
 
-TEST(Date16, from_ymd) {
-  Date16 const date0 = Date16(1970, 0, 0);
-  EXPECT_EQ(0, date0.get_offset());
-  EXPECT_EQ(Date16(1970/JAN/ 1), date0);
-  EXPECT_TRUE(date0.is(1970/JAN/ 1));
-  EXPECT_TRUE(date0.is({1970/JAN/ 1}));
-  DateParts const parts0 = get_parts(date0);
-  EXPECT_EQ(1970,   parts0.year);
-  EXPECT_EQ(0,      parts0.month);
-  EXPECT_EQ(0,      parts0.day);
+TEST(Date16, from_ymd0) {
+  Date16 const date{1970, 0, 0};
+  EXPECT_EQ(0, date.get_offset());
+  EXPECT_EQ(Date16(1970/JAN/ 1), date);
+  EXPECT_TRUE(date.is(1970/JAN/ 1));
+  EXPECT_TRUE(date.is({1970/JAN/ 1}));
 
-  Date16 const date1 = Date16(1973, 11, 2);
-  DateParts const parts1 = get_parts(date1);
-  EXPECT_EQ(1973,   parts1.year);
-  EXPECT_EQ(11,     parts1.month);
-  EXPECT_EQ(2,      parts1.day);
+  auto const ymd = get_ymd(date);
+  EXPECT_EQ(1970,   ymd.year);
+  EXPECT_EQ(0,      ymd.month);
+  EXPECT_EQ(0,      ymd.day);
+}
+
+TEST(Date16, from_ymd1) {
+  Date16 const date{1973, 11, 2};
+  auto const ymd = get_ymd(date);
+  EXPECT_EQ(1973,   ymd.year);
+  EXPECT_EQ(11,     ymd.month);
+  EXPECT_EQ(2,      ymd.day);
 }
 
 //------------------------------------------------------------------------------

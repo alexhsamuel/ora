@@ -138,18 +138,6 @@ get_ordinal_date(
 
 
 template<class DATE>
-DateParts 
-get_parts(
-  DATE const date)
-{ 
-  if (date.is_valid())
-    return datenum_to_parts(date.get_datenum()); 
-  else
-    throw InvalidDateError();
-}
-
-
-template<class DATE>
 YmdDate 
 get_ymd(
   DATE const date)
