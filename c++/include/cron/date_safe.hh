@@ -21,23 +21,6 @@ template<class DATE> inline DATE from_ymd(YmdDate);
 // Construction functions
 //------------------------------------------------------------------------------
 
-/*
- * Creates a date from its (date class-specific) offset.
- *
- * Returns an invalid date if the offset is not valid.
- */
-template<class DATE>
-inline DATE
-from_offset(
-  typename DATE::Offset const offset)
-{
-  return 
-      DATE::offset_is_valid(offset)
-    ? DATE::from_offset(offset)
-    : DATE::INVALID;
-}
-
-
 template<class DATE>
 inline DATE
 from_datenum(
@@ -53,6 +36,23 @@ from_iso_date(
   std::string const& date)
 {
   return from_ymd<DATE>(parse_iso_date(date));
+}
+
+
+/*
+ * Creates a date from its (date class-specific) offset.
+ *
+ * Returns an invalid date if the offset is not valid.
+ */
+template<class DATE>
+inline DATE
+from_offset(
+  typename DATE::Offset const offset)
+{
+  return 
+      DATE::offset_is_valid(offset)
+    ? DATE::from_offset(offset)
+    : DATE::INVALID;
 }
 
 
