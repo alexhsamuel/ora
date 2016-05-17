@@ -15,6 +15,7 @@ namespace safe {
 // Forward declarations
 //------------------------------------------------------------------------------
 
+template<class DATE> inline DATE from_offset(typename DATE::Offset);
 template<class DATE> inline DATE from_ymd(YmdDate);
 
 //------------------------------------------------------------------------------
@@ -206,7 +207,10 @@ inline int
 get_ymdi(
   DATE const date)
 {
-  return date.is_valid() ? datenum_to_ymdi(date.get_datenum()) : YMDI_INVALID;
+  return 
+      date.is_valid() 
+    ? datenum_to_ymdi(date.get_datenum()) 
+    : YMDI_INVALID;
 }
 
 
