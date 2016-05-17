@@ -1,8 +1,8 @@
 /*
  * Basic date calculations.
  *
- * These functions do _not_ check the validity of their arguments (other than
- * the *_is_valid() functions), and their results are undefined for invalid
+ * Some of these functions do _not_ check the validity of their arguments (other
+ * than the *_is_valid() functions); their results are undefined for invalid
  * values.
  */
 
@@ -23,27 +23,27 @@ using namespace aslib;
 /*
  * Returns ordinal date parts for a date.
  */
-extern OrdinalDate datenum_to_ordinal_date(Datenum);
+extern OrdinalDate datenum_to_ordinal_date(Datenum) noexcept;
 
 /*
  * Returns YMD date parts for a date.
  */
-extern YmdDate datenum_to_ymd(Datenum, OrdinalDate);
+extern YmdDate datenum_to_ymd(Datenum, OrdinalDate) noexcept;
 
 /*
  * Returns week date parts for a date.
  */
-extern WeekDate datenum_to_week_date(Datenum, OrdinalDate, Weekday);
+extern WeekDate datenum_to_week_date(Datenum, OrdinalDate, Weekday) noexcept;
 
 /*
  * Returns date parts for a date.
  */
-extern DateParts datenum_to_parts(Datenum);
+extern DateParts datenum_to_parts(Datenum) noexcept;
 
 /*
  * Parses an ISO-8601 extended date ("YYYY-MM-DD" format) into parts.
  */
-extern YmdDate parse_iso_date(std::string const&);
+extern YmdDate parse_iso_date(std::string const&) noexcept;
 
 //------------------------------------------------------------------------------
 // Inline functions
@@ -259,6 +259,7 @@ week_date_to_datenum(
 inline YmdDate
 datenum_to_ymd(
   Datenum const datenum)
+  noexcept
 {
   return datenum_to_ymd(datenum, datenum_to_ordinal_date(datenum));
 }
@@ -270,6 +271,7 @@ datenum_to_ymd(
 inline WeekDate 
 datenum_to_week_date(
   Datenum const datenum)
+  noexcept
 {
   return datenum_to_week_date(
     datenum, datenum_to_ordinal_date(datenum), get_weekday(datenum));
@@ -295,17 +297,19 @@ ymdi_is_valid(
 /*
  * Computes the date from a YMDI.
  */
-inline Datenum constexpr
+inline Datenum 
 ymdi_to_datenum(
   int const ymdi)
+  noexcept
 {
   return ymd_to_datenum(ymdi / 10000, ymdi / 100 % 100 - 1, ymdi % 100 - 1);
 }
 
 
-inline int
+inline int 
 datenum_to_ymdi(
   Datenum const datenum)
+  noexcept
 {
   auto const ymd = datenum_to_ymd(datenum);
   return 10000 * ymd.year + 100 * (ymd.month + 1) + (ymd.day + 1);

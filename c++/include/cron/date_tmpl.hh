@@ -195,6 +195,12 @@ public:
 
   // Helper methods  -----------------------------------------------------------
 
+  /*
+   * Computes the offset for a datenum.
+   *
+   * Returns the invalid offset if the datenum is outside the range of this
+   * template instance.
+   */
   static Offset
   datenum_to_offset(
     Datenum const datenum)

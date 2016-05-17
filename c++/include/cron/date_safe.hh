@@ -52,12 +52,7 @@ inline DATE
 from_iso_date(
   std::string const& date)
 {
-  try {
-    return from_ymd<DATE>(parse_iso_date(date));
-  }
-  catch (DateFormatError) {
-    return DATE::INVALID;
-  }
+  return from_ymd<DATE>(parse_iso_date(date));
 }
 
 
@@ -166,7 +161,10 @@ inline OrdinalDate
 get_ordinal_date(
   DATE const date)
 {
-  return date.is_valid() ? date.get_ordinal_date() : OrdinalDate::get_invalid();
+  return 
+      date.is_valid() 
+    ? date.get_ordinal_date() 
+    : OrdinalDate::get_invalid();
 }
 
 

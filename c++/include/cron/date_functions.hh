@@ -27,7 +27,11 @@ DATE
 from_iso_date(
   std::string const& date)
 {
-  return from_ymd<DATE>(parse_iso_date(date));
+  auto ymd = parse_iso_date(date);
+  if (year_is_valid(ymd.year))
+    return from_ymd<DATE>(ymd);
+  else
+    throw DateFormatError("not ISO date format");
 }
 
 
@@ -122,7 +126,10 @@ OrdinalDate
 get_ordinal_date(
   DATE const date)
 { 
-  return datenum_to_ordinal_date(date.get_datenum()); 
+  if (date.is_valid())
+    return datenum_to_ordinal_date(date.get_datenum());
+  else
+    throw InvalidDateError();
 }
 
 
@@ -131,7 +138,10 @@ DateParts
 get_parts(
   DATE const date)
 { 
-  return datenum_to_parts(date.get_datenum()); 
+  if (date.is_valid())
+    return datenum_to_parts(date.get_datenum()); 
+  else
+    throw InvalidDateError();
 }
 
 
@@ -140,7 +150,10 @@ YmdDate
 get_ymd(
   DATE const date)
 { 
-  return datenum_to_ymd(date.get_datenum()); 
+  if (date.is_valid())
+    return datenum_to_ymd(date.get_datenum()); 
+  else
+    throw InvalidDateError();
 }
 
 
@@ -149,7 +162,10 @@ Weekday
 get_weekday(
   DATE const date)
 { 
-  return cron::get_weekday(date.get_datenum()); 
+  if (date.is_valid())
+    return cron::get_weekday(date.get_datenum());
+  else
+    throw InvalidDateError();
 }
 
 
@@ -158,7 +174,10 @@ WeekDate
 get_week_date(
   DATE const date)
 { 
-  return cron::datenum_to_week_date(date.get_datenum()); 
+  if (date.is_valid())
+    return cron::datenum_to_week_date(date.get_datenum());
+  else
+    throw InvalidDateError();
 }
 
 
@@ -167,7 +186,10 @@ int
 get_ymdi(
   DATE const date)
 { 
-  return cron::datenum_to_ymdi(date.get_datenum()); 
+  if (date.is_valid())
+    return cron::datenum_to_ymdi(date.get_datenum()); 
+  else
+    throw InvalidDateError();
 }
 
 

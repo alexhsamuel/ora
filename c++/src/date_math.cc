@@ -19,10 +19,8 @@ using namespace aslib;
 OrdinalDate
 datenum_to_ordinal_date(
   Datenum const datenum)
+  noexcept
 {
-  if (! datenum_is_valid(datenum)) 
-    return OrdinalDate::get_invalid();
-
   // Compute the 400-year leap cycle and remainder; count from year 1.
   Year year = 1 + 400 * (datenum / 146097);
   uint32_t days = datenum % 146097;
@@ -60,6 +58,7 @@ extern YmdDate
 datenum_to_ymd(
   Datenum const datenum,
   OrdinalDate const ordinal_date)
+  noexcept
 {
   auto const leap = is_leap_year(ordinal_date.year);
 
@@ -129,6 +128,7 @@ datenum_to_week_date(
   Datenum const datenum,
   OrdinalDate const ordinal_date,
   Weekday const weekday)
+  noexcept
 {
   auto const year    = ordinal_date.year;
   auto const ordinal = ordinal_date.ordinal;
@@ -170,6 +170,7 @@ datenum_to_week_date(
 YmdDate
 parse_iso_date(
   std::string const& text)
+  noexcept
 {
   auto const len = text.length();
   if (
@@ -205,7 +206,7 @@ parse_iso_date(
       (Day)   (atoi(text.substr(8, 2).c_str()) - 1),
     };
   else
-    throw DateFormatError("not ISO date format");
+    return YmdDate::get_invalid();
 }
 
 
@@ -216,6 +217,7 @@ parse_iso_date(
 DateParts
 datenum_to_parts(
   Datenum const datenum)
+  noexcept
 {
   if (! datenum_is_valid(datenum)) 
     return DateParts::get_invalid();
