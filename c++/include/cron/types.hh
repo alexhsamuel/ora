@@ -202,7 +202,7 @@ struct OrdinalDate
   Year      year;
   Ordinal   ordinal;
 
-  static OrdinalDate get_invalid()
+  static constexpr OrdinalDate get_invalid()
     { return {YEAR_INVALID, ORDINAL_INVALID}; }
 
 };
@@ -217,7 +217,7 @@ struct YmdDate
   Month     month;
   Day       day;
 
-  static YmdDate get_invalid()
+  static constexpr YmdDate get_invalid()
     { return {YEAR_INVALID, MONTH_INVALID, DAY_INVALID}; }
 
 };
@@ -232,7 +232,7 @@ struct WeekDate
   Week      week;
   Weekday   weekday;
 
-  static WeekDate get_invalid()
+  static constexpr WeekDate get_invalid()
     { return {YEAR_INVALID, WEEK_INVALID, WEEKDAY_INVALID}; }
 
 };
@@ -250,8 +250,13 @@ struct DateParts
   Week      week;
   Weekday   weekday;
 
-  static DateParts get_invalid()
-    { return {YEAR_INVALID, MONTH_INVALID, DAY_INVALID, ORDINAL_INVALID, YEAR_INVALID, WEEK_INVALID, WEEKDAY_INVALID}; }
+  static constexpr DateParts 
+  get_invalid()
+  { 
+    return {
+      YEAR_INVALID, MONTH_INVALID, DAY_INVALID, 
+      ORDINAL_INVALID, YEAR_INVALID, WEEK_INVALID, WEEKDAY_INVALID}; 
+  }
 
 };
 
@@ -262,7 +267,7 @@ struct HmsDaytime
   Minute    minute;
   Second    second;
 
-  static HmsDaytime get_invalid()
+  static constexpr HmsDaytime get_invalid()
     { return {HOUR_INVALID, MINUTE_INVALID, SECOND_INVALID}; }
 
 };
@@ -274,7 +279,7 @@ struct TimeZoneParts
   char abbreviation[7];  // FIXME: ?!
   bool is_dst;
 
-  static TimeZoneParts get_invalid()
+  static constexpr TimeZoneParts get_invalid()
     { return TimeZoneParts{TIME_ZONE_OFFSET_INVALID, "?TZ", false}; }
 
 };
@@ -286,8 +291,14 @@ struct TimeParts
   HmsDaytime daytime;
   TimeZoneParts time_zone;
 
-  static TimeParts get_invalid()
-    { return {DateParts::get_invalid(), HmsDaytime::get_invalid(), TimeZoneParts::get_invalid()}; }
+  static constexpr TimeParts 
+  get_invalid()
+  { 
+    return {
+      DateParts::get_invalid(), 
+      HmsDaytime::get_invalid(), 
+      TimeZoneParts::get_invalid()}; 
+  }
 
 };
 
