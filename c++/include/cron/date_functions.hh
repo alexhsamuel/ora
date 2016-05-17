@@ -138,18 +138,6 @@ get_ordinal_date(
 
 
 template<class DATE>
-YmdDate 
-get_ymd(
-  DATE const date)
-{ 
-  if (date.is_valid())
-    return datenum_to_ymd(date.get_datenum()); 
-  else
-    throw InvalidDateError();
-}
-
-
-template<class DATE>
 Weekday 
 get_weekday(
   DATE const date)
@@ -168,6 +156,18 @@ get_week_date(
 { 
   if (date.is_valid())
     return cron::datenum_to_week_date(date.get_datenum());
+  else
+    throw InvalidDateError();
+}
+
+
+template<class DATE>
+YmdDate 
+get_ymd(
+  DATE const date)
+{ 
+  if (date.is_valid())
+    return datenum_to_ymd(date.get_datenum()); 
   else
     throw InvalidDateError();
 }

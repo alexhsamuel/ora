@@ -132,31 +132,6 @@ get_datenum(
 }
 
 
-template<typename DATE>
-inline cron::Day
-get_day(
-  DATE const date)
-{
-  return 
-      date.is_valid() 
-    ? datenum_to_ymd(date.get_datenum()).day + 1 
-    : cron::DAY_INVALID;
-}
-
-
-template<typename DATE>
-inline cron::Month
-get_month(
-  DATE const date)
-{
-  // FIXME: Use get_ymd().
-  return 
-      date.is_valid() 
-    ? datenum_to_ymd(date.get_datenum()).month + 1 
-    : cron::MONTH_INVALID;
-}
-
-
 template<class DATE>
 inline OrdinalDate
 get_ordinal_date(
@@ -169,15 +144,6 @@ get_ordinal_date(
 }
 
 
-template<typename DATE>
-inline cron::Year
-get_year(
-  DATE const date)
-{
-  return get_ymd(date).year;
-}
-
-
 template<class DATE>
 inline WeekDate
 get_week_date(
@@ -187,6 +153,18 @@ get_week_date(
       date.is_valid() 
     ? get_week_date(date.get_datenum()) 
     : WeekDate::get_invalid();
+}
+
+
+template<class DATE>
+inline Weekday
+get_weekday(
+  DATE const date)
+{
+  return 
+      date.is_valid() 
+    ? cron::get_weekday(date.get_datenum()) 
+    : WEEKDAY_INVALID;
 }
 
 
@@ -211,18 +189,6 @@ get_ymdi(
       date.is_valid() 
     ? datenum_to_ymdi(date.get_datenum()) 
     : YMDI_INVALID;
-}
-
-
-template<class DATE>
-inline Weekday
-get_weekday(
-  DATE const date)
-{
-  return 
-      date.is_valid() 
-    ? cron::get_weekday(date.get_datenum()) 
-    : WEEKDAY_INVALID;
 }
 
 
