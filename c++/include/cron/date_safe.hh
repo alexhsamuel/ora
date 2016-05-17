@@ -70,6 +70,20 @@ from_ordinal_date(
 
 
 template<class DATE>
+DATE
+from_week_date(
+  Year const week_year,
+  Week const week,
+  Weekday const weekday)
+{
+  return 
+      week_date_is_valid(week_year, week, weekday)
+    ? from_datenum<DATE>(week_date_to_datenum(week_year, week, weekday))
+    : DATE::INVALID;
+}
+
+
+template<class DATE>
 inline DATE
 from_ymd(
   Year const year,
@@ -100,20 +114,6 @@ from_ymdi(
   return 
       ymdi_is_valid(ymdi)
     ? from_datenum<DATE>(ymdi_to_datenum(ymdi))
-    : DATE::INVALID;
-}
-
-
-template<class DATE>
-inline DATE
-from_week_date(
-  Year const week_year,
-  Week const week,
-  Weekday const weekday)
-{
-  return
-      week_date_is_valid(week_year, week, weekday)
-    ? from_datenum<DATE>(week_date_to_datenum(week_year, week, weekday))
     : DATE::INVALID;
 }
 
