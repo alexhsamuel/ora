@@ -142,9 +142,15 @@ public:
 
   // Accessors  ----------------------------------------------------------------
 
-  bool      is_valid()      const { return offset_is_valid(offset_); }
-  bool      is_invalid()    const { return offset_ == TRAITS::invalid; }
-  bool      is_missing()    const { return offset_ == TRAITS::missing; }
+  bool 
+  is_valid()
+    const noexcept
+  {
+    return in_range(TRAITS::min, offset_, TRAITS::max);
+  }
+
+  bool is_invalid() const noexcept { return offset_ == TRAITS::invalid; }
+  bool is_missing() const noexcept { return offset_ == TRAITS::missing; }
 
   Datenum 
   get_datenum() 
@@ -172,29 +178,6 @@ public:
   bool operator> (DateTemplate const& o) const { return is_valid() && o.is_valid() && offset_ >  o.offset_; }
   bool operator>=(DateTemplate const& o) const { return is_valid() && o.is_valid() && offset_ >= o.offset_; }
 
-public:
-
-  // Helper methods  -----------------------------------------------------------
-
-  // FIXME: Take this out of the class?
-  static bool
-  offset_is_valid(
-    Offset const offset)
-  {
-    return in_range(TRAITS::min, offset, TRAITS::max);
-  }
-
-  /*
-   * Returns true iff the memory layout is exactly the offset.
-   */
-  static constexpr bool 
-  is_basic_layout()
-  {
-    return 
-         sizeof(DateTemplate) == sizeof(Offset)
-      && offsetof(DateTemplate, offset_) == 0;
-  }
-
 private:
 
   template<class DATE> friend DATE cron::date::from_datenum(Datenum);
@@ -212,6 +195,19 @@ private:
   }
 
   Offset offset_;
+
+public:
+
+  /*
+   * Returns true iff the memory layout is exactly the offset.
+   */
+  static constexpr bool 
+  is_basic_layout()
+  {
+    return 
+         sizeof(DateTemplate) == sizeof(Offset)
+      && offsetof(DateTemplate, offset_) == 0;
+  }
 
 };
 

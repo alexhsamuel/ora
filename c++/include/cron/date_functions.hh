@@ -66,7 +66,9 @@ inline DATE
 from_offset(
   typename DATE::Offset const offset)
 {
-  if (DATE::offset_is_valid(offset))
+  if (in_range(DATE::MIN.get_offset(), 
+               offset, 
+               DATE::MAX.get_offset()))
     return DATE(offset);
   else
     throw DateRangeError();
