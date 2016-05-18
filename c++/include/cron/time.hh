@@ -286,7 +286,7 @@ public:
       return DAYTICK_INVALID;
   }
 
-  template<class DATE> DATE get_utc_date() const { return DATE::from_datenum(get_utc_datenum()); }
+  template<class DATE> DATE get_utc_date() const { return date::from_datenum<DATE>(get_utc_datenum()); }
   template<class DAYTIME> DAYTIME get_utc_daytime() const { return DAYTIME::from_daytick(get_utc_daytick()); }
 
   TimeParts 
@@ -663,7 +663,10 @@ to_local(
 {
   if (time.is_valid()) {
     auto dd = to_local_datenum_daytick(time, tz);
-    return {DATE::from_datenum(dd.datenum), TIME::from_daytick(dd.daytick)};
+    return {
+      date::from_datenum<DATE>(dd.datenum), 
+      TIME::from_daytick(dd.daytick)
+    };
   }
   else
     // FIXME: LocalTime::INVALID?

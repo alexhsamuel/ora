@@ -154,22 +154,6 @@ public:
     return DateTemplate(valid_offset<DateRangeError>(offset));
   }
 
-  /*
-   * Creates a date from a datenum.
-   *
-   * Throws <InvalidDateError> if the datenum is invalid.
-   * Throws <DateRangeError> if the datenum is out of range.
-   */
-  static DateTemplate 
-  from_datenum(
-    Datenum const datenum) 
-  { 
-    if (datenum_is_valid(datenum))
-      return from_offset(datenum_to_offset(datenum));
-    else
-      throw InvalidDateError();
-  }
-
   // Accessors  ----------------------------------------------------------------
 
   bool      is_valid()      const { return offset_is_valid(offset_); }
@@ -195,6 +179,15 @@ public:
 
   // Helper methods  -----------------------------------------------------------
 
+  // FIXME: Take this out of the class?
+  static bool
+  offset_is_valid(
+    Offset const offset)
+  {
+    return in_range(TRAITS::min, offset, TRAITS::max);
+  }
+
+  // FIXME: Clean this up.
   /*
    * Computes the offset for a datenum.
    *
@@ -209,32 +202,11 @@ public:
     return overflows<Offset>(offset) ? TRAITS::invalid : (Offset) offset;
   }
 
-  static bool
-  offset_is_valid(
-    Offset const offset)
-  {
-    return in_range(TRAITS::min, offset, TRAITS::max);
-  }
-
   static Datenum
   offset_to_datenum(
     Offset const offset)
   {
     return (Datenum) ((int64_t) TRAITS::base + (int64_t) offset);
-  }
-
-  /*
-   * Returns `offset` if it is valid; else throws EXCEPTION.
-   */
-  template<class EXCEPTION>
-  static Offset
-  valid_offset(
-    Offset const offset)
-  {
-    if (offset_is_valid(offset))
-      return offset;
-    else
-      throw EXCEPTION();
   }
 
   // FIXME: Obviate?
@@ -251,6 +223,20 @@ public:
   }
 
   /*
+   * Returns `offset` if it is valid; else throws EXCEPTION.
+   */
+  template<class EXCEPTION>
+  static Offset
+  valid_offset(
+    Offset const offset)
+  {
+    if (offset_is_valid(offset))
+      return offset;
+    else
+      throw EXCEPTION();
+  }
+
+  /*
    * Returns true iff the memory layout is exactly the offset.
    */
   static constexpr bool 
@@ -262,6 +248,11 @@ public:
   }
 
 private:
+
+  template<class DATE> friend DATE cron::date::from_datenum(Datenum);
+  template<class DATE> friend DATE cron::date::from_offset(typename DATE::Offset);
+  template<class DATE> friend DATE cron::date::safe::from_datenum(Datenum) noexcept;
+  template<class DATE> friend DATE cron::date::safe::from_offset(typename DATE::Offset) noexcept;
 
   // State  --------------------------------------------------------------------
 

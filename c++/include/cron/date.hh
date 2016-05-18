@@ -16,21 +16,6 @@ namespace cron {
 namespace date {
 
 //------------------------------------------------------------------------------
-
-namespace {
-
-template<class TRAITS>
-void ensure_valid(
-  DateTemplate<TRAITS> const date)
-{
-  if (!date.is_valid())
-    throw InvalidDateError();
-}
-
-
-}  // anonymous namespace
-
-//------------------------------------------------------------------------------
 // Day arithmetic
 //------------------------------------------------------------------------------
 

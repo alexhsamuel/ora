@@ -34,19 +34,19 @@ TEST(Date, from_ymd) {
 }
 
 TEST(Date, offsets) {
-  EXPECT_EQ(Date::MIN, Date::from_offset(Date::MIN.get_offset()));
-  EXPECT_EQ(Date::MIN, Date::from_datenum(Date::MIN.get_datenum()));
+  EXPECT_EQ(Date::MIN, from_offset<Date>(Date::MIN.get_offset()));
+  EXPECT_EQ(Date::MIN, from_datenum<Date>(Date::MIN.get_datenum()));
 
-  EXPECT_EQ(Date::MAX, Date::from_offset(Date::MAX.get_offset()));
-  EXPECT_EQ(Date::MAX, Date::from_datenum(Date::MAX.get_datenum()));
+  EXPECT_EQ(Date::MAX, from_offset<Date>(Date::MAX.get_offset()));
+  EXPECT_EQ(Date::MAX, from_datenum<Date>(Date::MAX.get_datenum()));
 
   Date const date1 = Date(1600, 2, 0);
-  EXPECT_EQ(date1, Date::from_offset(date1.get_offset()));
-  EXPECT_EQ(date1, Date::from_datenum(date1.get_datenum()));
+  EXPECT_EQ(date1, from_offset<Date>(date1.get_offset()));
+  EXPECT_EQ(date1, from_datenum<Date>(date1.get_datenum()));
 
   Date const date2 = Date(2000, 2, 0);
-  EXPECT_EQ(date2, Date::from_offset(date2.get_offset()));
-  EXPECT_EQ(date2, Date::from_datenum(date2.get_datenum()));
+  EXPECT_EQ(date2, from_offset<Date>(date2.get_offset()));
+  EXPECT_EQ(date2, from_datenum<Date>(date2.get_datenum()));
 }
 
 TEST(Date, shift) {
@@ -89,7 +89,7 @@ TEST(Date, is) {
 }
 
 TEST(Date, invalid) {
-  EXPECT_THROW(Date::from_datenum(DATENUM_INVALID).is_invalid(), InvalidDateError);
+  EXPECT_THROW(from_datenum<Date>(DATENUM_INVALID).is_invalid(), InvalidDateError);
   EXPECT_THROW(Date(1973, 11,  31), InvalidDateError);
   EXPECT_THROW(Date(1973, 10,  30), InvalidDateError);
   EXPECT_THROW(Date(1973,  1,  28), InvalidDateError);
