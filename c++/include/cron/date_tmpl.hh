@@ -185,20 +185,6 @@ public:
   }
 
   /*
-   * Returns `offset` if it is valid; else throws EXCEPTION.
-   */
-  template<class EXCEPTION>
-  static Offset
-  valid_offset(
-    Offset const offset)
-  {
-    if (offset_is_valid(offset))
-      return offset;
-    else
-      throw EXCEPTION();
-  }
-
-  /*
    * Returns true iff the memory layout is exactly the offset.
    */
   static constexpr bool 
@@ -224,12 +210,6 @@ private:
   : offset_(offset) 
   {
   }
-
-  /*
-   * Internal accessor for offset that throws if not valid.
-   */
-  Offset valid_offset() const 
-    { return valid_offset<InvalidDateError>(offset_); }
 
   Offset offset_;
 
