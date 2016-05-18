@@ -160,10 +160,21 @@ public:
   bool      is_invalid()    const { return offset_ == TRAITS::invalid; }
   bool      is_missing()    const { return offset_ == TRAITS::missing; }
 
-  Offset get_offset() const 
-    { return valid_offset(); }
-  Datenum get_datenum() const 
-    { return offset_to_datenum(valid_offset()); }
+  Datenum 
+  get_datenum() 
+    const 
+  {
+    ensure_valid(*this);
+    return (Datenum) ((long) TRAITS::base + (long) offset_);
+  }
+
+  Offset 
+  get_offset() 
+    const 
+  { 
+    ensure_valid(*this);
+    return offset_;
+  }
 
   // Comparisons  --------------------------------------------------------------
 
@@ -191,7 +202,7 @@ public:
   offset_to_datenum(
     Offset const offset)
   {
-    return (Datenum) ((int64_t) TRAITS::base + (int64_t) offset);
+    return (Datenum) ((long) TRAITS::base + (long) offset);
   }
 
   /*
@@ -244,6 +255,19 @@ private:
   Offset offset_;
 
 };
+
+
+/*
+ * If `date` is valid, does nothing; otherwise, throws `InvalidDateError`.
+ */
+template<class DATE>
+void
+ensure_valid(
+  DATE const date)
+{
+  if (!date.is_valid())
+    throw InvalidDateError();
+}
 
 
 //------------------------------------------------------------------------------

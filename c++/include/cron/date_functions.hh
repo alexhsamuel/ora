@@ -8,26 +8,6 @@ namespace cron {
 namespace date {
 
 //------------------------------------------------------------------------------
-// Helpers
-//------------------------------------------------------------------------------
-
-namespace {
-
-/*
- * Throws `InvalidDateError` if `date` is not valid.
- */
-template<class DATE>
-void ensure_valid(
-  DATE const date)
-{
-  if (!date.is_valid())
-    throw InvalidDateError();
-}
-
-
-}  // anonymous namespace
-
-//------------------------------------------------------------------------------
 // Forward declarations
 //------------------------------------------------------------------------------
 
