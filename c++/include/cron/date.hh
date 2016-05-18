@@ -19,6 +19,9 @@ namespace date {
 // Day arithmetic
 //------------------------------------------------------------------------------
 
+// FIXME: Template on DATE instead?
+// FIXME: Move elsewhere.
+
 template<class TRAITS> 
 extern inline DateTemplate<TRAITS> 
 operator+(
@@ -26,7 +29,7 @@ operator+(
   int shift)
 {
   ensure_valid(date);
-  return DateTemplate<TRAITS>::from_offset(date.get_offset() + shift);
+  return from_offset<DateTemplate<TRAITS>>(date.get_offset() + shift);
 }
 
 
@@ -37,7 +40,7 @@ operator-(
   int shift)
 {
   ensure_valid(date);
-  return DateTemplate<TRAITS>::from_offset(date.get_offset() - shift);
+  return from_offset<DateTemplate<TRAITS>>(date.get_offset() - shift);
 }
 
 

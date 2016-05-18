@@ -140,20 +140,6 @@ public:
     return *this;
   }
 
-  // Factory methods  ----------------------------------------------------------
-
-  /*
-   * Creates a date object from an offset, which must be valid and in range.
-   *
-   * Throws <DateRangeError> if the offset is out of range.
-   */
-  static constexpr DateTemplate 
-  from_offset(
-    Offset const offset) 
-  { 
-    return DateTemplate(valid_offset<DateRangeError>(offset));
-  }
-
   // Accessors  ----------------------------------------------------------------
 
   bool      is_valid()      const { return offset_is_valid(offset_); }
@@ -196,13 +182,6 @@ public:
     Offset const offset)
   {
     return in_range(TRAITS::min, offset, TRAITS::max);
-  }
-
-  static Datenum
-  offset_to_datenum(
-    Offset const offset)
-  {
-    return (Datenum) ((long) TRAITS::base + (long) offset);
   }
 
   /*
