@@ -16,6 +16,8 @@ namespace date {
 // Generic date type
 //------------------------------------------------------------------------------
 
+// FIXME: Rename to Date in a sub-namespace.
+
 /*
  * Represents a Gregorian date as an integer day offset from a fixed base date.
  *
@@ -83,10 +85,9 @@ public:
   DateTemplate(
     DateTemplate<OTHER_TRAITS> const date)
   : DateTemplate(
-        date.is_invalid() ? TRAITS::invalid
-      : date.is_missing() ? TRAITS::missing
-      : valid_offset<DateRangeError>(
-          datenum_to_offset(date.get_datenum())))
+        date.is_invalid() ? INVALID
+      : date.is_missing() ? MISSING
+      : from_datenum<DateTemplate>(date.get_datenum()))
   {
   }
 
@@ -97,7 +98,7 @@ public:
     Year const year,
     Month const month,
     Day const day)
-  : offset_(valid_offset<DateRangeError>(ymd_to_offset(year, month, day)))
+  : DateTemplate(from_ymd<DateTemplate>(year, month, day))
   {
   }
 
@@ -132,11 +133,10 @@ public:
   operator=(
     DateTemplate<OTHER_TRAITS> const date)
   {
-    offset_ = 
-        date.is_invalid() ? TRAITS::invalid
-      : date.is_missing() ? TRAITS::missing
-      : valid_offset<DateRangeError>(
-          datenum_to_offset(date.get_datenum()));
+    *this = 
+        date.is_invalid() ? INVALID
+      : date.is_missing() ? MISSING
+      : from_datenum<DateTemplate>(date.get_datenum());
     return *this;
   }
 
@@ -187,39 +187,11 @@ public:
     return in_range(TRAITS::min, offset, TRAITS::max);
   }
 
-  // FIXME: Clean this up.
-  /*
-   * Computes the offset for a datenum.
-   *
-   * Returns the invalid offset if the datenum is outside the range of this
-   * template instance.
-   */
-  static Offset
-  datenum_to_offset(
-    Datenum const datenum)
-  {
-    auto offset = (long) datenum - (long) TRAITS::base;
-    return overflows<Offset>(offset) ? TRAITS::invalid : (Offset) offset;
-  }
-
   static Datenum
   offset_to_datenum(
     Offset const offset)
   {
     return (Datenum) ((int64_t) TRAITS::base + (int64_t) offset);
-  }
-
-  // FIXME: Obviate?
-  static Offset 
-  ymd_to_offset(
-    Year const year,
-    Month const month,
-    Day const day)
-  {
-    if (ymd_is_valid(year, month, day))
-      return datenum_to_offset(ymd_to_datenum(year, month, day));
-    else
-      throw InvalidDateError();
   }
 
   /*
