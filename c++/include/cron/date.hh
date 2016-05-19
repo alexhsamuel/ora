@@ -9,7 +9,7 @@
 #include "cron/date_math.hh"
 #include "cron/date_functions.hh"
 #include "cron/date_safe.hh"
-#include "cron/date_tmpl.hh"
+#include "cron/date_obj.hh"
 #include "cron/types.hh"
 
 namespace cron {
