@@ -19,7 +19,7 @@ template<class DATE> inline DATE from_offset(typename DATE::Offset) noexcept;
 template<class DATE> inline DATE from_ymd(YmdDate) noexcept;
 
 //------------------------------------------------------------------------------
-// Construction functions
+// Factory functions
 //------------------------------------------------------------------------------
 
 template<class DATE>
@@ -137,10 +137,6 @@ from_ymdi(
 }
 
 
-template<class DATE> inline Year  get_year (DATE const date) { return get_ymd(date).year; }
-template<class DATE> inline Month get_month(DATE const date) { return get_ymd(date).month; }
-template<class DATE> inline Day   get_day  (DATE const date) { return get_ymd(date).day; }
-
 //------------------------------------------------------------------------------
 // Accessors
 //------------------------------------------------------------------------------
@@ -202,7 +198,7 @@ get_ymd(
 {
   return 
       date.is_valid()
-    ? get_ymd(date)
+    ? safe::get_ymd(date)
     : YmdDate::get_invalid();
 }
 
@@ -219,6 +215,10 @@ get_ymdi(
     : YMDI_INVALID;
 }
 
+
+template<class DATE> inline Year  get_year (DATE const date) noexcept { return safe::get_ymd<DATE>(date).year;  }
+template<class DATE> inline Month get_month(DATE const date) noexcept { return safe::get_ymd<DATE>(date).month; }
+template<class DATE> inline Day   get_day  (DATE const date) noexcept { return safe::get_ymd<DATE>(date).day;   }
 
 //------------------------------------------------------------------------------
 // Arithmetic

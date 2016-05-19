@@ -15,6 +15,8 @@ template<class DATE> DATE from_offset(typename DATE::Offset);
 template<class DATE> DATE from_ymd(YmdDate const&);
 
 //------------------------------------------------------------------------------
+// Factory functions
+//------------------------------------------------------------------------------
 
 template<class DATE>
 inline DATE
@@ -214,9 +216,10 @@ get_ymdi(
 }
 
 
-template<class DATE> inline Year  get_year (DATE const date) { return get_ymd(date).year; }
+// For convenience.
+template<class DATE> inline Year  get_year (DATE const date) { return get_ymd(date).year;  }
 template<class DATE> inline Month get_month(DATE const date) { return get_ymd(date).month; }
-template<class DATE> inline Day   get_day  (DATE const date) { return get_ymd(date).day; }
+template<class DATE> inline Day   get_day  (DATE const date) { return get_ymd(date).day;   }
 
 //------------------------------------------------------------------------------
 
