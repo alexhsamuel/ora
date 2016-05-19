@@ -34,6 +34,7 @@ from_datenum(
     throw InvalidDateError();
 }
 
+
 /*
  * Creates a date by parsing an ISO date.
  *
