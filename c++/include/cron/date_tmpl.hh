@@ -16,8 +16,6 @@ namespace date {
 // Generic date type
 //------------------------------------------------------------------------------
 
-// FIXME: Rename to Date in a sub-namespace.
-
 /*
  * Represents a Gregorian date as an integer day offset from a fixed base date.
  *
@@ -190,7 +188,7 @@ private:
   constexpr 
   DateTemplate(
     Offset offset) 
-  : offset_(offset) 
+  : offset_(offset)
   {
   }
 
@@ -224,6 +222,54 @@ ensure_valid(
     throw InvalidDateError();
 }
 
+
+//------------------------------------------------------------------------------
+// Day arithmetic
+//------------------------------------------------------------------------------
+
+// FIXME: Template on DATE instead?
+// FIXME: Move elsewhere.
+
+template<class TRAITS> 
+extern inline DateTemplate<TRAITS> 
+operator+(
+  DateTemplate<TRAITS> date, 
+  int shift)
+{
+  ensure_valid(date);
+  return from_offset<DateTemplate<TRAITS>>(date.get_offset() + shift);
+}
+
+
+template<class TRAITS> 
+extern inline DateTemplate<TRAITS> 
+operator-(
+  DateTemplate<TRAITS> date, 
+  int shift)
+{
+  ensure_valid(date);
+  return from_offset<DateTemplate<TRAITS>>(date.get_offset() - shift);
+}
+
+
+template<class TRAITS>
+extern inline int
+operator-(
+  DateTemplate<TRAITS> date0,
+  DateTemplate<TRAITS> date1)
+{
+  ensure_valid(date0);
+  ensure_valid(date1);
+  return (int) date0.get_offset() - date1.get_offset();
+}
+
+
+template<class TRAITS> DateTemplate<TRAITS> operator+=(DateTemplate<TRAITS>& date, ssize_t days) { return date = date + days; }
+template<class TRAITS> DateTemplate<TRAITS> operator++(DateTemplate<TRAITS>& date) { return date = date + 1; }
+template<class TRAITS> DateTemplate<TRAITS> operator++(DateTemplate<TRAITS>& date, int) { auto old = date; date = date + 1; return old; }
+template<class TRAITS> DateTemplate<TRAITS> operator-=(DateTemplate<TRAITS>& date, ssize_t days) { return date = date -days; }
+template<class TRAITS> DateTemplate<TRAITS> operator--(DateTemplate<TRAITS>& date) { return date = date - 1; }
+template<class TRAITS> DateTemplate<TRAITS> operator--(DateTemplate<TRAITS>& date, int) { auto old = date; date = date  -1; return old; }
 
 //------------------------------------------------------------------------------
 // Static attributes
