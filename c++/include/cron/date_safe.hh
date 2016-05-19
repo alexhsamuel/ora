@@ -33,7 +33,7 @@ from_datenum(
   if (datenum_is_valid(datenum)) {
     auto offset = (long) datenum - (long) DATE::Traits::base;
     return 
-        in_range((long) DATE::MIN, offset, (long) DATE::MAX)
+        in_range((long) DATE::Traits::min, offset, (long) DATE::Traits::max)
       ? DATE((Offset) offset)
       : DATE::INVALID;
   }
@@ -136,6 +136,10 @@ from_ymdi(
     : DATE::INVALID;
 }
 
+
+template<class DATE> inline Year  get_year (DATE const date) { return get_ymd(date).year; }
+template<class DATE> inline Month get_month(DATE const date) { return get_ymd(date).month; }
+template<class DATE> inline Day   get_day  (DATE const date) { return get_ymd(date).day; }
 
 //------------------------------------------------------------------------------
 // Accessors

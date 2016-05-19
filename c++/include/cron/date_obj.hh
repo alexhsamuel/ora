@@ -100,6 +100,8 @@ public:
   {
   }
 
+  ~DateTemplate() = default;
+
   // Assignment operators  -----------------------------------------------------
 
   /*

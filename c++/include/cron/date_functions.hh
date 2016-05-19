@@ -25,9 +25,7 @@ from_datenum(
 
   if (datenum_is_valid(datenum)) {
     auto offset = (long) datenum - (long) DATE::Traits::base;
-    if (in_range((long) DATE::MIN.get_offset(), 
-                 offset, 
-                 (long) DATE::MAX.get_offset()))
+    if (in_range((long) DATE::Traits::min, offset, (long) DATE::Traits::max))
       return DATE((Offset) offset);
     else
       throw DateRangeError();
@@ -214,6 +212,10 @@ get_ymdi(
   return cron::datenum_to_ymdi(date.get_datenum()); 
 }
 
+
+template<class DATE> inline Year  get_year (DATE const date) { return get_ymd(date).year; }
+template<class DATE> inline Month get_month(DATE const date) { return get_ymd(date).month; }
+template<class DATE> inline Day   get_day  (DATE const date) { return get_ymd(date).day; }
 
 //------------------------------------------------------------------------------
 
