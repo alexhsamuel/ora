@@ -11,29 +11,21 @@ namespace date {
 // Forward declarations
 //------------------------------------------------------------------------------
 
-template<class DATE> DATE from_offset(typename DATE::Offset);
 template<class DATE> DATE from_ymd(YmdDate const&);
 
 //------------------------------------------------------------------------------
 // Factory functions
 //------------------------------------------------------------------------------
 
+/*
+ * Same as `DATE::from_datenum()`; included for completeness.
+ */
 template<class DATE>
 inline DATE
 from_datenum(
   Datenum const datenum)
 {
-  using Offset = typename DATE::Offset;
-
-  if (datenum_is_valid(datenum)) {
-    auto offset = (long) datenum - (long) DATE::Traits::base;
-    if (in_range((long) DATE::Traits::min, offset, (long) DATE::Traits::max))
-      return DATE((Offset) offset);
-    else
-      throw DateRangeError();
-  }
-  else
-    throw InvalidDateError();
+  return DATE::from_datenum(datenum);
 }
 
 
@@ -58,21 +50,14 @@ from_iso_date(
 
 
 /*
- * Creates a date from a (`DATE`-specific) date offset.
- *
- * Throws <DateRangeError> if the offset is not in range for `DATE`.
+ * Same as `DATE::from_offset()`; included for completeness.
  */
 template<class DATE>
 inline DATE
 from_offset(
   typename DATE::Offset const offset)
 {
-  if (in_range(DATE::MIN.get_offset(), 
-               offset, 
-               DATE::MAX.get_offset()))
-    return DATE(offset);
-  else
-    throw DateRangeError();
+  return DATE::from_offset(offset);
 }
 
 

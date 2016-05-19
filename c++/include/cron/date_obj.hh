@@ -85,7 +85,7 @@ public:
   : DateTemplate(
         date.is_invalid() ? INVALID
       : date.is_missing() ? MISSING
-      : from_datenum<DateTemplate>(date.get_datenum()))
+      : from_datenum(date.get_datenum()))
   {
   }
 
@@ -101,6 +101,44 @@ public:
   }
 
   ~DateTemplate() = default;
+
+  // Factory methods  ----------------------------------------------------------
+
+  /*
+   * Creates a date fro a datenum.
+   *
+   * Throws <InvalidDateError> if the datenum is not valid.
+   * Throws <DateRangeError> if the date cannot be represented with this type.
+   */
+  static DateTemplate
+  from_datenum(
+    Datenum const datenum)
+  {
+    if (datenum_is_valid(datenum)) {
+      auto offset = (long) datenum - (long) Traits::base;
+      if (in_range((long) Traits::min, offset, (long) Traits::max))
+        return {(Offset) offset};
+      else
+        throw DateRangeError();
+    }
+    else
+      throw InvalidDateError();
+  }
+
+  /*
+   * Creates a date from an offset.
+   *
+   * Throws <DateRangeError> if the offset is not valid.
+   */
+  static DateTemplate
+  from_offset(
+    Offset const offset)
+  {
+    if (in_range(Traits::min, offset, Traits::max))
+      return DateTemplate(offset);
+    else
+      throw DateRangeError();
+  }
 
   // Assignment operators  -----------------------------------------------------
 
@@ -136,7 +174,7 @@ public:
     *this = 
         date.is_invalid() ? INVALID
       : date.is_missing() ? MISSING
-      : from_datenum<DateTemplate>(date.get_datenum());
+      : from_datenum(date.get_datenum());
     return *this;
   }
 
