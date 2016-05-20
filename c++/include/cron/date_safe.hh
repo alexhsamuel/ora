@@ -159,7 +159,7 @@ get_ordinal_date(
 {
   return 
       date.is_valid() 
-    ? date.get_ordinal_date() 
+    ? datenum_to_ordinal_date(date.get_datenum())
     : OrdinalDate::get_invalid();
 }
 
@@ -216,9 +216,18 @@ get_ymdi(
 }
 
 
-template<class DATE> inline Year  get_year (DATE const date) noexcept { return safe::get_ymd<DATE>(date).year;  }
-template<class DATE> inline Month get_month(DATE const date) noexcept { return safe::get_ymd<DATE>(date).month; }
-template<class DATE> inline Day   get_day  (DATE const date) noexcept { return safe::get_ymd<DATE>(date).day;   }
+template<class DATE> inline Year get_year(DATE const date) noexcept 
+  { return safe::get_ordinal_date(date).year;  }
+template<class DATE> inline Month get_month(DATE const date) noexcept 
+  { return safe::get_ymd(date).month; }
+template<class DATE> inline Ordinal get_ordinal(DATE const date) noexcept
+  { return safe::get_ordinal_date(date).ordinal; }
+template<class DATE> inline Week get_week(DATE const date) noexcept
+  { return safe::get_week_date(date).week; }
+template<class DATE> inline Year get_week_year(DATE const date) noexcept
+  { return safe::get_week_date(date).week_year; }
+template<class DATE> inline Day get_day(DATE const date) noexcept 
+  { return safe::get_ymd(date).day;   }
 
 //------------------------------------------------------------------------------
 // Arithmetic

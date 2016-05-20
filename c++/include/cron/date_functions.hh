@@ -85,6 +85,12 @@ get_ymdi(
 
 
 // For convenience.
+
+template<class DATE> inline Datenum get_datenum(DATE const date)
+  { return date.get_datenum(); }
+template<class DATE> inline typename DATE::Offset get_offset(DATE const date)
+  { return date.get_offset(); }
+
 template<class DATE> inline Day get_day(DATE const date) 
   { return get_ymd(date).day; }
 template<class DATE> inline Month get_month(DATE const date) 
