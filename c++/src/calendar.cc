@@ -82,6 +82,7 @@ parse_holiday_calendar(
   assert(!max.is_missing());
 
   // Now construct the calendar.
+  assert(min <= max);
   auto cal = std::make_unique<HolidayCalendar>(min, max);
   for (auto const date : dates)
     cal->add(date);
