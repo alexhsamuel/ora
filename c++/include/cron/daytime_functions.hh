@@ -6,6 +6,45 @@ namespace cron {
 namespace daytime {
 
 //------------------------------------------------------------------------------
+// Accessors
+//------------------------------------------------------------------------------
+
+template<class DAYTIME>
+inline double 
+get_ssm(
+  DAYTIME const daytime)
+{
+  ensure_valid(daytime);
+  return (double) daytime.get_offset() / DAYTIME::Traits::denominator; 
+}
+
+
+template<class DAYTIME>
+inline HmsDaytime 
+get_hms(
+  DAYTIME const daytime)  
+{
+  ensure_valid(daytime);
+  auto const offset = daytime.get_offset();
+  auto const minutes = offset / (SECS_PER_MIN * DAYTIME::Traits::denominator);
+  auto const seconds = offset % (SECS_PER_MIN * DAYTIME::Traits::denominator);
+  return {
+    (Hour)   (minutes / MINS_PER_HOUR),
+    (Minute) (minutes % MINS_PER_HOUR),
+    (Second) seconds / DAYTIME::Traits::denominator
+  };
+}
+
+
+// For convenience.
+template<class DAYTIME> inline Hour get_hour(DAYTIME const daytime)
+  { return get_hms(daytime).hour; }
+template<class DAYTIME> inline Minute get_minute(DAYTIME const daytime)
+  { return get_hms(daytime).minute; }
+template<class DAYTIME> inline Second get_second(DAYTIME const daytime)
+  { return get_hms(daytime).second; }
+
+//------------------------------------------------------------------------------
 
 template<class TRAITS>
 inline DaytimeTemplate<TRAITS>

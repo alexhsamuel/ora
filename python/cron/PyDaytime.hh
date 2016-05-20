@@ -500,7 +500,7 @@ PyDaytime<DAYTIME>::get_hour(
   PyDaytime* self,
   void* /* closure */)
 {
-  return Long::FromLong(self->daytime_.get_hms().hour);
+  return Long::FromLong(cron::daytime::get_hour(self->daytime_));
 }
 
 
@@ -520,7 +520,7 @@ PyDaytime<DAYTIME>::get_minute(
   PyDaytime* self,
   void* /* closure */)
 {
-  return Long::FromLong(self->daytime_.get_hms().minute);
+  return Long::FromLong(cron::daytime::get_minute(self->daytime_));
 }
 
 
@@ -540,7 +540,7 @@ PyDaytime<DAYTIME>::get_hms(
   PyDaytime* self,
   void* /* closure */)
 {
-  return make_hms_daytime(self->daytime_.get_hms());
+  return make_hms_daytime(cron::daytime::get_hms(self->daytime_));
 }
 
 
@@ -550,7 +550,7 @@ PyDaytime<DAYTIME>::get_second(
   PyDaytime* self,
   void* /* closure */)
 {
-  return Float::FromDouble(self->daytime_.get_hms().second);
+  return Float::FromDouble(cron::daytime::get_second(self->daytime_));
 }
 
 
@@ -560,7 +560,7 @@ PyDaytime<DAYTIME>::get_ssm(
   PyDaytime* self,
   void* /* closure */)
 {
-  return Float::FromDouble(self->daytime_.get_ssm());
+  return Float::FromDouble(cron::daytime::get_ssm(self->daytime_));
 }
 
 

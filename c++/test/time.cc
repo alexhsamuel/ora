@@ -206,7 +206,7 @@ TEST(Unix32Time, zero) {
   EXPECT_EQ(21, ymd.day);
 
   auto const daytime = time.get_utc_daytime<Daytime>();
-  auto const hms = daytime.get_hms();
+  auto const hms = get_hms(daytime);
   EXPECT_EQ(19, hms.hour);
   EXPECT_EQ(43, hms.minute);
   EXPECT_EQ(52.0, hms.second);

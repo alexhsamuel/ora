@@ -281,7 +281,7 @@ public:
     const 
   { 
     return 
-        daytime.is_valid() ? operator()(daytime.get_hms())
+        daytime.is_valid() ? operator()(get_hms(daytime))
       : daytime.is_missing() ? get_missing()
       : get_invalid();
   }

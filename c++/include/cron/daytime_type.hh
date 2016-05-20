@@ -13,11 +13,12 @@ class DaytimeTemplate
 {
 public:
 
-  using Offset = typename TRAITS::Offset;
+  using Traits = TRAITS;
+  using Offset = typename Traits::Offset;
 
   // Constants  ----------------------------------------------------------------
 
-  static Offset constexpr DENOMINATOR = TRAITS::denominator;
+  static Offset constexpr DENOMINATOR = Traits::denominator;
 
   static DaytimeTemplate const MIN;
   static DaytimeTemplate const MAX;
@@ -140,26 +141,11 @@ public:
   Offset get_offset() const 
     { return valid_offset(); }
   Daytick get_daytick() const
-    { return offset_to_daytick(valid_offset()); }
-  double get_ssm() const
-    { return (double) valid_offset() / TRAITS::denominator; }
-  
-  HmsDaytime 
-  get_hms()  
-    const
-  {
-    auto const offset = valid_offset();
-    auto const minutes = offset / (SECS_PER_MIN * TRAITS::denominator);
-    auto const seconds = offset % (SECS_PER_MIN * TRAITS::denominator);
-    return {
-      (Hour)   (minutes / MINS_PER_HOUR),
-      (Minute) (minutes % MINS_PER_HOUR),
-      (Second) seconds / TRAITS::denominator
-    };
-  }
+    { return rescale_int<Daytick, Traits::denominator, DAYTICK_PER_SEC>(offset_); }
 
   // Comparisons  --------------------------------------------------------------
 
+  // FIXME: Move into daytime_functions.hh.
   bool is(DaytimeTemplate const& o)         const { return offset_ == o.offset_; }
   bool operator==(DaytimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ == o.offset_; }
   bool operator!=(DaytimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ != o.offset_; }
@@ -201,13 +187,6 @@ private:
     Daytick const daytick)
   {
     return rescale_int<Daytick, DAYTICK_PER_SEC, TRAITS::denominator>(daytick);
-  }
-
-  static Daytick 
-  offset_to_daytick(
-    Offset const offset)
-  {
-    return rescale_int<Daytick, TRAITS::denominator, DAYTICK_PER_SEC>(offset);
   }
 
   static Daytick
