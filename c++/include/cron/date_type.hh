@@ -297,6 +297,7 @@ public:
 
   // Comparisons  --------------------------------------------------------------
 
+  // FIXME: Move into date_functions.hh.
   bool is(DateTemplate const& o) const { return offset_ == o.offset_; }
   bool operator==(DateTemplate const& o) const { return is_valid() && o.is_valid() && offset_ == o.offset_; }
   bool operator!=(DateTemplate const& o) const { return is_valid() && o.is_valid() && offset_ != o.offset_; }
