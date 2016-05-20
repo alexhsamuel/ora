@@ -260,11 +260,10 @@ public:
   operator=(
     DateTemplate<OTHER_TRAITS> const date)
   {
-    *this = 
+    return *this = 
         date.is_invalid() ? INVALID
       : date.is_missing() ? MISSING
       : from_datenum(date.get_datenum());
-    return *this;
   }
 
   // Accessors  ----------------------------------------------------------------
