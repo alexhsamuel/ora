@@ -222,8 +222,8 @@ class HolidayCalendar
 public:
 
   HolidayCalendar(
-    date::Date min, 
-    date::Date max)
+    date::Date const min, 
+    date::Date const max)
     : min_(min),
       holidays_(max - min, false)
   {
@@ -254,8 +254,8 @@ public:
 
   inline void
   set(
-    date::Date date,
-    bool contained)
+    date::Date const date,
+    bool const contained)
   {
     ssize_t const index = date - min_;
     if (!(0 <= index && index < (ssize_t) holidays_.size()))
