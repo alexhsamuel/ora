@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 #include "cron/types.hh"
 #include "cron/daytime_math.hh"
 
@@ -216,8 +218,8 @@ public:
   is_complete()
   {
     return 
-         std::numeric_limits<Offset>::min() <= 0
-      && SECS_PER_DAY * DENOMINATOR < (long) std::numeric_limits<Offset>::max();
+        (intmax_t) (SECS_PER_DAY * DENOMINATOR)
+      < (intmax_t) std::numeric_limits<Offset>::max();
   }
 
   /*

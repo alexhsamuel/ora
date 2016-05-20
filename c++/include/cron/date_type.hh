@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <type_traits>
 
 #include "cron/date_math.hh"
