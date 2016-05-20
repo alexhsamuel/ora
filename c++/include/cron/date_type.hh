@@ -117,7 +117,7 @@ public:
     Datenum const datenum)
   {
     if (datenum_is_valid(datenum)) {
-      auto offset = (long) datenum - (long) Traits::base;
+      auto const offset = (long) datenum - (long) Traits::base;
       if (in_range((long) Traits::min, offset, (long) Traits::max))
         return {(Offset) offset};
       else
