@@ -315,7 +315,7 @@ class DateError
 public:
 
   DateError(std::string const& message) : Error(message) {}
-  virtual ~DateError() throw () {}
+  virtual ~DateError() = default;
 
 };
 
@@ -326,7 +326,7 @@ class DateFormatError
 public:
 
   DateFormatError(std::string const& message): DateError(message) {}
-  virtual ~DateFormatError() {}
+  virtual ~DateFormatError() = default;
 
 };
 
@@ -337,7 +337,7 @@ class DateRangeError
 public:
 
   DateRangeError() : DateError("date not in range") {}
-  virtual ~DateRangeError() throw () {}
+  virtual ~DateRangeError() = default;
 
 };
 
@@ -348,7 +348,7 @@ class InvalidDateError
 public:
 
   InvalidDateError() : DateError("invalid date") {}
-  virtual ~InvalidDateError() throw () {}
+  virtual ~InvalidDateError() = default;
 
 };
 
@@ -359,7 +359,18 @@ class DaytimeError
 public:
 
   DaytimeError(std::string const& message) : Error(message) {}
-  virtual ~DaytimeError() throw () {}
+  virtual ~DaytimeError() = default;
+
+};
+
+
+class DaytimeRangeError
+  : public DaytimeError
+{
+public:
+
+  DaytimeRangeError() : DaytimeError("daytime not in range") {}
+  virtual ~DaytimeRangeError() = default;
 
 };
 
@@ -370,7 +381,7 @@ class TimeError
 public:
 
   TimeError(std::string const& message) : Error(message) {}
-  virtual ~TimeError() throw () {}
+  virtual ~TimeError() = default;
 
 };
 
@@ -381,7 +392,7 @@ class InvalidTimeError
 public:
 
   InvalidTimeError() : TimeError("invalid time") {}
-  virtual ~InvalidTimeError() throw() {}
+  virtual ~InvalidTimeError() = default;
 
 };
 
@@ -392,7 +403,7 @@ class InvalidDaytimeError
 public:
 
   InvalidDaytimeError() : DaytimeError("invalid daytime") {}
-  virtual ~InvalidDaytimeError() throw () {}
+  virtual ~InvalidDaytimeError() = default;
 
 };
 
@@ -403,7 +414,7 @@ class NonexistentLocalTime
 public:
 
   NonexistentLocalTime() : Error("local time does not exist") {}
-  virtual ~NonexistentLocalTime() throw () {}
+  virtual ~NonexistentLocalTime() = default;
 
 };
 
@@ -414,7 +425,7 @@ class TimeFormatError
 public:
 
   TimeFormatError(std::string const& name) : FormatError(std::string("in time pattern: ") + name) {}
-  virtual ~TimeFormatError() throw () {}
+  virtual ~TimeFormatError() = default;
 
 };
 

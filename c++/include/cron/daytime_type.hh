@@ -53,9 +53,9 @@ public:
   DaytimeTemplate(
     DaytimeTemplate<OTHER_TRAITS> const daytime)
   : DaytimeTemplate(
-        daytime.is_invalid() ? TRAITS::invalid
-      : daytime.is_missing() ? TRAITS::missing
-      : daytick_to_offset(daytime.get_daytick()))
+        daytime.is_invalid() ? INVALID
+      : daytime.is_missing() ? MISSING
+      : from_daytick(daytime.get_daytick()))
   {
   }
 
@@ -66,7 +66,7 @@ public:
     Hour const hour,
     Minute const minute,
     Second const second)
-  : offset_(hms_to_offset(hour, minute, second))
+  : DaytimeTemplate(from_hms(hour, minute, second))
   {
   }
 
@@ -76,9 +76,12 @@ public:
 
   static DaytimeTemplate 
   from_offset(
-    Offset offset)
+    Offset const offset)
   {
-    return DaytimeTemplate(valid_offset<>(offset));
+    if (in_range((Offset) 0, offset, MAX_OFFSET))
+      return DaytimeTemplate(offset);
+    else
+      throw DaytimeRangeError();
   }
 
   static DaytimeTemplate
@@ -87,15 +90,32 @@ public:
     Minute const minute,
     Second const second)
   {
-    return DaytimeTemplate(hour, minute, second);
+    if (hms_is_valid(hour, minute, second)) {
+      auto const offset =
+          (hour * SECS_PER_HOUR + minute * SECS_PER_MIN) * TRAITS::denominator
+        + (Offset) (second * TRAITS::denominator);
+      return DaytimeTemplate(offset);
+    }
+    else
+      throw InvalidDaytimeError();
+  }
+
+  static DaytimeTemplate
+  from_hms(
+    HmsDaytime const& hms)
+  {
+    return from_hms(hms.hour, hms.minute, hms.second);
   }
 
   static DaytimeTemplate 
   from_daytick(
-    Daytick daytick)
+    Daytick const daytick)
   {
-    if (daytick_is_valid(daytick))
-      return daytick_to_offset(daytick);
+    if (daytick_is_valid(daytick)) {
+      auto const offset = 
+        rescale_int<Daytick, DAYTICK_PER_SEC, TRAITS::denominator>(daytick);
+      return DaytimeTemplate(offset);
+    }
     else
       throw InvalidDaytimeError();
   }
@@ -125,23 +145,39 @@ public:
   operator=(
     DaytimeTemplate<OTHER_TRAITS> const daytime)
   {
-    offset_ = 
-        daytime.is_invalid() ? TRAITS::invalid
-      : daytime.is_missing() ? TRAITS::missing
-      : daytick_to_offset(daytime.get_daytick());
-    return *this;
+    return *this =
+        daytime.is_invalid() ? INVALID
+      : daytime.is_missing() ? MISSING
+      : from_daytick(daytime.get_daytick());
   }
 
   // Accessors  ----------------------------------------------------------------
 
-  bool is_valid()   const noexcept { return offset_is_valid(offset_); }
+  bool 
+  is_valid() 
+    const noexcept 
+  { 
+    return in_range((Offset) 0, offset_, MAX_OFFSET);
+  }
+
   bool is_invalid() const noexcept { return is(INVALID); }
   bool is_missing() const noexcept { return is(MISSING); }
 
-  Offset get_offset() const 
-    { return valid_offset(); }
-  Daytick get_daytick() const
-    { return rescale_int<Daytick, Traits::denominator, DAYTICK_PER_SEC>(offset_); }
+  Offset 
+  get_offset() 
+    const 
+  {
+    ensure_valid(*this);
+    return offset_;
+  }
+
+  Daytick 
+  get_daytick() 
+    const
+  { 
+    ensure_valid(*this);
+    return rescale_int<Daytick, Traits::denominator, DAYTICK_PER_SEC>(offset_); 
+  }
 
   // Comparisons  --------------------------------------------------------------
 
@@ -156,52 +192,9 @@ public:
 
 private:
 
+  static Offset constexpr MAX_OFFSET = SECS_PER_DAY * Traits::denominator - 1;
   static Offset constexpr INVALID_OFFSET = std::numeric_limits<Offset>::max();
   static Offset constexpr MISSING_OFFSET = INVALID_OFFSET - 1;
-
-  // Helper methods  -----------------------------------------------------------
-
-  static bool
-  offset_is_valid(
-    Offset const offset)
-  {
-    return in_interval((Offset) 0, offset, SECS_PER_DAY * TRAITS::denominator);
-  }
-
-  template<class EXCEPTION=InvalidDaytimeError>
-  static Offset
-  valid_offset(
-    Offset const offset)
-  {
-    if (offset_is_valid(offset))
-      return offset;
-    else
-      throw EXCEPTION();
-  }
-
-  Offset valid_offset() const 
-    { return valid_offset(offset_); }
-
-  static Offset 
-  daytick_to_offset(
-    Daytick const daytick)
-  {
-    return rescale_int<Daytick, DAYTICK_PER_SEC, TRAITS::denominator>(daytick);
-  }
-
-  static Daytick
-  hms_to_offset(
-    Hour const hour,
-    Minute const minute,
-    Second const second)
-  {
-    if (hms_is_valid(hour, minute, second))
-      return 
-          (hour * SECS_PER_HOUR + minute * SECS_PER_MIN) * TRAITS::denominator
-        + (Offset) (second * TRAITS::denominator);
-    else
-      throw InvalidDaytimeError();
-  }
 
   // State  --------------------------------------------------------------------
 
