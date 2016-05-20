@@ -91,10 +91,21 @@ get_ymdi(
 
 
 // For convenience.
-template<class DATE> inline Year  get_year (DATE const date) { return get_ymd(date).year;  }
-template<class DATE> inline Month get_month(DATE const date) { return get_ymd(date).month; }
-template<class DATE> inline Day   get_day  (DATE const date) { return get_ymd(date).day;   }
+template<class DATE> inline Day get_day(DATE const date) 
+  { return get_ymd(date).day; }
+template<class DATE> inline Month get_month(DATE const date) 
+  { return get_ymd(date).month; }
+template<class DATE> inline Ordinal get_ordinal(DATE const date)
+  { return get_ordinal_date(date).ordinal; }
+template<class DATE> inline Week get_week(DATE const date)
+  { return get_week_date(date).week; }
+template<class DATE> inline Year get_week_year(DATE const date)
+  { return get_week_date(date).week_year; }
+template<class DATE> inline Year get_year(DATE const date) 
+  { return get_ordinal_date(date).year; }
 
+//------------------------------------------------------------------------------
+// Day arithmetic
 //------------------------------------------------------------------------------
 
 template<class DATE>
@@ -129,6 +140,26 @@ days_between(
   return (int) date0.get_offset() - date1.get_offset();
 }
 
+
+template<class DATE> inline DATE operator+(DATE const date, int const shift)
+  { return days_after(date, shift); }
+template<class DATE> inline DATE operator-(DATE const date, int const shift)
+  { return days_before(date, shift); }
+template<class DATE> inline int operator-(DATE const date0, DATE const date1)
+  { return days_between(date0, date1); } 
+
+template<class DATE> inline DATE operator+=(DATE& date, int const days) 
+  { return date = date + days; }
+template<class DATE> inline DATE operator++(DATE& date) 
+  { return date = date + 1; }
+template<class DATE> inline DATE operator++(DATE& date, int /* tag */) 
+  { auto old = date; date = date + 1; return old; }
+template<class DATE> inline DATE operator-=(DATE& date, int const days) 
+  { return date = date -days; }
+template<class DATE> inline DATE operator--(DATE& date) 
+  { return date = date - 1; }
+template<class DATE> inline DATE operator--(DATE& date, int /* tag */) 
+  { auto old = date; date = date  -1; return old; }
 
 //------------------------------------------------------------------------------
 
