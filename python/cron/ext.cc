@@ -44,11 +44,11 @@ PyInit_ext(void)
   auto mod = Module::Create(&module_def);
 
   try {
-    aslib::PyDate<cron::date::Date>      ::add_to(mod, "Date");
-    aslib::PyDate<cron::date::Date16>    ::add_to(mod, "Date16");
+    aslib::PyDate<cron::date::Date>             ::add_to(mod, "Date");
+    aslib::PyDate<cron::date::Date16>           ::add_to(mod, "Date16");
 
-    aslib::PyDaytime<cron::Daytime>      ::add_to(mod, "Daytime");
-    aslib::PyDaytime<cron::Daytime32>    ::add_to(mod, "Daytime32");
+    aslib::PyDaytime<cron::daytime::Daytime>    ::add_to(mod, "Daytime");
+    aslib::PyDaytime<cron::daytime::Daytime32>  ::add_to(mod, "Daytime32");
 
     aslib::PyTime<cron::Time>            ::add_to(mod, "Time");
     aslib::PyTime<cron::SmallTime>       ::add_to(mod, "SmallTime");

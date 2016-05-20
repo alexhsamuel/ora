@@ -170,8 +170,8 @@ set_up_numpy(
 
   DateDtype<PyDate<cron::date::Date>>::add(sub);
   DateDtype<PyDate<cron::date::Date16>>::add(sub);
-  DaytimeDtype<PyDaytime<cron::Daytime>>::add(sub);
-  DaytimeDtype<PyDaytime<cron::Daytime32>>::add(sub);
+  DaytimeDtype<PyDaytime<cron::daytime::Daytime>>::add(sub);
+  DaytimeDtype<PyDaytime<cron::daytime::Daytime32>>::add(sub);
 
   sub->AddFunctions(functions);
 

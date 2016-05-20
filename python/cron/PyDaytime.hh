@@ -669,7 +669,7 @@ PyDaytime<DAYTIME>::build_type(
 // Helper functions
 //------------------------------------------------------------------------------
 
-using PyDaytimeDefault = PyDaytime<cron::Daytime>;
+using PyDaytimeDefault = PyDaytime<cron::daytime::Daytime>;
 
 inline ref<Object>
 make_daytime(
@@ -762,8 +762,8 @@ convert_to_daytime(
 #ifdef __clang__
 // Use explicit instantiation for the main instances.
 // FIXME: GCC 5.2.1 generates PyDaytime<>::type_ in BSS, which breaks linking.
-extern template class PyDaytime<cron::Daytime>;
-extern template class PyDaytime<cron::Daytime32>;
+extern template class PyDaytime<cron::daytime::Daytime>;
+extern template class PyDaytime<cron::daytime::Daytime32>;
 #endif
 
 //------------------------------------------------------------------------------

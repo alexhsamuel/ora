@@ -50,8 +50,8 @@ make_hms_daytime(
 //------------------------------------------------------------------------------
 // Explicit template instances
 
-template class PyDaytime<cron::Daytime>;
-template class PyDaytime<cron::Daytime32>;
+template class PyDaytime<cron::daytime::Daytime>;
+template class PyDaytime<cron::daytime::Daytime32>;
 
 //------------------------------------------------------------------------------
 
