@@ -131,15 +131,15 @@ days_between(
 {
   ensure_valid(date0);
   ensure_valid(date1);
-  return (int) date0.get_offset() - date1.get_offset();
+  return (int) date1.get_offset() - date0.get_offset();
 }
 
 
-template<class DATE> inline DATE operator+(DATE const date, int const shift)
-  { return days_after(date, shift); }
-template<class DATE> inline DATE operator-(DATE const date, int const shift)
-  { return days_before(date, shift); }
-template<class DATE> inline int operator-(DATE const date0, DATE const date1)
+template<class DATE> inline DATE operator+(DATE const date, int const days)
+  { return days_after(date, days); }
+template<class DATE> inline DATE operator-(DATE const date, int const days)
+  { return days_before(date, days); }
+template<class DATE> inline int operator-(DATE const date1, DATE const date0)
   { return days_between(date0, date1); } 
 
 template<class DATE> inline DATE operator+=(DATE& date, int const days) 
@@ -153,7 +153,7 @@ template<class DATE> inline DATE operator-=(DATE& date, int const days)
 template<class DATE> inline DATE operator--(DATE& date) 
   { return date = date - 1; }
 template<class DATE> inline DATE operator--(DATE& date, int /* tag */) 
-  { auto old = date; date = date  -1; return old; }
+  { auto old = date; date = date - 1; return old; }
 
 //------------------------------------------------------------------------------
 

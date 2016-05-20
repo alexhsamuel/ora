@@ -92,8 +92,8 @@ public:
   {
     if (hms_is_valid(hour, minute, second)) {
       auto const offset =
-          (hour * SECS_PER_HOUR + minute * SECS_PER_MIN) * TRAITS::denominator
-        + (Offset) (second * TRAITS::denominator);
+          (hour * SECS_PER_HOUR + minute * SECS_PER_MIN) * Traits::denominator
+        + (Offset) (second * Traits::denominator);
       return DaytimeTemplate(offset);
     }
     else
@@ -113,7 +113,7 @@ public:
   {
     if (daytick_is_valid(daytick)) {
       auto const offset = 
-        rescale_int<Daytick, DAYTICK_PER_SEC, TRAITS::denominator>(daytick);
+        rescale_int<Daytick, DAYTICK_PER_SEC, DENOMINATOR>(daytick);
       return DaytimeTemplate(offset);
     }
     else
@@ -122,10 +122,10 @@ public:
 
   static DaytimeTemplate 
   from_ssm(
-    Ssm ssm)
+    Ssm const ssm)
   {
     if (ssm_is_valid(ssm))
-      return DaytimeTemplate((Offset) round(ssm * TRAITS::denominator));
+      return DaytimeTemplate((Offset) round(ssm * DENOMINATOR));
     else
       throw InvalidDaytimeError();
   }
@@ -259,7 +259,7 @@ DaytimeTemplate<TRAITS>::MIN
 template<class TRAITS>
 DaytimeTemplate<TRAITS> constexpr
 DaytimeTemplate<TRAITS>::MAX
-  {TRAITS::denominator * SECS_PER_DAY - 1};
+  {MAX_OFFSET};
 
 template<class TRAITS>
 DaytimeTemplate<TRAITS> constexpr

@@ -1,9 +1,29 @@
 #pragma once
 
+#include "aslib/math.hh"
+
 #include "cron/types.hh"
+#include "cron/daytime_type.hh"
 
 namespace cron {
 namespace daytime {
+
+//------------------------------------------------------------------------------
+// Factory functions
+//------------------------------------------------------------------------------
+
+// Synonyms for static factory methods; included for completeness.
+
+template<class DAYTIME> inline DAYTIME from_offset(typename DAYTIME::Offset const o)
+  { return DAYTIME::from_offset(o); }
+template<class DAYTIME> inline DAYTIME from_hms(Hour const h, Minute const m, Second const s)
+  { return DAYTIME::from_hms(h, m, s); }
+template<class DAYTIME> inline DAYTIME from_hms(HmsDaytime const& d)
+  { return DAYTIME::from_hms(d); }
+template<class DAYTIME> inline DAYTIME from_daytick(Daytick const d)
+  { return DAYTIME::from_daytick(d); }
+template<class DAYTIME> inline DAYTIME from_ssm(Ssm const s)
+  { return DAYTIME::from_ssm(s); }
 
 //------------------------------------------------------------------------------
 // Accessors
@@ -45,50 +65,66 @@ template<class DAYTIME> inline Second get_second(DAYTIME const daytime)
   { return get_hms(daytime).second; }
 
 //------------------------------------------------------------------------------
+// Arithemtic with seconds
+//------------------------------------------------------------------------------
 
-template<class TRAITS>
-inline DaytimeTemplate<TRAITS>
-operator+(
-  DaytimeTemplate<TRAITS> const daytime,
-  double const shift)
+template<class DAYTIME>
+inline DAYTIME
+seconds_after(
+  DAYTIME const daytime,
+  double const seconds)
 {
-  using Daytime = DaytimeTemplate<TRAITS>;
-
-  if (daytime.is_invalid() || daytime.is_missing())
-    return daytime;
-  else {
-    auto offset = daytime.get_offset();
-    offset += round(shift * Daytime::DENOMINATOR);
-    return Daytime::from_offset(offset % (SECS_PER_DAY * Daytime::DENOMINATOR));
-  }
+  ensure_valid(daytime);
+  return from_offset<DAYTIME>(
+    daytime.get_offset() + round(seconds * DAYTIME::DENOMINATOR));
 }
 
 
-template<class TRAITS>
-inline DaytimeTemplate<TRAITS>
-operator-(
-  DaytimeTemplate<TRAITS> const daytime,
-  double shift)
+template<class DAYTIME>
+inline DAYTIME
+seconds_before(
+  DAYTIME const daytime,
+  double const seconds)
 {
-  using Daytime = DaytimeTemplate<TRAITS>;
-
-  if (shift > SECS_PER_DAY)
-    shift = fmod(shift, SECS_PER_DAY);
-
-  if (daytime.is_invalid() || daytime.is_missing())
-    return daytime;
-  else {
-    auto shift_offset = 
-      (typename Daytime::Offset) round(shift * Daytime::DENOMINATOR);
-    auto offset = daytime.get_offset();
-    // Avoid a negative result.
-    if (offset < shift_offset)
-      offset += SECS_PER_DAY * Daytime::DENOMINATOR;
-    offset -= shift_offset;
-    return Daytime::from_offset(offset);
-  }
+  ensure_valid(daytime);
+  return from_offset<DAYTIME>(
+    daytime.get_offset() - round(seconds * DAYTIME::DENOMINATOR));
 }
 
+
+template<class DAYTIME>
+inline double
+seconds_between(
+  DAYTIME const daytime0,
+  DAYTIME const daytime1)
+{
+  ensure_valid(daytime0);
+  ensure_valid(daytime1);
+  return 
+    ((double) daytime0.get_offset() - (double) daytime1.get_offset()) 
+    / DAYTIME::DENOMINATOR;
+}
+
+
+template<class DAYTIME> inline DAYTIME operator+(DAYTIME const d, double const secs)
+  { return seconds_after(d, secs); }
+template<class DAYTIME> inline DAYTIME operator-(DAYTIME const d, double const secs)
+  { return seconds_before(d, secs); }
+template<class DAYTIME> inline int operator-(DAYTIME const d0, DAYTIME const d1)
+  { return seconds_between(d0, d1); } 
+
+template<class DAYTIME> inline DAYTIME operator+=(DAYTIME& d, int const secs) 
+  { return d = d + secs; }
+template<class DAYTIME> inline DAYTIME operator++(DAYTIME& d) 
+  { return d = d + 1; }
+template<class DAYTIME> inline DAYTIME operator++(DAYTIME& d, int /* tag */) 
+  { auto old = d; d = d + 1; return old; }
+template<class DAYTIME> inline DAYTIME operator-=(DAYTIME& d, int const secs) 
+  { return d = d -secs; }
+template<class DAYTIME> inline DAYTIME operator--(DAYTIME& d) 
+  { return d = d - 1; }
+template<class DAYTIME> inline DAYTIME operator--(DAYTIME& d, int /* tag */) 
+  { auto old = d; d = d - 1; return old; }
 
 //------------------------------------------------------------------------------
 
