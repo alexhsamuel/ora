@@ -207,8 +207,8 @@ public:
 // FIXME: Remove this.
   template<class DTRAITS, class YTRAITS>
   TimeTemplate(
-    date::DateTemplate<DTRAITS> date,
-    DaytimeTemplate<YTRAITS> daytime,
+    date::DateTemplate<DTRAITS> const date,
+    daytime::DaytimeTemplate<YTRAITS> const daytime,
     TimeZone const& tz,
     bool first=true)
   : TimeTemplate(date.get_datenum(), daytime.get_daytick(), tz, first)

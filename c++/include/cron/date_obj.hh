@@ -45,6 +45,8 @@ public:
   using Traits = TRAITS;
   using Offset = typename TRAITS::Offset;
 
+  // Constants -----------------------------------------------------------------
+
   // These are declared const here but defined constexpr to work around a clang
   // bug.  http://stackoverflow.com/questions/11928089/static-constexpr-member-of-same-type-as-class-being-defined
   static DateTemplate const MIN;
@@ -271,11 +273,11 @@ public:
   is_valid()
     const noexcept
   {
-    return in_range(TRAITS::min, offset_, TRAITS::max);
+    return in_range(Traits::min, offset_, Traits::max);
   }
 
-  bool is_invalid() const noexcept { return offset_ == TRAITS::invalid; }
-  bool is_missing() const noexcept { return offset_ == TRAITS::missing; }
+  bool is_invalid() const noexcept { return is(INVALID); }
+  bool is_missing() const noexcept { return is(MISSING); }
 
   Datenum 
   get_datenum() 
@@ -324,7 +326,7 @@ public:
   /*
    * Returns true iff the memory layout is exactly the offset.
    */
-  static constexpr bool 
+  static bool constexpr 
   is_basic_layout()
   {
     return 
@@ -336,7 +338,7 @@ public:
 
 
 /*
- * If `date` is valid, does nothing; otherwise, throws `InvalidDateError`.
+ * If `date` is invalid, throws `InvalidDateError`.
  */
 template<class DATE>
 void

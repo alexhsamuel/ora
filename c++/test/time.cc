@@ -6,6 +6,7 @@
 using namespace aslib;
 using namespace cron;
 using namespace cron::ez;
+using cron::daytime::Daytime;
 
 //------------------------------------------------------------------------------
 // Class Time
@@ -53,7 +54,7 @@ TEST(Time, comparisons) {
 }
 
 TEST(Time, from_parts) {
-  Daytime const daytime = Daytime(18, 27, 13);
+  Daytime const daytime(18, 27, 13);
   auto const tz = get_time_zone("US/Eastern");
   Unix32Time const time0(2013/JUL/29, daytime, *tz);
   EXPECT_EQ(1375136833, time0.get_offset());

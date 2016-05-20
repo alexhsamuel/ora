@@ -112,6 +112,8 @@ Daytick constexpr   DAYTICK_MIN         = 0;
 Daytick constexpr   DAYTICK_BOUND       = SECS_PER_DAY * DAYTICK_PER_SEC;
 Daytick constexpr   DAYTICK_MAX         = DAYTICK_BOUND - 1;
 Daytick constexpr   DAYTICK_INVALID     = std::numeric_limits<Daytick>::max();
+inline constexpr bool daytick_is_valid(Daytick const daytick)
+  { return in_range(DAYTICK_MIN, daytick, DAYTICK_MAX); }
 
 /**
  * Internal representation of dates.
