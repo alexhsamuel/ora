@@ -351,3 +351,147 @@ TEST(days_between, invalid) {
   EXPECT_THROW(days_between(Date16::INVALID, Date16::MISSING), InvalidDateError);
 }
 
+TEST(date_add, Date) {
+  EXPECT_EQ(1999/MAR/ 2, 2000/MAR/ 1 + -365);
+  EXPECT_EQ(2000/JAN/30, 2000/MAR/ 1 +  -31);
+  EXPECT_EQ(2000/FEB/20, 2000/MAR/ 1 +  -10);
+  EXPECT_EQ(2000/FEB/29, 2000/MAR/ 1 +   -1);
+  EXPECT_EQ(2000/MAR/ 1, 2000/MAR/ 1 +    0);
+  EXPECT_EQ(2000/MAR/ 2, 2000/MAR/ 1 +    1);
+  EXPECT_EQ(2000/MAR/11, 2000/MAR/ 1 +   10);
+  EXPECT_EQ(2000/APR/ 1, 2000/MAR/ 1 +   31);
+  EXPECT_EQ(2001/MAR/ 1, 2000/MAR/ 1 +  365);
+}
+
+TEST(date_add, Date16) {
+  EXPECT_EQ(2000/MAR/ 1, Date16(2001/MAR/ 1) + -365);
+  EXPECT_EQ(2001/JAN/29, Date16(2001/MAR/ 1) +  -31);
+  EXPECT_EQ(2001/FEB/19, Date16(2001/MAR/ 1) +  -10);
+  EXPECT_EQ(2001/FEB/28, Date16(2001/MAR/ 1) +   -1);
+  EXPECT_EQ(2001/MAR/ 1, Date16(2001/MAR/ 1) +    0);
+  EXPECT_EQ(2001/MAR/ 2, Date16(2001/MAR/ 1) +    1);
+  EXPECT_EQ(2001/MAR/11, Date16(2001/MAR/ 1) +   10);
+  EXPECT_EQ(2001/APR/ 1, Date16(2001/MAR/ 1) +   31);
+  EXPECT_EQ(2002/MAR/ 1, Date16(2001/MAR/ 1) +  365);
+}
+
+TEST(date_add, range) {
+  EXPECT_THROW(   1/JAN/ 1 +       -1, DateRangeError);
+  EXPECT_THROW(   1/JAN/ 1 +  3652059, DateRangeError);
+  EXPECT_THROW(9999/DEC/31 +        1, DateRangeError);
+  EXPECT_THROW(9999/DEC/31 +  (1<<31), DateRangeError);
+  EXPECT_THROW(9999/DEC/31 + -3652059, DateRangeError);
+
+  EXPECT_THROW(Date16::MAX + 1, DateRangeError);
+}
+
+TEST(date_add, invalid) {
+  EXPECT_THROW(Date::INVALID + 1, InvalidDateError);
+  EXPECT_THROW(Date::MISSING + 1, InvalidDateError);
+  EXPECT_THROW(Date16::INVALID + 1, InvalidDateError);
+  EXPECT_THROW(Date16::MISSING + 1, InvalidDateError);
+}
+
+TEST(date_sub, Date) {
+  EXPECT_EQ(1999/MAR/ 2, 2000/MAR/ 1 -  365);
+  EXPECT_EQ(2000/JAN/30, 2000/MAR/ 1 -   31);
+  EXPECT_EQ(2000/FEB/20, 2000/MAR/ 1 -   10);
+  EXPECT_EQ(2000/FEB/29, 2000/MAR/ 1 -    1);
+  EXPECT_EQ(2000/MAR/ 1, 2000/MAR/ 1 -    0);
+  EXPECT_EQ(2000/MAR/ 2, 2000/MAR/ 1 -   -1);
+  EXPECT_EQ(2000/MAR/11, 2000/MAR/ 1 -  -10);
+  EXPECT_EQ(2000/APR/ 1, 2000/MAR/ 1 -  -31);
+  EXPECT_EQ(2001/MAR/ 1, 2000/MAR/ 1 - -365);
+}
+
+TEST(date_sub, Date16) {
+  EXPECT_EQ(2000/MAR/ 1, Date16(2001/MAR/ 1) -  365);
+  EXPECT_EQ(2001/JAN/29, Date16(2001/MAR/ 1) -   31);
+  EXPECT_EQ(2001/FEB/19, Date16(2001/MAR/ 1) -   10);
+  EXPECT_EQ(2001/FEB/28, Date16(2001/MAR/ 1) -    1);
+  EXPECT_EQ(2001/MAR/ 1, Date16(2001/MAR/ 1) -    0);
+  EXPECT_EQ(2001/MAR/ 2, Date16(2001/MAR/ 1) -   -1);
+  EXPECT_EQ(2001/MAR/11, Date16(2001/MAR/ 1) -  -10);
+  EXPECT_EQ(2001/APR/ 1, Date16(2001/MAR/ 1) -  -31);
+  EXPECT_EQ(2002/MAR/ 1, Date16(2001/MAR/ 1) - -365);
+}
+
+TEST(date_sub, range) {
+  EXPECT_THROW(   1/JAN/ 1 -        1, DateRangeError);
+  EXPECT_THROW(   1/JAN/ 1 - -3652059, DateRangeError);
+  EXPECT_THROW(   1/JAN/ 1 -  (1<<31), DateRangeError);
+  EXPECT_THROW(9999/DEC/31 -  3652059, DateRangeError);
+
+  EXPECT_THROW(Date16::MIN - 1, DateRangeError);
+}
+
+TEST(date_sub, invalid) {
+  EXPECT_THROW(Date::INVALID - 1, InvalidDateError);
+  EXPECT_THROW(Date::MISSING - 1, InvalidDateError);
+  EXPECT_THROW(Date16::INVALID - 1, InvalidDateError);
+  EXPECT_THROW(Date16::MISSING - 1, InvalidDateError);
+}
+
+TEST(days_diff, Date) {
+  EXPECT_EQ(       0,    1/JAN/ 1 -    1/JAN/ 1);
+  EXPECT_EQ(      -1,    1/JAN/ 1 -    1/JAN/ 2);
+  EXPECT_EQ(       1,    1/JAN/ 2 -    1/JAN/ 1);
+  EXPECT_EQ(-3652058,    1/JAN/ 1 - 9999/DEC/31);
+  EXPECT_EQ( 3652058, 9999/DEC/31 -    1/JAN/ 1);
+}
+
+TEST(days_diff, invalid) {
+  EXPECT_THROW(Date::INVALID - 1/JAN/1, InvalidDateError);
+  EXPECT_THROW(Date::INVALID - Date::MISSING, InvalidDateError);
+  EXPECT_THROW(Date::INVALID - Date::INVALID, InvalidDateError);
+
+  EXPECT_THROW(Date16(2000/JAN/1) - Date16::MISSING, InvalidDateError);
+  EXPECT_THROW(Date16::MISSING - Date16::MISSING, InvalidDateError);
+  EXPECT_THROW(Date16::INVALID - Date16::MISSING, InvalidDateError);
+}
+
+TEST(date_inc_dec, Date) {
+  Date date = 2000/JAN/1;
+  date++;
+  EXPECT_EQ(2000/JAN/2, date);
+  ++date;
+  EXPECT_EQ(2000/JAN/3, date);
+  date += 10;
+  EXPECT_EQ(2000/JAN/13, date);
+  date -= 13;
+  EXPECT_EQ(1999/DEC/31, date);
+  date--;
+  EXPECT_EQ(1999/DEC/30, date);
+  --date;
+  EXPECT_EQ(1999/DEC/29, date);
+}
+
+TEST(date_inc_dec, range) {
+  Date date = 1/JAN/1;
+  EXPECT_THROW(date--, DateRangeError);
+  EXPECT_THROW(--date, DateRangeError);
+  EXPECT_THROW(date -= 1, DateRangeError);
+  date = 9999/DEC/31;
+  EXPECT_THROW(date++, DateRangeError);
+  EXPECT_THROW(++date, DateRangeError);
+  EXPECT_THROW(date += 1, DateRangeError);
+}
+
+TEST(date_inc_dec, invalid) {
+  Date date = Date::INVALID;
+  EXPECT_THROW(date++, InvalidDateError);
+  EXPECT_THROW(++date, InvalidDateError);
+  EXPECT_THROW(date += 0, InvalidDateError);
+  EXPECT_THROW(date--, InvalidDateError);
+  EXPECT_THROW(--date, InvalidDateError);
+  EXPECT_THROW(date -= 0, InvalidDateError);
+
+  date = Date::MISSING;
+  EXPECT_THROW(date++, InvalidDateError);
+  EXPECT_THROW(++date, InvalidDateError);
+  EXPECT_THROW(date += 0, InvalidDateError);
+  EXPECT_THROW(date--, InvalidDateError);
+  EXPECT_THROW(--date, InvalidDateError);
+  EXPECT_THROW(date -= 0, InvalidDateError);
+}
+
