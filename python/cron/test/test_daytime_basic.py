@@ -295,33 +295,31 @@ def test_add0():
     assert a +    100 == Daytime( 0,  1, 40)
     assert a +   1000 == Daytime( 0, 16, 40)
     assert a +  10000 == Daytime( 2, 46, 40)
-    assert a + 100000 == Daytime( 3, 46, 40)
+    with pytest.raises(OverflowError):
+        a + 100000
 
 
 def test_add1():
     a = Daytime(23, 50, 30)
     assert a +      1 == Daytime(23, 50, 31)
     assert a +    100 == Daytime(23, 52, 10)
-    assert a +  10000 == Daytime( 2, 37, 10)
+    with pytest.raises(OverflowError):
+        a + 10000
 
 
 def test_add2():
     a = Daytime(23, 59, 59.999)
     assert near(a + 0.0001, Daytime(23, 59, 59.9991))
     assert near(a + 0.0005, Daytime(23, 59, 59.9995))
-    assert near(a + 0.0010, Daytime( 0,  0,  0.0000))
-    assert near(a + 0.0100, Daytime( 0,  0,  0.0090))
-    assert near(a + 1     , Daytime( 0,  0,  0.9990))
+    with pytest.raises(OverflowError):
+        a + 0.0010
 
 
 def test_subtract0():
     a = Daytime( 0,  0,  0)
-    assert a -      1 == Daytime(23, 59, 59)
-    assert a -     10 == Daytime(23, 59, 50)
-    assert a -    100 == Daytime(23, 58, 20)
-    assert a -   1000 == Daytime(23, 43, 20)
-    assert a -  10000 == Daytime(21, 13, 20)
-    assert a - 100000 == Daytime(20, 13, 20)
+    assert a - 0 == a
+    with pytest.raises(OverflowError):
+        a - 1
 
 
 def test_subtract1():
