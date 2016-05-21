@@ -237,3 +237,117 @@ TEST(get_ymdi, invalid) {
   EXPECT_THROW(get_ymdi(Date16::MISSING), InvalidDateError);
 }
 
+TEST(days_after, Date) {
+  EXPECT_EQ(   1/JAN/ 1, days_after(   1/JAN/ 1,       0));
+  EXPECT_EQ(   1/JAN/ 2, days_after(   1/JAN/ 1,       1));
+  EXPECT_EQ(   1/APR/11, days_after(   1/JAN/ 1,     100));
+  EXPECT_EQ(   3/SEP/28, days_after(   1/JAN/ 1,    1000));
+  EXPECT_EQ(  28/MAY/19, days_after(   1/JAN/ 1,   10000));
+  EXPECT_EQ( 274/OCT/17, days_after(   1/JAN/ 1,  100000));
+  EXPECT_EQ(2738/NOV/29, days_after(   1/JAN/ 1, 1000000));
+  EXPECT_EQ(2738/NOV/30, days_after(   1/JAN/ 2, 1000000));
+  EXPECT_EQ(2738/DEC/ 1, days_after(   1/JAN/ 3, 1000000));
+  EXPECT_EQ(2000/JAN/ 1, days_after(1000/JAN/ 1,  365242));
+  EXPECT_EQ(9999/DEC/31, days_after(   1/JAN/ 1, 3652058));
+}
+
+TEST(days_after, negative) {
+  EXPECT_EQ(   1/JAN /1, days_after(   1/JAN/ 2,       -1));
+  EXPECT_EQ(   1/JAN/ 1, days_after(   1/APR/11,     -100));
+  EXPECT_EQ(   1/JAN/ 1, days_after(   3/SEP/28,    -1000));
+  EXPECT_EQ(   1/JAN/ 1, days_after(  28/MAY/19,   -10000));
+  EXPECT_EQ(   1/JAN/ 1, days_after( 274/OCT/17,  -100000));
+  EXPECT_EQ(   1/JAN/ 1, days_after(2738/NOV/29, -1000000));
+  EXPECT_EQ(   1/JAN/ 2, days_after(2738/NOV/30, -1000000));
+  EXPECT_EQ(   1/JAN/ 3, days_after(2738/DEC/ 1, -1000000));
+  EXPECT_EQ(1000/JAN/ 1, days_after(2000/JAN/ 1,  -365242));
+  EXPECT_EQ(   1/JAN/ 1, days_after(9999/DEC/31, -3652058));
+}
+
+TEST(days_after, range) {
+  EXPECT_THROW(days_after(   1/JAN/ 1,      -1), DateRangeError);
+  EXPECT_THROW(days_after(   1/JAN/ 1, -100000), DateRangeError);
+  EXPECT_THROW(days_after(   1/JAN/ 2,      -2), DateRangeError);
+  EXPECT_THROW(days_after(   1/DEC/31,    -400), DateRangeError);
+  EXPECT_THROW(days_after(   1/JAN/ 1, 3652059), DateRangeError);
+  EXPECT_THROW(days_after(9999/JAN/ 1,     365), DateRangeError);
+  EXPECT_THROW(days_after(9999/DEC/31,       1), DateRangeError);
+  EXPECT_THROW(days_after(9999/DEC/31, 1000000), DateRangeError);
+}
+
+TEST(days_after, invalid) {
+  EXPECT_THROW(days_after(Date::INVALID, 0), InvalidDateError);
+  EXPECT_THROW(days_after(Date::MISSING, 0), InvalidDateError);
+  EXPECT_THROW(days_after(Date16::INVALID, 0), InvalidDateError);
+  EXPECT_THROW(days_after(Date16::MISSING, 0), InvalidDateError);
+
+  EXPECT_THROW(days_after(Date::INVALID, 1), InvalidDateError);
+  EXPECT_THROW(days_after(Date::MISSING, -1000), InvalidDateError);
+  EXPECT_THROW(days_after(Date16::INVALID, 1000), InvalidDateError);
+  EXPECT_THROW(days_after(Date16::MISSING, -1), InvalidDateError);
+}
+
+TEST(days_before, inverse) {
+  for (int i = 0; i < 3652058; i += 137) {
+    EXPECT_EQ(1/JAN/1, days_before(days_after(1/JAN/1, i), i));
+    EXPECT_EQ(1/JAN/1, days_before(days_before(1/JAN/1, -i), i));
+
+    EXPECT_EQ(9999/DEC/31, days_after(days_before(9999/DEC/31, i), i));
+    EXPECT_EQ(9999/DEC/31, days_before(days_before(9999/DEC/31, i), -i));
+  }
+}
+
+TEST(days_before, invalid) {
+  EXPECT_THROW(days_before(Date::INVALID, 0), InvalidDateError);
+  EXPECT_THROW(days_before(Date::MISSING, 0), InvalidDateError);
+  EXPECT_THROW(days_before(Date16::INVALID, 0), InvalidDateError);
+  EXPECT_THROW(days_before(Date16::MISSING, 0), InvalidDateError);
+
+  EXPECT_THROW(days_before(Date::INVALID, 1), InvalidDateError);
+  EXPECT_THROW(days_before(Date::MISSING, -1000), InvalidDateError);
+  EXPECT_THROW(days_before(Date16::INVALID, 1000), InvalidDateError);
+  EXPECT_THROW(days_before(Date16::MISSING, -1), InvalidDateError);
+}
+
+TEST(days_between, Date) {
+  EXPECT_EQ(       0, days_between(   1/JAN/ 1,    1/JAN/ 1));
+  EXPECT_EQ(       1, days_between(   1/JAN/ 1,    1/JAN/ 2));
+  EXPECT_EQ(      -1, days_between(   1/JAN/ 2,    1/JAN/ 1));
+  EXPECT_EQ( 3652058, days_between(   1/JAN/ 1, 9999/DEC/31));
+  EXPECT_EQ(-3652058, days_between(9999/DEC/31,    1/JAN/ 1));
+}
+
+TEST(days_between, Date16) {
+  EXPECT_EQ(    0, days_between(Date16(2000/JAN/ 1), Date16(2000/JAN/ 1)));
+  EXPECT_EQ(  365, days_between(Date16(2000/JAN/ 1), Date16(2000/DEC/31)));
+  EXPECT_EQ(  366, days_between(Date16(2000/JAN/ 1), Date16(2001/JAN/ 1)));
+  EXPECT_EQ( 3653, days_between(Date16(2000/JAN/ 1), Date16(2010/JAN/ 1)));
+  EXPECT_EQ(-3653, days_between(Date16(2010/JAN/ 1), Date16(2000/JAN/ 1)));
+}
+
+TEST(days_between, thorough) {
+  for (int i = 0; i < 3652058; i += 97) {
+    EXPECT_EQ( i, days_between(1/JAN/1, days_after(1/JAN/1, i)));
+    EXPECT_EQ(-i, days_between(days_after(1/JAN/1, i), 1/JAN/1));
+
+    EXPECT_EQ(-i, days_between(9999/DEC/31, days_before(9999/DEC/31, i)));
+    EXPECT_EQ( i, days_between(days_before(9999/DEC/31, i), 9999/DEC/31));
+  }
+}
+
+TEST(days_between, invalid) {
+  EXPECT_THROW(days_between(1/JAN/1      , Date::INVALID), InvalidDateError);
+  EXPECT_THROW(days_between(Date::INVALID, 1/JAN/1      ), InvalidDateError);
+  EXPECT_THROW(days_between(1/JAN/1      , Date::MISSING), InvalidDateError);
+  EXPECT_THROW(days_between(Date::MISSING, 1/JAN/1      ), InvalidDateError);
+  EXPECT_THROW(days_between(Date::MISSING, Date::INVALID), InvalidDateError);
+  EXPECT_THROW(days_between(Date::INVALID, Date::MISSING), InvalidDateError);
+
+  EXPECT_THROW(days_between(Date16(2000/JAN/1), Date16::INVALID), InvalidDateError);
+  EXPECT_THROW(days_between(Date16::INVALID, Date16(2000/JAN/1)), InvalidDateError);
+  EXPECT_THROW(days_between(Date16(2000/JAN/1), Date16::MISSING), InvalidDateError);
+  EXPECT_THROW(days_between(Date16::MISSING, Date16(2000/JAN/1)), InvalidDateError);
+  EXPECT_THROW(days_between(Date16::MISSING, Date16::INVALID), InvalidDateError);
+  EXPECT_THROW(days_between(Date16::INVALID, Date16::MISSING), InvalidDateError);
+}
+
