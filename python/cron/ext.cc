@@ -80,10 +80,12 @@ PyInit_ext(void)
     mod->AddObject("MIDNIGHT"         , PyDaytimeDefault::create(PyDaytimeDefault::Daytime::MIDNIGHT));
     mod->AddObject("UTC"              , PyTimeZone::create(cron::UTC));
 
+    // FIXME: Use specific Python exception classes.
     TranslateException<cron::InvalidDateError>::to(PyExc_ValueError);
     TranslateException<cron::InvalidDaytimeError>::to(PyExc_ValueError);
-    TranslateException<cron::DateFormatError>::to(PyExc_ValueError);  // FIXME
+    TranslateException<cron::DateFormatError>::to(PyExc_ValueError); 
     TranslateException<cron::DateRangeError>::to(PyExc_OverflowError);
+    TranslateException<cron::DaytimeRangeError>::to(PyExc_OverflowError);
 
     return mod.release();
   }
