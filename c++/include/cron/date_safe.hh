@@ -64,7 +64,7 @@ from_offset(
   noexcept
 {
   return 
-      DATE::offset_is_valid(offset)
+      in_range(DATE::Traits::min, offset, DATE::Traits::max)
     ? DATE(offset)
     : DATE::INVALID;
 }
@@ -172,7 +172,7 @@ get_week_date(
 {
   return 
       date.is_valid() 
-    ? get_week_date(date.get_datenum()) 
+    ? datenum_to_week_date(date.get_datenum()) 
     : WeekDate::get_invalid();
 }
 
@@ -198,11 +198,16 @@ get_ymd(
 {
   return 
       date.is_valid()
-    ? safe::get_ymd(date)
+    ? datenum_to_ymd(date.get_datenum())
     : YmdDate::get_invalid();
 }
 
 
+/*
+ * Returns the int-encoded YYYYMMDD representation of a date.
+ *
+ * Returns YMDI_INVALID if `date` is not valid.
+ */
 template<class DATE>
 inline int
 get_ymdi(
@@ -246,7 +251,7 @@ days_after(
   return 
       date.is_valid()
     ? from_offset<DATE>(date.get_offset() + days)
-    : date;
+    : DATE::INVALID;
 }  
 
 
@@ -260,7 +265,7 @@ days_before(
   int const days)
   noexcept
 {
-  return add(date, -days);
+  return safe::days_after(date, -days);
 }  
 
 
@@ -280,7 +285,7 @@ days_between(
 {
   return
       date0.is_valid() && date1.is_valid()
-    ? (int) date0.get_offset() - date1.get_offset()
+    ? (int) date1.get_offset() - date0.get_offset()
     : std::numeric_limits<int>::min();
 }
 
