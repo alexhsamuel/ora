@@ -306,7 +306,25 @@ struct TimeParts
 
 
 //------------------------------------------------------------------------------
+// Local time structs
+//------------------------------------------------------------------------------
+
+struct LocalDatenumDaytick
+{
+  Datenum   datenum = DATENUM_INVALID;
+  Daytick   daytick = DAYTICK_INVALID;
+};
+
+
+template<class DATE, class DAYTIME>
+struct LocalTime
+{
+  DATE      date    = DATE::INVALID;
+  DAYTIME   daytime = DAYTIME::INVALID;
+};
+
+
+//------------------------------------------------------------------------------
 
 }  // namespace cron
-
 

@@ -23,51 +23,6 @@ namespace cron {
 using namespace aslib;
 
 //------------------------------------------------------------------------------
-// Local time structs
-//------------------------------------------------------------------------------
-
-// FIXME: In types.hh?
-
-struct LocalDatenumDaytick
-{
-  LocalDatenumDaytick()
-  : datenum(DATENUM_INVALID),
-    daytick(DAYTICK_INVALID)
-  {
-  }
-
-  LocalDatenumDaytick(
-    Datenum const _datenum,
-    Daytick const _daytick)
-  : datenum(_datenum),
-    daytick(_daytick)
-  {
-  }
-
-  Datenum   datenum;
-  Daytick   daytick;
-
-};
-
-
-template<class DATE, class DAYTIME>
-struct LocalTime
-{
-  LocalTime(
-    DATE const _date, 
-    DAYTIME const _daytime)
-  : date(_date),
-    daytime(_daytime)
-  {
-  }
-
-  DATE      date;
-  DAYTIME   daytime;
-
-};
-
-
-//------------------------------------------------------------------------------
 // Helper functions
 //------------------------------------------------------------------------------
 
