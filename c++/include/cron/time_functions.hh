@@ -36,6 +36,15 @@ from_local(
 }
 
 
+template<class DATE, class TIME>
+inline DATE
+get_utc_date(
+  TIME const time)
+{
+  return date::from_datenum<DATE>(get_utc_datenum(time));
+}
+
+
 template<class TIME>
 inline Datenum
 get_utc_datenum(
@@ -58,15 +67,6 @@ get_utc_daytick(
     = time.get_offset() % (SECS_PER_DAY * TIME::Traits::denominator);
   return rescale_int<Daytick, TIME::Traits::denominator, DAYTICK_PER_SEC>
     (day_offset);
-}
-
-
-template<class DATE, class TIME>
-inline DATE
-get_utc_date(
-  TIME const time)
-{
-  return date::from_datenum<DATE>(get_utc_datenum(time));
 }
 
 
