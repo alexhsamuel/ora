@@ -133,32 +133,13 @@ public:
 
   // Accessors
 
-  Offset get_offset() const { return offset_; }
-
-  Datenum
-  get_utc_datenum() 
+  Offset
+  get_offset()
     const
   {
-    return 
-      is_valid() 
-      ? offset_ / SECS_PER_DAY / Traits::denominator + Traits::base
-      : DATENUM_INVALID;
+    ensure_valid(*this);
+    return offset_;
   }
-
-  Daytick 
-  get_utc_daytick() 
-    const
-  {
-    if (is_valid()) {
-      Offset const day_offset = offset_ % (SECS_PER_DAY * Traits::denominator);
-      return rescale_int<Daytick, Traits::denominator, DAYTICK_PER_SEC>(day_offset);
-    }
-    else
-      return DAYTICK_INVALID;
-  }
-
-  template<class DATE> DATE get_utc_date() const { return date::from_datenum<DATE>(get_utc_datenum()); }
-  template<class DAYTIME> DAYTIME get_utc_daytime() const { return DAYTIME::from_daytick(get_utc_daytick()); }
 
   TimeParts 
   get_parts(
@@ -295,6 +276,19 @@ private:
   Offset offset_;
 
 };
+
+
+/*
+ * If `time` is invalid, throws `InvalidTimeError`.
+ */
+template<class TIME>
+void
+ensure_valid(
+  TIME const time)
+{
+  if (!time.is_valid())
+    throw InvalidTimeError();
+}
 
 
 //------------------------------------------------------------------------------

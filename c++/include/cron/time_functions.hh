@@ -37,6 +37,49 @@ from_local(
 
 
 template<class TIME>
+inline Datenum
+get_utc_datenum(
+  TIME const time)
+{
+  ensure_valid(time);
+  return
+      TIME::Traits::base
+    + time.get_offset() / SECS_PER_DAY / TIME::Traits::denominator;
+}
+
+
+template<class TIME>
+inline Daytick
+get_utc_daytick(
+  TIME const time)
+{
+  ensure_valid(time);
+  auto const day_offset
+    = time.get_offset() % (SECS_PER_DAY * TIME::Traits::denominator);
+  return rescale_int<Daytick, TIME::Traits::denominator, DAYTICK_PER_SEC>
+    (day_offset);
+}
+
+
+template<class DATE, class TIME>
+inline DATE
+get_utc_date(
+  TIME const time)
+{
+  return date::from_datenum<DATE>(get_utc_datenum(time));
+}
+
+
+template<class DAYTIME, class TIME>
+inline DAYTIME
+get_utc_daytime(
+  TIME const time)
+{
+  return daytime::from_daytick<DAYTIME>(get_utc_daytick(time));
+}
+
+
+template<class TIME>
 inline TIME
 now()
 {
@@ -63,7 +106,7 @@ now()
 }
 
 
-template<class TIME, class DATE, class DAYTIME>
+template<class DATE, class DAYTIME, class TIME>
 inline LocalTime<DATE, DAYTIME>
 to_local(
   TIME const time,

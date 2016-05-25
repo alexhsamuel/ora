@@ -198,13 +198,13 @@ TEST(Time, to_string) {
 TEST(Unix32Time, zero) {
   auto const time = Unix32Time::from_offset(1374522232);
 
-  auto const date = time.get_utc_date<Date>();
+  auto const date = get_utc_date<Date>(time);
   auto const ymd = get_ymd(date);
   EXPECT_EQ(2013, ymd.year);
   EXPECT_EQ(6, ymd.month);
   EXPECT_EQ(21, ymd.day);
 
-  auto const daytime = time.get_utc_daytime<Daytime>();
+  auto const daytime = get_utc_daytime<Daytime>(time);
   auto const hms = get_hms(daytime);
   EXPECT_EQ(19, hms.hour);
   EXPECT_EQ(43, hms.minute);
