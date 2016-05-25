@@ -86,8 +86,8 @@ to_local(
 template<typename TRAITS>
 inline TimeTemplate<TRAITS>
 operator+(
-  TimeTemplate<TRAITS> time,
-  double shift)
+  TimeTemplate<TRAITS> const time,
+  double const shift)
 {
   using Time = TimeTemplate<TRAITS>;
   using Offset = typename Time::Offset;
@@ -101,8 +101,8 @@ operator+(
 template<typename TRAITS>
 inline TimeTemplate<TRAITS>
 operator-(
-  TimeTemplate<TRAITS> time,
-  double shift)
+  TimeTemplate<TRAITS> const time,
+  double const shift)
 {
   using Time = TimeTemplate<TRAITS>;
   using Offset = typename Time::Offset;
@@ -116,8 +116,8 @@ operator-(
 template<typename TRAITS>
 inline double
 operator-(
-  TimeTemplate<TRAITS> time0,
-  TimeTemplate<TRAITS> time1)
+  TimeTemplate<TRAITS> const time0,
+  TimeTemplate<TRAITS> const time1)
 {
   using Time = TimeTemplate<TRAITS>;
 
