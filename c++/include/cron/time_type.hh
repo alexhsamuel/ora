@@ -44,7 +44,6 @@ public:
   using Traits = TRAITS;
   using Offset = typename Traits::Offset;
 
-  static bool         constexpr USE_INVALID = Traits::use_invalid;
   static Datenum      constexpr BASE        = Traits::base;
   static Offset       constexpr DENOMINATOR = Traits::denominator;
   static TimeTemplate const     MIN;
@@ -56,7 +55,7 @@ public:
   // Constructors
 
   TimeTemplate() 
-  : offset_(USE_INVALID ? INVALID.offset_ : MIN.offset_) 
+  : offset_(Traits::invalid)
   {
   }
 
@@ -104,10 +103,10 @@ public:
   from_offset(
     Offset offset)
   {
-    return TimeTemplate(
-      in_range(MIN.get_offset(), offset, MAX.get_offset())
-      ? offset
-      : on_error<InvalidTimeError>());
+    if (in_range(Traits::min, offset, Traits::max))
+      return TimeTemplate(offset);
+    else
+      throw TimeRangeError();
   }
 
   static TimeTemplate
@@ -217,16 +216,6 @@ public:
 
 private:
 
-  template<class EXC>
-  static Offset
-  on_error()
-  {
-    if (TRAITS::use_invalid)
-      return INVALID.get_offset();
-    else
-      throw EXC();
-  }
-
   static Offset 
   datenum_daytick_to_offset(
     Datenum datenum,
@@ -235,9 +224,9 @@ private:
     bool first)
   {
     if (! datenum_is_valid(datenum)) 
-      return on_error<InvalidDateError>();
+      throw InvalidDateError();
     if (! daytick_is_valid(daytick))
-      return on_error<InvalidDaytimeError>();
+      throw InvalidDaytimeError();
 
     Offset tz_offset;
     try {
@@ -245,7 +234,7 @@ private:
     }
     catch (NonexistentLocalTime) {
       // FIXME: Don't catch and rethrow...
-      return on_error<NonexistentLocalTime>();
+      throw NonexistentLocalTime();
     }
 
     // Below, we compute this expression with overflow checking:
@@ -260,7 +249,7 @@ private:
     Offset r;
     if (   mul_overflow(DENOMINATOR * SECS_PER_DAY, (Offset) datenum - BASE, r)
         || add_overflow(r, off, r))
-      return on_error<InvalidTimeError>();
+      throw InvalidTimeError();
     else
       return r;
   }
@@ -277,9 +266,9 @@ private:
     bool first=true)
   {
     if (! ymd_is_valid(year, month, day))
-      return on_error<InvalidDateError>();
+      throw InvalidDateError();
     if (! hms_is_valid(hour, minute, second))
-      return on_error<InvalidTimeError>();
+      throw InvalidTimeError();
 
     Datenum const datenum = ymd_to_datenum(year, month, day);
     Daytick const daytick = hms_to_daytick(hour, minute, second);
@@ -295,10 +284,10 @@ private:
     intmax_t const offset = 
       cron::time::convert_offset(
         offset0, denominator0, base0, DENOMINATOR, BASE);
-    return
-      in_range((intmax_t) MIN.get_offset(), offset, (intmax_t) MAX.get_offset())
-      ? offset
-      : on_error<InvalidTimeError>();
+    if (in_range((intmax_t) Traits::min, offset, (intmax_t) Traits::max))
+      return offset;
+    else
+      throw InvalidTimeError();
   }
 
   constexpr TimeTemplate(Offset offset) : offset_(offset) {}
@@ -311,10 +300,6 @@ private:
 //------------------------------------------------------------------------------
 // Static members
 //------------------------------------------------------------------------------
-
-template<class TRAITS>
-bool constexpr
-TimeTemplate<TRAITS>::USE_INVALID;
 
 template<class TRAITS>
 Datenum constexpr
@@ -362,8 +347,6 @@ struct TimeTraits
   static Offset  constexpr missing      = std::numeric_limits<Offset>::max() - 1;
   static Offset  constexpr min          = 0;
   static Offset  constexpr max          = std::numeric_limits<Offset>::max() - 2;
-
-  static bool    constexpr use_invalid  = true;
 };
 
 extern template class TimeTemplate<TimeTraits>;
@@ -380,8 +363,6 @@ struct SmallTimeTraits
   static Offset  constexpr missing      = std::numeric_limits<Offset>::max() - 1;
   static Offset  constexpr min          = 0;
   static Offset  constexpr max          = std::numeric_limits<Offset>::max() - 2;
-
-  static bool    constexpr use_invalid  = true;
 };
 
 extern template class TimeTemplate<SmallTimeTraits>;
@@ -398,8 +379,6 @@ struct NsecTimeTraits
   static Offset  constexpr missing      = std::numeric_limits<Offset>::max() - 1;
   static Offset  constexpr min          = 0;
   static Offset  constexpr max          = std::numeric_limits<Offset>::max() - 2;
-
-  static bool    constexpr use_invalid  = true;
 };
 
 extern template class TimeTemplate<NsecTimeTraits>;
@@ -416,8 +395,6 @@ struct Unix32TimeTraits
   static Offset  constexpr missing      = std::numeric_limits<Offset>::max() - 1;
   static Offset  constexpr min          = std::numeric_limits<Offset>::min();
   static Offset  constexpr max          = std::numeric_limits<Offset>::max() - 2;
-
-  static bool    constexpr use_invalid  = true;
 };
 
 extern template class TimeTemplate<Unix32TimeTraits>;
@@ -434,8 +411,6 @@ struct Unix64TimeTraits
   static Offset  constexpr max          = 253402300800l;    // 9999-12-31
   static Offset  constexpr invalid      = 253402300802l;
   static Offset  constexpr missing      = 253402300801l;
-
-  static bool    constexpr use_invalid  = true;
 };
 
 extern template class TimeTemplate<Unix64TimeTraits>;

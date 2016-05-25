@@ -125,9 +125,6 @@ operator-(
     return 
         (double) time0.get_offset() / Time::DENOMINATOR
       - (double) time1.get_offset() / Time::DENOMINATOR;
-  else if (Time::USE_INVALID)
-    // FIXME: What do we do with invalid/missing values?
-    return 0;
   else
     throw cron::ValueError("can't subtract invalid times");
 }

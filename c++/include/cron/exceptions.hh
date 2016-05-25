@@ -98,6 +98,17 @@ public:
 };
 
 
+class TimeRangeError
+  : public TimeError
+{
+public:
+
+  TimeRangeError() : TimeError("time out of range") {}
+  virtual ~TimeRangeError() noexcept = default;
+
+};
+
+
 class InvalidDaytimeError
   : public DaytimeError
 {
