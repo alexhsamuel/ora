@@ -41,16 +41,17 @@ class TimeTemplate
 {
 public:
 
-  using Offset = typename TRAITS::Offset;
+  using Traits = TRAITS;
+  using Offset = typename Traits::Offset;
 
-  static bool         constexpr USE_INVALID = TRAITS::use_invalid;
-  static Datenum      constexpr BASE        = TRAITS::base;
-  static Offset       constexpr DENOMINATOR = TRAITS::denominator;
+  static bool         constexpr USE_INVALID = Traits::use_invalid;
+  static Datenum      constexpr BASE        = Traits::base;
+  static Offset       constexpr DENOMINATOR = Traits::denominator;
   static TimeTemplate const     MIN;
   static TimeTemplate const     MAX;
   static TimeTemplate const     INVALID;
   static TimeTemplate const     MISSING;
-  static double       constexpr RESOLUTION  = 1.0 / TRAITS::denominator;
+  static double       constexpr RESOLUTION  = 1.0 / Traits::denominator;
 
   // Constructors
 
@@ -141,7 +142,7 @@ public:
   {
     return 
       is_valid() 
-      ? offset_ / SECS_PER_DAY / TRAITS::denominator + TRAITS::base
+      ? offset_ / SECS_PER_DAY / Traits::denominator + Traits::base
       : DATENUM_INVALID;
   }
 
@@ -150,8 +151,8 @@ public:
     const
   {
     if (is_valid()) {
-      Offset const day_offset = offset_ % (SECS_PER_DAY * TRAITS::denominator);
-      return rescale_int<Daytick, TRAITS::denominator, DAYTICK_PER_SEC>(day_offset);
+      Offset const day_offset = offset_ % (SECS_PER_DAY * Traits::denominator);
+      return rescale_int<Daytick, Traits::denominator, DAYTICK_PER_SEC>(day_offset);
     }
     else
       return DAYTICK_INVALID;
@@ -172,21 +173,21 @@ public:
 
     // Look up the time zone.
     parts.time_zone = tz.get_parts(*this);
-    Offset const offset = offset_ + parts.time_zone.offset * TRAITS::denominator;
+    Offset const offset = offset_ + parts.time_zone.offset * Traits::denominator;
 
     // Establish the date and daytime parts, using division rounded toward -inf
     // and a positive remainder.
     Datenum const datenum   
-      = (int64_t) (offset / TRAITS::denominator) / SECS_PER_DAY 
+      = (int64_t) (offset / Traits::denominator) / SECS_PER_DAY 
         + (offset < 0 ? -1 : 0)
         + BASE;
     Offset const day_offset 
-      = (int64_t) offset % (TRAITS::denominator * SECS_PER_DAY) 
-        + (offset < 0 ? TRAITS::denominator * SECS_PER_DAY : 0);
+      = (int64_t) offset % (Traits::denominator * SECS_PER_DAY) 
+        + (offset < 0 ? Traits::denominator * SECS_PER_DAY : 0);
 
     parts.date            = datenum_to_parts(datenum);
-    parts.daytime.second  = (Second) (day_offset % (SECS_PER_MIN * TRAITS::denominator)) / TRAITS::denominator;
-    Offset const minutes  = day_offset / (SECS_PER_MIN * TRAITS::denominator);
+    parts.daytime.second  = (Second) (day_offset % (SECS_PER_MIN * Traits::denominator)) / Traits::denominator;
+    Offset const minutes  = day_offset / (SECS_PER_MIN * Traits::denominator);
     parts.daytime.minute  = minutes % MINS_PER_HOUR;
     parts.daytime.hour    = minutes / MINS_PER_HOUR;
     return parts;
