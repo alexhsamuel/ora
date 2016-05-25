@@ -23,7 +23,7 @@ namespace time {
 
 //------------------------------------------------------------------------------
 
-template<typename TIME>
+template<class TIME>
 inline TIME
 from_local(
   Datenum const datenum,
@@ -36,7 +36,7 @@ from_local(
 }
 
 
-template<typename TIME>
+template<class TIME>
 inline TIME
 now()
 {
@@ -63,7 +63,7 @@ now()
 }
 
 
-template<typename TIME, typename DATE, typename DAYTIME>
+template<class TIME, class DATE, class DAYTIME>
 inline LocalTime<DATE, DAYTIME>
 to_local(
   TIME const time,
@@ -83,7 +83,7 @@ to_local(
 
 //------------------------------------------------------------------------------
 
-template<typename TRAITS>
+template<class TRAITS>
 inline TimeTemplate<TRAITS>
 operator+(
   TimeTemplate<TRAITS> const time,
@@ -98,7 +98,7 @@ operator+(
 }
 
 
-template<typename TRAITS>
+template<class TRAITS>
 inline TimeTemplate<TRAITS>
 operator-(
   TimeTemplate<TRAITS> const time,
@@ -113,7 +113,7 @@ operator-(
 }
 
 
-template<typename TRAITS>
+template<class TRAITS>
 inline double
 operator-(
   TimeTemplate<TRAITS> const time0,
