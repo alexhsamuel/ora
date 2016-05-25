@@ -83,9 +83,12 @@ PyInit_ext(void)
     // FIXME: Use specific Python exception classes.
     TranslateException<cron::InvalidDateError>::to(PyExc_ValueError);
     TranslateException<cron::InvalidDaytimeError>::to(PyExc_ValueError);
+    TranslateException<cron::InvalidTimeError>::to(PyExc_ValueError);
     TranslateException<cron::DateFormatError>::to(PyExc_ValueError); 
     TranslateException<cron::DateRangeError>::to(PyExc_OverflowError);
     TranslateException<cron::DaytimeRangeError>::to(PyExc_OverflowError);
+    TranslateException<cron::NonexistentLocalTime>::to(PyExc_RuntimeError);
+    TranslateException<cron::TimeRangeError>::to(PyExc_OverflowError);
 
     return mod.release();
   }

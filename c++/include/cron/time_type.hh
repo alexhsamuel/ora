@@ -249,26 +249,26 @@ private:
     Offset r;
     if (   mul_overflow(DENOMINATOR * SECS_PER_DAY, (Offset) datenum - BASE, r)
         || add_overflow(r, off, r))
-      throw InvalidTimeError();
+      throw TimeRangeError();
     else
       return r;
   }
 
   static Offset 
   parts_to_offset(
-    Year year,
-    Month month,
-    Day day,
-    Hour hour,
-    Minute minute,
-    Second second,
+    Year const      year,
+    Month const     month,
+    Day const       day,
+    Hour const      hour,
+    Minute const    minute,
+    Second const    second,
     TimeZone const& tz,
-    bool first=true)
+    bool const      first=true)
   {
     if (! ymd_is_valid(year, month, day))
       throw InvalidDateError();
     if (! hms_is_valid(hour, minute, second))
-      throw InvalidTimeError();
+      throw InvalidDaytimeError();
 
     Datenum const datenum = ymd_to_datenum(year, month, day);
     Daytick const daytick = hms_to_daytick(hour, minute, second);

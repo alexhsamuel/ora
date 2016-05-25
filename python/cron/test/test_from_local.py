@@ -23,8 +23,8 @@ def test_nsec_time():
     t = from_local((2444/May/29, Daytime(1, 53, 3.999999997)), UTC, Time=NsecTime)
     assert str(t) == "2444-05-29T01:53:03.999999997Z"
 
-    t = from_local((2444/May/29, Daytime(1, 53, 5)), UTC, Time=NsecTime)
-    assert str(t) == "INVALID"
+    with pytest.raises(OverflowError):
+        from_local((2444/May/29, Daytime(1, 53, 5)), UTC, Time=NsecTime)
 
     t = from_local((1973/Dec/3, 7200.125), UTC, Time=NsecTime)
     assert str(t) == "1973-12-03T02:00:00.125000000Z"

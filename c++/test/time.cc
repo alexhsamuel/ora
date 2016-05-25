@@ -108,20 +108,18 @@ TEST(Time, from_parts_invalid) {
   EXPECT_THROW(Time(2013/JUL/28, Daytime(0, 60, 0), *tz), InvalidDaytimeError);
   EXPECT_THROW(Time(2013/JUL/28, Daytime(0, 0, 60), *tz), InvalidDaytimeError);
 
-  // FIXME: These should throw.
-  EXPECT_TRUE(Time(10000,  0,  0,  0,  0,  0, *tz).is_invalid());
-  EXPECT_TRUE(Time( 2013, 12,  0,  0,  0,  0, *tz).is_invalid());
-  EXPECT_TRUE(Time( 2013,  0, 31,  0,  0,  0, *tz).is_invalid());
-  EXPECT_TRUE(Time( 2013,  0,  0, 24,  0,  0, *tz).is_invalid());
-  EXPECT_TRUE(Time( 2013,  0,  0,  0, 60,  0, *tz).is_invalid());
-  EXPECT_TRUE(Time( 2013,  0,  0,  0,  0, 60, *tz).is_invalid());
+  EXPECT_THROW(Time(10000,  0,  0,  0,  0,  0, *tz), InvalidDateError);
+  EXPECT_THROW(Time( 2013, 12,  0,  0,  0,  0, *tz), InvalidDateError);
+  EXPECT_THROW(Time( 2013,  0, 31,  0,  0,  0, *tz), InvalidDateError);
+  EXPECT_THROW(Time( 2013,  0,  0, 24,  0,  0, *tz), InvalidDaytimeError);
+  EXPECT_THROW(Time( 2013,  0,  0,  0, 60,  0, *tz), InvalidDaytimeError);
+  EXPECT_THROW(Time( 2013,  0,  0,  0,  0, 60, *tz), InvalidDaytimeError);
 
-  // FIXME: Invalid times should throw.
-  EXPECT_TRUE(Time( 2013,  2,  9,  1, 59, 59, *tz).is_valid());
-  EXPECT_TRUE(Time( 2013,  2,  9,  2,  0,  0, *tz).is_invalid());
-  EXPECT_TRUE(Time( 2013,  2,  9,  2, 59, 59, *tz).is_invalid());
-  EXPECT_TRUE(Time( 2013,  2,  9,  3,  0,  0, *tz).is_valid());
-  EXPECT_TRUE(Time( 2013,  2,  9,  3,  0,  0, *tz, false).is_valid());
+  EXPECT_TRUE (Time( 2013,  2,  9,  1, 59, 59, *tz).is_valid());
+  EXPECT_THROW(Time( 2013,  2,  9,  2,  0,  0, *tz), NonexistentLocalTime);
+  EXPECT_THROW(Time( 2013,  2,  9,  2, 59, 59, *tz), NonexistentLocalTime);
+  EXPECT_TRUE (Time( 2013,  2,  9,  3,  0,  0, *tz).is_valid());
+  EXPECT_TRUE (Time( 2013,  2,  9,  3,  0,  0, *tz, false).is_valid());
 }
 
 TEST(Time, get_parts) {
