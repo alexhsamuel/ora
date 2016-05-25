@@ -8,6 +8,7 @@
 #include <type_traits>
 
 #include "cron/date_math.hh"
+#include "cron/exceptions.hh"
 #include "cron/types.hh"
 
 namespace cron {

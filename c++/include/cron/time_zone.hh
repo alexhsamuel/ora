@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "aslib/string.hh"
+#include "cron/exceptions.hh"
 #include "cron/types.hh"
 #include "cron/tzfile.hh"
 

@@ -3,6 +3,7 @@
 #include <cstddef>
 
 #include "cron/types.hh"
+#include "cron/exceptions.hh"
 #include "cron/daytime_math.hh"
 
 namespace cron {
