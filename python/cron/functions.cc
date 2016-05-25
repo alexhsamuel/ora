@@ -154,7 +154,8 @@ to_local(
     // If this is a PyTime object and we have an API, use it.
     api != nullptr ? api->to_local_datenum_daytick(time, *tz)
     // Otherwise, convert to a time and then proceed.
-    : cron::to_local_datenum_daytick(convert_to_time<cron::Time>(time), *tz);
+    : cron::time::to_local_datenum_daytick(
+        convert_to_time<cron::time::Time>(time), *tz);
   return make_local(local, date_type, daytime_type);
 }
 
@@ -176,7 +177,8 @@ to_local_datenum_daytick(
     // If this is a PyTime object and we have an API, use it.
     api != nullptr ? api->to_local_datenum_daytick(time, *tz)
     // Otherwise, convert to a time and then proceed.
-    : cron::to_local_datenum_daytick(convert_to_time<cron::Time>(time), *tz);
+    : cron::time::to_local_datenum_daytick(
+        convert_to_time<cron::time::Time>(time), *tz);
   return make_local_datenum_daytick(local);
 }
 
@@ -192,8 +194,8 @@ today(
   static char const* const arg_names[] = {"time_zone", "Date", nullptr};
   Arg::ParseTupleAndKeywords(args, kw_args, "O|O", arg_names, &tz, &date_type);
 
-  auto local = cron::to_local_datenum_daytick(
-    cron::now<cron::Time>(), *convert_to_time_zone(tz));
+  auto local = cron::time::to_local_datenum_daytick(
+    cron::time::now<cron::time::Time>(), *convert_to_time_zone(tz));
   // FIXME: Use API.
   return date_type
     ->CallMethodObjArgs("from_datenum", Long::from(local.datenum));

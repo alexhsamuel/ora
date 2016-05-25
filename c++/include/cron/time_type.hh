@@ -5,6 +5,7 @@
 #include "aslib/exc.hh"
 
 namespace cron {
+namespace time {
 
 using namespace aslib;
 
@@ -198,7 +199,8 @@ public:
   get_time_offset()
     const
   {
-    return cron::convert_offset(get_offset(), DENOMINATOR, BASE, 1, DATENUM_UNIX_EPOCH);
+    return cron::time::convert_offset(
+      get_offset(), DENOMINATOR, BASE, 1, DATENUM_UNIX_EPOCH);
   }
 
   Timetick
@@ -290,7 +292,8 @@ private:
     Datenum base0)
   {
     intmax_t const offset = 
-      cron::convert_offset(offset0, denominator0, base0, DENOMINATOR, BASE);
+      cron::time::convert_offset(
+        offset0, denominator0, base0, DENOMINATOR, BASE);
     return
       in_range((intmax_t) MIN.get_offset(), offset, (intmax_t) MAX.get_offset())
       ? offset
@@ -439,5 +442,6 @@ using Unix64Time = TimeTemplate<Unix64TimeTraits>;
 
 //------------------------------------------------------------------------------
 
+}  // namespace time
 }  // namespace cron
 

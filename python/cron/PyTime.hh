@@ -172,10 +172,10 @@ public:
       { return ((PyTime*) time)->time_.get_timetick(); }
 
     virtual ref<Object> from_local_datenum_daytick(cron::Datenum const datenum, cron::Daytick const daytick, cron::TimeZone const& tz, bool first) const
-      { return PyTime::create(cron::from_local<Time>(datenum, daytick, tz, first)); }
+      { return PyTime::create(cron::time::from_local<Time>(datenum, daytick, tz, first)); }
 
     virtual ref<Object> now() const
-      { return PyTime::create(cron::now<Time>()); }
+      { return PyTime::create(cron::time::now<Time>()); }
 
     virtual bool is_invalid(Object* const time) const
       { return ((PyTime*) time)->time_.is_invalid(); }
@@ -184,7 +184,7 @@ public:
       { return ((PyTime*) time)->time_.is_missing(); }
 
     virtual cron::LocalDatenumDaytick to_local_datenum_daytick(Object* const time, cron::TimeZone const& tz) const
-      { return cron::to_local_datenum_daytick(((PyTime*) time)->time_, tz); }
+      { return cron::time::to_local_datenum_daytick(((PyTime*) time)->time_, tz); }
 
   };
 
@@ -689,7 +689,7 @@ PyTime<TIME>::build_type(
 //------------------------------------------------------------------------------
 // Helpers
 
-using PyTimeDefault = PyTime<cron::Time>;
+using PyTimeDefault = PyTime<cron::time::Time>;
 
 template<typename TIME>
 inline TIME
@@ -820,11 +820,11 @@ convert_to_time(
 #ifdef __clang__
 // Use explicit instantiation for the main instances.
 // FIXME: GCC 5.2.1 generates PyTime<>::type_ in BSS, which breaks linking.
-extern template class PyTime<cron::Time>;
-extern template class PyTime<cron::SmallTime>;
-extern template class PyTime<cron::NsecTime>;
-extern template class PyTime<cron::Unix32Time>;
-extern template class PyTime<cron::Unix64Time>;
+extern template class PyTime<cron::time::Time>;
+extern template class PyTime<cron::time::SmallTime>;
+extern template class PyTime<cron::time::NsecTime>;
+extern template class PyTime<cron::time::Unix32Time>;
+extern template class PyTime<cron::time::Unix64Time>;
 #endif
 
 //------------------------------------------------------------------------------

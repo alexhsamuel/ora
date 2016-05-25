@@ -4,6 +4,7 @@
 #include "cron/types.hh"
 
 namespace cron {
+namespace time { 
 
 //------------------------------------------------------------------------------
 // Helper functions
@@ -23,7 +24,7 @@ convert_offset(
 }
 
 
-template<typename TIME>
+template<class TIME>
 inline LocalDatenumDaytick
 to_local_datenum_daytick(
   TIME const time,
@@ -58,7 +59,7 @@ to_local_datenum_daytick(
 /* 
  * Converts the time in a a 'struct timespec' to an offset for 'TIME'.
  */
-template<typename TIME>
+template<class TIME>
 inline typename TIME::Offset
 timespec_to_offset(
   struct timespec const& ts)
@@ -73,5 +74,6 @@ timespec_to_offset(
 
 //------------------------------------------------------------------------------
 
+}  // namespace time
 }  // namespace cron
 

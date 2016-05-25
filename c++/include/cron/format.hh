@@ -115,7 +115,7 @@ public:
   template<class TRAITS> 
   std::string
   operator()(
-    TimeTemplate<TRAITS> time, 
+    time::TimeTemplate<TRAITS> time, 
     TimeZone const& tz) 
     const 
   { 
@@ -128,7 +128,7 @@ public:
   template<class TRAITS> 
   std::string
   operator()(
-    TimeTemplate<TRAITS> time, 
+    time::TimeTemplate<TRAITS> time, 
     std::string const& tz_name) 
     const 
   { 
@@ -138,7 +138,7 @@ public:
   template<class TRAITS> 
   std::string
   operator()(
-    TimeTemplate<TRAITS> time) 
+    time::TimeTemplate<TRAITS> time) 
     const 
   { 
     return operator()(time, *get_display_time_zone()); 
@@ -150,7 +150,7 @@ public:
 template<class TRAITS>
 inline std::string
 to_string(
-  TimeTemplate<TRAITS> time)
+  time::TimeTemplate<TRAITS> time)
 {
   return TimeFormat::get_default()(time);
 }
@@ -160,7 +160,7 @@ template<class TRAITS>
 inline std::ostream&
 operator<<(
   std::ostream& os,
-  TimeTemplate<TRAITS> time)
+  time::TimeTemplate<TRAITS> time)
 {
   os << to_string(time);
   return os;

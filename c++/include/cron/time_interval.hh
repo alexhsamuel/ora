@@ -59,24 +59,24 @@ operator*(
 }
 
 
-template<class TRAITS>
-inline TimeTemplate<TRAITS>
+template<class TIME>
+inline TIME
 operator+(
-  TimeTemplate<TRAITS> time,
+  TIME const time,
   TimeInterval const& interval)
 {
-  return TimeTemplate<TRAITS>::from_offset(
+  return TIME::from_offset(
     time.get_offset() 
     // FIXME
-    + rescale_int((intmax_t) interval.get_dayticks(), (intmax_t) DAYTICK_PER_SEC, (intmax_t) TimeTemplate<TRAITS>::DENOMINATOR));
+    + rescale_int((intmax_t) interval.get_dayticks(), (intmax_t) DAYTICK_PER_SEC, (intmax_t) TIME::DENOMINATOR));
 }
 
 
-template<class TRAITS>
-inline TimeTemplate<TRAITS>
+template<class TIME>
+inline TIME
 operator+(
   TimeInterval const& interval,
-  TimeTemplate<TRAITS> time)
+  TIME const time)
 {
   return time + interval;
 }

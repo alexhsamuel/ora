@@ -50,13 +50,13 @@ PyInit_ext(void)
     aslib::PyDaytime<cron::daytime::Daytime>    ::add_to(mod, "Daytime");
     aslib::PyDaytime<cron::daytime::Daytime32>  ::add_to(mod, "Daytime32");
 
-    aslib::PyTime<cron::Time>            ::add_to(mod, "Time");
-    aslib::PyTime<cron::SmallTime>       ::add_to(mod, "SmallTime");
-    aslib::PyTime<cron::NsecTime>        ::add_to(mod, "NsecTime");
-    aslib::PyTime<cron::Unix32Time>      ::add_to(mod, "Unix32Time");
-    aslib::PyTime<cron::Unix64Time>      ::add_to(mod, "Unix64Time");
+    aslib::PyTime<cron::time::Time>             ::add_to(mod, "Time");
+    aslib::PyTime<cron::time::SmallTime>        ::add_to(mod, "SmallTime");
+    aslib::PyTime<cron::time::NsecTime>         ::add_to(mod, "NsecTime");
+    aslib::PyTime<cron::time::Unix32Time>       ::add_to(mod, "Unix32Time");
+    aslib::PyTime<cron::time::Unix64Time>       ::add_to(mod, "Unix64Time");
 
-    aslib::PyTimeZone                    ::add_to(mod, "TimeZone");
+    aslib::PyTimeZone                           ::add_to(mod, "TimeZone");
 
     StructSequenceType* const ymd_date_type = get_ymd_date_type();
     mod->AddObject(ymd_date_type->tp_name, (PyObject*) ymd_date_type);

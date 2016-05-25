@@ -1,6 +1,7 @@
 #include "cron/time.hh"
 
 namespace cron {
+namespace time {
 
 //------------------------------------------------------------------------------
 
@@ -12,6 +13,6 @@ template class TimeTemplate<Unix64TimeTraits>;
 
 //------------------------------------------------------------------------------
 
+}  // namespace time
 }  // namespace cron
-
 

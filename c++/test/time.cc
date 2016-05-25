@@ -6,6 +6,7 @@
 using namespace aslib;
 using namespace cron;
 using namespace cron::ez;
+using namespace cron::time;
 using cron::daytime::Daytime;
 
 //------------------------------------------------------------------------------

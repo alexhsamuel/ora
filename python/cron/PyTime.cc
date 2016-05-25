@@ -43,14 +43,13 @@ PyTimeAPI::apis_;
 //------------------------------------------------------------------------------
 // Explicit template instances
 
-template class PyTime<cron::Time>;
-template class PyTime<cron::SmallTime>;
-template class PyTime<cron::NsecTime>;
-template class PyTime<cron::Unix32Time>;
-template class PyTime<cron::Unix64Time>;
+template class PyTime<cron::time::Time>;
+template class PyTime<cron::time::SmallTime>;
+template class PyTime<cron::time::NsecTime>;
+template class PyTime<cron::time::Unix32Time>;
+template class PyTime<cron::time::Unix64Time>;
 
 //------------------------------------------------------------------------------
 
 }  // namespace aslib
-
 

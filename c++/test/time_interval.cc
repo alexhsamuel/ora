@@ -5,6 +5,7 @@
 
 using namespace aslib;
 using namespace cron;
+using namespace cron::time;
 
 //------------------------------------------------------------------------------
 // Class TimeInterval
