@@ -40,7 +40,7 @@ convert_offset(
       rescale_int(offset0, denominator0, denominator1)
     + ((intmax_t) base0 - base1) * SECS_PER_DAY * denominator1;
 }
-  
+
 
 template<typename TIME>
 inline LocalDatenumDaytick
