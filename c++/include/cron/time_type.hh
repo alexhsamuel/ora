@@ -176,25 +176,6 @@ public:
   TimeParts get_parts(std::string const& tz_name) const { return get_parts(*get_time_zone(tz_name)); }
   TimeParts get_parts() const { return get_parts(*get_display_time_zone()); }
 
-  TimeOffset 
-  get_time_offset()
-    const
-  {
-    return cron::time::convert_offset(
-      get_offset(), DENOMINATOR, BASE, 1, DATENUM_UNIX_EPOCH);
-  }
-
-  Timetick
-  get_timetick()
-    const
-  {
-    return 
-      is_valid() 
-      ?   rescale_int<Timetick, DENOMINATOR, TIMETICK_PER_SEC>(offset_)
-        + TIMETICK_PER_SEC * SECS_PER_DAY * BASE
-      : TIMETICK_INVALID;
-  }
-
 private:
 
   static Offset 
@@ -409,6 +390,8 @@ struct Unix64TimeTraits
 
 extern template class TimeTemplate<Unix64TimeTraits>;
 using Unix64Time = TimeTemplate<Unix64TimeTraits>;
+
+// FIXME: Add a int128_t type.
 
 //------------------------------------------------------------------------------
 
