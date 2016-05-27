@@ -174,27 +174,6 @@ TimeZoneOffset constexpr TIME_ZONE_OFFSET_MAX       =  43200;
 TimeZoneOffset constexpr TIME_ZONE_OFFSET_INVALID   = std::numeric_limits<TimeZoneOffset>::max();
 inline constexpr bool time_zone_offset_is_valid(TimeZoneOffset offset) { return in_range(TIME_ZONE_OFFSET_MIN, offset, TIME_ZONE_OFFSET_MAX); }
 
-// FIXME: Remove this.
-/**
- * A time expressed in (positive or negative) seconds since the UNIX epoch,
- * midnight on 1970 January 1.
- */
-using TimeOffset = int64_t;
-TimeOffset constexpr TIME_OFFSET_MIN        = -62135596800;
-TimeOffset constexpr TIME_OFFSET_INVALID    = std::numeric_limits<TimeOffset>::max();
-
-// FIXME: Remove this.
-/**
- * A time expressed in units of 1/(1 << 80) seconds since 0001-01-01T00:00:00Z.
- * Each timetick unit is slightly less than 1 yoctosecond.
- */
-using Timetick = int128_t;
-Timetick constexpr TIMETICK_PER_SEC         = ((int128_t) 1) << 80;
-double   constexpr TIMETICK_SEC             = 1. / TIMETICK_PER_SEC;
-Timetick constexpr TIMETICK_MIN             = 0;
-Timetick constexpr TIMETICK_MAX             = 3652059 * SECS_PER_DAY * TIMETICK_PER_SEC;
-Timetick const     TIMETICK_INVALID         = ((int128_t) -1) << 127;
-
 //------------------------------------------------------------------------------
 
 /*

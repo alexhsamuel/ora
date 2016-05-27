@@ -48,6 +48,7 @@ template class PyTime<cron::time::SmallTime>;
 template class PyTime<cron::time::NsecTime>;
 template class PyTime<cron::time::Unix32Time>;
 template class PyTime<cron::time::Unix64Time>;
+template class PyTime<cron::time::Time128>;
 
 //------------------------------------------------------------------------------
 

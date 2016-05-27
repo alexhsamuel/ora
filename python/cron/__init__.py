@@ -17,6 +17,7 @@ __all__ = (
     "NsecTime",
     "SmallTime",
     "Time",
+    "Time128",
     "TimeZone",
     "Unix32Time",
     "Unix64Time",

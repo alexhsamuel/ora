@@ -19,21 +19,24 @@ using namespace aslib;
  *  the total representable range in years, the range of representable years,
  *  and the approximate time resolution.
  *
+ *  Note that 10000 years (the year range supported by the library) is about
+ *  3.2E+11 s, which requires 39 bits represent with 1 s resolution.
+ *
  *  FIXME: Maybe NsecTime should be Time.  Who measures ns before 1900?
  *  - SmallTime -> Time32
  *  - LongTime and LongTime32 to span 1-9999
  *
  *    Bits  Sgn  Denom  Base     Years  Yr. Range  Resolution    Class
  *    ----  ---  -----  ----     -----  ---------  ----------    ------------
- *      32    u  1      1970       136  1970-2106      1  sec    SmallTime
- *      32    s  1      1970       136  1902-2038      1  sec    Unix32Time
- *      64    s  1      1970      many  0001-9999      1  sec    Unix64Time
- *      32    u  1<< 2  1990        34  1990-2024    250 msec
- *      64    u  1<<32  1970       136  1970-2106    230 psec 
- *      64    u  1<<30  1900       544  1900-2444    930 psec    NsecTime
- *      64    u  1<<28  1200      2179  1200-3379      4 nsec
- *      64    u  1<<26     1      8716     1-8717     15 nsec    Time
- *
+ *      32    u  1      1970       136  1970-2106      1  s      SmallTime
+ *      32    s  1      1970       136  1902-2038      1  s      Unix32Time
+ *      64    s  1      1970      many  0001-9999      1  s      Unix64Time
+ *      32    u  1<< 2  1990        34  1990-2024    250 ms
+ *      64    u  1<<32  1970       136  1970-2106    230 ps   
+ *      64    u  1<<30  1900       544  1900-2444    930 ps      NsecTime
+ *      64    u  1<<28  1200      2179  1200-3379      4 ns
+ *      64    u  1<<26     1      8716  0001-8717     15 ns      Time
+ *     128    u  1<<89     1    ~17000  0001-9999    < 1 ys      Time128
  */
 
 template<class TRAITS>
@@ -107,14 +110,6 @@ public:
       return TimeTemplate(offset);
     else
       throw TimeRangeError();
-  }
-
-  static TimeTemplate
-  from_timetick(
-    Timetick const timetick)
-  {
-    return TimeTemplate(rescale_int<Timetick, TIMETICK_PER_SEC, DENOMINATOR>(
-      timetick - TIMETICK_PER_SEC * SECS_PER_DAY * BASE));
   }
 
   // Comparisons
@@ -391,7 +386,23 @@ struct Unix64TimeTraits
 extern template class TimeTemplate<Unix64TimeTraits>;
 using Unix64Time = TimeTemplate<Unix64TimeTraits>;
 
-// FIXME: Add a int128_t type.
+
+struct Time128Traits
+{
+  using Offset = uint128_t;
+
+  static Datenum constexpr base         = 0;
+  static Offset  constexpr denominator  = 1;
+  static Offset  constexpr min          = 0;                // 0001-01-01
+  static Offset  constexpr max          = make_uint128(0x92ef0c7100000000, 0); 
+                                                            // 9999-12-31
+  static Offset  constexpr invalid      = make_uint128(0xffffffffffffffff, 0xffffffffffffffff);
+  static Offset  constexpr missing      = make_uint128(0xffffffffffffffff, 0xfffffffffffffffe);
+};
+
+extern template class TimeTemplate<Time128Traits>;
+using Time128 = TimeTemplate<Time128Traits>;
+
 
 //------------------------------------------------------------------------------
 

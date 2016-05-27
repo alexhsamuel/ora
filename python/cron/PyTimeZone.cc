@@ -213,7 +213,7 @@ PyTimeZone::tp_call(
     auto const api = PyTimeAPI::get(arg);
     if (api != nullptr)
       return make_time_zone_parts(
-        self->tz_->get_parts(api->get_time_offset(arg)));
+        self->tz_->get_parts(api->get_epoch_time(arg)));
 
     throw TypeError("arg not a time or local time");
   }    
@@ -342,7 +342,7 @@ PyTimeZone::method_at(
   if (api == nullptr)
     throw py::TypeError("not a time: "s + *time->Repr());
 
-  return make_time_zone_parts(self->tz_->get_parts(api->get_time_offset(time)));
+  return make_time_zone_parts(self->tz_->get_parts(api->get_epoch_time(time)));
 }
 
 

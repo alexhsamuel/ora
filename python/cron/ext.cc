@@ -55,6 +55,7 @@ PyInit_ext(void)
     aslib::PyTime<cron::time::NsecTime>         ::add_to(mod, "NsecTime");
     aslib::PyTime<cron::time::Unix32Time>       ::add_to(mod, "Unix32Time");
     aslib::PyTime<cron::time::Unix64Time>       ::add_to(mod, "Unix64Time");
+    aslib::PyTime<cron::time::Time128>          ::add_to(mod, "Time128");
 
     aslib::PyTimeZone                           ::add_to(mod, "TimeZone");
 

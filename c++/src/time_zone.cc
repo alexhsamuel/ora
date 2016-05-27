@@ -7,6 +7,7 @@
 
 #include "aslib/file.hh"
 #include "aslib/filename.hh"
+#include "cron/time.hh"
 #include "cron/time_zone.hh"
 #include "cron/tzfile.hh"
 
@@ -45,7 +46,7 @@ display_time_zone;
 //------------------------------------------------------------------------------
 
 TimeZone::Entry::Entry(
-  TimeOffset transition_time,
+  int64_t const transition_time,
   TzFile::Type const& type)
   : transition(transition_time)
 {
@@ -62,7 +63,7 @@ TimeZone::TimeZone()
   : name_("UTC")
 {
   entries_.emplace_back(
-    TIME_OFFSET_MIN, 
+    time::Unix64Time::MIN.get_offset(), 
     TzFile::Type{0, false, "UTC", true, true});
 }
 
@@ -86,7 +87,7 @@ TimeZone::TimeZone(
   if (default_type == nullptr) 
     default_type = &tz_file.types_.front();
   // Add a sentry entry.
-  entries_.emplace_back(TIME_OFFSET_MIN, *default_type);
+  entries_.emplace_back(time::Unix64Time::MIN.get_offset(), *default_type);
 
   for (auto const& transition : tz_file.transitions_)
     entries_.emplace_back(
@@ -99,28 +100,28 @@ TimeZone::TimeZone(
 
 TimeZoneParts
 TimeZone::get_parts(
-  TimeOffset time)
+  int64_t const time)
   const
 {
   auto iter = std::lower_bound(
     entries_.cbegin(), entries_.cend(), 
     time,
-    [] (Entry const& entry, TimeOffset time) { return entry.transition > time; });
+    [] (Entry const& entry, int64_t const time) { return entry.transition > time; });
   return iter->parts;
 }
 
 
 TimeZoneParts
 TimeZone::get_parts_local(
-  TimeOffset time,
-  bool first)
+  int64_t const time,
+  bool const first)
   const
 {
   // First, find the most recent transition, pretending the time is UTC.
   auto const iter = std::lower_bound(
     entries_.cbegin(), entries_.cend(), 
     time,
-    [] (Entry const& entry, TimeOffset time) { return entry.transition > time; });
+    [] (Entry const& entry, int64_t const time) { return entry.transition > time; });
   // The sentry protects from no result.
   assert(iter != entries_.cend());
 

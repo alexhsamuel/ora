@@ -106,8 +106,8 @@ public:
 
   // API methods.
   virtual ref<Object>               from_local_datenum_daytick(cron::Datenum, cron::Daytick, cron::TimeZone const&, bool) const = 0; 
-  virtual cron::TimeOffset          get_time_offset(Object* time) const = 0;
-  virtual cron::Timetick            get_timetick(Object* time) const = 0;
+  virtual int64_t                   get_epoch_time(Object* time) const = 0;
+  virtual cron::time::Time128       get_time128(Object* time) const = 0;
   virtual bool                      is_invalid(Object* time) const = 0;
   virtual bool                      is_missing(Object* time) const = 0;
   virtual ref<Object>               now() const = 0;
@@ -165,11 +165,11 @@ public:
   {
   public:
 
-    virtual cron::TimeOffset get_time_offset(Object* const time) const
-      { return ((PyTime*) time)->time_.get_time_offset(); }
+    virtual int64_t get_epoch_time(Object* const time) const
+      { return cron::time::get_epoch_time(((PyTime*) time)->time_); }
 
-    virtual cron::Timetick get_timetick(Object* const time) const
-      { return ((PyTime*) time)->time_.get_timetick(); }
+    virtual cron::time::Time128 get_time128(Object* const time) const
+      { return cron::time::Time128(((PyTime*) time)->time_); }
 
     virtual ref<Object> from_local_datenum_daytick(cron::Datenum const datenum, cron::Daytick const daytick, cron::TimeZone const& tz, bool first) const
       { return PyTime::create(cron::time::from_local<Time>(datenum, daytick, tz, first)); }
@@ -210,7 +210,6 @@ private:
   static ref<Object> get_invalid                    (PyTime*, void*);
   static ref<Object> get_missing                    (PyTime*, void*);
   static ref<Object> get_offset                     (PyTime*, void*);
-  static ref<Object> get_timetick                   (PyTime*, void*);
   static ref<Object> get_valid                      (PyTime*, void*);
   static GetSets<PyTime> tp_getsets_;
 
@@ -579,16 +578,6 @@ PyTime<TIME>::get_offset(
 
 template<typename TIME>
 ref<Object>
-PyTime<TIME>::get_timetick(
-  PyTime* const self,
-  void* /* closure */)
-{
-  return Long::from(self->time_.get_timetick());
-}
-
-
-template<typename TIME>
-ref<Object>
 PyTime<TIME>::get_valid(
   PyTime* const self,
   void* /* closure */)
@@ -604,7 +593,6 @@ PyTime<TIME>::tp_getsets_
     .template add_get<get_invalid>      ("invalid")
     .template add_get<get_missing>      ("missing")
     .template add_get<get_offset>       ("offset")
-    .template add_get<get_timetick>     ("timetick")
     .template add_get<get_valid>        ("valid")
   ;
 
@@ -752,7 +740,7 @@ maybe_time(
     return 
         api->is_invalid(obj) ? TIME::INVALID
       : api->is_missing(obj) ? TIME::MISSING
-      : TIME::from_timetick(api->get_timetick(obj));
+      : TIME(api->get_time128(obj));
 
   // A 'datetime.datetime'?
   if (PyDateTimeAPI == nullptr)
@@ -825,6 +813,7 @@ extern template class PyTime<cron::time::SmallTime>;
 extern template class PyTime<cron::time::NsecTime>;
 extern template class PyTime<cron::time::Unix32Time>;
 extern template class PyTime<cron::time::Unix64Time>;
+extern template class PyTime<cron::time::Time128>;
 #endif
 
 //------------------------------------------------------------------------------

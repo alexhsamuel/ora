@@ -13,6 +13,18 @@ using uint128_t = unsigned __int128;
 static_assert(sizeof(int128_t) == 16, "int128_t isn't 128 bits");
 static_assert(sizeof(uint128_t) == 16, "uint128_t isn't 128 bits");
 
+/*
+ * Constructs an unisgned 128-bit integer out of high and low 64 bit parts.
+ */
+inline constexpr uint128_t
+make_uint128(
+  uint64_t hi,
+  uint64_t lo)
+{
+  return ((uint128_t) hi) << 64 | lo;
+}
+
+
 //------------------------------------------------------------------------------
 
 inline unsigned long
@@ -173,6 +185,29 @@ inline bool mul_overflow(unsigned long long a, unsigned long long b, unsigned lo
 inline bool mul_overflow(         int       a,          int       b,          int      & r) { return __builtin_smul_overflow  (a, b, &r); }
 inline bool mul_overflow(         long      a,          long      b,          long     & r) { return __builtin_smull_overflow (a, b, &r); }
 inline bool mul_overflow(         long long a,          long long b,          long long& r) { return __builtin_smulll_overflow(a, b, &r); }
+
+// FIXME
+inline bool
+add_overflow(
+  uint128_t a,
+  uint128_t b,
+  uint128_t& r)
+{
+  r = a + b;
+  return false;
+}
+
+// FIXME
+inline bool
+mul_overflow(
+  uint128_t a,
+  uint128_t b,
+  uint128_t& r)
+{
+  r = a * b;
+  return false;
+}
+
 
 //------------------------------------------------------------------------------
 

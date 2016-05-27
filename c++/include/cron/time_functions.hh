@@ -36,29 +36,17 @@ from_local(
 }
 
 
-// FIXME: Remove this.
+/*
+ * Returns the closest UNIX epoch time.
+ *
+ * Returns the rounded (signed) number of seconds since 1970-01-01T00:00:00Z.
+ */
 template<class TIME>
-inline TimeOffset
-get_time_offset(
+inline int64_t
+get_epoch_time(
   TIME const time)
 {
-  ensure_valid(time);
-  return cron::time::convert_offset(
-    time.get_offset(), TIME::DENOMINATOR, TIME::BASE, 1, DATENUM_UNIX_EPOCH);
-}
-
-
-// FIXME: Remove this.
-template<class TIME>
-inline Timetick
-get_timetick(
-  TIME const time)
-{
-  ensure_valid(time);
-  return 
-    rescale_int<Timetick, TIME::DENOMINATOR, TIMETICK_PER_SEC>
-      (time.get_offset())
-    + TIMETICK_PER_SEC * SECS_PER_DAY * TIME::BASE;
+  return Unix64Time(time).get_offset();
 }
 
 

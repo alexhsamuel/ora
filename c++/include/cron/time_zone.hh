@@ -28,7 +28,7 @@ public:
 
   std::string get_name() const { return name_; }
 
-  TimeZoneParts get_parts(TimeOffset time) const;
+  TimeZoneParts get_parts(int64_t epoch_time) const;
 
   template<class TIME> 
   TimeZoneParts 
@@ -36,10 +36,10 @@ public:
     TIME time) 
     const
   {
-    return get_parts(time.get_time_offset());
+    return get_parts(get_epoch_time(time));
   }
 
-  TimeZoneParts get_parts_local(TimeOffset, bool first=true) const;
+  TimeZoneParts get_parts_local(int64_t, bool first=true) const;
 
   // FIXME: Take a LocalDatenumDaytick instead?
   TimeZoneParts get_parts_local(
@@ -50,7 +50,7 @@ public:
    {
      return get_parts_local(
        ((long) datenum - DATENUM_UNIX_EPOCH) * SECS_PER_DAY 
-         + (TimeOffset) (daytick / DAYTICK_PER_SEC),
+         + (int64_t) (daytick / DAYTICK_PER_SEC),
        first);
    }
 
@@ -58,9 +58,9 @@ private:
 
   struct Entry
   {
-    Entry(TimeOffset transition, TzFile::Type const& type);
+    Entry(int64_t transition, TzFile::Type const& type);
 
-    TimeOffset transition;
+    int64_t transition;
     TimeZoneParts parts;
   };
 

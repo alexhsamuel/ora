@@ -10,6 +10,7 @@ template class TimeTemplate<SmallTimeTraits>;
 template class TimeTemplate<NsecTimeTraits>;
 template class TimeTemplate<Unix32TimeTraits>;
 template class TimeTemplate<Unix64TimeTraits>;
+template class TimeTemplate<Time128Traits>;
 
 //------------------------------------------------------------------------------
 
