@@ -165,7 +165,7 @@ inline size_t xread(int fd, void* buf, size_t count)
 {
   ssize_t const rval = read(fd, buf, count);
   if (rval == -1)
-    // FIXME: Handel EINTR here?
+    // FIXME: Handle EINTR here?
     throw aslib::SystemError("read");
   return (size_t) rval;
 }
