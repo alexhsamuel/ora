@@ -3,6 +3,7 @@
 #include <limits>
 
 #include "aslib/exc.hh"
+#include "aslib/math.hh"
 
 namespace cron {
 namespace time {
@@ -232,16 +233,16 @@ private:
     return datenum_daytick_to_offset(datenum, daytick, tz, first);
   }
 
+  template<class OFFSET0>
   static Offset
   convert_offset(
-    intmax_t offset0,
-    intmax_t denominator0,
+    OFFSET0 offset0,
+    OFFSET0 denominator0,
     Datenum base0)
   {
-    intmax_t const offset = 
-      cron::time::convert_offset(
-        offset0, denominator0, base0, DENOMINATOR, BASE);
-    if (in_range((intmax_t) Traits::min, offset, (intmax_t) Traits::max))
+    auto const offset = cron::time::convert_offset(
+      offset0, denominator0, base0, DENOMINATOR, BASE);
+    if (in_range(Traits::min, offset, Traits::max))
       return offset;
     else
       throw InvalidTimeError();
@@ -392,7 +393,8 @@ struct Time128Traits
   using Offset = uint128_t;
 
   static Datenum constexpr base         = 0;
-  static Offset  constexpr denominator  = 1;
+  static Offset  constexpr denominator  = make_uint128(0x2000000, 0); 
+                                                            // 1 << 89
   static Offset  constexpr min          = 0;                // 0001-01-01
   static Offset  constexpr max          = make_uint128(0x92ef0c7100000000, 0); 
                                                             // 9999-12-31
