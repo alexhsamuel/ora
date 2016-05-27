@@ -154,18 +154,19 @@ public:
     // Establish the date and daytime parts, using division rounded toward -inf
     // and a positive remainder.
     Datenum const datenum   
-      = (int64_t) (offset / Traits::denominator) / SECS_PER_DAY 
+      =   (int64_t) (offset / Traits::denominator) / SECS_PER_DAY 
         + (offset < 0 ? -1 : 0)
         + BASE;
-    Offset const day_offset 
-      = (int64_t) offset % (Traits::denominator * SECS_PER_DAY) 
-        + (offset < 0 ? Traits::denominator * SECS_PER_DAY : 0);
+    parts.date = datenum_to_parts(datenum);
 
-    parts.date            = datenum_to_parts(datenum);
+    Offset const day_offset 
+      =   offset % (Traits::denominator * SECS_PER_DAY)
+        + (offset < 0 ? Traits::denominator * SECS_PER_DAY : 0);
     parts.daytime.second  = (Second) (day_offset % (SECS_PER_MIN * Traits::denominator)) / Traits::denominator;
     Offset const minutes  = day_offset / (SECS_PER_MIN * Traits::denominator);
     parts.daytime.minute  = minutes % MINS_PER_HOUR;
     parts.daytime.hour    = minutes / MINS_PER_HOUR;
+
     return parts;
   }
 
