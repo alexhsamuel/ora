@@ -4,6 +4,7 @@
 
 #include "aslib/exc.hh"
 #include "aslib/math.hh"
+#include "cron/time_functions.hh"
 
 namespace cron {
 namespace time {
@@ -81,7 +82,9 @@ public:
     Daytick daytick,
     TimeZone const& tz,
     bool first=true)
-  : offset_(datenum_daytick_to_offset(datenum, daytick, tz, first))
+  : TimeTemplate(
+      from_offset(
+        datenum_daytick_to_offset<Traits>(datenum, daytick, tz, first)))
   {
   }
 
@@ -97,16 +100,35 @@ public:
   }
 
   TimeTemplate(
-    Year year,
-    Month month,
-    Day day,
-    Hour hour,
-    Minute minute,
-    Second second,
+    Year const      year,
+    Month const     month,
+    Day const       day,
+    Hour const      hour,
+    Minute const    minute,
+    Second const    second,
     TimeZone const& tz,
-    bool first=true)
-  : TimeTemplate(parts_to_offset(year, month, day, hour, minute, second, tz, first))
+    bool const      first=true)
+  : TimeTemplate(from_parts(year, month, day, hour, minute, second, tz, first))
   {
+  }
+
+  // Factory methods  ----------------------------------------------------------
+
+  static TimeTemplate
+  from_datenum_daytick(
+    Datenum const     datenum,
+    Daytick const     daytick,
+    TimeZone const&   time_zone,
+    bool const        first=true)
+  {
+    if (! datenum_is_valid(datenum)) 
+      throw InvalidDateError();
+    if (! daytick_is_valid(daytick))
+      throw InvalidDaytimeError();
+
+    return from_offset(
+      datenum_daytick_to_offset<Traits>(
+        datenum, daytick, time_zone, first));
   }
 
   static TimeTemplate 
@@ -117,6 +139,29 @@ public:
       return TimeTemplate(offset);
     else
       throw TimeRangeError();
+  }
+
+  static TimeTemplate
+  from_parts(
+    Year const        year,
+    Month const       month,
+    Day const         day,
+    Hour const        hour,
+    Minute const      minute,
+    Second const      second,
+    TimeZone const&   tz,
+    bool const        first=true)
+  {
+    if (! ymd_is_valid(year, month, day))
+      throw InvalidDateError();
+    if (! hms_is_valid(hour, minute, second))
+      throw InvalidDaytimeError();
+
+    return from_offset(
+      datenum_daytick_to_offset<Traits>(
+        ymd_to_datenum(year, month, day), 
+        hms_to_daytick(hour, minute, second), 
+        tz, first));
   }
 
   // Comparisons
@@ -144,65 +189,6 @@ public:
   }
 
 private:
-
-  static Offset 
-  datenum_daytick_to_offset(
-    Datenum datenum,
-    Daytick daytick,
-    TimeZone const& tz,
-    bool first)
-  {
-    if (! datenum_is_valid(datenum)) 
-      throw InvalidDateError();
-    if (! daytick_is_valid(daytick))
-      throw InvalidDaytimeError();
-
-    Offset tz_offset;
-    try {
-      tz_offset = tz.get_parts_local(datenum, daytick, first).offset;
-    }
-    catch (NonexistentLocalTime) {
-      // FIXME: Don't catch and rethrow...
-      throw NonexistentLocalTime();
-    }
-
-    // Below, we compute this expression with overflow checking:
-    //
-    //     DENOMINATOR * SECS_PER_DAY * (datenum - BASE)
-    //   + rescale_int(daytick)  // to DENOMINATOR
-    //   - DENOMINATOR * tz_offset;
-
-    auto const day_offset
-      = rescale_int(daytick, DAYTICK_PER_SEC, DENOMINATOR) 
-        - DENOMINATOR * tz_offset;
-    Offset offset;
-    if (   mul_overflow(DENOMINATOR * SECS_PER_DAY, (Offset) datenum - BASE, offset)
-        || add_overflow(offset, day_offset, offset))
-      throw TimeRangeError();
-    else
-      return offset;
-  }
-
-  static Offset 
-  parts_to_offset(
-    Year const      year,
-    Month const     month,
-    Day const       day,
-    Hour const      hour,
-    Minute const    minute,
-    Second const    second,
-    TimeZone const& tz,
-    bool const      first=true)
-  {
-    if (! ymd_is_valid(year, month, day))
-      throw InvalidDateError();
-    if (! hms_is_valid(hour, minute, second))
-      throw InvalidDaytimeError();
-
-    Datenum const datenum = ymd_to_datenum(year, month, day);
-    Daytick const daytick = hms_to_daytick(hour, minute, second);
-    return datenum_daytick_to_offset(datenum, daytick, tz, first);
-  }
 
   constexpr TimeTemplate(Offset offset) : offset_(offset) {}
 

@@ -25,6 +25,40 @@ convert_offset(
 }
 
 
+template<class TRAITS>
+inline typename TRAITS::Offset 
+datenum_daytick_to_offset(
+  Datenum const datenum,
+  Daytick const daytick,
+  TimeZone const& tz,
+  bool const first)
+{
+  using Offset = typename TRAITS::Offset;
+  static auto const denominator = TRAITS::denominator;
+  static auto const base = TRAITS::base;
+
+  Offset tz_offset;
+  try {
+    tz_offset = tz.get_parts_local(datenum, daytick, first).offset;
+  }
+  catch (NonexistentLocalTime) {
+    // FIXME: Don't catch and rethrow...
+    throw NonexistentLocalTime();
+  }
+
+  auto const day_offset
+    =   rescale_int(daytick, DAYTICK_PER_SEC, denominator) 
+      - denominator * tz_offset;
+  Offset offset;
+  if (   mul_overflow(denominator * SECS_PER_DAY, 
+                      (Offset) datenum - base, offset)
+      || add_overflow(offset, day_offset, offset))
+    throw TimeRangeError();
+  else
+    return offset;
+}
+
+
 template<class TIME>
 inline LocalDatenumDaytick
 to_local_datenum_daytick(
