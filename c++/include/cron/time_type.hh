@@ -202,15 +202,15 @@ private:
     //   + (Offset) rescale_int<Daytick, DAYTICK_PER_SEC, DENOMINATOR>(daytick)
     //   - DENOMINATOR * tz_offset;
 
-    auto const off
+    auto const day_offset
       = rescale_int(daytick, DAYTICK_PER_SEC, DENOMINATOR) 
         - DENOMINATOR * tz_offset;
-    Offset r;
-    if (   mul_overflow(DENOMINATOR * SECS_PER_DAY, (Offset) datenum - BASE, r)
-        || add_overflow(r, off, r))
+    Offset offset;
+    if (   mul_overflow(DENOMINATOR * SECS_PER_DAY, (Offset) datenum - BASE, offset)
+        || add_overflow(offset, day_offset, offset))
       throw TimeRangeError();
     else
-      return r;
+      return offset;
   }
 
   static Offset 
