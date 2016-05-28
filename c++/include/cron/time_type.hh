@@ -199,7 +199,7 @@ private:
     // Below, we compute this expression with overflow checking:
     //
     //     DENOMINATOR * SECS_PER_DAY * (datenum - BASE)
-    //   + (Offset) rescale_int<Daytick, DAYTICK_PER_SEC, DENOMINATOR>(daytick)
+    //   + rescale_int(daytick)  // to DENOMINATOR
     //   - DENOMINATOR * tz_offset;
 
     auto const day_offset
