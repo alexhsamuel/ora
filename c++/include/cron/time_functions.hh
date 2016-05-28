@@ -115,7 +115,7 @@ now()
 
   return 
       success
-    ? TIME::from_offset(cron::time::timespec_to_offset<Time>(ts)) 
+    ? TIME::from_offset(cron::time::timespec_to_offset<TIME>(ts)) 
     : TIME::INVALID;
 }
 
