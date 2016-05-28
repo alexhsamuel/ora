@@ -31,8 +31,7 @@ from_local(
   TimeZone const& time_zone,
   bool const first=true)
 {
-  // FIXME: Move the logic here, instead of delegating.
-  return {datenum, daytick, time_zone, first};
+  return TIME::from_datenum_daytick(datenum, daytick, time_zone, first);
 }
 
 

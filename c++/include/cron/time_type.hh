@@ -77,17 +77,6 @@ public:
   {
   }
 
-  TimeTemplate(
-    Datenum datenum,
-    Daytick daytick,
-    TimeZone const& tz,
-    bool first=true)
-  : TimeTemplate(
-      from_offset(
-        datenum_daytick_to_offset<Traits>(datenum, daytick, tz, first)))
-  {
-  }
-
 // FIXME: Remove this.
   template<class DTRAITS, class YTRAITS>
   TimeTemplate(
@@ -95,7 +84,8 @@ public:
     daytime::DaytimeTemplate<YTRAITS> const daytime,
     TimeZone const& tz,
     bool first=true)
-  : TimeTemplate(date.get_datenum(), daytime.get_daytick(), tz, first)
+  : TimeTemplate(
+      from_datenum_daytick(date.get_datenum(), daytime.get_daytick(), tz, first))
   {
   }
 

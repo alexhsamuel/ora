@@ -693,7 +693,7 @@ localtime_to_time(
   auto const datenum    = to_datenum(localtime->GetItem(0));
   auto const daytick    = to_daytick(localtime->GetItem(1));
   auto const tz         = convert_to_time_zone(parts->GetItem(1));
-  return TIME(datenum, daytick, *tz);
+  return TIME::from_datenum_daytick(datenum, daytick, *tz);
 }
 
 
@@ -706,7 +706,7 @@ date_daytime_to_time(
   auto const datenum    = to_datenum(parts->GetItem(0));
   auto const daytick    = to_daytick(parts->GetItem(1));
   auto const tz         = convert_to_time_zone(parts->GetItem(2));
-  return TIME(datenum, daytick, *tz);
+  return TIME::from_datenum_daytick(datenum, daytick, *tz);
 }
 
 
