@@ -498,7 +498,7 @@ PyTime<TIME>::method_get_parts(
   Object* tz;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz);
 
-  auto parts = self->time_.get_parts(*convert_to_time_zone(tz));
+  auto parts = get_parts(self->time_, *convert_to_time_zone(tz));
 
   auto ymd_date = make_ymd_date(
     cron::YmdDate{parts.date.year, parts.date.month, parts.date.day});  // FIXME

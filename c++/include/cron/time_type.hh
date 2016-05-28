@@ -137,42 +137,6 @@ public:
     return offset_;
   }
 
-  TimeParts 
-  get_parts(
-    TimeZone const& tz) 
-    const
-  {
-    if (! is_valid()) 
-      return TimeParts::get_invalid();
-
-    TimeParts parts;
-
-    // Look up the time zone.
-    parts.time_zone = tz.get_parts(*this);
-    Offset const offset = offset_ + parts.time_zone.offset * Traits::denominator;
-
-    // Establish the date and daytime parts, using division rounded toward -inf
-    // and a positive remainder.
-    Datenum const datenum   
-      =   (int64_t) (offset / Traits::denominator) / SECS_PER_DAY 
-        + (offset < 0 ? -1 : 0)
-        + BASE;
-    parts.date = datenum_to_parts(datenum);
-
-    Offset const day_offset 
-      =   offset % (Traits::denominator * SECS_PER_DAY)
-        + (offset < 0 ? Traits::denominator * SECS_PER_DAY : 0);
-    parts.daytime.second  = (Second) (day_offset % (SECS_PER_MIN * Traits::denominator)) / Traits::denominator;
-    Offset const minutes  = day_offset / (SECS_PER_MIN * Traits::denominator);
-    parts.daytime.minute  = minutes % MINS_PER_HOUR;
-    parts.daytime.hour    = minutes / MINS_PER_HOUR;
-
-    return parts;
-  }
-
-  TimeParts get_parts(std::string const& tz_name) const { return get_parts(*get_time_zone(tz_name)); }
-  TimeParts get_parts() const { return get_parts(*get_display_time_zone()); }
-
 private:
 
   static Offset 

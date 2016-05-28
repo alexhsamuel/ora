@@ -16,7 +16,7 @@ TEST(Time128, convert_to) {
   Time128 const t(t0);
   EXPECT_TRUE(t.is_valid());
 
-  auto parts = t.get_parts(*UTC);
+  auto parts = get_parts(t, *UTC);
   EXPECT_EQ(2016, parts.date.year);
   EXPECT_EQ(   4, parts.date.month);
   EXPECT_EQ(  26, parts.date.day);

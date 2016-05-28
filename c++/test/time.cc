@@ -63,7 +63,7 @@ TEST(Time, from_parts) {
   Time::Offset const offset = 4262126704878682112l;
   Time const time1 = Time::from_offset(offset);
   EXPECT_EQ(offset, time1.get_offset());
-  TimeParts const parts1 = time1.get_parts("US/Eastern");
+  TimeParts const parts1 = get_parts(time1, "US/Eastern");
   EXPECT_EQ(2013, parts1.date.year);
   EXPECT_EQ(6, parts1.date.month);
   EXPECT_EQ(27, parts1.date.day);
@@ -128,7 +128,7 @@ TEST(Time, get_parts) {
   EXPECT_EQ(1375040258, Unix64Time(time).get_offset());
 
   auto const time_zone = get_time_zone("US/Eastern");
-  TimeParts const parts = time.get_parts(*time_zone);
+  TimeParts const parts = get_parts(time, *time_zone);
   EXPECT_EQ(2013,       parts.date.year);
   EXPECT_EQ(6,          parts.date.month);
   EXPECT_EQ(27,         parts.date.day);
@@ -141,14 +141,43 @@ TEST(Time, get_parts) {
 }
 
 TEST(Time, get_parts_invalid) {
-  TimeParts const parts = Time::INVALID.get_parts();
-  EXPECT_FALSE(year_is_valid(parts.date.year));
-  EXPECT_FALSE(month_is_valid(parts.date.month));
-  EXPECT_FALSE(day_is_valid(parts.date.day));
-  EXPECT_FALSE(hour_is_valid(parts.daytime.hour));
-  EXPECT_FALSE(minute_is_valid(parts.daytime.minute));
-  EXPECT_FALSE(second_is_valid(parts.daytime.second));
-  EXPECT_FALSE(time_zone_offset_is_valid(parts.time_zone.offset));
+  EXPECT_THROW(get_parts(Time::INVALID, "US/Eastern"), InvalidTimeError);
+}
+
+TEST(Time, get_parts_display) {
+  Time const time(2016/MAY/28, Daytime(16, 30, 0), *UTC);
+
+  set_display_time_zone("US/Eastern");  // EDT = UTC-04:00
+  auto parts = get_parts(time, DTZ);
+  EXPECT_EQ(2016,       parts.date.year);
+  EXPECT_EQ(MAY,        parts.date.month);
+  EXPECT_EQ(27,         parts.date.day);
+  EXPECT_EQ(12,         parts.daytime.hour);
+  EXPECT_EQ(30,         parts.daytime.minute);
+
+  set_display_time_zone(UTC);
+  parts = get_parts(time, DTZ);
+  EXPECT_EQ(2016,       parts.date.year);
+  EXPECT_EQ(MAY,        parts.date.month);
+  EXPECT_EQ(27,         parts.date.day);
+  EXPECT_EQ(16,         parts.daytime.hour);
+  EXPECT_EQ(30,         parts.daytime.minute);
+
+  set_display_time_zone("Asia/Tokyo");  // JST = UTC+09:00
+  parts = get_parts(time, DTZ);
+  EXPECT_EQ(2016,       parts.date.year);
+  EXPECT_EQ(MAY,        parts.date.month);
+  EXPECT_EQ(28,         parts.date.day);
+  EXPECT_EQ(1,          parts.daytime.hour);
+  EXPECT_EQ(30,         parts.daytime.minute);
+
+  set_display_time_zone("Asia/Kolkata");  // IST = UTC+05:30
+  parts = get_parts(time, DTZ);
+  EXPECT_EQ(2016,       parts.date.year);
+  EXPECT_EQ(MAY,        parts.date.month);
+  EXPECT_EQ(27,         parts.date.day);
+  EXPECT_EQ(22,         parts.daytime.hour);
+  EXPECT_EQ(0 ,         parts.daytime.minute);
 }
 
 TEST(Time, default_format) {
