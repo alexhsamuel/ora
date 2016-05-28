@@ -63,10 +63,16 @@ public:
   {
   }
 
-  template<class TTRAITS> 
+  template<class OTHER_TRAITS> 
   TimeTemplate(
-    TimeTemplate<TTRAITS> time)
-  : TimeTemplate(convert_offset(time.get_offset(), TTRAITS::denominator, TTRAITS::base))
+    TimeTemplate<OTHER_TRAITS> const time)
+  : TimeTemplate(
+        time.is_invalid() ? INVALID
+      : time.is_missing() ? MISSING
+      : from_offset(
+          convert_offset(
+            time.get_offset(), OTHER_TRAITS::denominator, OTHER_TRAITS::base,
+            DENOMINATOR, BASE)))
   {
   }
 
@@ -105,7 +111,7 @@ public:
 
   static TimeTemplate 
   from_offset(
-    Offset offset)
+    Offset const offset)
   {
     if (in_range(Traits::min, offset, Traits::max))
       return TimeTemplate(offset);
@@ -196,21 +202,6 @@ private:
     Datenum const datenum = ymd_to_datenum(year, month, day);
     Daytick const daytick = hms_to_daytick(hour, minute, second);
     return datenum_daytick_to_offset(datenum, daytick, tz, first);
-  }
-
-  template<class OFFSET0>
-  static Offset
-  convert_offset(
-    OFFSET0 offset0,
-    OFFSET0 denominator0,
-    Datenum base0)
-  {
-    auto const offset = cron::time::convert_offset(
-      offset0, denominator0, base0, DENOMINATOR, BASE);
-    if (in_range(Traits::min, offset, Traits::max))
-      return offset;
-    else
-      throw InvalidTimeError();
   }
 
   constexpr TimeTemplate(Offset offset) : offset_(offset) {}
