@@ -128,12 +128,18 @@ set_display_time_zone(
 }
 
 
+/*
+ * A tag class for indicating the display time zone.
+ */
 class _DisplayTimeZoneTag
 {
 };
 
 
-_DisplayTimeZoneTag constexpr
+/*
+ * Tag value to indicate the display time zone.
+ */
+extern _DisplayTimeZoneTag 
 DTZ;
 
 //------------------------------------------------------------------------------
