@@ -37,7 +37,7 @@ using namespace aslib;
  *      64    u  1<<30  1900       544  1900-2444    930 ps      NsecTime
  *      64    u  1<<28  1200      2179  1200-3379      4 ns
  *      64    u  1<<26     1      8716  0001-8717     15 ns      Time
- *     128    u  1<<89     1    ~17000  0001-9999    < 1 ys      Time128
+ *     128    u  1<<64     1      many  0001-9999     54 zs      Time128
  */
 
 template<class TRAITS>
@@ -394,10 +394,10 @@ struct Time128Traits
   using Offset = uint128_t;
 
   static Datenum constexpr base         = 0;
-  static Offset  constexpr denominator  = make_uint128(0x2000000, 0); 
-                                                            // 1 << 89
+  static Offset  constexpr denominator  = make_uint128(1, 0); 
+                                                            // 1 << 64
   static Offset  constexpr min          = 0;                // 0001-01-01
-  static Offset  constexpr max          = make_uint128(0x92ef0c7100000000, 0); 
+  static Offset  constexpr max          = make_uint128(0x497786387f, 0xffffffffffffffff); 
                                                             // 9999-12-31
   static Offset  constexpr invalid      = make_uint128(0xffffffffffffffff, 0xffffffffffffffff);
   static Offset  constexpr missing      = make_uint128(0xffffffffffffffff, 0xfffffffffffffffe);
