@@ -120,7 +120,7 @@ public:
     const 
   { 
     return 
-      time.is_valid() ? operator()(time.get_parts(tz))
+      time.is_valid() ? operator()(get_parts(time, tz))
       : time.is_missing() ? get_missing() 
       : get_invalid();
   }

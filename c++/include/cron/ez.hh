@@ -38,6 +38,8 @@ public:
   constexpr MonthLiteral(Month month) : month_(month) {}
   constexpr YearMonthLiteral with_year(Year year) const { return YearMonthLiteral(year, month_); }
   
+  explicit operator Month() const { return month_ - 1; }
+
 private:
 
   Month month_;
@@ -54,6 +56,33 @@ operator/(
   MonthLiteral const& month)
 {
   return month.with_year(year);
+}
+
+
+inline bool
+operator==(
+  MonthLiteral const month0,
+  MonthLiteral const month1)
+{
+  return (Month) month0 == (Month) month1;
+}
+
+
+inline bool
+operator==(
+  Month const month0,
+  MonthLiteral const month1)
+{
+  return month0 == (Month) month1;
+}
+
+
+inline bool
+operator==(
+  MonthLiteral const month0,
+  Month const month1)
+{
+  return (Month) month0 == month1;
 }
 
 

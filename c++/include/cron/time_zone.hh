@@ -74,6 +74,7 @@ private:
 
 using TimeZone_ptr = std::shared_ptr<TimeZone const>;
 
+// FIXME: Does this really need to be a pointer??
 /**
  * UTC time zone singleton.
  */
@@ -113,6 +114,9 @@ extern TimeZone         get_time_zone(std::string const& name, fs::Filename cons
 
 extern std::string      get_system_time_zone_name();
 extern TimeZone_ptr     get_system_time_zone();
+
+//------------------------------------------------------------------------------
+
 extern TimeZone_ptr     get_display_time_zone();
 extern void             set_display_time_zone(TimeZone_ptr tz);
 
@@ -124,8 +128,15 @@ set_display_time_zone(
 }
 
 
+class _DisplayTimeZoneTag
+{
+};
+
+
+_DisplayTimeZoneTag constexpr
+DTZ;
+
 //------------------------------------------------------------------------------
 
 }  // namespace cron
-
 

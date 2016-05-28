@@ -238,16 +238,18 @@ PyTime<TIME>::add_to(
 
   PyTimeAPI::add(&type_, std::make_unique<API>());
 
+  // Choose precision for seconds that captures actual precision of the time
+  // class (up to 1 fs).
+  auto const precision = std::min((size_t) log10(Time::DENOMINATOR), 15ul);
+
   // Build the repr format.
   repr_format_ = make_unique<cron::TimeFormat>(
-    name + "(%0Y, %0m, %0d, %0H, %0M, %0S, UTC)",
+    name + "(%0Y, %0m, %0d, %0H, %0M, %0." + std::to_string(precision) + "S, UTC)",
     name + ".INVALID",
     name + ".MISSING");
 
-  // Build the str format.  Choose precision for seconds that captures actual
-  // precision of the time class (up to 1 fs).
+  // Build the str format.  
   std::string pattern = "%Y-%m-%dT%H:%M:%";
-  auto const precision = std::min((size_t) log10(Time::DENOMINATOR), 15ul);
   if (precision > 0) {
     pattern += ".";
     pattern += std::to_string(precision);
@@ -496,7 +498,7 @@ PyTime<TIME>::method_get_parts(
   Object* tz;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz);
 
-  auto parts = self->time_.get_parts(*convert_to_time_zone(tz));
+  auto parts = get_parts(self->time_, *convert_to_time_zone(tz));
 
   auto ymd_date = make_ymd_date(
     cron::YmdDate{parts.date.year, parts.date.month, parts.date.day});  // FIXME
@@ -572,7 +574,7 @@ PyTime<TIME>::get_offset(
   PyTime* const self,
   void* /* closure */)
 {
-  return Long::FromUnsignedLong(self->time_.get_offset());
+  return Long::from(self->time_.get_offset());
 }
 
 

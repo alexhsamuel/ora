@@ -37,7 +37,7 @@ using namespace aslib;
  *      64    u  1<<30  1900       544  1900-2444    930 ps      NsecTime
  *      64    u  1<<28  1200      2179  1200-3379      4 ns
  *      64    u  1<<26     1      8716  0001-8717     15 ns      Time
- *     128    u  1<<89     1    ~17000  0001-9999    < 1 ys      Time128
+ *     128    u  1<<64     1      many  0001-9999     54 zs      Time128
  */
 
 template<class TRAITS>
@@ -136,42 +136,6 @@ public:
     ensure_valid(*this);
     return offset_;
   }
-
-  TimeParts 
-  get_parts(
-    TimeZone const& tz) 
-    const
-  {
-    if (! is_valid()) 
-      return TimeParts::get_invalid();
-
-    TimeParts parts;
-
-    // Look up the time zone.
-    parts.time_zone = tz.get_parts(*this);
-    Offset const offset = offset_ + parts.time_zone.offset * Traits::denominator;
-
-    // Establish the date and daytime parts, using division rounded toward -inf
-    // and a positive remainder.
-    Datenum const datenum   
-      =   (int64_t) (offset / Traits::denominator) / SECS_PER_DAY 
-        + (offset < 0 ? -1 : 0)
-        + BASE;
-    parts.date = datenum_to_parts(datenum);
-
-    Offset const day_offset 
-      =   offset % (Traits::denominator * SECS_PER_DAY)
-        + (offset < 0 ? Traits::denominator * SECS_PER_DAY : 0);
-    parts.daytime.second  = (Second) (day_offset % (SECS_PER_MIN * Traits::denominator)) / Traits::denominator;
-    Offset const minutes  = day_offset / (SECS_PER_MIN * Traits::denominator);
-    parts.daytime.minute  = minutes % MINS_PER_HOUR;
-    parts.daytime.hour    = minutes / MINS_PER_HOUR;
-
-    return parts;
-  }
-
-  TimeParts get_parts(std::string const& tz_name) const { return get_parts(*get_time_zone(tz_name)); }
-  TimeParts get_parts() const { return get_parts(*get_display_time_zone()); }
 
 private:
 
@@ -394,10 +358,10 @@ struct Time128Traits
   using Offset = uint128_t;
 
   static Datenum constexpr base         = 0;
-  static Offset  constexpr denominator  = make_uint128(0x2000000, 0); 
-                                                            // 1 << 89
+  static Offset  constexpr denominator  = make_uint128(1, 0); 
+                                                            // 1 << 64
   static Offset  constexpr min          = 0;                // 0001-01-01
-  static Offset  constexpr max          = make_uint128(0x92ef0c7100000000, 0); 
+  static Offset  constexpr max          = make_uint128(0x497786387f, 0xffffffffffffffff); 
                                                             // 9999-12-31
   static Offset  constexpr invalid      = make_uint128(0xffffffffffffffff, 0xffffffffffffffff);
   static Offset  constexpr missing      = make_uint128(0xffffffffffffffff, 0xfffffffffffffffe);

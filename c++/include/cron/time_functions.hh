@@ -50,6 +50,63 @@ get_epoch_time(
 }
 
 
+template<class TIME>
+inline TimeParts 
+get_parts(
+  TIME const time,
+  TimeZone const& tz) 
+{
+  using Offset = typename TIME::Offset;
+  static Offset const secs_per_day = TIME::DENOMINATOR * SECS_PER_DAY;
+  static Offset const secs_per_min = TIME::DENOMINATOR * SECS_PER_MIN;
+
+  TimeParts parts;
+
+  // Look up the time zone.
+  parts.time_zone = tz.get_parts(time);
+  Offset const offset 
+    = time.get_offset() + parts.time_zone.offset * TIME::DENOMINATOR;
+
+  // Establish the date and daytime parts, using division rounded toward -inf
+  // and a positive remainder.
+  Datenum const datenum   
+    =   (int64_t) (offset / secs_per_day)
+      + (offset < 0 ? -1 : 0)
+      + TIME::BASE;
+  parts.date = datenum_to_parts(datenum);
+
+  auto const day_offset 
+    = offset % secs_per_day + (offset < 0 ? secs_per_day : 0);
+  parts.daytime.second  
+    = (Second) (day_offset % secs_per_min) / TIME::DENOMINATOR;
+  Offset const minutes  = day_offset / secs_per_min;
+  parts.daytime.minute  = minutes % MINS_PER_HOUR;
+  parts.daytime.hour    = minutes / MINS_PER_HOUR;
+
+  return parts;
+}
+
+
+template<class TIME>
+inline TimeParts 
+get_parts(
+  TIME const time, 
+  std::string const& tz_name)
+{ 
+  return get_parts(time, *get_time_zone(tz_name)); 
+}
+
+
+template<class TIME>
+inline TimeParts 
+get_parts(
+  TIME const time,
+  _DisplayTimeZoneTag /* unused */) 
+{ 
+  return get_parts(time, *get_display_time_zone()); 
+}
+
+
 template<class DATE, class TIME>
 inline DATE
 get_utc_date(
@@ -115,7 +172,7 @@ now()
 
   return 
       success
-    ? TIME::from_offset(cron::time::timespec_to_offset<Time>(ts)) 
+    ? TIME::from_offset(cron::time::timespec_to_offset<TIME>(ts)) 
     : TIME::INVALID;
 }
 
