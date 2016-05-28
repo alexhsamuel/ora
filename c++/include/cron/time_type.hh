@@ -202,9 +202,9 @@ private:
     //   + (Offset) rescale_int<Daytick, DAYTICK_PER_SEC, DENOMINATOR>(daytick)
     //   - DENOMINATOR * tz_offset;
 
-    Offset const off = 
-      (Offset) rescale_int<Daytick, DAYTICK_PER_SEC, DENOMINATOR>(daytick)
-      - DENOMINATOR * tz_offset;
+    auto const off
+      = rescale_int(daytick, DAYTICK_PER_SEC, DENOMINATOR) 
+        - DENOMINATOR * tz_offset;
     Offset r;
     if (   mul_overflow(DENOMINATOR * SECS_PER_DAY, (Offset) datenum - BASE, r)
         || add_overflow(r, off, r))

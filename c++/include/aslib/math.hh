@@ -151,7 +151,7 @@ rescale_int(
  * Rescales a value from one denominator to another, rounding if necessary.
  */
 // FIXME: Is this really necessary?  Won't the above be inlined well enough?
-template<typename T, T OLD_DEN, T NEW_DEN>
+template<class T, T OLD_DEN, T NEW_DEN>
 inline T
 rescale_int(
   T val)
