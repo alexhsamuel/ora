@@ -10,17 +10,18 @@ namespace time {
 // Helper functions
 //------------------------------------------------------------------------------
 
-inline intmax_t
+template<class OFFSET0, class OFFSET1>
+inline OFFSET1
 convert_offset(
-  intmax_t  const offset0,
-  intmax_t  const denominator0,
+  OFFSET0   const offset0,
+  OFFSET0   const denominator0,
   Datenum   const base0,
-  intmax_t  const denominator1,
+  OFFSET1   const denominator1,
   Datenum   const base1)
 {
   return
       rescale_int(offset0, denominator0, denominator1)
-    + ((intmax_t) base0 - base1) * SECS_PER_DAY * denominator1;
+    + ((long) base0 - base1) * SECS_PER_DAY * denominator1;
 }
 
 

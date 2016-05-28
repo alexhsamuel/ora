@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <limits>
+#include <iostream>
 
 namespace aslib {
 
@@ -26,6 +27,7 @@ make_uint128(
 
 
 //------------------------------------------------------------------------------
+
 
 inline unsigned long
 pow10(
@@ -87,6 +89,7 @@ in_interval(
 }
 
 
+// FIXME: Not used. (?)  And probably doesn't work for __int128.
 /*
  * True if `val` overflows when conveted from integer types `FROM` to `TO`.
  */
@@ -125,19 +128,22 @@ round_div(
 }
 
 
-template<typename T>
-inline T
+template<class T0, class T1>
+inline T1
 rescale_int(
-  T val,
-  T old_den,
-  T new_den)
+  T0 const val,
+  T0 const old_den,
+  T1 const new_den)
 {
+  // FIXME: Careful!
   if (old_den % new_den == 0)
-    return round_div(val, old_den / new_den);
+    return round_div(val, old_den / (T0) new_den);
   else if (new_den % old_den == 0)
     return val * (new_den / old_den);
+  else if (sizeof(T0) >= sizeof(T1))
+    return round_div((T0) val * (T0) new_den, (T0) old_den);
   else
-    return round_div((intmax_t) val * new_den, (intmax_t) old_den);
+    return round_div((T1) val * (T1) new_den, (T1) old_den);
 }
 
 
@@ -213,3 +219,29 @@ mul_overflow(
 
 }  // namespace aslib
 
+//------------------------------------------------------------------------------
+
+namespace std {
+
+// FIXME: Hack to print uint128_t.
+inline std::ostream&
+operator<<(
+  std::ostream& os,
+  aslib::uint128_t x)
+{
+  char buf[40];
+  char* p = &buf[39];
+  *p = 0;
+  if (x == 0)
+    *--p = '0';
+  else
+    while (x > 0) {
+      *--p = '0' + x % 10;
+      x /= 10;
+    }
+  os << p;
+  return os;
+}
+
+
+}

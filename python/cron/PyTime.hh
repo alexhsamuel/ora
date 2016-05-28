@@ -245,9 +245,9 @@ PyTime<TIME>::add_to(
     name + ".MISSING");
 
   // Build the str format.  Choose precision for seconds that captures actual
-  // precision of the time class.
+  // precision of the time class (up to 1 fs).
   std::string pattern = "%Y-%m-%dT%H:%M:%";
-  size_t const precision = (size_t) log10(Time::DENOMINATOR);
+  auto const precision = std::min((size_t) log10(Time::DENOMINATOR), 15ul);
   if (precision > 0) {
     pattern += ".";
     pattern += std::to_string(precision);
@@ -258,7 +258,7 @@ PyTime<TIME>::add_to(
   // Add in static data members.
   Dict* const dict = (Dict*) type_.tp_dict;
   assert(dict != nullptr);
-  dict->SetItemString("DENOMINATOR" , Long::FromUnsignedLong(Time::DENOMINATOR));
+  dict->SetItemString("DENOMINATOR" , Long::from(Time::DENOMINATOR));
   dict->SetItemString("INVALID"     , create(Time::INVALID));
   dict->SetItemString("MAX"         , create(Time::MAX));
   dict->SetItemString("MIN"         , create(Time::MIN));
@@ -737,10 +737,7 @@ maybe_time(
   // A different instance of the time class?
   auto const api = PyTimeAPI::get(obj);
   if (api != nullptr) 
-    return 
-        api->is_invalid(obj) ? TIME::INVALID
-      : api->is_missing(obj) ? TIME::MISSING
-      : TIME(api->get_time128(obj));
+    return TIME(api->get_time128(obj));
 
   // A 'datetime.datetime'?
   if (PyDateTimeAPI == nullptr)

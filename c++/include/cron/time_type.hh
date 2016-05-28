@@ -3,6 +3,7 @@
 #include <limits>
 
 #include "aslib/exc.hh"
+#include "aslib/math.hh"
 
 namespace cron {
 namespace time {
@@ -153,18 +154,19 @@ public:
     // Establish the date and daytime parts, using division rounded toward -inf
     // and a positive remainder.
     Datenum const datenum   
-      = (int64_t) (offset / Traits::denominator) / SECS_PER_DAY 
+      =   (int64_t) (offset / Traits::denominator) / SECS_PER_DAY 
         + (offset < 0 ? -1 : 0)
         + BASE;
-    Offset const day_offset 
-      = (int64_t) offset % (Traits::denominator * SECS_PER_DAY) 
-        + (offset < 0 ? Traits::denominator * SECS_PER_DAY : 0);
+    parts.date = datenum_to_parts(datenum);
 
-    parts.date            = datenum_to_parts(datenum);
+    Offset const day_offset 
+      =   offset % (Traits::denominator * SECS_PER_DAY)
+        + (offset < 0 ? Traits::denominator * SECS_PER_DAY : 0);
     parts.daytime.second  = (Second) (day_offset % (SECS_PER_MIN * Traits::denominator)) / Traits::denominator;
     Offset const minutes  = day_offset / (SECS_PER_MIN * Traits::denominator);
     parts.daytime.minute  = minutes % MINS_PER_HOUR;
     parts.daytime.hour    = minutes / MINS_PER_HOUR;
+
     return parts;
   }
 
@@ -232,16 +234,16 @@ private:
     return datenum_daytick_to_offset(datenum, daytick, tz, first);
   }
 
+  template<class OFFSET0>
   static Offset
   convert_offset(
-    intmax_t offset0,
-    intmax_t denominator0,
+    OFFSET0 offset0,
+    OFFSET0 denominator0,
     Datenum base0)
   {
-    intmax_t const offset = 
-      cron::time::convert_offset(
-        offset0, denominator0, base0, DENOMINATOR, BASE);
-    if (in_range((intmax_t) Traits::min, offset, (intmax_t) Traits::max))
+    auto const offset = cron::time::convert_offset(
+      offset0, denominator0, base0, DENOMINATOR, BASE);
+    if (in_range(Traits::min, offset, Traits::max))
       return offset;
     else
       throw InvalidTimeError();
@@ -392,7 +394,8 @@ struct Time128Traits
   using Offset = uint128_t;
 
   static Datenum constexpr base         = 0;
-  static Offset  constexpr denominator  = 1;
+  static Offset  constexpr denominator  = make_uint128(0x2000000, 0); 
+                                                            // 1 << 89
   static Offset  constexpr min          = 0;                // 0001-01-01
   static Offset  constexpr max          = make_uint128(0x92ef0c7100000000, 0); 
                                                             // 9999-12-31
