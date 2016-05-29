@@ -9,17 +9,15 @@
 
 namespace cron {
 
-using std::string;
-
 //------------------------------------------------------------------------------
 
 template<class TIME=time::Time>
 inline TIME
 from_local(
-  Datenum const     datenum,
-  Daytick const     daytick,
-  TimeZone const&   time_zone,
-  bool const        first=true)
+  Datenum const         datenum,
+  Daytick const         daytick,
+  TimeZone const&       time_zone,
+  bool const            first=true)
 {
   if (! datenum_is_valid(datenum)) 
     throw InvalidDateError();
@@ -35,10 +33,10 @@ from_local(
 template<class TIME=time::Time, class DATE, class DAYTIME>
 inline TIME
 from_local(
-  DATE const        date,
-  DAYTIME const     daytime,
-  TimeZone const&   time_zone,
-  bool const        first=true)
+  DATE const            date,
+  DAYTIME const         daytime,
+  TimeZone const&       time_zone,
+  bool const            first=true)
 {
   ensure_valid(date);
   ensure_valid(daytime);
@@ -48,17 +46,28 @@ from_local(
 }
 
 
+template<class TIME=time::Time, class DATE, class DAYTIME>
+inline TIME
+from_local(
+  DATE const            date,
+  DAYTIME const         daytime,
+  std::string const&    time_zone_name,
+  bool const            first=true)
+{
+
+
+
 template<class TIME=time::Time>
 inline TIME
 from_local(
-  Year const        year,
-  Month const       month,
-  Day const         day,
-  Hour const        hour,
-  Minute const      minute,
-  Second const      second,
-  TimeZone const&   tz,
-  bool const        first=true)
+  Year const            year,
+  Month const           month,
+  Day const             day,
+  Hour const            hour,
+  Minute const          minute,
+  Second const          second,
+  TimeZone const&       time_zone,
+  bool const            first=true)
 {
   if (! ymd_is_valid(year, month, day))
     throw InvalidDateError();
@@ -69,24 +78,25 @@ from_local(
     time::datenum_daytick_to_offset<typename TIME::Traits>(
       ymd_to_datenum(year, month, day), 
       hms_to_daytick(hour, minute, second), 
-      tz, first));
+      time_zone, first));
 }
 
 
 template<class TIME=time::Time>
 inline TIME
 from_local(
-  Year const        year,
-  Month const       month,
-  Day const         day,
-  Hour const        hour,
-  Minute const      minute,
-  Second const      second,
-  string const&     tz_name,
+  Year const            year,
+  Month const           month,
+  Day const             day,
+  Hour const            hour,
+  Minute const          minute,
+  Second const          second,
+  std::string const&    time_zone_name,
   bool const        first=true)
 {
   return from_local(
-    year, month, day, hour, minute, second, *get_time_zone(tz_name), first);
+    year, month, day, hour, minute, second, 
+    *get_time_zone(time_zone_name), first);
 }
 
 
