@@ -93,7 +93,7 @@ from_local(
   Minute const          minute,
   Second const          second,
   std::string const&    time_zone_name,
-  bool const        first=true)
+  bool const            first=true)
 {
   return from_local(
     year, month, day, hour, minute, second, 
