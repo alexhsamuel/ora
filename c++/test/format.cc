@@ -1,5 +1,6 @@
 #include "cron/ez.hh"
 #include "cron/format.hh"
+#include "cron/localization.hh"
 #include "gtest/gtest.h"
 
 using namespace aslib;
@@ -29,7 +30,7 @@ TEST(TimeFormat, invalid) {
 
 TEST(TimeFormat, all) {
   auto const tz = get_time_zone("US/Eastern");
-  Time const time(2013/JUL/28, Daytime(15, 37, 38.0), *tz);
+  auto const time = from_local(2013/JUL/28, Daytime(15, 37, 38.0), *tz);
   EXPECT_EQ("July (Jul)",       TimeFormat("%b (%~b)")(time, *tz));
   EXPECT_THROW(TimeFormat("%c")(time, *tz), TimeFormatError);  // FIXME
   EXPECT_EQ("28",               TimeFormat("%d")(time, *tz));
@@ -55,13 +56,13 @@ TEST(TimeFormat, all) {
   EXPECT_EQ("EDT",              TimeFormat("%~Z")(time, *tz));
 
   // One Time tick is a bit less than 15 nsec.
-  Time const time1 = Time::from_offset(time.get_offset() + 1);
+  auto const time1 = Time::from_offset(time.get_offset() + 1);
   EXPECT_EQ(".000 000 014", TimeFormat(".%k %K %l")(time1));
 }
 
 TEST(TimeFormat, width) {
   auto const tz = get_time_zone("US/Eastern");
-  Time const time(2013/JAN/1, Daytime(6, 7, 8.0), *tz);
+  auto const time = from_local(2013/JAN/1, Daytime(6, 7, 8.0), *tz);
   EXPECT_EQ("6 hr 7 min 8 sec",         TimeFormat("%0H hr %0M min %0S sec")(time, *tz));
   EXPECT_EQ("006 hr 007 min 008 sec",   TimeFormat("%3H hr %3M min %3S sec")(time, *tz));
   EXPECT_EQ("002013/001/001",           TimeFormat("%6Y/%3m/%3d")(time, *tz));
@@ -71,7 +72,7 @@ TEST(TimeFormat, width) {
 
 TEST(TimeFormat, str_width) {
   auto const tz = get_time_zone("US/Eastern");
-  Time const time(2013/JAN/1, Daytime(6, 7, 8.0), *tz);
+  auto const time = from_local(2013/JAN/1, Daytime(6, 7, 8.0), *tz);
   EXPECT_EQ("     TUESDAY", TimeFormat("%12^W")(time, *tz));
   EXPECT_EQ("         TUE", TimeFormat("%12^~W")(time, *tz));
   EXPECT_EQ("*****JANUARY", TimeFormat("%#*12^b")(time, *tz));
@@ -80,7 +81,7 @@ TEST(TimeFormat, str_width) {
 
 TEST(TimeFormat, rounding) {
   auto const tz = get_time_zone("US/Eastern");
-  Time const time(2013/JAN/1, Daytime(6, 7, 8.999999), *tz);
+  auto const time = from_local(2013/JAN/1, Daytime(6, 7, 8.999999), *tz);
   EXPECT_EQ("06:07:09",         TimeFormat("%H:%M:%S")(time, *tz));
   EXPECT_EQ("06:07:09.0",       TimeFormat("%H:%M:%.1S")(time, *tz));
   EXPECT_EQ("06:07:09.00",      TimeFormat("%H:%M:%.2S")(time, *tz));
@@ -90,7 +91,7 @@ TEST(TimeFormat, rounding) {
 
 TEST(TimeFormat, precision) { 
   auto const tz = get_time_zone("US/Eastern");
-  Time const time(2013/JAN/1, Daytime(6, 7, 8.01234567), *tz);
+  auto const time = from_local(2013/JAN/1, Daytime(6, 7, 8.01234567), *tz);
   EXPECT_EQ("06:07:08",         TimeFormat("%H:%M:%S")(time, *tz));
   EXPECT_EQ("06:07:08.",        TimeFormat("%H:%M:%.0S")(time, *tz));
   EXPECT_EQ("06:07:08.01",      TimeFormat("%H:%M:%.2S")(time, *tz));
@@ -104,7 +105,7 @@ TEST(TimeFormat, precision) {
 
 TEST(TimeFormat, precision_zero) {
   auto const tz = get_time_zone("US/Eastern");
-  Time const time(2013/JAN/1, Daytime(6, 7, 8), *tz);
+  auto const time = from_local(2013/JAN/1, Daytime(6, 7, 8), *tz);
   EXPECT_EQ("06:07:08",         TimeFormat("%H:%M:%S")(time, *tz));
   EXPECT_EQ("06:07:08.",        TimeFormat("%H:%M:%.0S")(time, *tz));
   EXPECT_EQ("06:07:08.00",      TimeFormat("%H:%M:%.2S")(time, *tz));
@@ -118,7 +119,7 @@ TEST(TimeFormat, precision_zero) {
 
 TEST(TimeFormat, pad) {
   auto const tz = get_time_zone("US/Eastern");
-  Time const time(2013/JAN/1, Daytime(6, 7, 8.01234), *tz);
+  auto const time = from_local(2013/JAN/1, Daytime(6, 7, 8.01234), *tz);
   EXPECT_EQ("06:07:08",         TimeFormat("%H:%M:%S")(time, *tz));
   EXPECT_EQ(" 6: 7: 8",         TimeFormat("%# H:%# M:%# S")(time, *tz));
   EXPECT_EQ("%6 $7 %8",         TimeFormat("%#%H %#$M %#%S")(time, *tz));
@@ -127,7 +128,7 @@ TEST(TimeFormat, pad) {
 
 TEST(TimeFormat, str_case) {
   auto const tz = get_time_zone("US/Eastern");
-  Time const time(2013/JAN/1, Daytime(6, 7, 8.01234), *tz);
+  auto const time = from_local(2013/JAN/1, Daytime(6, 7, 8.01234), *tz);
   EXPECT_EQ("1 = JAN",          TimeFormat("%0m = %^~b")(time));
   EXPECT_EQ("1 = JAN",          TimeFormat("%0m = %~^b")(time));
   EXPECT_EQ("1 = jan",          TimeFormat("%0m = %_~b")(time));
@@ -145,7 +146,7 @@ TEST(TimeFormat, str_case) {
 
 TEST(TimeFormat, display_time_zone) {
   auto const tz = get_time_zone("US/Eastern");
-  Time const time(2013/JUL/28, Daytime(15, 37, 38.0), *tz);
+  auto const time = from_local(2013/JUL/28, Daytime(15, 37, 38.0), *tz);
 
   TimeFormat const format0 = "%Y-%m-%d";
   TimeFormat const format1 = "%H:%M:%S %~Z";
@@ -161,7 +162,7 @@ TEST(TimeFormat, display_time_zone) {
 
 TEST(TimeFormat, iso) {
   auto const tz = get_time_zone("US/Eastern");
-  Time const time(2013/JUL/28, Daytime(15, 37, 38.0), *tz);
+  auto const time = from_local(2013/JUL/28, Daytime(15, 37, 38.0), *tz);
   set_display_time_zone("US/Eastern");
   EXPECT_EQ("20130728T153738",              TimeFormat::ISO_LOCAL_BASIC(time));
   EXPECT_EQ("2013-07-28T15:37:38",          TimeFormat::ISO_LOCAL_EXTENDED(time));

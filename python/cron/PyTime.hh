@@ -10,6 +10,7 @@
 
 #include "aslib/math.hh"
 #include "cron/format.hh"
+#include "cron/localization.hh"
 #include "cron/time.hh"
 #include "cron/time_zone.hh"
 #include "py.hh"
@@ -723,7 +724,7 @@ parts_to_time(
   auto const minute = parts->GetItem(4)->long_value();
   auto const second = parts->GetItem(5)->double_value();
   auto const tz     = convert_to_time_zone(parts->GetItem(6));
-  return TIME(year, month, day, hour, minute, second, *tz);
+  return cron::from_local<TIME>(year, month, day, hour, minute, second, *tz);
 }
 
 
@@ -755,7 +756,7 @@ maybe_time(
         string("unknown tzinfo: ") + tzinfo->Repr()->as_utf8_string());
     
     // FIXME: Provide a all-integer ctor with (sec, usec).
-    return TIME(
+    return cron::from_local<TIME>(
       PyDateTime_GET_YEAR(obj),
       PyDateTime_GET_MONTH(obj) - 1,
       PyDateTime_GET_DAY(obj) - 1,

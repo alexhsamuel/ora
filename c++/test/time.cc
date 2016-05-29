@@ -1,5 +1,6 @@
 #include "cron/ez.hh"
 #include "cron/format.hh"
+#include "cron/localization.hh"
 #include "cron/time.hh"
 #include "gtest/gtest.h"
 
@@ -14,7 +15,7 @@ using cron::daytime::Daytime;
 //------------------------------------------------------------------------------
 
 TEST(Time, comparisons) {
-  Time const t = Time(2013, 6, 29, 18, 27, 13, *get_time_zone("US/Eastern"));
+  Time const t = from_local(2013, 6, 29, 18, 27, 13, "US/Eastern");
   Time const i = Time::INVALID;
   Time const m = Time::MISSING;
 
@@ -48,16 +49,16 @@ TEST(Time, comparisons) {
   EXPECT_FALSE(m >= i);
   EXPECT_FALSE(m >= m);
 
-  EXPECT_TRUE (t == Time(2013, 6, 29, 18, 27, 13,   *get_time_zone("US/Eastern")));
-  EXPECT_TRUE (t >  Time(2013, 6, 28, 18, 27, 13,   *get_time_zone("US/Eastern")));
-  EXPECT_TRUE (t <  Time(2013, 6, 29, 18, 27, 13.1, *get_time_zone("US/Eastern")));
-  EXPECT_FALSE(t >  Time(2013, 6, 29, 18, 27, 13.1, *get_time_zone("US/Eastern")));
+  EXPECT_TRUE (t == from_local(2013, 6, 29, 18, 27, 13,   "US/Eastern"));
+  EXPECT_TRUE (t >  from_local(2013, 6, 28, 18, 27, 13,   "US/Eastern"));
+  EXPECT_TRUE (t <  from_local(2013, 6, 29, 18, 27, 13.1, "US/Eastern"));
+  EXPECT_FALSE(t >  from_local(2013, 6, 29, 18, 27, 13.1, "US/Eastern"));
 }
 
 TEST(Time, from_parts) {
   Daytime const daytime(18, 27, 13);
   auto const tz = get_time_zone("US/Eastern");
-  Unix32Time const time0(2013/JUL/29, daytime, *tz);
+  auto const time0 = from_local<Unix32Time>(2013/JUL/29, daytime, *tz);
   EXPECT_EQ(1375136833, time0.get_offset());
 
   Time::Offset const offset = 4262126704878682112l;
@@ -68,10 +69,10 @@ TEST(Time, from_parts) {
   EXPECT_EQ(6, parts1.date.month);
   EXPECT_EQ(27, parts1.date.day);
 
-  Time const time2(2013/JUL/28, Daytime(15, 37, 38), *tz);
+  auto const time2 = from_local(2013/JUL/28, Daytime(15, 37, 38), *tz);
   EXPECT_EQ(offset, time2.get_offset());
 
-  Time const time3(2013, 6, 27, 15, 37, 38, *tz);
+  auto const time3 = from_local(2013, 6, 27, 15, 37, 38, *tz);
   EXPECT_EQ(offset, time3.get_offset());
 }
 
@@ -80,51 +81,51 @@ TEST(Time, from_parts_dst) {
 
   // Test transition to DST.
   Date const dst0 = 2013/MAR/10;
-  EXPECT_EQ(Time(dst0, Daytime(6, 59, 0), *UTC), Time(dst0, Daytime(1, 59, 0), *tz));
-  EXPECT_EQ(Time(dst0, Daytime(7,  0, 0), *UTC), Time(dst0, Daytime(3,  0, 0), *tz));
-  EXPECT_EQ(Time(dst0, Daytime(7,  0, 0), *UTC), Time(dst0, Daytime(3,  0, 0), *tz, false));
+  EXPECT_EQ(from_local(dst0, Daytime(6, 59, 0), *UTC), from_local(dst0, Daytime(1, 59, 0), *tz));
+  EXPECT_EQ(from_local(dst0, Daytime(7,  0, 0), *UTC), from_local(dst0, Daytime(3,  0, 0), *tz));
+  EXPECT_EQ(from_local(dst0, Daytime(7,  0, 0), *UTC), from_local(dst0, Daytime(3,  0, 0), *tz, false));
 
   // Test transition from DST.
   Date const dst1 = 2013/NOV/3;
-  EXPECT_EQ(Time(dst1, Daytime(4, 59, 0), *UTC), Time(dst1, Daytime(0, 59, 0), *tz));
-  EXPECT_EQ(Time(dst1, Daytime(5,  0, 0), *UTC), Time(dst1, Daytime(1,  0, 0), *tz));
-  EXPECT_EQ(Time(dst1, Daytime(5,  0, 0), *UTC), Time(dst1, Daytime(1,  0, 0), *tz, true));
-  EXPECT_EQ(Time(dst1, Daytime(5, 59, 0), *UTC), Time(dst1, Daytime(1, 59, 0), *tz));
-  EXPECT_EQ(Time(dst1, Daytime(5, 59, 0), *UTC), Time(dst1, Daytime(1, 59, 0), *tz, true));
-  EXPECT_EQ(Time(dst1, Daytime(6,  0, 0), *UTC), Time(dst1, Daytime(1,  0, 0), *tz, false));
-  EXPECT_EQ(Time(dst1, Daytime(6, 59, 0), *UTC), Time(dst1, Daytime(1, 59, 0), *tz, false));
-  EXPECT_EQ(Time(dst1, Daytime(7,  0, 0), *UTC), Time(dst1, Daytime(2,  0, 0), *tz));
-  EXPECT_EQ(Time(dst1, Daytime(7,  0, 0), *UTC), Time(dst1, Daytime(2,  0, 0), *tz, false));
+  EXPECT_EQ(from_local(dst1, Daytime(4, 59, 0), *UTC), from_local(dst1, Daytime(0, 59, 0), *tz));
+  EXPECT_EQ(from_local(dst1, Daytime(5,  0, 0), *UTC), from_local(dst1, Daytime(1,  0, 0), *tz));
+  EXPECT_EQ(from_local(dst1, Daytime(5,  0, 0), *UTC), from_local(dst1, Daytime(1,  0, 0), *tz, true));
+  EXPECT_EQ(from_local(dst1, Daytime(5, 59, 0), *UTC), from_local(dst1, Daytime(1, 59, 0), *tz));
+  EXPECT_EQ(from_local(dst1, Daytime(5, 59, 0), *UTC), from_local(dst1, Daytime(1, 59, 0), *tz, true));
+  EXPECT_EQ(from_local(dst1, Daytime(6,  0, 0), *UTC), from_local(dst1, Daytime(1,  0, 0), *tz, false));
+  EXPECT_EQ(from_local(dst1, Daytime(6, 59, 0), *UTC), from_local(dst1, Daytime(1, 59, 0), *tz, false));
+  EXPECT_EQ(from_local(dst1, Daytime(7,  0, 0), *UTC), from_local(dst1, Daytime(2,  0, 0), *tz));
+  EXPECT_EQ(from_local(dst1, Daytime(7,  0, 0), *UTC), from_local(dst1, Daytime(2,  0, 0), *tz, false));
 }
 
 TEST(Time, from_parts_invalid) {
   auto const tz = get_time_zone("US/Eastern");
 
-  EXPECT_THROW(Time(Date::INVALID, Daytime(0, 0, 0), *tz), InvalidDateError);
-  EXPECT_THROW(Time(Date::MISSING, Daytime(0, 0, 0), *tz), InvalidDateError);
+  EXPECT_THROW(from_local(Date::INVALID, Daytime(0, 0, 0), *tz), InvalidDateError);
+  EXPECT_THROW(from_local(Date::MISSING, Daytime(0, 0, 0), *tz), InvalidDateError);
 
-  EXPECT_THROW(Time(2013/JUL/28, Daytime::INVALID , *tz), InvalidDaytimeError);
-  EXPECT_THROW(Time(2013/JUL/28, Daytime(24, 0, 0), *tz), InvalidDaytimeError);
-  EXPECT_THROW(Time(2013/JUL/28, Daytime(0, 60, 0), *tz), InvalidDaytimeError);
-  EXPECT_THROW(Time(2013/JUL/28, Daytime(0, 0, 60), *tz), InvalidDaytimeError);
+  EXPECT_THROW(from_local(2013/JUL/28, Daytime::INVALID , *tz), InvalidDaytimeError);
+  EXPECT_THROW(from_local(2013/JUL/28, Daytime(24, 0, 0), *tz), InvalidDaytimeError);
+  EXPECT_THROW(from_local(2013/JUL/28, Daytime(0, 60, 0), *tz), InvalidDaytimeError);
+  EXPECT_THROW(from_local(2013/JUL/28, Daytime(0, 0, 60), *tz), InvalidDaytimeError);
 
-  EXPECT_THROW(Time(10000,  0,  0,  0,  0,  0, *tz), InvalidDateError);
-  EXPECT_THROW(Time( 2013, 12,  0,  0,  0,  0, *tz), InvalidDateError);
-  EXPECT_THROW(Time( 2013,  0, 31,  0,  0,  0, *tz), InvalidDateError);
-  EXPECT_THROW(Time( 2013,  0,  0, 24,  0,  0, *tz), InvalidDaytimeError);
-  EXPECT_THROW(Time( 2013,  0,  0,  0, 60,  0, *tz), InvalidDaytimeError);
-  EXPECT_THROW(Time( 2013,  0,  0,  0,  0, 60, *tz), InvalidDaytimeError);
+  EXPECT_THROW(from_local(10000,  0,  0,  0,  0,  0, *tz), InvalidDateError);
+  EXPECT_THROW(from_local( 2013, 12,  0,  0,  0,  0, *tz), InvalidDateError);
+  EXPECT_THROW(from_local( 2013,  0, 31,  0,  0,  0, *tz), InvalidDateError);
+  EXPECT_THROW(from_local( 2013,  0,  0, 24,  0,  0, *tz), InvalidDaytimeError);
+  EXPECT_THROW(from_local( 2013,  0,  0,  0, 60,  0, *tz), InvalidDaytimeError);
+  EXPECT_THROW(from_local( 2013,  0,  0,  0,  0, 60, *tz), InvalidDaytimeError);
 
-  EXPECT_TRUE (Time( 2013,  2,  9,  1, 59, 59, *tz).is_valid());
-  EXPECT_THROW(Time( 2013,  2,  9,  2,  0,  0, *tz), NonexistentLocalTime);
-  EXPECT_THROW(Time( 2013,  2,  9,  2, 59, 59, *tz), NonexistentLocalTime);
-  EXPECT_TRUE (Time( 2013,  2,  9,  3,  0,  0, *tz).is_valid());
-  EXPECT_TRUE (Time( 2013,  2,  9,  3,  0,  0, *tz, false).is_valid());
+  EXPECT_TRUE (from_local( 2013,  2,  9,  1, 59, 59, *tz).is_valid());
+  EXPECT_THROW(from_local( 2013,  2,  9,  2,  0,  0, *tz), NonexistentLocalTime);
+  EXPECT_THROW(from_local( 2013,  2,  9,  2, 59, 59, *tz), NonexistentLocalTime);
+  EXPECT_TRUE (from_local( 2013,  2,  9,  3,  0,  0, *tz).is_valid());
+  EXPECT_TRUE (from_local( 2013,  2,  9,  3,  0,  0, *tz, false).is_valid());
 }
 
 TEST(Time, get_parts) {
   // 2013 July 28 15:37:38.125 EDT [UTC-4].
-  Time const time = Time::from_offset(4262126704887070720l);
+  auto const time = Time::from_offset(4262126704887070720l);
   EXPECT_EQ(1375040258, Unix64Time(time).get_offset());
 
   auto const time_zone = get_time_zone("US/Eastern");
@@ -145,7 +146,7 @@ TEST(Time, get_parts_invalid) {
 }
 
 TEST(Time, get_parts_display) {
-  Time const time(2016/MAY/28, Daytime(16, 30, 0), *UTC);
+  auto const time = from_local(2016/MAY/28, Daytime(16, 30, 0), *UTC);
 
   set_display_time_zone("US/Eastern");  // EDT = UTC-04:00
   auto parts = get_parts(time, DTZ);
@@ -186,7 +187,7 @@ TEST(Time, default_format) {
 
 TEST(Time, ostream) {
   auto const tz = get_time_zone("US/Eastern");
-  Time const time(2013/JUL/29, Daytime(18, 27, 13.6316313), *tz);
+  auto const time = from_local(2013/JUL/29, Daytime(18, 27, 13.6316313), *tz);
   set_display_time_zone(tz);
 
   {
@@ -210,7 +211,7 @@ TEST(Time, ostream) {
 
 TEST(Time, to_string) {
   auto const tz = get_time_zone("US/Eastern");
-  Time const time(2013/JUL/29, Daytime(18, 27, 13.6316313), *tz);
+  auto const time = from_local(2013/JUL/29, Daytime(18, 27, 13.6316313), *tz);
 
   EXPECT_EQ("2013-07-29 18:27:14 EDT", to_string(time));
   EXPECT_EQ("INVALID                ", to_string(Time::INVALID));

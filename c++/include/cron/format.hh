@@ -135,6 +135,7 @@ public:
     return operator()(time, get_time_zone(tz_name)); 
   }
 
+  // FIXME: No! Remove!!
   template<class TRAITS> 
   std::string
   operator()(

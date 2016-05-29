@@ -1,5 +1,6 @@
 #include "cron/ez.hh"
 #include "cron/format.hh"
+#include "cron/localization.hh"
 #include "cron/time.hh"
 #include "gtest/gtest.h"
 
@@ -12,8 +13,8 @@ using cron::daytime::Daytime;
 //------------------------------------------------------------------------------
 
 TEST(Time128, convert_to) {
-  Time const t0(2016, 4, 26, 16, 13, 26.577521, *UTC);
-  Time128 const t(t0);
+  Time const t0 = from_local(2016, 4, 26, 16, 13, 26.577521, *UTC);
+  Time128 const t = t0;
   EXPECT_TRUE(t.is_valid());
 
   auto parts = get_parts(t, *UTC);

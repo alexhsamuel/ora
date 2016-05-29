@@ -4,7 +4,6 @@
 
 #include "aslib/exc.hh"
 #include "aslib/math.hh"
-#include "cron/localization.hh"
 #include "cron/time_functions.hh"
 
 namespace cron {
@@ -75,32 +74,6 @@ public:
           convert_offset(
             time.get_offset(), OTHER_TRAITS::denominator, OTHER_TRAITS::base,
             DENOMINATOR, BASE)))
-  {
-  }
-
-// FIXME: Remove this.
-  template<class DTRAITS, class YTRAITS>
-  TimeTemplate(
-    date::DateTemplate<DTRAITS> const date,
-    daytime::DaytimeTemplate<YTRAITS> const daytime,
-    TimeZone const& tz,
-    bool first=true)
-  : TimeTemplate(
-      from_local<TimeTemplate>(date.get_datenum(), daytime.get_daytick(), tz, first))
-  {
-  }
-
-  TimeTemplate(
-    Year const      year,
-    Month const     month,
-    Day const       day,
-    Hour const      hour,
-    Minute const    minute,
-    Second const    second,
-    TimeZone const& tz,
-    bool const      first=true)
-  : TimeTemplate(
-      from_local<TimeTemplate>(year, month, day, hour, minute, second, tz, first))
   {
   }
 
