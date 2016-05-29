@@ -16,24 +16,11 @@
 #include "cron/daytime.hh"
 #include "cron/time_math.hh"
 #include "cron/time_type.hh"
-#include "cron/time_zone.hh"
 
 namespace cron {
 namespace time {
 
 //------------------------------------------------------------------------------
-
-template<class TIME>
-inline TIME
-from_local(
-  Datenum const datenum,
-  Daytick const daytick,
-  TimeZone const& time_zone,
-  bool const first=true)
-{
-  return TIME::from_datenum_daytick(datenum, daytick, time_zone, first);
-}
-
 
 /*
  * Returns the closest UNIX epoch time.

@@ -172,7 +172,7 @@ public:
       { return cron::time::Time128(((PyTime*) time)->time_); }
 
     virtual ref<Object> from_local_datenum_daytick(cron::Datenum const datenum, cron::Daytick const daytick, cron::TimeZone const& tz, bool first) const
-      { return PyTime::create(cron::time::from_local<Time>(datenum, daytick, tz, first)); }
+      { return PyTime::create(cron::from_local<Time>(datenum, daytick, tz, first)); }
 
     virtual ref<Object> now() const
       { return PyTime::create(cron::time::now<Time>()); }
@@ -681,7 +681,7 @@ PyTime<TIME>::build_type(
 
 using PyTimeDefault = PyTime<cron::time::Time>;
 
-template<typename TIME>
+template<class TIME>
 inline TIME
 localtime_to_time(
   Sequence* const parts)
@@ -693,11 +693,11 @@ localtime_to_time(
   auto const datenum    = to_datenum(localtime->GetItem(0));
   auto const daytick    = to_daytick(localtime->GetItem(1));
   auto const tz         = convert_to_time_zone(parts->GetItem(1));
-  return TIME::from_datenum_daytick(datenum, daytick, *tz);
+  return cron::from_local<TIME>(datenum, daytick, *tz);
 }
 
 
-template<typename TIME>
+template<class TIME>
 inline TIME
 date_daytime_to_time(
   Sequence* const parts)
@@ -706,11 +706,11 @@ date_daytime_to_time(
   auto const datenum    = to_datenum(parts->GetItem(0));
   auto const daytick    = to_daytick(parts->GetItem(1));
   auto const tz         = convert_to_time_zone(parts->GetItem(2));
-  return TIME::from_datenum_daytick(datenum, daytick, *tz);
+  return cron::from_local<TIME>(datenum, daytick, *tz);
 }
 
 
-template<typename TIME>
+template<class TIME>
 inline TIME
 parts_to_time(
   Sequence* const parts)
@@ -727,7 +727,7 @@ parts_to_time(
 }
 
 
-template<typename TIME>
+template<class TIME>
 optional<TIME>
 maybe_time(
   Object* const obj)
@@ -772,7 +772,7 @@ maybe_time(
 }
 
 
-template<typename TIME>
+template<class TIME>
 TIME
 convert_to_time(
   Object* const obj)

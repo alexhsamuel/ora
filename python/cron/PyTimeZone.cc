@@ -273,8 +273,7 @@ PyTimeZone::nb_matrix_multiply(
       auto const datenum = to_datenum(local->GetItem(0));
       auto const daytick = to_daytick(local->GetItem(1));
       return PyTimeDefault::create(
-        PyTimeDefault::Time::from_datenum_daytick(
-          datenum, daytick, *self->tz_));
+        cron::from_local<PyTimeDefault::Time>(datenum, daytick, *self->tz_));
     }
   }
 

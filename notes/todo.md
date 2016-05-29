@@ -1,6 +1,10 @@
 # Work List
 
 1. C++ namespace reorg.
+1. Add default template args to ctor functions, e.g.
+   ```c++
+   template<class TIME=Time> inline TIME local(...) { ... }
+   ```
 1. Replace operator+ and operator- with interval types.
 1. Reevaluate operator== and operator< for invalid and missing; get rid 
    of `is_invalid()` and `is_missing()`?
