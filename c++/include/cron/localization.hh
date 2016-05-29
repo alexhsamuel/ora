@@ -54,7 +54,8 @@ from_local(
   std::string const&    time_zone_name,
   bool const            first=true)
 {
-
+  return from_local(date, daytime, *get_time_zone(time_zone_name), first);
+}
 
 
 template<class TIME=time::Time>
