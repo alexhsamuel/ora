@@ -8,6 +8,7 @@
 1. Replace operator+ and operator- with interval types.
 1. Reevaluate operator== and operator< for invalid and missing; get rid 
    of `is_invalid()` and `is_missing()`?
+1. Add to time formatting the letter code for UTC offset (e.g. Z for UTC+0).
 1. Add hash functions for all Python types.
 1. Make hms_daytime dtype.
 1. Add it to the global module.
