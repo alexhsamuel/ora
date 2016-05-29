@@ -246,8 +246,8 @@ struct Unix64TimeTraits
   static Datenum constexpr base         = DATENUM_UNIX_EPOCH;
   static Offset  constexpr denominator  = 1;
   static Offset  constexpr min          = -62135596800l;    // 0001-01-01
-  static Offset  constexpr max          = 253402300800l;    // 9999-12-31
-  static Offset  constexpr invalid      = 253402300802l;
+  static Offset  constexpr max          = 253402300799l;    // 9999-12-31
+  static Offset  constexpr invalid      = 253402300800l;
   static Offset  constexpr missing      = 253402300801l;
 };
 
