@@ -34,8 +34,11 @@ datenum_daytick_to_offset(
   bool const first)
 {
   using Offset = typename TRAITS::Offset;
-  static auto const denominator = TRAITS::denominator;
-  static auto const base = TRAITS::base;
+  static auto constexpr denominator = TRAITS::denominator;
+  static auto constexpr base = TRAITS::base;
+  // The datenum of the day containing the minimum time.
+  static auto constexpr min_datenum 
+    = (Datenum) (TRAITS::base + TRAITS::min / (Offset) SECS_PER_DAY);
 
   Offset tz_offset;
   try {
@@ -46,13 +49,28 @@ datenum_daytick_to_offset(
     throw NonexistentLocalTime();
   }
 
-  auto const day_offset
+  Offset date_diff = (int64_t) datenum - base;
+  Offset daytime_offset
     =   rescale_int(daytick, DAYTICK_PER_SEC, denominator) 
       - denominator * tz_offset;
+
+  // Special case: if the time occurs on the first representable date, but
+  // midnight of that date is not representable, we'd overflow if we computed
+  // the midnight offset first and then added the daytime.  To get around this,
+  // shift the date forward a day and nock a day off the daytime offset.
+  if (   TRAITS::min < 0
+      && TRAITS::min % SECS_PER_DAY != 0
+      && daytime_offset > 0
+      && datenum < min_datenum) {
+    ++date_diff;
+    daytime_offset -= SECS_PER_DAY * denominator;
+  }
+    
+  // Compute the offset for midnight on the date, then add the offset for the
+  // daytime, checking for overflows.
   Offset offset;
-  if (   mul_overflow(denominator * SECS_PER_DAY, 
-                      (Offset) datenum - base, offset)
-      || add_overflow(offset, day_offset, offset))
+  if (   mul_overflow(denominator * SECS_PER_DAY, date_diff, offset)
+      || add_overflow(offset, daytime_offset, offset))
     throw TimeRangeError();
   else
     return offset;

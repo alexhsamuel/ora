@@ -264,7 +264,7 @@ struct Time128Traits
                                                             // 1 << 64
   static Offset  constexpr min          = 0;                // 0001-01-01
   static Offset  constexpr max          = make_uint128(0x497786387f, 0xffffffffffffffff); 
-                                                            // 9999-12-31
+                                                            // 9999-12-31 23:59:59.999...
   static Offset  constexpr invalid      = make_uint128(0xffffffffffffffff, 0xffffffffffffffff);
   static Offset  constexpr missing      = make_uint128(0xffffffffffffffff, 0xfffffffffffffffe);
 };
