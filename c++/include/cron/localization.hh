@@ -46,18 +46,6 @@ from_local(
 }
 
 
-template<class TIME=time::Time, class DATE, class DAYTIME>
-inline TIME
-from_local(
-  DATE const            date,
-  DAYTIME const         daytime,
-  std::string const&    time_zone_name,
-  bool const            first=true)
-{
-  return from_local(date, daytime, *get_time_zone(time_zone_name), first);
-}
-
-
 template<class TIME=time::Time>
 inline TIME
 from_local(
@@ -83,6 +71,20 @@ from_local(
 }
 
 
+// Variants that take a time zone name  ----------------------------------------
+
+template<class TIME=time::Time, class DATE, class DAYTIME>
+inline TIME
+from_local(
+  DATE const            date,
+  DAYTIME const         daytime,
+  std::string const&    time_zone_name,
+  bool const            first=true)
+{
+  return from_local(date, daytime, *get_time_zone(time_zone_name), first);
+}
+
+
 template<class TIME=time::Time>
 inline TIME
 from_local(
@@ -98,6 +100,38 @@ from_local(
   return from_local(
     year, month, day, hour, minute, second, 
     *get_time_zone(time_zone_name), first);
+}
+
+
+// UTC variants  ---------------------------------------------------------------
+
+/*
+ * Equivalent to `from_local(date, daytime, UTC)`.
+ */
+template<class TIME=time::Time, class DATE, class DAYTIME>
+inline TIME
+from_utc(
+  DATE const            date,
+  DAYTIME const         daytime)
+{
+  return from_local(date, daytime, *UTC);
+}
+
+
+/*
+ * Equivalent to `from_local(year, month, ..., UTC)`.
+ */
+template<class TIME=time::Time>
+inline TIME
+from_utc(
+  Year const            year,
+  Month const           month,
+  Day const             day,
+  Hour const            hour,
+  Minute const          minute,
+  Second const          second)
+{
+  return from_local(year, month, day, hour, minute, second, *UTC);
 }
 
 

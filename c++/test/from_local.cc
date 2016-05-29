@@ -9,6 +9,7 @@
 using namespace aslib;
 using namespace cron;
 using namespace cron::ez;
+using namespace cron::daytime;
 using namespace cron::time;
 
 //------------------------------------------------------------------------------
@@ -32,5 +33,16 @@ TEST(Time, maxs) {
   auto max128 = from_local<Time128>(9999, 11, 30, 23, 59, 59.99999999999, *UTC);
   // FIXME: Difference should not be zero!
   EXPECT_TRUE(std::abs(Time128::MAX - max128) < 1E-12);
+}
+
+TEST(Time, from_utc) {
+  auto const d = 2016/MAY/29;
+  Daytime const y(23, 30, 15.5);
+  EXPECT_EQ(from_local(d, y, *UTC), from_utc(d, y));
+
+  EXPECT_EQ(from_local<Unix32Time>(d, y, *UTC), from_utc<Unix32Time>(d, y));
+  EXPECT_EQ(from_local<Unix64Time>(d, y, *UTC), from_utc<Unix64Time>(d, y));
+  EXPECT_EQ(from_local<SmallTime>(d, y, *UTC), from_utc<SmallTime>(d, y));
+  EXPECT_EQ(from_local<Time128>(d, y, *UTC), from_utc<Time128>(d, y));
 }
 
