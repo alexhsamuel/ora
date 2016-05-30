@@ -5,7 +5,8 @@
 1. Function (not method) APIs for dates, daytimes, and times.
 1. The operator<<(ostream) story.
 1. Global display time zone in Python API.
-1. Adjust the definition of TimeTraits.
+1. Add epsilon or precision class attributes.
+1. Adjust the definition of TimeTraits.1
 1. Add default template args to ctor functions, e.g.
    ```c++
    template<class TIME=Time> inline TIME local(...) { ... }
