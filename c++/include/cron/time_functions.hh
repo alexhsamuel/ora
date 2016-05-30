@@ -163,24 +163,6 @@ now()
 }
 
 
-template<class DATE, class DAYTIME, class TIME>
-inline LocalTime<DATE, DAYTIME>
-to_local(
-  TIME const time,
-  TimeZone const& tz)
-{
-  if (time.is_valid()) {
-    auto dd = to_local_datenum_daytick(time, tz);
-    return {
-      date::from_datenum<DATE>(dd.datenum), 
-      TIME::from_daytick(dd.daytick)
-    };
-  }
-  else
-    return {};  // invalid
-}
-
-
 //------------------------------------------------------------------------------
 
 template<class TRAITS>

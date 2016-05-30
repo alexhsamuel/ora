@@ -137,5 +137,48 @@ from_utc(
 
 //------------------------------------------------------------------------------
 
+template<class DATE=date::Date, class DAYTIME=daytime::Daytime, class TIME>
+inline LocalTime<DATE, DAYTIME>
+to_local(
+  TIME const time,
+  TimeZone const& tz)
+{
+  if (time.is_valid()) {
+    auto const dd = to_local_datenum_daytick(time, tz);
+    return {
+      DATE::from_datenum(dd.datenum), 
+      DAYTIME::from_daytick(dd.daytick)
+    };
+  }
+  else
+    return {};  // invalid
+}
+
+
+// Variants that take a time zone name  ----------------------------------------
+
+template<class DATE=date::Date, class DAYTIME=daytime::Daytime, class TIME>
+inline LocalTime<DATE, DAYTIME>
+to_local(
+  TIME const time,
+  std::string const& time_zone_name)
+{
+  return to_local(time, *get_time_zone(time_zone_name));
+}
+
+
+// UTC variants  ---------------------------------------------------------------
+
+template<class DATE=date::Date, class DAYTIME=daytime::Daytime, class TIME>
+inline LocalTime<DATE, DAYTIME>
+to_utc(
+  TIME const time)
+{
+  return to_local(time, UTC);
+}
+
+
+//------------------------------------------------------------------------------
+
 }  // namespace cron
 

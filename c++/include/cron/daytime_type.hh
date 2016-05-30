@@ -68,7 +68,7 @@ public:
   DaytimeTemplate(
     Hour const hour,
     Minute const minute,
-    Second const second)
+    Second const second=0)
   : DaytimeTemplate(from_hms(hour, minute, second))
   {
   }
