@@ -181,8 +181,8 @@ inline constexpr bool time_zone_offset_is_valid(TimeZoneOffset offset) { return 
  */
 struct OrdinalDate
 {
-  Year              year            = YEAR_INVALID;
-  Ordinal           ordinal         = ORDINAL_INVALID;
+  Year              year                = YEAR_INVALID;
+  Ordinal           ordinal             = ORDINAL_INVALID;
 };
 
 
@@ -191,9 +191,9 @@ struct OrdinalDate
  */
 struct YmdDate
 {
-  Year              year            = YEAR_INVALID;
-  Month             month           = MONTH_INVALID;
-  Day               day             = DAY_INVALID;
+  Year              year                = YEAR_INVALID;
+  Month             month               = MONTH_INVALID;
+  Day               day                 = DAY_INVALID;
 };
 
 
@@ -202,9 +202,9 @@ struct YmdDate
  */
 struct WeekDate
 {
-  Year              week_year       = YEAR_INVALID;
-  Week              week            = WEEK_INVALID;
-  Weekday           weekday         = WEEKDAY_INVALID;
+  Year              week_year           = YEAR_INVALID;
+  Week              week                = WEEK_INVALID;
+  Weekday           weekday             = WEEKDAY_INVALID;
 };
 
 
@@ -213,9 +213,9 @@ struct WeekDate
  */
 struct FullDate
 {
-  OrdinalDate       ordinal_date    = {};
-  YmdDate           ymd_date        = {};
-  WeekDate          week_date       = {};
+  OrdinalDate       ordinal_date        = {};
+  YmdDate           ymd_date            = {};
+  WeekDate          week_date           = {};
 };
 
 
@@ -224,9 +224,9 @@ struct FullDate
  */
 struct HmsDaytime
 {
-  Hour              hour            = HOUR_INVALID;
-  Minute            minute          = MINUTE_INVALID;
-  Second            second          = SECOND_INVALID;
+  Hour              hour                = HOUR_INVALID;
+  Minute            minute              = MINUTE_INVALID;
+  Second            second              = SECOND_INVALID;
 };
 
 
@@ -235,9 +235,9 @@ struct HmsDaytime
  */
 struct TimeZoneParts
 {
-  TimeZoneOffset    offset          = TIME_ZONE_OFFSET_INVALID;
-  char              abbreviation[7] = "?TZ";  // FIXME: ?!
-  bool              is_dst          = false;
+  TimeZoneOffset    offset              = TIME_ZONE_OFFSET_INVALID;
+  char              abbreviation[7]     = "?TZ";  // FIXME: ?!
+  bool              is_dst              = false;
 };
 
 
@@ -248,9 +248,9 @@ struct TimeZoneParts
  */
 struct LocalDatenumDaytick
 {
-  Datenum           datenum         = DATENUM_INVALID;
-  Daytick           daytick         = DAYTICK_INVALID;
-  TimeZoneParts     time_zone       = {};
+  Datenum           datenum             = DATENUM_INVALID;
+  Daytick           daytick             = DAYTICK_INVALID;
+  TimeZoneParts     time_zone           = {};
 };
 
 
@@ -262,9 +262,9 @@ struct LocalDatenumDaytick
 template<class DATE, class DAYTIME>
 struct LocalTime
 {
-  DATE              date            = DATE::INVALID;
-  DAYTIME           daytime         = DAYTIME::INVALID;
-  TimeZoneParts     time_zone       = {};
+  DATE              date                = DATE::INVALID;
+  DAYTIME           daytime             = DAYTIME::INVALID;
+  TimeZoneParts     time_zone           = {};
 };
 
 
@@ -273,9 +273,9 @@ struct LocalTime
  */
 struct TimeParts
 {
-  YmdDate           date            = {};
-  HmsDaytime        daytime         = {};
-  TimeZoneParts     time_zone       = {};
+  YmdDate           date                = {};
+  HmsDaytime        daytime             = {};
+  TimeZoneParts     time_zone           = {};
 };
 
 
