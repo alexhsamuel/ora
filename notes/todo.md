@@ -1,6 +1,7 @@
 # Work List
 
 1. C++ namespace reorg.
+1. Adjust the definition of TimeTraits.
 1. Add default template args to ctor functions, e.g.
    ```c++
    template<class TIME=Time> inline TIME local(...) { ... }
