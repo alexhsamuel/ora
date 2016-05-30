@@ -173,10 +173,10 @@ public:
       { return cron::time::Time128(((PyTime*) time)->time_); }
 
     virtual ref<Object> from_local_datenum_daytick(cron::Datenum const datenum, cron::Daytick const daytick, cron::TimeZone const& tz, bool first) const
-      { return PyTime::create(cron::from_local<TIME>(datenum, daytick, tz, first)); }
+      { return PyTime::create(cron::from_local<Time>(datenum, daytick, tz, first)); }
 
     virtual ref<Object> now() const
-      { return PyTime::create(cron::time::now<TIME>()); }
+      { return PyTime::create(cron::time::now<Time>()); }
 
     virtual bool is_invalid(Object* const time) const
       { return ((PyTime*) time)->time_.is_invalid(); }
