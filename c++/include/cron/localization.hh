@@ -15,36 +15,26 @@ template<class TIME>
 inline TimeParts 
 get_parts(
   TIME const time,
-  TimeZone const& tz) 
+  TimeZone const& time_zone) 
 {
   using Offset = typename TIME::Offset;
-  static Offset const secs_per_day = TIME::DENOMINATOR * SECS_PER_DAY;
   static Offset const secs_per_min = TIME::DENOMINATOR * SECS_PER_MIN;
 
-  TimeParts parts;
-
-  // Look up the time zone.
-  parts.time_zone = tz.get_parts(time);
-  Offset const offset 
-    = time.get_offset() + parts.time_zone.offset * TIME::DENOMINATOR;
-
-  // Establish the date and daytime parts, using division rounded toward -inf
-  // and a positive remainder.
-  Datenum const datenum   
-    =   (int64_t) (offset / secs_per_day)
-      + (offset < 0 ? -1 : 0)
-      + TIME::BASE;
-  parts.date = datenum_to_ymd(datenum);
-
-  auto const day_offset 
-    = offset % secs_per_day + (offset < 0 ? secs_per_day : 0);
-  parts.daytime.second  
-    = (Second) (day_offset % secs_per_min) / TIME::DENOMINATOR;
-  Offset const minutes  = day_offset / secs_per_min;
-  parts.daytime.minute  = minutes % MINS_PER_HOUR;
-  parts.daytime.hour    = minutes / MINS_PER_HOUR;
-
-  return parts;
+  Datenum datenum;
+  Offset daytime_offset;
+  TimeZoneParts tz_parts;
+  std::tie(datenum, daytime_offset, tz_parts) = split(time, time_zone);
+  
+  auto const minutes = daytime_offset / secs_per_min;
+  return {
+    datenum_to_ymd(datenum),
+    HmsDaytime{
+      (Hour)   (minutes / MINS_PER_HOUR),
+      (Minute) (minutes % MINS_PER_HOUR),
+      (Second) (daytime_offset % secs_per_min) / TIME::DENOMINATOR,
+    },
+    tz_parts,
+  };
 }
 
 

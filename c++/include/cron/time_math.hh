@@ -77,35 +77,51 @@ datenum_daytick_to_offset(
 }
 
 
+/*
+ * Splits a time into localized date and daytime parts.
+ *
+ * For <time> in <time_zone>, returns the local datenum, the residual daytime
+ * offset, and the time zone state.
+ */
+template<class TIME>
+inline std::tuple<Datenum, typename TIME::Offset, TimeZoneParts>
+split(
+  TIME const time,
+  TimeZone const& time_zone)
+{
+  using Offset = typename TIME::Offset;
+  static Offset const secs_per_day = TIME::DENOMINATOR * SECS_PER_DAY;
+
+  // Look up the time zone offset for this time.
+  auto const tz = time_zone.get_parts(time);
+  // Compute the local offset.
+  Offset const offset = time.get_offset() + tz.offset * TIME::DENOMINATOR;
+  // Establish the date and daytime parts, using division rounded toward -inf
+  // and a positive remainder.
+  Datenum const datenum   
+    =   (int64_t) (offset / secs_per_day)
+      + (offset < 0 ? -1 : 0)
+      + TIME::BASE;
+  auto const daytime_offset 
+    = offset % secs_per_day + (offset < 0 ? secs_per_day : 0);
+
+  return std::make_tuple(datenum, daytime_offset, tz);
+}
+
+
 template<class TIME>
 inline LocalDatenumDaytick
 to_local_datenum_daytick(
   TIME const time,
   TimeZone const& time_zone)
 {
-  using Offset = typename TIME::Offset;
+  auto parts = split(time, time_zone);
 
-  // Look up the time zone offset for this time.
-  auto const tz = time_zone.get_parts(time);
-  // Compute the local offset.
-  auto const offset 
-    = (Offset) (time.get_offset() + tz.offset * TIME::DENOMINATOR);
-
-  // Establish the date and daytime parts, using division rounded toward -inf
-  // and a positive remainder.
-  Datenum const datenum   
-    =   (int64_t) (offset / TIME::DENOMINATOR) / SECS_PER_DAY 
-      + (offset < 0 ? -1 : 0)
-      + TIME::BASE;
-  Offset const day_offset 
-    =   (int64_t) offset % (TIME::DENOMINATOR * SECS_PER_DAY) 
-      + (offset < 0 ? TIME::DENOMINATOR * SECS_PER_DAY : 0);
   // FIXME: Not sure the types are right here.
   Daytick const daytick = rescale_int(
-    (intmax_t) day_offset, 
-    (intmax_t) TIME::DENOMINATOR, (intmax_t) DAYTICK_PER_SEC);
+    std::get<1>(parts), TIME::DENOMINATOR, DAYTICK_PER_SEC);
 
-  return {datenum, daytick, tz};
+  return {std::get<0>(parts), daytick, std::get<2>(parts)};
 }
 
 
