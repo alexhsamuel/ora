@@ -257,13 +257,9 @@ struct HmsDaytime
 
 struct TimeZoneParts
 {
-  TimeZoneOffset offset;
-  char abbreviation[7];  // FIXME: ?!
-  bool is_dst;
-
-  static constexpr TimeZoneParts get_invalid()
-    { return TimeZoneParts{TIME_ZONE_OFFSET_INVALID, "?TZ", false}; }
-
+  TimeZoneOffset    offset          = TIME_ZONE_OFFSET_INVALID;
+  char              abbreviation[7] = "?TZ";  // FIXME: ?!
+  bool              is_dst          = false;
 };
 
 
@@ -279,28 +275,43 @@ struct TimeParts
     return {
       DateParts::get_invalid(), 
       HmsDaytime::get_invalid(), 
-      TimeZoneParts::get_invalid()}; 
+      TimeZoneParts{}
+    }; 
   }
 
 };
 
 
-//------------------------------------------------------------------------------
-// Local time structs
-//------------------------------------------------------------------------------
-
 /*
- * A pair of datenum and daytick.
+ * A time that has been localized to a particular time zone.
  *
- * An instance does *not* represent a time!  Given a time zone, the instance
- * might be converted to zero, one, or two times.
+ * An instance does *not* uniquely represent a time.
  */
-struct DatenumDaytick
+struct LocalDatenumDaytick
 {
-  Datenum   datenum = DATENUM_INVALID;
-  Daytick   daytick = DAYTICK_INVALID;
+  Datenum           datenum     = DATENUM_INVALID;
+  Daytick           daytick     = DAYTICK_INVALID;
+  TimeZoneParts     time_zone   = {};
 };
 
+
+/*
+ * A time that has been localized to a particular time zone.
+ *
+ * An instance does *not* uniquely represent a time.
+ */
+template<class DATE, class DAYTIME>
+struct LocalTime
+{
+  DATE              date        = DATE::INVALID;
+  DAYTIME           daytime     = DAYTIME::INVALID;
+  TimeZoneParts     time_zone   = {};
+};
+
+
+//------------------------------------------------------------------------------
+// Date, daytime structs
+//------------------------------------------------------------------------------
 
 /*
  * A pair of date and daytime.

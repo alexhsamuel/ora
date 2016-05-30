@@ -21,24 +21,26 @@ StructSequenceType* get_local_time_type();
 
 inline ref<Object>
 make_local(
-  cron::DatenumDaytick const local,
+  cron::LocalDatenumDaytick const local,
   PyTypeObject* date_type=&PyDateDefault::type_,
   PyTypeObject* daytime_type=&PyDaytimeDefault::type_)
 {
   auto result = get_local_time_type()->New();
   result->initialize(0, make_date(local.datenum, date_type));
   result->initialize(1, make_daytime(local.daytick, daytime_type));
+  // FIXME: Add time zone info?
   return std::move(result);
 }
 
 
 inline ref<Object>
 make_local_datenum_daytick(
-  cron::DatenumDaytick const local)
+  cron::LocalDatenumDaytick const local)
 {
   auto result = get_local_time_type()->New();
   result->initialize(0, Long::FromLong(local.datenum));
   result->initialize(1, Long::FromUnsignedLong(local.daytick));
+  // FIXME: Add time zone info?
   return std::move(result);
 }
 

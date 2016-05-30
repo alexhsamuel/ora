@@ -78,18 +78,20 @@ datenum_daytick_to_offset(
 
 
 template<class TIME>
-inline DatenumDaytick
+inline LocalDatenumDaytick
 to_local_datenum_daytick(
   TIME const time,
-  TimeZone const& tz)
+  TimeZone const& time_zone)
 {
   using Offset = typename TIME::Offset;
 
+  LocalDatenumDaytick ldd;
+
   // Look up the time zone offset for this time.
-  auto const tz_offset = tz.get_parts(time).offset;
+  auto const tz = time_zone.get_parts(time);
   // Compute the local offset.
   auto const offset 
-    = (Offset) (time.get_offset() + tz_offset * TIME::DENOMINATOR);
+    = (Offset) (time.get_offset() + tz.offset * TIME::DENOMINATOR);
 
   // Establish the date and daytime parts, using division rounded toward -inf
   // and a positive remainder.
@@ -105,7 +107,7 @@ to_local_datenum_daytick(
     (intmax_t) day_offset, 
     (intmax_t) TIME::DENOMINATOR, (intmax_t) DAYTICK_PER_SEC);
 
-  return {datenum, daytick};
+  return {datenum, daytick, tz};
 }
 
 
