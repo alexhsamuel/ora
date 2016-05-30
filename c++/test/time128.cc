@@ -13,7 +13,7 @@ using cron::daytime::Daytime;
 //------------------------------------------------------------------------------
 
 TEST(Time128, convert_to) {
-  Time const t0 = from_utc(2016, 4, 26, 16, 13, 26.577521);
+  Time const t0 = from_utc_parts(2016, 4, 26, 16, 13, 26.577521);
   Time128 const t = t0;
   EXPECT_TRUE(t.is_valid());
 

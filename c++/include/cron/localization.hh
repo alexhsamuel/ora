@@ -173,6 +173,27 @@ from_local_parts(
 }
 
 
+//------------------------------------------------------------------------------
+
+template<class DATE=date::Date, class DAYTIME=daytime::Daytime, class TIME>
+inline LocalTime<DATE, DAYTIME>
+to_local(
+  TIME const time,
+  TimeZone const& tz)
+{
+  if (time.is_valid()) {
+    auto const ldd = to_local_datenum_daytick(time, tz);
+    return {
+      DATE::from_datenum(ldd.datenum), 
+      DAYTIME::from_daytick(ldd.daytick),
+      ldd.time_zone
+    };
+  }
+  else
+    return {};  // invalid
+}
+
+
 // Variants that take a time zone name  ----------------------------------------
 
 template<class TIME=time::Time, class DATE, class DAYTIME>
@@ -205,6 +226,16 @@ from_local_parts(
 }
 
 
+template<class DATE=date::Date, class DAYTIME=daytime::Daytime, class TIME>
+inline LocalTime<DATE, DAYTIME>
+to_local(
+  TIME const time,
+  std::string const& time_zone_name)
+{
+  return to_local(time, *get_time_zone(time_zone_name));
+}
+
+
 // UTC variants  ---------------------------------------------------------------
 
 /*
@@ -225,7 +256,7 @@ from_utc(
  */
 template<class TIME=time::Time>
 inline TIME
-from_utc(
+from_utc_parts(
   Year const            year,
   Month const           month,
   Day const             day,
@@ -236,41 +267,6 @@ from_utc(
   return from_local_parts(year, month, day, hour, minute, second, UTC);
 }
 
-
-//------------------------------------------------------------------------------
-
-template<class DATE=date::Date, class DAYTIME=daytime::Daytime, class TIME>
-inline LocalTime<DATE, DAYTIME>
-to_local(
-  TIME const time,
-  TimeZone const& tz)
-{
-  if (time.is_valid()) {
-    auto const ldd = to_local_datenum_daytick(time, tz);
-    return {
-      DATE::from_datenum(ldd.datenum), 
-      DAYTIME::from_daytick(ldd.daytick),
-      ldd.time_zone
-    };
-  }
-  else
-    return {};  // invalid
-}
-
-
-// Variants that take a time zone name  ----------------------------------------
-
-template<class DATE=date::Date, class DAYTIME=daytime::Daytime, class TIME>
-inline LocalTime<DATE, DAYTIME>
-to_local(
-  TIME const time,
-  std::string const& time_zone_name)
-{
-  return to_local(time, *get_time_zone(time_zone_name));
-}
-
-
-// UTC variants  ---------------------------------------------------------------
 
 template<class DATE=date::Date, class DAYTIME=daytime::Daytime, class TIME>
 inline LocalTime<DATE, DAYTIME>
