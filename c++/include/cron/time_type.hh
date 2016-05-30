@@ -59,10 +59,10 @@ public:
 
   // Constructors
 
-  TimeTemplate() 
-  : offset_(Traits::invalid)
-  {
-  }
+  // FIXME: Using '= default' causes instantiation problems?
+  constexpr TimeTemplate() {}  
+
+  constexpr TimeTemplate(TimeTemplate const&) = default;
 
   template<class OTHER_TRAITS> 
   TimeTemplate(
@@ -117,7 +117,7 @@ private:
 
   constexpr TimeTemplate(Offset offset) : offset_(offset) {}
 
-  Offset offset_;
+  Offset offset_ = Traits::invalid;
 
 };
 

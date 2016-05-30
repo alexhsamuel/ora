@@ -32,22 +32,10 @@ public:
 
   // Constructors  -------------------------------------------------------------
 
-  /*
-   * Default constructor: an invalid daytime.
-   */
-  DaytimeTemplate()
-    : DaytimeTemplate(INVALID_OFFSET)
-  {
-  }
+  // FIXME: Using '= default' causes instantiation problems?
+  constexpr DaytimeTemplate() {}
 
-  /*
-   * Copy constructor.
-   */
-  DaytimeTemplate(
-    DaytimeTemplate const& daytime)
-  : offset_(daytime.offset_)
-  {
-  }
+  constexpr DaytimeTemplate(DaytimeTemplate const&) = default;
 
   /*
    * Constructs from another daytime template instance.
@@ -208,7 +196,7 @@ private:
   {
   }
 
-  Offset offset_;
+  Offset offset_ = INVALID_OFFSET;
 
 public:
 

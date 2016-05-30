@@ -58,23 +58,10 @@ public:
 
   // Constructors  -------------------------------------------------------------
 
-  /*
-   * Default constructor: an invalid date.
-   */
-  constexpr 
-  DateTemplate()
-  : offset_(TRAITS::invalid)
-  {
-  }
+  // FIXME: Using '= default' causes instantiation problems?
+  constexpr DateTemplate() {}
 
-  /*
-   * Copy constructor.
-   */
-  DateTemplate(
-    DateTemplate const& date)
-  : offset_(date.offset_)
-  {
-  }
+  constexpr DateTemplate(DateTemplate const&) = default;
 
   /*
    * Constructs from another date template instance.
@@ -321,7 +308,7 @@ private:
   {
   }
 
-  Offset offset_;
+  Offset offset_ = Traits::invalid;
 
 public:
 
