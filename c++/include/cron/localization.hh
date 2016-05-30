@@ -11,98 +11,6 @@ namespace cron {
 
 //------------------------------------------------------------------------------
 
-template<class TIME>
-inline TimeParts 
-get_parts(
-  TIME const time,
-  TimeZone const& time_zone) 
-{
-  using Offset = typename TIME::Offset;
-  static Offset const secs_per_min = TIME::DENOMINATOR * SECS_PER_MIN;
-
-  Datenum datenum;
-  Offset daytime_offset;
-  TimeZoneParts tz_parts;
-  std::tie(datenum, daytime_offset, tz_parts) = split(time, time_zone);
-  
-  auto const minutes = daytime_offset / secs_per_min;
-  return {
-    datenum_to_ymd(datenum),
-    HmsDaytime{
-      (Hour)   (minutes / MINS_PER_HOUR),
-      (Minute) (minutes % MINS_PER_HOUR),
-      (Second) (daytime_offset % secs_per_min) / TIME::DENOMINATOR,
-    },
-    tz_parts,
-  };
-}
-
-
-template<class TIME>
-inline TimeParts 
-get_parts(
-  TIME const time, 
-  std::string const& tz_name)
-{ 
-  return get_parts(time, *get_time_zone(tz_name)); 
-}
-
-
-template<class TIME>
-inline TimeParts 
-get_parts(
-  TIME const time,
-  _DisplayTimeZoneTag /* unused */) 
-{ 
-  return get_parts(time, *get_display_time_zone()); 
-}
-
-
-template<class TIME>
-inline Datenum
-get_utc_datenum(
-  TIME const time)
-{
-  ensure_valid(time);
-  return
-      TIME::Traits::base
-    + time.get_offset() / SECS_PER_DAY / TIME::Traits::denominator;
-}
-
-
-template<class DATE, class TIME>
-inline DATE
-get_utc_date(
-  TIME const time)
-{
-  return date::from_datenum<DATE>(get_utc_datenum(time));
-}
-
-
-template<class TIME>
-inline Daytick
-get_utc_daytick(
-  TIME const time)
-{
-  ensure_valid(time);
-  auto const day_offset
-    = time.get_offset() % (SECS_PER_DAY * TIME::Traits::denominator);
-  return rescale_int<Daytick, TIME::Traits::denominator, DAYTICK_PER_SEC>
-    (day_offset);
-}
-
-
-template<class DAYTIME, class TIME>
-inline DAYTIME
-get_utc_daytime(
-  TIME const time)
-{
-  return daytime::from_daytick<DAYTIME>(get_utc_daytick(time));
-}
-
-
-//------------------------------------------------------------------------------
-
 template<class TIME=time::Time>
 inline TIME
 from_local(
@@ -163,7 +71,86 @@ from_local_parts(
 }
 
 
-//------------------------------------------------------------------------------
+template<class TIME>
+inline TimeParts 
+get_parts(
+  TIME const time,
+  TimeZone const& time_zone) 
+{
+  using Offset = typename TIME::Offset;
+  static Offset const secs_per_min = TIME::DENOMINATOR * SECS_PER_MIN;
+
+  Datenum datenum;
+  Offset daytime_offset;
+  TimeZoneParts tz_parts;
+  std::tie(datenum, daytime_offset, tz_parts) = split(time, time_zone);
+  
+  auto const minutes = daytime_offset / secs_per_min;
+  return {
+    datenum_to_ymd(datenum),
+    HmsDaytime{
+      (Hour)   (minutes / MINS_PER_HOUR),
+      (Minute) (minutes % MINS_PER_HOUR),
+      (Second) (daytime_offset % secs_per_min) / TIME::DENOMINATOR,
+    },
+    tz_parts,
+  };
+}
+
+
+// FIXME: Remove?
+template<class TIME>
+inline TimeParts 
+get_parts(
+  TIME const time,
+  _DisplayTimeZoneTag /* unused */) 
+{ 
+  return get_parts(time, *get_display_time_zone()); 
+}
+
+
+template<class TIME>
+inline Datenum
+get_utc_datenum(
+  TIME const time)
+{
+  ensure_valid(time);
+  return
+      TIME::Traits::base
+    + time.get_offset() / SECS_PER_DAY / TIME::Traits::denominator;
+}
+
+
+template<class DATE, class TIME>
+inline DATE
+get_utc_date(
+  TIME const time)
+{
+  return date::from_datenum<DATE>(get_utc_datenum(time));
+}
+
+
+template<class TIME>
+inline Daytick
+get_utc_daytick(
+  TIME const time)
+{
+  ensure_valid(time);
+  auto const day_offset
+    = time.get_offset() % (SECS_PER_DAY * TIME::Traits::denominator);
+  return rescale_int<Daytick, TIME::Traits::denominator, DAYTICK_PER_SEC>
+    (day_offset);
+}
+
+
+template<class DAYTIME, class TIME>
+inline DAYTIME
+get_utc_daytime(
+  TIME const time)
+{
+  return daytime::from_daytick<DAYTIME>(get_utc_daytick(time));
+}
+
 
 template<class DATE=date::Date, class DAYTIME=daytime::Daytime, class TIME>
 inline LocalTime<DATE, DAYTIME>
@@ -195,6 +182,16 @@ from_local(
   bool const            first=true)
 {
   return from_local(date, daytime, *get_time_zone(time_zone_name), first);
+}
+
+
+template<class TIME>
+inline TimeParts 
+get_parts(
+  TIME const time, 
+  std::string const& tz_name)
+{ 
+  return get_parts(time, *get_time_zone(tz_name)); 
 }
 
 
