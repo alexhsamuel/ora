@@ -11,6 +11,7 @@
 1. Add to time formatting the letter code for UTC offset (e.g. Z for UTC+0).
 1. Add hash functions for all Python types.
 1. Make hms_daytime dtype.
+1. Check Time128 second precision in C++ and Python.
 1. Add it to the global module.
 1. Offset month, day by one.
 1. Rename `InvalidDateError` -> `BadDateError` _et fils_.
