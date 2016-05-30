@@ -85,8 +85,6 @@ to_local_datenum_daytick(
 {
   using Offset = typename TIME::Offset;
 
-  LocalDatenumDaytick ldd;
-
   // Look up the time zone offset for this time.
   auto const tz = time_zone.get_parts(time);
   // Compute the local offset.
