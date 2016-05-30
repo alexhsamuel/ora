@@ -79,7 +79,8 @@ PyInit_ext(void)
     mod->AddObject("DATENUM_MIN"      , Long::from(cron::DATENUM_MIN));
     mod->AddObject("DATENUM_MAX"      , Long::from(cron::DATENUM_MAX));
     mod->AddObject("MIDNIGHT"         , PyDaytimeDefault::create(PyDaytimeDefault::Daytime::MIDNIGHT));
-    mod->AddObject("UTC"              , PyTimeZone::create(cron::UTC));
+    mod->AddObject("UTC"              , 
+                   PyTimeZone::create(std::make_shared<cron::TimeZone>()));
 
     // FIXME: Use specific Python exception classes.
     TranslateException<cron::InvalidDateError>::to(PyExc_ValueError);

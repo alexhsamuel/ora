@@ -81,21 +81,21 @@ TEST(Time, from_parts_dst) {
 
   // Test transition to DST.
   Date const dst0 = 2013/MAR/10;
-  EXPECT_EQ(from_local(dst0, Daytime(6, 59, 0), *UTC), from_local(dst0, Daytime(1, 59, 0), *tz));
-  EXPECT_EQ(from_local(dst0, Daytime(7,  0, 0), *UTC), from_local(dst0, Daytime(3,  0, 0), *tz));
-  EXPECT_EQ(from_local(dst0, Daytime(7,  0, 0), *UTC), from_local(dst0, Daytime(3,  0, 0), *tz, false));
+  EXPECT_EQ(from_local(dst0, Daytime(6, 59, 0), UTC), from_local(dst0, Daytime(1, 59, 0), *tz));
+  EXPECT_EQ(from_local(dst0, Daytime(7,  0, 0), UTC), from_local(dst0, Daytime(3,  0, 0), *tz));
+  EXPECT_EQ(from_local(dst0, Daytime(7,  0, 0), UTC), from_local(dst0, Daytime(3,  0, 0), *tz, false));
 
   // Test transition from DST.
   Date const dst1 = 2013/NOV/3;
-  EXPECT_EQ(from_local(dst1, Daytime(4, 59, 0), *UTC), from_local(dst1, Daytime(0, 59, 0), *tz));
-  EXPECT_EQ(from_local(dst1, Daytime(5,  0, 0), *UTC), from_local(dst1, Daytime(1,  0, 0), *tz));
-  EXPECT_EQ(from_local(dst1, Daytime(5,  0, 0), *UTC), from_local(dst1, Daytime(1,  0, 0), *tz, true));
-  EXPECT_EQ(from_local(dst1, Daytime(5, 59, 0), *UTC), from_local(dst1, Daytime(1, 59, 0), *tz));
-  EXPECT_EQ(from_local(dst1, Daytime(5, 59, 0), *UTC), from_local(dst1, Daytime(1, 59, 0), *tz, true));
-  EXPECT_EQ(from_local(dst1, Daytime(6,  0, 0), *UTC), from_local(dst1, Daytime(1,  0, 0), *tz, false));
-  EXPECT_EQ(from_local(dst1, Daytime(6, 59, 0), *UTC), from_local(dst1, Daytime(1, 59, 0), *tz, false));
-  EXPECT_EQ(from_local(dst1, Daytime(7,  0, 0), *UTC), from_local(dst1, Daytime(2,  0, 0), *tz));
-  EXPECT_EQ(from_local(dst1, Daytime(7,  0, 0), *UTC), from_local(dst1, Daytime(2,  0, 0), *tz, false));
+  EXPECT_EQ(from_local(dst1, Daytime(4, 59, 0), UTC), from_local(dst1, Daytime(0, 59, 0), *tz));
+  EXPECT_EQ(from_local(dst1, Daytime(5,  0, 0), UTC), from_local(dst1, Daytime(1,  0, 0), *tz));
+  EXPECT_EQ(from_local(dst1, Daytime(5,  0, 0), UTC), from_local(dst1, Daytime(1,  0, 0), *tz, true));
+  EXPECT_EQ(from_local(dst1, Daytime(5, 59, 0), UTC), from_local(dst1, Daytime(1, 59, 0), *tz));
+  EXPECT_EQ(from_local(dst1, Daytime(5, 59, 0), UTC), from_local(dst1, Daytime(1, 59, 0), *tz, true));
+  EXPECT_EQ(from_local(dst1, Daytime(6,  0, 0), UTC), from_local(dst1, Daytime(1,  0, 0), *tz, false));
+  EXPECT_EQ(from_local(dst1, Daytime(6, 59, 0), UTC), from_local(dst1, Daytime(1, 59, 0), *tz, false));
+  EXPECT_EQ(from_local(dst1, Daytime(7,  0, 0), UTC), from_local(dst1, Daytime(2,  0, 0), *tz));
+  EXPECT_EQ(from_local(dst1, Daytime(7,  0, 0), UTC), from_local(dst1, Daytime(2,  0, 0), *tz, false));
 }
 
 TEST(Time, from_parts_invalid) {
@@ -146,7 +146,7 @@ TEST(Time, get_parts_invalid) {
 }
 
 TEST(Time, get_parts_display) {
-  auto const time = from_local(2016/MAY/28, Daytime(16, 30, 0), *UTC);
+  auto const time = from_utc(2016/MAY/28, Daytime(16, 30, 0));
 
   set_display_time_zone("US/Eastern");  // EDT = UTC-04:00
   auto parts = get_parts(time, DTZ);
@@ -156,7 +156,7 @@ TEST(Time, get_parts_display) {
   EXPECT_EQ(12,         parts.daytime.hour);
   EXPECT_EQ(30,         parts.daytime.minute);
 
-  set_display_time_zone(UTC);
+  set_display_time_zone("UTC");
   parts = get_parts(time, DTZ);
   EXPECT_EQ(2016,       parts.date.year);
   EXPECT_EQ(MAY,        parts.date.month);

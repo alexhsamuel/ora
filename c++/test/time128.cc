@@ -13,11 +13,11 @@ using cron::daytime::Daytime;
 //------------------------------------------------------------------------------
 
 TEST(Time128, convert_to) {
-  Time const t0 = from_local(2016, 4, 26, 16, 13, 26.577521, *UTC);
+  Time const t0 = from_utc(2016, 4, 26, 16, 13, 26.577521);
   Time128 const t = t0;
   EXPECT_TRUE(t.is_valid());
 
-  auto parts = get_parts(t, *UTC);
+  auto parts = get_parts(t, UTC);
   EXPECT_EQ(2016, parts.date.year);
   EXPECT_EQ(   4, parts.date.month);
   EXPECT_EQ(  26, parts.date.day);
