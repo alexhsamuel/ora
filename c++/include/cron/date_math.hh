@@ -40,7 +40,7 @@ extern WeekDate datenum_to_week_date(Datenum, OrdinalDate, Weekday) noexcept;
 /*
  * Returns date parts for a date.
  */
-extern DateParts datenum_to_parts(Datenum) noexcept;
+extern FullDate datenum_to_full_date(Datenum) noexcept;
 
 /*
  * Parses an ISO-8601 extended date ("YYYY-MM-DD" format) into parts.

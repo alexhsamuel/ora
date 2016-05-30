@@ -139,15 +139,18 @@ format_date(
   size_t& pos,
   StringBuilder& sb,
   Modifiers const& mods,
-  DateParts const& date)
+  FullDate const& date)
 {
   switch (pattern[pos]) {
   case 'b':
-    format_string(sb, mods, mods.abbreviate ? get_month_abbr(date.month) : get_month_name(date.month));
+    format_string(
+      sb, mods, 
+      mods.abbreviate ? get_month_abbr(date.ymd_date.month) 
+        : get_month_name(date.ymd_date.month));
     break;
 
   case 'd':
-    sb.format(date.day + 1, mods.get_width(2), mods.get_pad('0'));
+    sb.format(date.ymd_date.day + 1, mods.get_width(2), mods.get_pad('0'));
     break;
 
   case 'D':
@@ -156,40 +159,52 @@ format_date(
     break;
 
   case 'g':
-    sb.format(date.week_year % 100, mods.get_width(2), mods.get_pad('0'));
+    sb.format(
+      date.week_date.week_year % 100, mods.get_width(2), mods.get_pad('0'));
     break;
 
   case 'G':
-    sb.format(date.week_year, mods.get_width(4), mods.get_pad('0'));
+    sb.format(
+      date.week_date.week_year, mods.get_width(4), mods.get_pad('0'));
     break;
 
   case 'j':
-    sb.format(date.ordinal + 1, mods.get_width(3), mods.get_pad('0'));
+    sb.format(
+      date.ordinal_date.ordinal + 1, mods.get_width(3), mods.get_pad('0'));
     break;
 
   case 'm':
-    sb.format(date.month + 1, mods.get_width(2), mods.get_pad('0'));
+    sb.format(
+      date.ymd_date.month + 1, mods.get_width(2), mods.get_pad('0'));
     break;
 
   case 'V':
-    sb.format(date.week + 1, mods.get_width(2), mods.get_pad('0'));
+    sb.format(
+      date.week_date.week + 1, mods.get_width(2), mods.get_pad('0'));
     break;
 
   case 'w':
     // FIXME: Generalize?
-    sb.format((date.weekday + (7 - SUNDAY)) % 7, mods.get_width(1), mods.get_pad('0'));
+    sb.format(
+      (date.week_date.weekday + (7 - SUNDAY)) % 7, 
+      mods.get_width(1), mods.get_pad('0'));
     break;
 
   case 'W':
-    format_string(sb, mods, mods.abbreviate ? get_weekday_abbr(date.weekday) : get_weekday_name(date.weekday));
+    format_string(
+      sb, mods, 
+      mods.abbreviate ? get_weekday_abbr(date.week_date.weekday) 
+        : get_weekday_name(date.week_date.weekday));
     break;
 
   case 'y':
-    sb.format(date.year % 100, mods.get_width(2), mods.get_pad('0'));
+    sb.format(
+      date.ymd_date.year % 100, mods.get_width(2), mods.get_pad('0'));
     break;
 
   case 'Y':
-    sb.format(date.year, mods.get_width(4), mods.get_pad('0'));
+    sb.format(
+      date.ymd_date.year, mods.get_width(4), mods.get_pad('0'));
     break;
 
   default:
@@ -349,10 +364,7 @@ format_time(
   string const& pattern,
   size_t& pos,
   StringBuilder& /*sb*/,
-  Modifiers     const& /*mods*/,
-  DateParts     const& /*date_parts*/,
-  HmsDaytime  const& /*daytime_parts*/,
-  TimeZoneParts const& /*time_zone_parts*/)
+  Modifiers const& /*mods*/)
 {
   switch (pattern[pos]) {
   case 'c':
@@ -380,9 +392,7 @@ format_time(
 void 
 Format::format(
   StringBuilder& sb,
-  DateParts const* date_parts,
-  HmsDaytime const* daytime_parts,
-  TimeZoneParts const* time_zone_parts)
+  Parts const& parts)
   const
 {
   size_t pos = 0;
@@ -420,19 +430,19 @@ Format::format(
         continue;
 
       // Handle escape codes for date components.
-      if (date_parts != nullptr
-          && format_date(pattern_, pos, sb, mods, *date_parts))
+      if (   parts.have_date 
+          && format_date(pattern_, pos, sb, mods, parts.date))
         break;
-      if (daytime_parts != nullptr
-          && format_daytime(pattern_, pos, sb, mods, *daytime_parts))
+      if (   parts.have_daytime
+          && format_daytime(pattern_, pos, sb, mods, parts.daytime))
         break;
-      if (time_zone_parts != nullptr
-          && format_time_zone(pattern_, pos, sb, mods, *time_zone_parts))
+      if (   parts.have_time_zone
+          && format_time_zone(pattern_, pos, sb, mods, parts.time_zone))
         break;
-      if (   date_parts      != nullptr
-          && daytime_parts   != nullptr
-          && time_zone_parts != nullptr
-          && format_time(pattern_, pos, sb, mods, *date_parts, *daytime_parts, *time_zone_parts))
+      if (   parts.have_date
+          && parts.have_daytime
+          && parts.have_time_zone
+          && format_time(pattern_, pos, sb, mods))
         break;
 
       // If we made it this far, it's not a valid character.
@@ -441,7 +451,6 @@ Format::format(
     }
   }
 }
-
 
 
 //------------------------------------------------------------------------------

@@ -9,7 +9,7 @@ namespace aslib {
 
 //------------------------------------------------------------------------------
 
-
+// FIXME: Add time zone info.
 StructSequenceType*
 get_local_time_type()
 {
@@ -23,7 +23,7 @@ get_local_time_type()
       {nullptr, nullptr}
     };
     static PyStructSequence_Desc desc{
-      (char*) "DateDaytime",                                  // name
+      (char*) "LocalTime",                                  // name
       nullptr,                                              // doc
       fields,                                               // fields
       2                                                     // n_in_sequence

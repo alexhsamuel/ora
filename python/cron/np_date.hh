@@ -134,7 +134,7 @@ get_ordinal_date_(
     return od;
   }
   else
-    return cron::OrdinalDate::get_invalid();
+    return cron::OrdinalDate{};
 }
 
 
@@ -149,7 +149,7 @@ get_week_date_(
     return wd;
   }
   else
-    return cron::WeekDate::get_invalid();
+    return cron::WeekDate{};
 }
 
 
@@ -165,7 +165,7 @@ get_ymd_(
     return ymd;
   }
   else
-    return cron::YmdDate::get_invalid();
+    return cron::YmdDate{};
 }
 
 

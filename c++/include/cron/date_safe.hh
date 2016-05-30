@@ -160,7 +160,7 @@ get_ordinal_date(
   return 
       date.is_valid() 
     ? datenum_to_ordinal_date(date.get_datenum())
-    : OrdinalDate::get_invalid();
+    : OrdinalDate{};  // invalid
 }
 
 
@@ -173,7 +173,7 @@ get_week_date(
   return 
       date.is_valid() 
     ? datenum_to_week_date(date.get_datenum()) 
-    : WeekDate::get_invalid();
+    : WeekDate{};  // invalid
 }
 
 
@@ -199,7 +199,7 @@ get_ymd(
   return 
       date.is_valid()
     ? datenum_to_ymd(date.get_datenum())
-    : YmdDate::get_invalid();
+    : YmdDate{};  // invalid
 }
 
 

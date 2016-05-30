@@ -181,12 +181,8 @@ inline constexpr bool time_zone_offset_is_valid(TimeZoneOffset offset) { return 
  */
 struct OrdinalDate
 {
-  Year      year;
-  Ordinal   ordinal;
-
-  static constexpr OrdinalDate get_invalid()
-    { return {YEAR_INVALID, ORDINAL_INVALID}; }
-
+  Year              year            = YEAR_INVALID;
+  Ordinal           ordinal         = ORDINAL_INVALID;
 };
 
 
@@ -195,13 +191,9 @@ struct OrdinalDate
  */
 struct YmdDate
 {
-  Year      year;
-  Month     month;
-  Day       day;
-
-  static constexpr YmdDate get_invalid()
-    { return {YEAR_INVALID, MONTH_INVALID, DAY_INVALID}; }
-
+  Year              year            = YEAR_INVALID;
+  Month             month           = MONTH_INVALID;
+  Day               day             = DAY_INVALID;
 };
 
 
@@ -210,75 +202,42 @@ struct YmdDate
  */
 struct WeekDate
 {
-  Year      week_year;
-  Week      week;
-  Weekday   weekday;
-
-  static constexpr WeekDate get_invalid()
-    { return {YEAR_INVALID, WEEK_INVALID, WEEKDAY_INVALID}; }
-
+  Year              week_year       = YEAR_INVALID;
+  Week              week            = WEEK_INVALID;
+  Weekday           weekday         = WEEKDAY_INVALID;
 };
 
 
-// FIXME: Get rid of this by refactoring format.cc.
-
-struct DateParts
+/*
+ * Components of the various date representation.s
+ */
+struct FullDate
 {
-  Year      year;
-  Month     month;
-  Day       day;
-  Ordinal   ordinal;
-  Year      week_year;
-  Week      week;
-  Weekday   weekday;
-
-  static constexpr DateParts 
-  get_invalid()
-  { 
-    return {
-      YEAR_INVALID, MONTH_INVALID, DAY_INVALID, 
-      ORDINAL_INVALID, YEAR_INVALID, WEEK_INVALID, WEEKDAY_INVALID}; 
-  }
-
+  OrdinalDate       ordinal_date    = {};
+  YmdDate           ymd_date        = {};
+  WeekDate          week_date       = {};
 };
 
 
+/*
+ * Components of a conventional (hour, minute, second) daytime.
+ */
 struct HmsDaytime
 {
-  Hour      hour;
-  Minute    minute;
-  Second    second;
-
-  static constexpr HmsDaytime get_invalid()
-    { return {HOUR_INVALID, MINUTE_INVALID, SECOND_INVALID}; }
-
+  Hour              hour            = HOUR_INVALID;
+  Minute            minute          = MINUTE_INVALID;
+  Second            second          = SECOND_INVALID;
 };
 
 
+/*
+ * The state of a time zone at a specific time.
+ */
 struct TimeZoneParts
 {
   TimeZoneOffset    offset          = TIME_ZONE_OFFSET_INVALID;
   char              abbreviation[7] = "?TZ";  // FIXME: ?!
   bool              is_dst          = false;
-};
-
-
-struct TimeParts
-{
-  DateParts date;
-  HmsDaytime daytime;
-  TimeZoneParts time_zone;
-
-  static constexpr TimeParts 
-  get_invalid()
-  { 
-    return {
-      DateParts::get_invalid(), 
-      HmsDaytime::get_invalid(), 
-      TimeZoneParts{}
-    }; 
-  }
-
 };
 
 
@@ -289,9 +248,9 @@ struct TimeParts
  */
 struct LocalDatenumDaytick
 {
-  Datenum           datenum     = DATENUM_INVALID;
-  Daytick           daytick     = DAYTICK_INVALID;
-  TimeZoneParts     time_zone   = {};
+  Datenum           datenum         = DATENUM_INVALID;
+  Daytick           daytick         = DAYTICK_INVALID;
+  TimeZoneParts     time_zone       = {};
 };
 
 
@@ -303,28 +262,20 @@ struct LocalDatenumDaytick
 template<class DATE, class DAYTIME>
 struct LocalTime
 {
-  DATE              date        = DATE::INVALID;
-  DAYTIME           daytime     = DAYTIME::INVALID;
-  TimeZoneParts     time_zone   = {};
+  DATE              date            = DATE::INVALID;
+  DAYTIME           daytime         = DAYTIME::INVALID;
+  TimeZoneParts     time_zone       = {};
 };
 
 
-//------------------------------------------------------------------------------
-// Date, daytime structs
-//------------------------------------------------------------------------------
-
 /*
- * A pair of date and daytime.
- *
- * An instance does *not* represent a time, but rather the values read off a
- * calendar and clock in a particular (unspecified) time zone.  Given a time
- * zone, the instance might be converted to zero, one, or two times.
+ * Components of a time that has been localized to a particular time zone.
  */
-template<class DATE, class DAYTIME>
-struct DateDaytime
+struct TimeParts
 {
-  DATE      date    = DATE::INVALID;
-  DAYTIME   daytime = DAYTIME::INVALID;
+  YmdDate           date            = {};
+  HmsDaytime        daytime         = {};
+  TimeZoneParts     time_zone       = {};
 };
 
 

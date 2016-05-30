@@ -34,7 +34,7 @@ get_parts(
     =   (int64_t) (offset / secs_per_day)
       + (offset < 0 ? -1 : 0)
       + TIME::BASE;
-  parts.date = datenum_to_parts(datenum);
+  parts.date = datenum_to_ymd(datenum);
 
   auto const day_offset 
     = offset % secs_per_day + (offset < 0 ? secs_per_day : 0);

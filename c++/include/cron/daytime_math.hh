@@ -6,6 +6,21 @@ namespace cron {
 
 //------------------------------------------------------------------------------
 
+// FIXME: Merge with get_hms();
+inline HmsDaytime
+daytick_to_hms(
+  Daytick const daytick)
+{
+  auto const minutes = daytick / (SECS_PER_MIN * DAYTICK_PER_SEC);
+  auto const seconds = daytick % (SECS_PER_MIN * DAYTICK_PER_SEC);
+  return {
+    (Hour)   (minutes / MINS_PER_HOUR),
+    (Minute) (minutes % MINS_PER_HOUR),
+    (Second) seconds / DAYTICK_PER_SEC 
+  };
+}
+
+
 /*
  * Not aware of leap hours.
  */

@@ -29,20 +29,25 @@ public:
     std::string const& pattern,
     std::string const& invalid="INVALID", 
     std::string const& missing="MISSING") 
-    : pattern_(pattern), 
-      invalid_(invalid), 
-      missing_(missing) 
+  : pattern_(pattern), 
+    invalid_(invalid), 
+    missing_(missing) 
   {
   }
 
   Format(
     char const* pattern) 
-    : pattern_(pattern)
+  : pattern_(pattern)
   {
-    static DateParts const date_parts{0, 0, 0, 0, 0, 0, 0};
-    static HmsDaytime const daytime_parts{0, 0, 0};
-    static TimeZoneParts const time_zone_parts{0, "", false};
-    size_t const width = format(&date_parts, &daytime_parts, &time_zone_parts).length();
+    static Parts parts{
+      .date = FullDate{{0, 0}, {0, 0, 0}, {0, 0, 0}}, 
+      .have_date = true,
+      .daytime = HmsDaytime{0, 0, 0}, 
+      .have_daytime = true,
+      .time_zone = TimeZoneParts{0, "", false},
+      .have_time_zone = true,
+    };
+    size_t const width = format(parts).length();
     invalid_ = std::string(width, ' ');
     invalid_.replace(0, 7, "INVALID");
     missing_ = std::string(width, ' ');
@@ -55,21 +60,32 @@ public:
 
 protected:
 
+  /*
+   * Includes all the various parts that can be used for formatting.
+   */
+  struct Parts
+  {
+    FullDate      date            = {};
+    bool          have_date       = false;
+    HmsDaytime    daytime         = {};
+    bool          have_daytime    = false;
+    TimeZoneParts time_zone       = {};
+    bool          have_time_zone  = false;
+  };
+
   std::string 
   format(
-    DateParts const*     date_parts, 
-    HmsDaytime const*    daytime_parts, 
-    TimeZoneParts const* time_zone_parts)
+    Parts const& parts)
     const
   {
     StringBuilder sb;
-    format(sb, date_parts, daytime_parts, time_zone_parts);
+    format(sb, parts);
     return sb.str();
   }
 
 private:
 
-  void format(StringBuilder&, DateParts const*, HmsDaytime const*, TimeZoneParts const*) const;
+  void format(StringBuilder&, Parts const&) const;
 
   std::string pattern_;
   std::string invalid_;
@@ -104,25 +120,28 @@ public:
     return format;
   }
 
-  std::string
-  operator()(
-    TimeParts const& parts) 
-    const 
-  { 
-    return format(&parts.date, &parts.daytime, &parts.time_zone); 
-  }
-
   template<class TRAITS> 
   std::string
   operator()(
     time::TimeTemplate<TRAITS> time, 
-    TimeZone const& tz) 
+    TimeZone const& time_zone) 
     const 
   { 
-    return 
-      time.is_valid() ? operator()(get_parts(time, tz))
-      : time.is_missing() ? get_missing() 
-      : get_invalid();
+    if (time.is_invalid())
+      return get_invalid();
+    else if (time.is_missing())
+      return get_missing();
+    else {
+      auto const ldd = to_local_datenum_daytick(time, time_zone);
+      return format(Parts{
+        .date           = datenum_to_full_date(ldd.datenum), 
+        .have_date      = true,
+        .daytime        = daytick_to_hms(ldd.daytick), 
+        .have_daytime   = true,
+        .time_zone      = ldd.time_zone, 
+        .have_time_zone = true,
+      });
+    }
   }
 
   template<class TRAITS> 
@@ -195,24 +214,19 @@ public:
     return format;
   }
 
-  std::string
-  operator()(
-    DateParts const& parts) 
-    const 
-  { 
-    return format(&parts, nullptr, nullptr); 
-  }
-
   template<class DATE> 
   std::string
   operator()(
     DATE const date) 
     const 
   { 
-    return 
-      date.is_valid() ? operator()(datenum_to_parts(date.get_datenum()))
+    return
+        date.is_invalid() ? get_invalid()
       : date.is_missing() ? get_missing()
-      : get_invalid();
+      : format(Parts{
+          .date = datenum_to_full_date(date.get_datenum()),
+          .have_date = true,
+        });
   }
 
 };
@@ -269,10 +283,13 @@ public:
 
   std::string 
   operator()(
-    HmsDaytime const& parts) 
+    HmsDaytime const& hms) 
     const 
   { 
-    return format(nullptr, &parts, nullptr); 
+    return format(Parts{
+      .date = {}, .have_date = false,
+      .daytime = hms, .have_daytime = true
+    });
   }
 
   template<class TRAITS> 
@@ -281,10 +298,10 @@ public:
     daytime::DaytimeTemplate<TRAITS> const daytime) 
     const 
   { 
-    return 
-        daytime.is_valid() ? operator()(get_hms(daytime))
+    return
+        daytime.is_invalid() ? get_invalid()
       : daytime.is_missing() ? get_missing()
-      : get_invalid();
+      : operator()(get_hms(daytime));
   }
 
 };

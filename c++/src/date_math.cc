@@ -206,29 +206,26 @@ parse_iso_date(
       (Day)   (atoi(text.substr(8, 2).c_str()) - 1),
     };
   else
-    return YmdDate::get_invalid();
+    return YmdDate{};  // invalid
 }
 
 
 //------------------------------------------------------------------------------
 
-// FIXME: Remove, eventually.
-
-DateParts
-datenum_to_parts(
+FullDate
+datenum_to_full_date(
   Datenum const datenum)
   noexcept
 {
   if (! datenum_is_valid(datenum)) 
-    return DateParts::get_invalid();
+    return {};
 
   auto const ord = datenum_to_ordinal_date(datenum);
   auto const ymd = datenum_to_ymd(datenum, ord);
   auto const wdy = get_weekday(datenum);
   auto const wdt = datenum_to_week_date(datenum, ord, wdy);
 
-  return DateParts{
-    ymd.year, ymd.month, ymd.day, ord.ordinal, wdt.week_year, wdt.week, wdy};
+  return {ord, ymd, wdt};
 }
 
 
