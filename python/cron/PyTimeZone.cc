@@ -123,7 +123,7 @@ get_parts_local(
   try {
     return tz->get_parts_local(datenum, daytick, first);
   }
-  catch (cron::NonexistentLocalTime) {
+  catch (cron::NonexistentDateDaytime) {
     // FIXME: Use a custom exception class.
     throw py::ValueError("nonexistent local time");
   }

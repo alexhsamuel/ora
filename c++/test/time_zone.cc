@@ -31,7 +31,7 @@ TEST(TimeZone, get_parts_local) {
   EXPECT_FALSE(parts0.is_dst);
   EXPECT_EQ(-18000, parts0.offset);
 
-  EXPECT_THROW(tz->get_parts_local(1362880800), NonexistentLocalTime);
+  EXPECT_THROW(tz->get_parts_local(1362880800), NonexistentDateDaytime);
 
   auto const parts2 = tz->get_parts_local(1362884400);
   EXPECT_TRUE(parts2.is_dst);

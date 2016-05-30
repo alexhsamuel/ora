@@ -23,7 +23,7 @@ get_local_time_type()
       {nullptr, nullptr}
     };
     static PyStructSequence_Desc desc{
-      (char*) "LocalTime",                                  // name
+      (char*) "DateDaytime",                                  // name
       nullptr,                                              // doc
       fields,                                               // fields
       2                                                     // n_in_sequence

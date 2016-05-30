@@ -41,7 +41,7 @@ public:
 
   TimeZoneParts get_parts_local(int64_t, bool first=true) const;
 
-  // FIXME: Take a LocalDatenumDaytick instead?
+  // FIXME: Take a DatenumDaytick instead?
   TimeZoneParts get_parts_local(
     Datenum datenum, 
     Daytick daytick, 

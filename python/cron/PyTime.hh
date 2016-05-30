@@ -112,7 +112,7 @@ public:
   virtual bool                      is_invalid(Object* time) const = 0;
   virtual bool                      is_missing(Object* time) const = 0;
   virtual ref<Object>               now() const = 0;
-  virtual cron::LocalDatenumDaytick to_local_datenum_daytick(Object* time, cron::TimeZone const& tz) const = 0;
+  virtual cron::DatenumDaytick to_local_datenum_daytick(Object* time, cron::TimeZone const& tz) const = 0;
 
 private:
 
@@ -184,7 +184,7 @@ public:
     virtual bool is_missing(Object* const time) const
       { return ((PyTime*) time)->time_.is_missing(); }
 
-    virtual cron::LocalDatenumDaytick to_local_datenum_daytick(Object* const time, cron::TimeZone const& tz) const
+    virtual cron::DatenumDaytick to_local_datenum_daytick(Object* const time, cron::TimeZone const& tz) const
       { return cron::time::to_local_datenum_daytick(((PyTime*) time)->time_, tz); }
 
   };

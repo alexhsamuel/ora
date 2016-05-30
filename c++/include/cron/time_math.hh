@@ -44,9 +44,9 @@ datenum_daytick_to_offset(
   try {
     tz_offset = tz.get_parts_local(datenum, daytick, first).offset;
   }
-  catch (NonexistentLocalTime) {
+  catch (NonexistentDateDaytime) {
     // FIXME: Don't catch and rethrow...
-    throw NonexistentLocalTime();
+    throw NonexistentDateDaytime();
   }
 
   Offset date_diff = (int64_t) datenum - base;
@@ -78,7 +78,7 @@ datenum_daytick_to_offset(
 
 
 template<class TIME>
-inline LocalDatenumDaytick
+inline DatenumDaytick
 to_local_datenum_daytick(
   TIME const time,
   TimeZone const& tz)

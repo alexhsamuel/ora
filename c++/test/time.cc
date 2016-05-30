@@ -117,8 +117,8 @@ TEST(Time, from_parts_invalid) {
   EXPECT_THROW(from_local( 2013,  0,  0,  0,  0, 60, *tz), InvalidDaytimeError);
 
   EXPECT_TRUE (from_local( 2013,  2,  9,  1, 59, 59, *tz).is_valid());
-  EXPECT_THROW(from_local( 2013,  2,  9,  2,  0,  0, *tz), NonexistentLocalTime);
-  EXPECT_THROW(from_local( 2013,  2,  9,  2, 59, 59, *tz), NonexistentLocalTime);
+  EXPECT_THROW(from_local( 2013,  2,  9,  2,  0,  0, *tz), NonexistentDateDaytime);
+  EXPECT_THROW(from_local( 2013,  2,  9,  2, 59, 59, *tz), NonexistentDateDaytime);
   EXPECT_TRUE (from_local( 2013,  2,  9,  3,  0,  0, *tz).is_valid());
   EXPECT_TRUE (from_local( 2013,  2,  9,  3,  0,  0, *tz, false).is_valid());
 }

@@ -138,7 +138,7 @@ from_utc(
 //------------------------------------------------------------------------------
 
 template<class DATE=date::Date, class DAYTIME=daytime::Daytime, class TIME>
-inline LocalTime<DATE, DAYTIME>
+inline DateDaytime<DATE, DAYTIME>
 to_local(
   TIME const time,
   TimeZone const& tz)
@@ -158,7 +158,7 @@ to_local(
 // Variants that take a time zone name  ----------------------------------------
 
 template<class DATE=date::Date, class DAYTIME=daytime::Daytime, class TIME>
-inline LocalTime<DATE, DAYTIME>
+inline DateDaytime<DATE, DAYTIME>
 to_local(
   TIME const time,
   std::string const& time_zone_name)
@@ -170,7 +170,7 @@ to_local(
 // UTC variants  ---------------------------------------------------------------
 
 template<class DATE=date::Date, class DAYTIME=daytime::Daytime, class TIME>
-inline LocalTime<DATE, DAYTIME>
+inline DateDaytime<DATE, DAYTIME>
 to_utc(
   TIME const time)
 {

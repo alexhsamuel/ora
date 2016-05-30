@@ -191,7 +191,7 @@ TimeZone::get_parts_local(
     return (iter - 1)->parts;
   else
     // The local time does not exist.
-    throw NonexistentLocalTime(); 
+    throw NonexistentDateDaytime(); 
 }
 
 

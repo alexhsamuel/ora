@@ -289,15 +289,28 @@ struct TimeParts
 // Local time structs
 //------------------------------------------------------------------------------
 
-struct LocalDatenumDaytick
+/*
+ * A pair of datenum and daytick.
+ *
+ * An instance does *not* represent a time!  Given a time zone, the instance
+ * might be converted to zero, one, or two times.
+ */
+struct DatenumDaytick
 {
   Datenum   datenum = DATENUM_INVALID;
   Daytick   daytick = DAYTICK_INVALID;
 };
 
 
+/*
+ * A pair of date and daytime.
+ *
+ * An instance does *not* represent a time, but rather the values read off a
+ * calendar and clock in a particular (unspecified) time zone.  Given a time
+ * zone, the instance might be converted to zero, one, or two times.
+ */
 template<class DATE, class DAYTIME>
-struct LocalTime
+struct DateDaytime
 {
   DATE      date    = DATE::INVALID;
   DAYTIME   daytime = DAYTIME::INVALID;

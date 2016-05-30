@@ -120,13 +120,13 @@ public:
 };
 
 
-class NonexistentLocalTime
+class NonexistentDateDaytime
   : public Error
 {
 public:
 
-  NonexistentLocalTime() : Error("local time does not exist") {}
-  virtual ~NonexistentLocalTime() = default;
+  NonexistentDateDaytime() : Error("local time does not exist") {}
+  virtual ~NonexistentDateDaytime() = default;
 
 };
 
