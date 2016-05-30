@@ -150,7 +150,7 @@ from_local(
 
 template<class TIME=time::Time>
 inline TIME
-from_local(
+from_local_parts(
   Year const            year,
   Month const           month,
   Day const             day,
@@ -189,7 +189,7 @@ from_local(
 
 template<class TIME=time::Time>
 inline TIME
-from_local(
+from_local_parts(
   Year const            year,
   Month const           month,
   Day const             day,
@@ -199,7 +199,7 @@ from_local(
   std::string const&    time_zone_name,
   bool const            first=true)
 {
-  return from_local(
+  return from_local_parts(
     year, month, day, hour, minute, second, 
     *get_time_zone(time_zone_name), first);
 }
@@ -233,7 +233,7 @@ from_utc(
   Minute const          minute,
   Second const          second)
 {
-  return from_local(year, month, day, hour, minute, second, UTC);
+  return from_local_parts(year, month, day, hour, minute, second, UTC);
 }
 
 
