@@ -74,24 +74,23 @@ private:
 
 using TimeZone_ptr = std::shared_ptr<TimeZone const>;
 
-// FIXME: Does this really need to be a pointer??
-/**
+/*
  * UTC time zone singleton.
  */
 extern TimeZone_ptr const UTC;
 
-/**
+/*
  * Returns the path to the current default zoneinfo directory.
  */
 extern fs::Filename     get_zoneinfo_dir();
 
-/**
+/*
  * Returns the path to the zoneinfo file for the time zone named 'name' in the
  * given zoneinfo directory.  If the time zone is not found, raises ValueError.
  */
 extern fs::Filename     find_time_zone_file(std::string const& name, fs::Filename const& zoneinfo_dir);
 
-/**
+/*
  * Returns the path to the zoneinfo file for the time zone named 'name' in the
  * default zoneinfo directory.
  */
@@ -102,12 +101,12 @@ find_time_zone_file(
   return find_time_zone_file(name, get_zoneinfo_dir());
 }
 
-/**
+/*
  * Returns a time zone named 'name' from the default zoneinfo directory.
  */
 extern TimeZone_ptr     get_time_zone(std::string const& name);
 
-/**
+/*
  * Returns a time zone named 'name' from the given zoneinfo directory.
  */
 extern TimeZone         get_time_zone(std::string const& name, fs::Filename const& zoneinfo_dir);
