@@ -1,6 +1,10 @@
 # Work List
 
 1. C++ namespace reorg.
+1. Offset month, day by one.
+1. Function (not method) APIs for dates, daytimes, and times.
+1. The operator<<(ostream) story.
+1. Global display time zone in Python API.
 1. Adjust the definition of TimeTraits.
 1. Add default template args to ctor functions, e.g.
    ```c++
@@ -12,16 +16,11 @@
 1. Add to time formatting the letter code for UTC offset (e.g. Z for UTC+0).
 1. Add hash functions for all Python types.
 1. Make hms_daytime dtype.
-1. Check Time128 second precision in C++ and Python.
 1. Add it to the global module.
-1. Offset month, day by one.
+1. Check Time128 second precision in C++ and Python.
 1. Rename `InvalidDateError` -> `BadDateError` _et fils_.
 1. Basic string parsing for `convert_to_*()` functions.
-1. Function (not method) APIs for dates, daytimes, and times.
-1. Global display time zone in Python API.
 1. `format()` method and `tp_format` for Date, Daytime, Time.
-1. Replace `tp_print` with API for Python Daytime.
-1. Kill off DateParts.
 
 
 # C++ API
