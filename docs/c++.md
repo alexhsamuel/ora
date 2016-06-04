@@ -82,6 +82,7 @@ auto last_week = date - 7;  // or date + -7
 ```c++
 int days_ago = days_between(past_date, today);
 int days_ago = today - past_date;
+```
 
 
 ### Date representations
