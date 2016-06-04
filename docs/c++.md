@@ -12,7 +12,7 @@ A `cron::date::Date` represents a calendar date.  A calendar date represents a p
 
 ### Building dates
 
-Cron provides various date factory functions. The most common convention for specifying a date is the _YMD_ form, a triplet of year number, month number, and day of month.  
+Cron provides various date factory functions. The most common convention for specifying a date is the _YMD_ form, a triplet of year number, month number, and day of month.  (The components are, according to tradition rather than reason, one-indexed.)
 
 ```c++
 Date date = from_ymd(1973, 12, 3);
