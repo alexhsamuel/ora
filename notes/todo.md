@@ -3,6 +3,8 @@
 1. C++ namespace reorg.
 1. Offset month, day by one.
 1. Make `offset_` a public member named `offset`.
+1. Move formatters into correct namespace.
+1. Just one cron.hh?
 1. Function (not method) APIs for dates, daytimes, and times.
 1. The operator<<(ostream) story.
 1. Global display time zone in Python API.
