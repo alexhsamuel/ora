@@ -120,5 +120,5 @@ The various dates are mutually constructible and assignable, as long as the actu
 
 ```c++
 Date date = from_ymd<Date16>(1973, 12, 3);
-Date16 date = 1973/DEC/3;
+Date16 date = 1973/DEC/3;  // from namespace cron::ez
 ```
