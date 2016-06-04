@@ -38,7 +38,6 @@ The `cron::ez` namespace adds syntactic sugar for specifying date literals.
 
 ```c++
 using namespace cron::ez;
-
 auto date = 1973/DEC/3;
 ```
 
@@ -61,16 +60,14 @@ auto ymdi = get_ymdi(date);
 There are also functions to return individual components directly, with a type alias for each component.
 
 ```c++
-Year year       = get_year(date);
+Year year       = get_year(date);       // for ymd and ordinal dates 
 Month month     = get_month(date);
 Day day         = get_day(date);
 Ordinal ordinal = get_ordinal(date);
-Year week_year  = get_week_year(date);
+Year week_year  = get_week_year(date);  // not same as get_year()!
 Week week       = get_week(date);
 Weekday weekday = get_weekday(date);
 ```
-
-Note that the year (of the YMD and ordinal representations) shares a _type_ with the "week year" of the week date, but they may have different values.
 
 
 ### Shifting dates
@@ -116,9 +113,9 @@ Date16 date = from_ymd<Date16>(1973, 12, 3);
 
 Each date class has `MIN` and `MAX` static attributes containing the earliest and latest representable dates.  Other than this, the date classes have identical APIs.
 
-The various dates are mutually constructible and assignable, as long as the actual dates are representable.
+The various dates are mutually conversion-constructible and -assignable, as long as the actual dates are representable.
 
 ```c++
-Date date = from_ymd<Date16>(1973, 12, 3);
-Date16 date = 1973/DEC/3;  // from namespace cron::ez
+using namespace cron::ez;
+Date16 date = 1973/DEC/3;  // RHS is Date, so convert.
 ```
