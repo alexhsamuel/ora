@@ -220,7 +220,7 @@ private:
   static GetSets<PyDate> tp_getsets_;
 
   /** Date format used to generate the repr.  */
-  static unique_ptr<cron::DateFormat> repr_format_;
+  static unique_ptr<cron::date::DateFormat> repr_format_;
 
   static Type build_type(string const& type_name);
 
@@ -246,7 +246,7 @@ PyDate<DATE>::add_to(
   PyDateAPI::add(&type_, std::make_unique<API>());
 
   // Build the repr format.
-  repr_format_ = make_unique<cron::DateFormat>(
+  repr_format_ = make_unique<cron::date::DateFormat>(
     name + "(%0Y, %~b, %0d)",
     name + ".INVALID",
     name + ".MISSING");
@@ -343,7 +343,7 @@ PyDate<DATE>::tp_str(
   PyDate* const self)
 {
   // FIXME: Make the format configurable.
-  auto& format = cron::DateFormat::get_default();
+  auto& format = cron::date::DateFormat::get_default();
   return Unicode::from(format(self->date_));
 }
 
@@ -780,7 +780,7 @@ PyDate<DATE>::tp_getsets_
 //------------------------------------------------------------------------------
 
 template<typename DATE>
-unique_ptr<cron::DateFormat>
+unique_ptr<cron::date::DateFormat>
 PyDate<DATE>::repr_format_;
 
 

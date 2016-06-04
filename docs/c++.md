@@ -3,7 +3,7 @@
 ## Dates
 
 ```c++
-#include "cron/date.hh"
+#include "cron.hh"
 
 using cron::date;
 ```
@@ -31,7 +31,19 @@ auto date = from_ordinal(1973, 337);
 auto date = from_week_date(1973, 48, MONDAY);
 ```
 
-`Date` supports dates between 0001-01-01 (Jan 1 of the year 1 C.E.) and 9999-12-31 (Dec 31, 9999).
+
+#### Date literals
+
+The `cron::ez` namespace adds syntactic sugar for specifying date literals.
+
+```c++
+using namespace cron::ez;
+
+auto date = 1973/DEC/3;
+```
+
+Special three-letter month constants must be used (`JAN`, `FEB`, ...), and leading zeros are not allowed for the year and day.  Such literals are `constexpr` and may be used as compile-time constants.
+
 
 ### Date accessors
 
@@ -63,7 +75,7 @@ Note that the year (of the YMD and ordinal representations) shares a _type_ with
 
 ### Shifting dates
 
-The `days_after()` and `days_before()` functions shift a date forward or backward by some number of calendar days.  Negative shifts may be used; the two functions are provided only for convenience.
+The `days_after()` and `days_before()` functions shift a date forward or backward by some number of calendar days.  Negative shifts may be used; two functions are provided only for convenience.
 
 ```c++
 auto next_week = days_after(date, 7);
@@ -87,7 +99,9 @@ int days_ago = today - past_date;
 
 ### Date representations
 
-`Date` stores the date as an `uint32_t` offset from 0001-01-01.  It has no virtual methods or other state, so `uint32_t*` may safely be cast to and from `Date*`.
+`Date` supports dates between 0001-01-01 (Jan 1 of the year 1 C.E.) and 9999-12-31 (Dec 31, 9999).  
+
+An instance stores the date as an `uint32_t` offset from 0001-01-01, and may efficiently be passed by value.  It has no virtual methods or other state, so `uint32_t*` may safely be cast to and from `Date*`.
 
 ```c++
 int offset = date.get_offset();
@@ -102,4 +116,9 @@ Date16 date = from_ymd<Date16>(1973, 12, 3);
 
 Each date class has `MIN` and `MAX` static attributes containing the earliest and latest representable dates.  Other than this, the date classes have identical APIs.
 
-The various dates are mutually copy-constructible and assignable, as long as the actual dates are representable.
+The various dates are mutually constructible and assignable, as long as the actual dates are representable.
+
+```c++
+Date date = from_ymd<Date16>(1973, 12, 3);
+Date16 date = 1973/DEC/3;
+```
