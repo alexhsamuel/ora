@@ -82,6 +82,7 @@ auto last_week = date - 7;  // or date + -7
 ```c++
 int days_ago = days_between(past_date, today);
 int days_ago = today - past_date;
+```
 
 
 ### Date representations
@@ -100,3 +101,5 @@ Date16 date = from_ymd<Date16>(1973, 12, 3);
 ```
 
 Each date class has `MIN` and `MAX` static attributes containing the earliest and latest representable dates.  Other than this, the date classes have identical APIs.
+
+The various dates are mutually copy-constructible and assignable, as long as the actual dates are representable.
