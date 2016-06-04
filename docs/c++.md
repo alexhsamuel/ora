@@ -41,8 +41,7 @@ using namespace cron::ez;
 auto date = 1973/DEC/3;
 ```
 
-Special three-letter month constants must be used (`JAN`, `FEB`, ...), and leading zeros are not allowed for the year and day.  Such literals are `constexpr` and may be used as compile-time constants.
-
+Special three-letter month constants must be used (`JAN`, `FEB`, ...), and leading zeros are not allowed for the year and day.  
 
 ### Date accessors
 
@@ -117,5 +116,5 @@ The various dates are mutually conversion-constructible and -assignable, as long
 
 ```c++
 using namespace cron::ez;
-Date16 date = 1973/DEC/3;  // RHS is Date, so convert.
+Date16 date = 1973/DEC/3;  // RHS is Date, so convert
 ```
