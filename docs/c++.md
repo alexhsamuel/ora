@@ -97,7 +97,7 @@ int days_ago = today - past_date;
 
 `Date` supports dates between 0001-01-01 (Jan 1 of the year 1 C.E.) and 9999-12-31 (Dec 31, 9999).  
 
-An instance stores the date as an `uint32_t` offset from 0001-01-01, and may efficiently be passed by value.  It has no virtual methods or other state, so `uint32_t*` may safely be cast to and from `Date*`.
+An instance stores the date as an `uint32_t` offset from 0001-01-01, and may efficiently be passed by value.  It has no virtual methods or other state, so `uint32_t*` may be cast to and from `Date*`, as long as the value corresponds to a valid offset.
 
 ```c++
 int offset = date.get_offset();
