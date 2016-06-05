@@ -54,3 +54,16 @@ TEST(DateFormat, iso_invalid) {
   EXPECT_EQ("INVALID   ", DateFormat::ISO_WEEK_EXTENDED(Date::INVALID));
 }
 
+TEST(Date, to_string1) {
+  EXPECT_EQ("0001-01-01", to_string(Date::MIN));
+  EXPECT_EQ("2016-06-05", to_string(2016/JUN/5));
+  EXPECT_EQ("9999-12-31", to_string(Date::MAX));
+  EXPECT_EQ("INVALID", to_string(Date::INVALID));
+  EXPECT_EQ("MISSING", to_string(Date::MISSING));
+
+  EXPECT_EQ("1970-01-01", to_string(Date16::MIN));
+  EXPECT_EQ("2149-06-04", to_string(Date16::MAX));
+  EXPECT_EQ("INVALID", to_string(Date16::INVALID));
+  EXPECT_EQ("MISSING", to_string(Date16::MISSING));
+}
+

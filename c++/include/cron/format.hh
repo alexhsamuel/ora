@@ -99,11 +99,14 @@ private:
 
 //------------------------------------------------------------------------------
 
+namespace time {
+
 class TimeFormat
   : public Format
 {
 public:
 
+  //static TimeFormat const DEFAULT;
   static TimeFormat const ISO_LOCAL_BASIC;
   static TimeFormat const ISO_LOCAL_EXTENDED;
   static TimeFormat const ISO_UTC_BASIC;
@@ -113,6 +116,7 @@ public:
 
   using Format::Format;
 
+  // FIXME: Remove.
   static TimeFormat const& 
   get_default() 
   { 
@@ -190,6 +194,8 @@ operator<<(
 }
 
 
+}  // namespace time
+
 //------------------------------------------------------------------------------
 
 namespace date {
@@ -199,6 +205,7 @@ class DateFormat
 {
 public:
 
+  static DateFormat const DEFAULT;
   static DateFormat const ISO_CALENDAR_BASIC;
   static DateFormat const ISO_CALENDAR_EXTENDED;
   static DateFormat const ISO_ORDINAL_BASIC;
@@ -207,17 +214,6 @@ public:
   static DateFormat const ISO_WEEK_EXTENDED;
 
   using Format::Format;
-
-  static DateFormat const& 
-  get_default() 
-  { 
-    // Use representations for invalid and missing that are the same length.
-    static DateFormat const format(
-      "%Y-%m-%d", 
-      "INVALID   ", 
-      "MISSING   ");
-    return format;
-  }
 
   template<class DATE> 
   std::string
@@ -242,7 +238,7 @@ inline std::string
 to_string(
   date::DateTemplate<TRAITS> date)
 {
-  return DateFormat::get_default()(date);
+  return DateFormat::DEFAULT(date);
 }
 
 

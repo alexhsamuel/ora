@@ -457,6 +457,7 @@ Format::format(
 // Class TimeFormat
 //------------------------------------------------------------------------------
 
+//TimeFormat const TimeFormat::DEFAULT            {};
 TimeFormat const TimeFormat::ISO_LOCAL_BASIC    = "%Y%m%dT%H%M%S";
 TimeFormat const TimeFormat::ISO_LOCAL_EXTENDED = "%Y-%m-%dT%H:%M:%S";
 TimeFormat const TimeFormat::ISO_UTC_BASIC      = "%Y%m%dT%H%M%SZ";
@@ -470,6 +471,7 @@ TimeFormat const TimeFormat::ISO_ZONE_EXTENDED  = "%Y-%m-%dT%H:%M:%S%U%Q:%q";
 
 namespace date {
 
+DateFormat const DateFormat::DEFAULT{"%Y-%m-%d", "INVALID", "MISSING"};
 DateFormat const DateFormat::ISO_CALENDAR_BASIC    = "%Y%m%d";
 DateFormat const DateFormat::ISO_CALENDAR_EXTENDED = "%Y-%m-%d";
 DateFormat const DateFormat::ISO_ORDINAL_BASIC     = "%Y%j";

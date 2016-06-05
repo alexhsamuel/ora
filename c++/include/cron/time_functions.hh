@@ -36,7 +36,7 @@ get_epoch_time(
 }
 
 
-template<class TIME>
+template<class TIME=Time>
 inline TIME
 now()
 {

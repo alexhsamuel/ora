@@ -158,19 +158,6 @@ TEST(Date, ostream) {
 
 }
 
-TEST(Date, to_string) {
-  Date const date = 1973/DEC/3;
-  EXPECT_EQ("1973-12-03", to_string(date));
-
-  DateFormat const format = "%~^b %0d, %Y";
-  EXPECT_EQ("DEC 3, 1973", format(date));
-
-  EXPECT_EQ("1973-12-03", to_string(date));
-  EXPECT_EQ("1973 Dec  3", (std::string) DateFormat("%Y %~b %# d")(date));
-  EXPECT_EQ("INVALID   ", to_string(Date::INVALID));
-  EXPECT_EQ("MISSING   ", to_string(Date::MISSING));
-}
-
 TEST(Date, from_iso_date) {
   EXPECT_EQ(from_iso_date<Date>("0001-01-01"),    1/JAN/ 1);
   EXPECT_EQ(from_iso_date<Date>("00010101"  ),    1/JAN/ 1);
