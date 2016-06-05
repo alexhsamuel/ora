@@ -44,6 +44,7 @@ The following format codes are supported for times only:
 | `%Q` | the hours part of the time zone offset |
 | `%U` | the sign of the time zone offset |
 | `%Z` | the time zone name |
+| `%z` | the [military time zone](https://en.wikipedia.org/wiki/List_of_military_time_zones) letter |
 
 The following modifiers are supported:
 

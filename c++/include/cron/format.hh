@@ -109,8 +109,8 @@ public:
   static TimeFormat const DEFAULT;
   static TimeFormat const ISO_LOCAL_BASIC;
   static TimeFormat const ISO_LOCAL_EXTENDED;
-  static TimeFormat const ISO_UTC_BASIC;
-  static TimeFormat const ISO_UTC_EXTENDED;
+  static TimeFormat const ISO_ZONE_LETTER_BASIC;
+  static TimeFormat const ISO_ZONE_LETTER_EXTENDED;
   static TimeFormat const ISO_ZONE_BASIC;
   static TimeFormat const ISO_ZONE_EXTENDED;
 
@@ -332,6 +332,16 @@ extern Month parse_month_name(std::string const& str);
 extern std::string const& get_month_abbr(Month month);
 extern Month parse_month_abbr(std::string const& str);
 
+/*
+ * Returns the military / nautical time zone offset letter.
+ *
+ * Returns the one letter code of the [military time
+ * zone](http://en.wikipedia.org/wiki/List_of_military_time_zones)
+ * corresponding to an offset.  If there is no military time zone, returns an
+ * unspecified nonalphabetic character.
+ */
+extern char get_time_zone_offset_letter(TimeZoneOffset);
+
 extern std::string const& get_weekday_name(Weekday weekday);
 extern Weekday parse_weekday_name(std::string const& str);
 extern std::string const& get_weekday_abbr(Weekday weekday);
@@ -340,5 +350,4 @@ extern Weekday parse_weekday_abbr(std::string const& str);
 //------------------------------------------------------------------------------
 
 }  // namespace cron
-
 

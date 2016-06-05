@@ -166,8 +166,8 @@ TEST(TimeFormat, iso) {
   set_display_time_zone("US/Eastern");
   EXPECT_EQ("20130728T153738",              TimeFormat::ISO_LOCAL_BASIC(time, DTZ));
   EXPECT_EQ("2013-07-28T15:37:38",          TimeFormat::ISO_LOCAL_EXTENDED(time, DTZ));
-  EXPECT_EQ("20130728T193738Z",             TimeFormat::ISO_UTC_BASIC(time));
-  EXPECT_EQ("2013-07-28T19:37:38Z",         TimeFormat::ISO_UTC_EXTENDED(time));
+  EXPECT_EQ("20130728T193738Z",             TimeFormat::ISO_ZONE_LETTER_BASIC(time));
+  EXPECT_EQ("2013-07-28T19:37:38Z",         TimeFormat::ISO_ZONE_LETTER_EXTENDED(time));
   EXPECT_EQ("20130728T153738-0400",         TimeFormat::ISO_ZONE_BASIC(time, DTZ));
   EXPECT_EQ("2013-07-28T15:37:38-04:00",    TimeFormat::ISO_ZONE_EXTENDED(time, DTZ));
 }
@@ -175,8 +175,8 @@ TEST(TimeFormat, iso) {
 TEST(TimeFormat, iso_invalid) {
   EXPECT_EQ("INVALID        ",              TimeFormat::ISO_LOCAL_BASIC(Time::INVALID));
   EXPECT_EQ("MISSING            ",          TimeFormat::ISO_LOCAL_EXTENDED(Time::MISSING));
-  EXPECT_EQ("MISSING         ",             TimeFormat::ISO_UTC_BASIC(Time::MISSING));
-  EXPECT_EQ("INVALID             ",         TimeFormat::ISO_UTC_EXTENDED(Time::INVALID));
+  EXPECT_EQ("MISSING         ",             TimeFormat::ISO_ZONE_LETTER_BASIC(Time::MISSING));
+  EXPECT_EQ("INVALID             ",         TimeFormat::ISO_ZONE_LETTER_EXTENDED(Time::INVALID));
   EXPECT_EQ("INVALID             ",         TimeFormat::ISO_ZONE_BASIC(Time::INVALID));
   EXPECT_EQ("MISSING                  ",    TimeFormat::ISO_ZONE_EXTENDED(Time::MISSING));
 }

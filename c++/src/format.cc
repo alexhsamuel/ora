@@ -339,6 +339,10 @@ format_time_zone(
     sb << (time_zone.offset < 0 ? '-' : '+');
     break;
 
+  case 'z':
+    sb << get_time_zone_offset_letter(time_zone.offset);
+    break;
+
   case 'Z':
     // FIXME: Time zone full name.
     if (mods.abbreviate)
@@ -459,13 +463,13 @@ Format::format(
 
 namespace time {
 
-TimeFormat const TimeFormat::DEFAULT("%Y-%m-%dT%H:%M:%SZ", "INVALID", "MISSING");
-TimeFormat const TimeFormat::ISO_LOCAL_BASIC    = "%Y%m%dT%H%M%S";
-TimeFormat const TimeFormat::ISO_LOCAL_EXTENDED = "%Y-%m-%dT%H:%M:%S";
-TimeFormat const TimeFormat::ISO_UTC_BASIC      = "%Y%m%dT%H%M%SZ";
-TimeFormat const TimeFormat::ISO_UTC_EXTENDED   = "%Y-%m-%dT%H:%M:%SZ";
-TimeFormat const TimeFormat::ISO_ZONE_BASIC     = "%Y%m%dT%H%M%S%U%Q%q";
-TimeFormat const TimeFormat::ISO_ZONE_EXTENDED  = "%Y-%m-%dT%H:%M:%S%U%Q:%q";
+TimeFormat const TimeFormat::DEFAULT("%Y-%m-%dT%H:%M:%S%z", "INVALID", "MISSING");
+TimeFormat const TimeFormat::ISO_LOCAL_BASIC            = "%Y%m%dT%H%M%S";
+TimeFormat const TimeFormat::ISO_LOCAL_EXTENDED         = "%Y-%m-%dT%H:%M:%S";
+TimeFormat const TimeFormat::ISO_ZONE_LETTER_BASIC      = "%Y%m%dT%H%M%S%z";
+TimeFormat const TimeFormat::ISO_ZONE_LETTER_EXTENDED   = "%Y-%m-%dT%H:%M:%S%z";
+TimeFormat const TimeFormat::ISO_ZONE_BASIC             = "%Y%m%dT%H%M%S%U%Q%q";
+TimeFormat const TimeFormat::ISO_ZONE_EXTENDED          = "%Y-%m-%dT%H:%M:%S%U%Q:%q";
 
 }  // namespace time
 
@@ -533,6 +537,23 @@ month_abbrs[] = {
 };
 
 
+// Letters representing military time zone offsets, starting with UTC-12:00 and
+// proceeding in one-hour increments through UTC+12:00.
+char const
+time_zone_offset_letters[25] = {
+  'Y', 'X', 'W', 'V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N',
+  'Z',
+  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M',
+};
+
+
+// The letter to use for a time zone offset that has no military / nautical
+// correspondence, because it is not a round hour offset from UTC.
+char const
+time_zone_offset_letter_missing
+  = '*';
+
+
 string const
 weekday_names[] = {
   "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
@@ -584,6 +605,24 @@ parse_month_abbr(
     if (month_abbrs[(int) month - 1] == str)
       return month;
   throw ValueError(string("bad month abbr: ") + str);
+}
+
+
+inline char
+get_time_zone_offset_letter(
+  TimeZoneOffset const offset)
+{
+  // Fast path.
+  if (offset == 0)
+    return 'Z';
+
+  auto hours = std::div(offset, SECS_PER_HOUR);
+  if (hours.rem == 0) {
+    assert(0 <= hours.quot + 12 && hours.quot + 12 <= 24);
+    return time_zone_offset_letters[hours.quot + 12];
+  }
+  else
+    return time_zone_offset_letter_missing;
 }
 
 
