@@ -53,17 +53,17 @@ Hour constexpr      HOUR_INVALID        = std::numeric_limits<Hour>::max();
 inline constexpr bool hour_is_valid(Hour hour) { return in_interval(HOUR_MIN, hour, HOUR_END); }
 
 using Day = uint8_t;
-Day constexpr       DAY_MIN             = 0;
-Day constexpr       DAY_END             = 31;
+Day constexpr       DAY_MIN             = 1;
+Day constexpr       DAY_END             = 32;
 Day constexpr       DAY_MAX             = DAY_END - 1;
 Day constexpr       DAY_INVALID         = std::numeric_limits<Day>::max();
 // FIXME: Maybe we shouldn't have this.
 inline constexpr bool day_is_valid(Day day) { return in_interval(DAY_MIN, day, DAY_END); }
 
 using Month = uint8_t;
-Month constexpr     MONTH_MIN           = 0;
-Month constexpr     MONTH_END           = 12;
-Month constexpr     MONTH_MAX           = MONTH_END - 1;
+Month constexpr     MONTH_MIN           = 1;
+Month constexpr     MONTH_MAX           = 12;
+Month constexpr     MONTH_END           = MONTH_MAX + 1;
 Month constexpr     MONTH_INVALID       = std::numeric_limits<Month>::max();
 inline constexpr bool month_is_valid(Month month) { return in_interval(MONTH_MIN, month, MONTH_END); }
 
@@ -75,15 +75,15 @@ Year constexpr      YEAR_INVALID        = std::numeric_limits<Year>::min();
 inline constexpr bool year_is_valid(Year year) { return in_interval(YEAR_MIN, year, YEAR_END); }
 
 using Ordinal = uint16_t;
-Ordinal constexpr   ORDINAL_MIN         = 0;
-Ordinal constexpr   ORDINAL_END         = 366;
+Ordinal constexpr   ORDINAL_MIN         = 1;
+Ordinal constexpr   ORDINAL_END         = 367;
 Ordinal constexpr   ORDINAL_MAX         = ORDINAL_END - 1;
 Ordinal constexpr   ORDINAL_INVALID     = std::numeric_limits<Ordinal>::max();
 inline constexpr bool ordinal_is_valid(Ordinal ordinal) { return in_interval(ORDINAL_MIN, ordinal, ORDINAL_END); }
 
 using Week = uint8_t;
-Week constexpr      WEEK_MIN            = 0;
-Week constexpr      WEEK_END            = 53;
+Week constexpr      WEEK_MIN            = 1;
+Week constexpr      WEEK_END            = 54;
 Week constexpr      WEEK_MAX            = WEEK_END - 1;
 Week constexpr      WEEK_INVALID        = std::numeric_limits<Week>::max();
 inline constexpr bool week_is_valid(Week week) { return in_interval(WEEK_MIN, week, WEEK_END); }

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "cron/date.hh"
 #include "cron/date_math.hh"
+#include "cron/date_type.hh"
 #include "cron/types.hh"
 
 namespace cron {
@@ -13,21 +13,21 @@ namespace date {
 
 // Synonyms for static factory methods; included for completeness.
 
-template<class DATE> inline DATE from_datenum(Datenum const d)
+template<class DATE=Date> inline DATE from_datenum(Datenum const d)
   { return DATE::from_datenum(d); }
-template<class DATE> inline DATE from_iso_date(std::string const& d)
+template<class DATE=Date> inline DATE from_iso_date(std::string const& d)
   { return DATE::from_iso_date(d); }
-template<class DATE> inline DATE from_offset(typename DATE::Offset const o)
+template<class DATE=Date> inline DATE from_offset(typename DATE::Offset const o)
   { return DATE::from_offset(o); }
-template<class DATE> inline DATE from_ordinal_date(Year const y, Ordinal const o) 
+template<class DATE=Date> inline DATE from_ordinal_date(Year const y, Ordinal const o) 
   { return DATE::from_ordinal_date(y, o); }
-template<class DATE> inline DATE from_week_date(Year const y, Week const w, Weekday const d)
+template<class DATE=Date> inline DATE from_week_date(Year const y, Week const w, Weekday const d)
   { return DATE::from_week_date(y, w, d); }
-template<class DATE> inline DATE from_ymd(Year const y, Month const m, Day const d)
+template<class DATE=Date> inline DATE from_ymd(Year const y, Month const m, Day const d)
   { return DATE::from_ymd(y, m, d); }
-template<class DATE> inline DATE from_ymd(YmdDate const& d)
+template<class DATE=Date> inline DATE from_ymd(YmdDate const& d)
   { return DATE::from_ymd(d); }
-template<class DATE> inline DATE from_ymdi(int y)
+template<class DATE=Date> inline DATE from_ymdi(int y)
   { return DATE::from_ymdi(y); }
 
 //------------------------------------------------------------------------------

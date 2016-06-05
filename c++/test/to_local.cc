@@ -13,7 +13,7 @@ using namespace cron::time;
 //------------------------------------------------------------------------------
 
 TEST(Time, basic) {
-  auto const time = from_utc_parts(2016, 4, 29, 20, 15, 0);
+  auto const time = from_utc_parts(2016, 5, 30, 20, 15, 0);
 
   auto const nyc = to_local(time, "America/New_York");
   EXPECT_EQ(2016/MAY/30, nyc.date);

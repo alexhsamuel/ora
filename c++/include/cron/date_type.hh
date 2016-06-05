@@ -15,6 +15,17 @@ namespace cron {
 namespace date {
 
 //------------------------------------------------------------------------------
+// Forward declarations
+//------------------------------------------------------------------------------
+
+namespace safe {
+
+template<class DATE> DATE from_datenum(Datenum) noexcept;
+template<class DATE> DATE from_offset(typename DATE::Offset) noexcept;
+
+}  // namespace safe
+
+//------------------------------------------------------------------------------
 // Generic date type
 //------------------------------------------------------------------------------
 
@@ -106,8 +117,8 @@ public:
     Datenum const datenum)
   {
     if (datenum_is_valid(datenum)) {
-      auto const offset = (long) datenum - (long) Traits::base;
-      if (in_range((long) Traits::min, offset, (long) Traits::max))
+      auto const offset = (int64_t) datenum - (int64_t) Traits::base;
+      if (in_range<int64_t>(Traits::min, offset, Traits::max))
         return {(Offset) offset};
       else
         throw DateRangeError();

@@ -32,15 +32,15 @@ TEST(AllCalendar, contains0) {
 
 TEST(AllCalendar, contains1) {
   AllCalendar const cal;
-  EXPECT_TRUE (cal.contains(Date16(1970,  0, 0)));
-  EXPECT_TRUE (cal.contains(Date16(1973, 11, 2)));
-  EXPECT_TRUE (cal.contains(Date16(2013,  6, 10)));
-  EXPECT_TRUE (cal.contains(Date16(2013,  6, 11)));
-  EXPECT_TRUE (cal.contains(Date16(2013,  6, 12)));
-  EXPECT_TRUE (cal.contains(Date16(2013,  6, 13)));
-  EXPECT_TRUE (cal.contains(Date16(2013,  6, 14)));
-  EXPECT_TRUE (cal[Date16(2013,  6, 13)]);
-  EXPECT_TRUE (cal[Date16(2013,  6, 14)]);
+  EXPECT_TRUE (cal.contains(from_ymd<Date16>(1970,  1,  1)));
+  EXPECT_TRUE (cal.contains(from_ymd<Date16>(1973, 12,  3)));
+  EXPECT_TRUE (cal.contains(from_ymd<Date16>(2013,  7, 11)));
+  EXPECT_TRUE (cal.contains(from_ymd<Date16>(2013,  7, 12)));
+  EXPECT_TRUE (cal.contains(from_ymd<Date16>(2013,  7, 13)));
+  EXPECT_TRUE (cal.contains(from_ymd<Date16>(2013,  7, 14)));
+  EXPECT_TRUE (cal.contains(from_ymd<Date16>(2013,  7, 15)));
+  EXPECT_TRUE (cal[from_ymd<Date16>(2013,  7, 14)]);
+  EXPECT_TRUE (cal[from_ymd<Date16>(2013,  7, 15)]);
   EXPECT_TRUE (cal[Date16::MIN]);
   EXPECT_TRUE (cal[Date16::MAX]);
   EXPECT_FALSE(cal.contains(Date16::INVALID));

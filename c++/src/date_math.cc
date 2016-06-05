@@ -50,7 +50,7 @@ datenum_to_ordinal_date(
     days %= 365;
   }
 
-  return OrdinalDate{year, (Ordinal) days};
+  return OrdinalDate{year, (Ordinal) (days + 1)};
 }
 
 
@@ -66,55 +66,55 @@ datenum_to_ymd(
   Month month;
   Day day;
 
-  if (days < 31) {
-    month = 0;
+  if (days < 32) {
+    month = 1;
     day = days;
   } 
-  else if (days < 59 || (leap && days == 59)) {
-    month = 1;
+  else if (days < 60 || (leap && days == 60)) {
+    month = 2;
     day = days - 31;
   }
   else {
     if (leap)
       --days;
-    if (days < 90) {
-      month = 2;
+    if (days < 91) {
+      month = 3;
       day = days - 59;
     }
-    else if (days < 120) {
-      month = 3;
+    else if (days < 121) {
+      month = 4;
       day = days - 90;
     }
-    else if (days < 151) {
-      month = 4;
+    else if (days < 152) {
+      month = 5;
       day = days - 120;
     }
-    else if (days < 181) {
-      month = 5;
+    else if (days < 182) {
+      month = 6;
       day = days - 151;
     }
-    else if (days < 212) {
-      month = 6;
+    else if (days < 213) {
+      month = 7;
       day = days - 181;
     }
-    else if (days < 243) {
-      month = 7;
+    else if (days < 244) {
+      month = 8;
       day = days - 212;
     }
-    else if (days < 273) {
-      month = 8;
+    else if (days < 274) {
+      month = 9;
       day = days - 243;
     }
-    else if (days < 304) {
-      month = 9;
+    else if (days < 305) {
+      month = 10;
       day = days - 273;
     }
-    else if (days < 334) {
-      month = 10;
+    else if (days < 335) {
+      month = 11;
       day = days - 304;
     }
     else {
-      month = 11;
+      month = 12;
       day = days - 334;
     }
   }
@@ -130,14 +130,14 @@ datenum_to_week_date(
   Weekday const weekday)
   noexcept
 {
-  auto const year    = ordinal_date.year;
-  auto const ordinal = ordinal_date.ordinal;
+  auto const year = ordinal_date.year;
+  auto const days = ordinal_date.ordinal - 1;
 
   Year week_year;
   Week week;
 
   // The week number is the week number of the nearest Thursday.
-  int16_t const thursday = ordinal + THURSDAY - weekday;
+  int16_t const thursday = days + THURSDAY - weekday;
   if (thursday < 0) {
     // The nearest Thursday is part of the previous week year.
     week_year = year - 1;
@@ -146,21 +146,21 @@ datenum_to_week_date(
     //   - a Thursday, in week 52
     //   - a Friday, in week 52 of a leap year or week 51 otherwise, 
     //   - a Saturday, in week 51.
-    Weekday const dec31_weekday = weekday - ordinal - 1;
+    Weekday const dec31_weekday = weekday - days - 1;
     week = 
          dec31_weekday == THURSDAY
       || (dec31_weekday == FRIDAY && is_leap_year(week_year))
-      ? 52 : 51;
+      ? 53 : 52;
   }
   else if (thursday >= 365 + is_leap_year(year)) {
     // The nearest Thursday is part of the next week year.
     week_year = year + 1;
-    week = 0;
+    week = 1;
   }
   else {
     week_year = year;
     // Just count Thursdays.
-    week = thursday / 7;
+    week = thursday / 7 + 1;
   }
 
   return WeekDate{week_year, week, weekday};
@@ -185,8 +185,8 @@ parse_iso_date(
     && isdigit(text[7])) 
     return {
       (Year)   atoi(text.substr(0, 4).c_str()),
-      (Month) (atoi(text.substr(4, 2).c_str()) - 1),
-      (Day)   (atoi(text.substr(6, 2).c_str()) - 1),
+      (Month) (atoi(text.substr(4, 2).c_str())),
+      (Day)   (atoi(text.substr(6, 2).c_str())),
     };
   else if (
        len == 10
@@ -202,8 +202,8 @@ parse_iso_date(
     && isdigit(text[9])) 
     return {
       (Year)   atoi(text.substr(0, 4).c_str()),
-      (Month) (atoi(text.substr(5, 2).c_str()) - 1),
-      (Day)   (atoi(text.substr(8, 2).c_str()) - 1),
+      (Month) (atoi(text.substr(5, 2).c_str())),
+      (Day)   (atoi(text.substr(8, 2).c_str())),
     };
   else
     return YmdDate{};  // invalid

@@ -23,8 +23,21 @@ private:
   {
   public:
 
-    constexpr YearMonthLiteral(Year year, Month month) : year_(year), month_(month) {}
-    Date operator/(Day day) const { return Date(year_, month_ - 1, day - 1); }
+    constexpr 
+    YearMonthLiteral(
+      Year const year, 
+      Month const month) 
+    : year_(year), 
+      month_(month) 
+    {}
+    
+    Date 
+    operator/(
+      Day day) 
+      const 
+    { 
+      return Date(year_, month_, day); 
+    }
 
   private:
 
@@ -38,7 +51,7 @@ public:
   constexpr MonthLiteral(Month month) : month_(month) {}
   constexpr YearMonthLiteral with_year(Year year) const { return YearMonthLiteral(year, month_); }
   
-  explicit operator Month() const { return month_ - 1; }
+  explicit operator Month() const { return month_; }
 
 private:
 

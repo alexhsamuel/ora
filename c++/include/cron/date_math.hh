@@ -80,7 +80,7 @@ ordinal_date_is_valid(
 {
   return 
        year_is_valid(year) 
-    && in_interval(ORDINAL_MIN, ordinal, days_per_year(year));
+    && in_range(ORDINAL_MIN, ordinal, days_per_year(year));
 }
 
 
@@ -95,8 +95,8 @@ days_per_month(
   Month const month)
 {
   return 
-      month ==  3 || month ==  5 || month ==  8 || month == 10 ? 30
-    : month == 1 ? (is_leap_year(year) ? 29 : 28)
+      month ==  4 || month ==  6 || month ==  9 || month == 11 ? 30
+    : month == 2 ? (is_leap_year(year) ? 29 : 28)
     : 31;
 }
 
@@ -113,7 +113,7 @@ ymd_is_valid(
   return 
        month_is_valid(month)
     && year_is_valid(year)
-    && in_interval(DAY_MIN, day, days_per_month(year, month));
+    && in_range(DAY_MIN, day, days_per_month(year, month));
 }
 
 
@@ -153,7 +153,7 @@ ordinal_date_to_datenum(
   Year const year,
   Ordinal const ordinal)
 {
-  return jan1_datenum(year) + ordinal;
+  return jan1_datenum(year) + ordinal - 1;
 }
 
 
@@ -167,18 +167,18 @@ get_month_offset(
 {
   // The cumbersome construction is required for constexpr.
   return
-      (month == 0) ?    0
-    : (month == 1) ?   31
+      (month == 1) ?    0
+    : (month == 2) ?   31
     : (
-         (month ==  2) ?  59
-       : (month ==  3) ?  90
-       : (month ==  4) ? 120
-       : (month ==  5) ? 151
-       : (month ==  6) ? 181
-       : (month ==  7) ? 212
-       : (month ==  8) ? 243
-       : (month ==  9) ? 273
-       : (month == 10) ? 304
+         (month ==  3) ?  59
+       : (month ==  4) ?  90
+       : (month ==  5) ? 120
+       : (month ==  6) ? 151
+       : (month ==  7) ? 181
+       : (month ==  8) ? 212
+       : (month ==  9) ? 243
+       : (month == 10) ? 273
+       : (month == 11) ? 304
        :                 334
       ) + (is_leap_year(year) ? 1 : 0);
 }
@@ -193,7 +193,7 @@ ymd_to_datenum(
   return
       jan1_datenum(year)
     + get_month_offset(year, month)
-    + day;
+    + day - 1;
 }
 
 
@@ -232,7 +232,7 @@ week_date_is_valid(
   return
        year_is_valid(week_year)
     && weekday_is_valid(weekday)
-    && in_interval(WEEK_MIN, week, weeks_in_week_year(week_year));
+    && in_range(WEEK_MIN, week, weeks_in_week_year(week_year));
 }
 
 
@@ -250,7 +250,7 @@ week_date_to_datenum(
   return 
       jan1                              // Start with Jan 1.
     + (10 - get_weekday(jan1)) % 7 - 3  // Adjust to start on the full week.
-    + week * 7                          // Add the week offset.
+    + (week - 1) * 7                    // Add the week offset.
     + weekday;                          // Add the weekday offset.
 }
 
@@ -292,7 +292,7 @@ ymdi_is_valid(
 {
   return 
        in_interval(YMDI_MIN, ymdi, YMDI_END)
-    && ymd_is_valid(ymdi / 10000, ymdi / 100 % 100 - 1, ymdi % 100 - 1);
+    && ymd_is_valid(ymdi / 10000, ymdi / 100 % 100, ymdi % 100);
 }
 
 
@@ -304,7 +304,7 @@ ymdi_to_datenum(
   int const ymdi)
   noexcept
 {
-  return ymd_to_datenum(ymdi / 10000, ymdi / 100 % 100 - 1, ymdi % 100 - 1);
+  return ymd_to_datenum(ymdi / 10000, ymdi / 100 % 100, ymdi % 100);
 }
 
 
@@ -314,7 +314,7 @@ datenum_to_ymdi(
   noexcept
 {
   auto const ymd = datenum_to_ymd(datenum);
-  return 10000 * ymd.year + 100 * (ymd.month + 1) + (ymd.day + 1);
+  return 10000 * ymd.year + 100 * ymd.month + ymd.day;
 }
 
 

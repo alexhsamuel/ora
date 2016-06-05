@@ -40,7 +40,10 @@ public:
   : pattern_(pattern)
   {
     static Parts parts{
-      .date = FullDate{{0, 0}, {0, 0, 0}, {0, 0, 0}}, 
+      .date = FullDate{
+        {YEAR_MIN, ORDINAL_MIN}, 
+        {YEAR_MIN, MONTH_MIN, DAY_MIN}, 
+        {YEAR_MIN, WEEK_MIN, WEEKDAY_MIN}}, 
       .have_date = true,
       .daytime = HmsDaytime{0, 0, 0}, 
       .have_daytime = true,

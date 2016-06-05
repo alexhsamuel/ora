@@ -66,13 +66,13 @@ TEST(Time, from_parts) {
   EXPECT_EQ(offset, time1.get_offset());
   TimeParts const parts1 = get_parts(time1, "US/Eastern");
   EXPECT_EQ(2013, parts1.date.year);
-  EXPECT_EQ(6, parts1.date.month);
-  EXPECT_EQ(27, parts1.date.day);
+  EXPECT_EQ(7, parts1.date.month);
+  EXPECT_EQ(28, parts1.date.day);
 
   auto const time2 = from_local(2013/JUL/28, Daytime(15, 37, 38), *tz);
   EXPECT_EQ(offset, time2.get_offset());
 
-  auto const time3 = from_local_parts(2013, 6, 27, 15, 37, 38, *tz);
+  auto const time3 = from_local_parts(2013, 7, 28, 15, 37, 38, *tz);
   EXPECT_EQ(offset, time3.get_offset());
 }
 
@@ -109,18 +109,18 @@ TEST(Time, from_parts_invalid) {
   EXPECT_THROW(from_local(2013/JUL/28, Daytime(0, 60, 0), *tz), InvalidDaytimeError);
   EXPECT_THROW(from_local(2013/JUL/28, Daytime(0, 0, 60), *tz), InvalidDaytimeError);
 
-  EXPECT_THROW(from_local_parts(10000,  0,  0,  0,  0,  0, *tz), InvalidDateError);
-  EXPECT_THROW(from_local_parts( 2013, 12,  0,  0,  0,  0, *tz), InvalidDateError);
-  EXPECT_THROW(from_local_parts( 2013,  0, 31,  0,  0,  0, *tz), InvalidDateError);
-  EXPECT_THROW(from_local_parts( 2013,  0,  0, 24,  0,  0, *tz), InvalidDaytimeError);
-  EXPECT_THROW(from_local_parts( 2013,  0,  0,  0, 60,  0, *tz), InvalidDaytimeError);
-  EXPECT_THROW(from_local_parts( 2013,  0,  0,  0,  0, 60, *tz), InvalidDaytimeError);
+  EXPECT_THROW(from_local_parts(10000,  1,  1,  0,  0,  0, *tz), InvalidDateError);
+  EXPECT_THROW(from_local_parts( 2013, 13,  1,  0,  0,  0, *tz), InvalidDateError);
+  EXPECT_THROW(from_local_parts( 2013,  1, 32,  0,  0,  0, *tz), InvalidDateError);
+  EXPECT_THROW(from_local_parts( 2013,  1,  1, 24,  0,  0, *tz), InvalidDaytimeError);
+  EXPECT_THROW(from_local_parts( 2013,  1,  1,  0, 60,  0, *tz), InvalidDaytimeError);
+  EXPECT_THROW(from_local_parts( 2013,  1,  1,  0,  0, 60, *tz), InvalidDaytimeError);
 
-  EXPECT_TRUE (from_local_parts( 2013,  2,  9,  1, 59, 59, *tz).is_valid());
-  EXPECT_THROW(from_local_parts( 2013,  2,  9,  2,  0,  0, *tz), NonexistentDateDaytime);
-  EXPECT_THROW(from_local_parts( 2013,  2,  9,  2, 59, 59, *tz), NonexistentDateDaytime);
-  EXPECT_TRUE (from_local_parts( 2013,  2,  9,  3,  0,  0, *tz).is_valid());
-  EXPECT_TRUE (from_local_parts( 2013,  2,  9,  3,  0,  0, *tz, false).is_valid());
+  EXPECT_TRUE (from_local_parts( 2013,  3, 10,  1, 59, 59, *tz).is_valid());
+  EXPECT_THROW(from_local_parts( 2013,  3, 10,  2,  0,  0, *tz), NonexistentDateDaytime);
+  EXPECT_THROW(from_local_parts( 2013,  3, 10,  2, 59, 59, *tz), NonexistentDateDaytime);
+  EXPECT_TRUE (from_local_parts( 2013,  3, 10,  3,  0,  0, *tz).is_valid());
+  EXPECT_TRUE (from_local_parts( 2013,  3, 10,  3,  0,  0, *tz, false).is_valid());
 }
 
 TEST(Time, get_parts) {
@@ -131,8 +131,8 @@ TEST(Time, get_parts) {
   auto const time_zone = get_time_zone("US/Eastern");
   TimeParts const parts = get_parts(time, *time_zone);
   EXPECT_EQ(2013,       parts.date.year);
-  EXPECT_EQ(6,          parts.date.month);
-  EXPECT_EQ(27,         parts.date.day);
+  EXPECT_EQ(7,          parts.date.month);
+  EXPECT_EQ(28,         parts.date.day);
   EXPECT_EQ(15,         parts.daytime.hour);
   EXPECT_EQ(37,         parts.daytime.minute);
   EXPECT_EQ(38.125,     parts.daytime.second);
@@ -152,7 +152,7 @@ TEST(Time, get_parts_display) {
   auto parts = get_parts(time, DTZ);
   EXPECT_EQ(2016,       parts.date.year);
   EXPECT_EQ(MAY,        parts.date.month);
-  EXPECT_EQ(27,         parts.date.day);
+  EXPECT_EQ(28,         parts.date.day);
   EXPECT_EQ(12,         parts.daytime.hour);
   EXPECT_EQ(30,         parts.daytime.minute);
 
@@ -160,7 +160,7 @@ TEST(Time, get_parts_display) {
   parts = get_parts(time, DTZ);
   EXPECT_EQ(2016,       parts.date.year);
   EXPECT_EQ(MAY,        parts.date.month);
-  EXPECT_EQ(27,         parts.date.day);
+  EXPECT_EQ(28,         parts.date.day);
   EXPECT_EQ(16,         parts.daytime.hour);
   EXPECT_EQ(30,         parts.daytime.minute);
 
@@ -168,7 +168,7 @@ TEST(Time, get_parts_display) {
   parts = get_parts(time, DTZ);
   EXPECT_EQ(2016,       parts.date.year);
   EXPECT_EQ(MAY,        parts.date.month);
-  EXPECT_EQ(28,         parts.date.day);
+  EXPECT_EQ(29,         parts.date.day);
   EXPECT_EQ(1,          parts.daytime.hour);
   EXPECT_EQ(30,         parts.daytime.minute);
 
@@ -176,7 +176,7 @@ TEST(Time, get_parts_display) {
   parts = get_parts(time, DTZ);
   EXPECT_EQ(2016,       parts.date.year);
   EXPECT_EQ(MAY,        parts.date.month);
-  EXPECT_EQ(27,         parts.date.day);
+  EXPECT_EQ(28,         parts.date.day);
   EXPECT_EQ(22,         parts.daytime.hour);
   EXPECT_EQ(0 ,         parts.daytime.minute);
 }
@@ -231,8 +231,8 @@ TEST(Unix32Time, zero) {
   auto const date = get_utc_date<Date>(time);
   auto const ymd = get_ymd(date);
   EXPECT_EQ(2013, ymd.year);
-  EXPECT_EQ(6, ymd.month);
-  EXPECT_EQ(21, ymd.day);
+  EXPECT_EQ(7, ymd.month);
+  EXPECT_EQ(22, ymd.day);
 
   auto const daytime = get_utc_daytime<Daytime>(time);
   auto const hms = get_hms(daytime);

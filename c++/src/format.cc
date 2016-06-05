@@ -150,7 +150,7 @@ format_date(
     break;
 
   case 'd':
-    sb.format(date.ymd_date.day + 1, mods.get_width(2), mods.get_pad('0'));
+    sb.format(date.ymd_date.day, mods.get_width(2), mods.get_pad('0'));
     break;
 
   case 'D':
@@ -170,17 +170,17 @@ format_date(
 
   case 'j':
     sb.format(
-      date.ordinal_date.ordinal + 1, mods.get_width(3), mods.get_pad('0'));
+      date.ordinal_date.ordinal, mods.get_width(3), mods.get_pad('0'));
     break;
 
   case 'm':
     sb.format(
-      date.ymd_date.month + 1, mods.get_width(2), mods.get_pad('0'));
+      date.ymd_date.month, mods.get_width(2), mods.get_pad('0'));
     break;
 
   case 'V':
     sb.format(
-      date.week_date.week + 1, mods.get_width(2), mods.get_pad('0'));
+      date.week_date.week, mods.get_width(2), mods.get_pad('0'));
     break;
 
   case 'w':
@@ -536,11 +536,11 @@ weekday_abbrs[] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 
 inline string const& 
 get_month_name(
-  Month month)
+  Month const month)
 {
   if (! month_is_valid(month))
     throw ValueError("bad month");
-  return month_names[(int) month];
+  return month_names[(int) month - 1];
 }
 
 
@@ -548,8 +548,8 @@ inline Month
 parse_month_name(
   string const& str)
 {
-  for (Month month = 0; month < 12; ++month)
-    if (month_names[month] == str)
+  for (Month month = MONTH_MIN; month < MONTH_END; ++month)
+    if (month_names[(int) month - 1] == str)
       return month;
   throw ValueError(string("bad month name: ") + str);
 }
@@ -557,11 +557,11 @@ parse_month_name(
 
 inline string const& 
 get_month_abbr(
-  Month month)
+  Month const month)
 {
   if (! month_is_valid(month))
     throw ValueError("bad month");
-  return month_abbrs[(int) month];
+  return month_abbrs[(int) month - 1];
 }
 
 
@@ -569,8 +569,8 @@ inline Month
 parse_month_abbr(
   string const& str)
 {
-  for (Month month = 0; month < 12; ++month)
-    if (month_abbrs[month] == str)
+  for (Month month = MONTH_MIN; month < MONTH_END; ++month)
+    if (month_abbrs[(int) month - 1] == str)
       return month;
   throw ValueError(string("bad month abbr: ") + str);
 }
