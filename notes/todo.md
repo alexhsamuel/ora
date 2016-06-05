@@ -1,13 +1,12 @@
 # Work List
 
 1. C++ namespace reorg.
-1. Offset month, day by one.
 1. Make `offset_` a public member named `offset`.
 1. Move formatters into correct namespace.
+1. The operator<<(ostream) story.
 1. Just one cron.hh?
 1. Constants for months.
 1. Function (not method) APIs for dates, daytimes, and times.
-1. The operator<<(ostream) story.
 1. Global display time zone in Python API.
 1. Add epsilon or precision class attributes.
 1. Adjust the definition of TimeTraits.1
@@ -15,7 +14,6 @@
    ```c++
    template<class TIME=Time> inline TIME local(...) { ... }
    ```
-1. Replace operator+ and operator- with interval types.
 1. Reevaluate operator== and operator< for invalid and missing; get rid 
    of `is_invalid()` and `is_missing()`?
 1. Add to time formatting the letter code for UTC offset (e.g. Z for UTC+0).
@@ -29,10 +27,6 @@
 
 
 # C++ API
-
-## Date
-
-- Maybe make Month, Day, Ordinal one-indexed?
 
 ## Time zone
 
@@ -132,11 +126,3 @@
   distinct from invalid and missing, not itself valid, but compares strictly
   greater than every other valid value.
  
-
-# Rejected
-
-- Split `DateParts` into {year, month, day, weekday}, `OrdinalDateParts`, and
-  `WeekDateParts`.  This doesn't work so well, because the date parts aren't so
-  big or expensive to compute, and separating them makes the formatting code
-  substantially more complicated.
-
