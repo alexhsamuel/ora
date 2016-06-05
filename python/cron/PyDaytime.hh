@@ -134,8 +134,8 @@ private:
   static GetSets<PyDaytime> tp_getsets_;
 
   /** Date format used to generate the repr and str.  */
-  static unique_ptr<cron::DaytimeFormat> repr_format_;
-  static unique_ptr<cron::DaytimeFormat> str_format_;
+  static unique_ptr<cron::daytime::DaytimeFormat> repr_format_;
+  static unique_ptr<cron::daytime::DaytimeFormat> str_format_;
 
   static Type build_type(string const& type_name);
 
@@ -158,7 +158,7 @@ PyDaytime<DAYTIME>::add_to(
   // PyDaytimeAPI::add(&type_, std::make_unique<API>());
 
   // Build the repr format.
-  repr_format_ = make_unique<cron::DaytimeFormat>(
+  repr_format_ = make_unique<cron::daytime::DaytimeFormat>(
     name + "(%0H, %0M, %0S)",
     name + ".INVALID",
     name + ".MISSING");
@@ -172,7 +172,7 @@ PyDaytime<DAYTIME>::add_to(
     pattern += std::to_string(precision);
   }
   pattern += "S";
-  str_format_ = make_unique<cron::DaytimeFormat>(pattern);
+  str_format_ = make_unique<cron::daytime::DaytimeFormat>(pattern);
 
   // Add in static data members.
   auto const dict = (Dict*) type_.tp_dict;
@@ -595,11 +595,11 @@ PyDaytime<DAYTIME>::tp_getsets_
 //------------------------------------------------------------------------------
 
 template<typename DAYTIME>
-unique_ptr<cron::DaytimeFormat>
+unique_ptr<cron::daytime::DaytimeFormat>
 PyDaytime<DAYTIME>::repr_format_;
 
 template<typename DAYTIME>
-unique_ptr<cron::DaytimeFormat>
+unique_ptr<cron::daytime::DaytimeFormat>
 PyDaytime<DAYTIME>::str_format_;
 
 //------------------------------------------------------------------------------

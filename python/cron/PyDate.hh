@@ -343,7 +343,7 @@ PyDate<DATE>::tp_str(
   PyDate* const self)
 {
   // FIXME: Make the format configurable.
-  auto& format = cron::date::DateFormat::get_default();
+  auto& format = cron::date::DateFormat::DEFAULT;
   return Unicode::from(format(self->date_));
 }
 

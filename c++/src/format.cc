@@ -457,7 +457,9 @@ Format::format(
 // Class TimeFormat
 //------------------------------------------------------------------------------
 
-//TimeFormat const TimeFormat::DEFAULT            {};
+namespace time {
+
+TimeFormat const TimeFormat::DEFAULT("%Y-%m-%dT%H:%M:%SZ", "INVALID", "MISSING");
 TimeFormat const TimeFormat::ISO_LOCAL_BASIC    = "%Y%m%dT%H%M%S";
 TimeFormat const TimeFormat::ISO_LOCAL_EXTENDED = "%Y-%m-%dT%H:%M:%S";
 TimeFormat const TimeFormat::ISO_UTC_BASIC      = "%Y%m%dT%H%M%SZ";
@@ -465,13 +467,15 @@ TimeFormat const TimeFormat::ISO_UTC_EXTENDED   = "%Y-%m-%dT%H:%M:%SZ";
 TimeFormat const TimeFormat::ISO_ZONE_BASIC     = "%Y%m%dT%H%M%S%U%Q%q";
 TimeFormat const TimeFormat::ISO_ZONE_EXTENDED  = "%Y-%m-%dT%H:%M:%S%U%Q:%q";
 
+}  // namespace time
+
 //------------------------------------------------------------------------------
 // Class DateFormat
 //------------------------------------------------------------------------------
 
 namespace date {
 
-DateFormat const DateFormat::DEFAULT{"%Y-%m-%d", "INVALID", "MISSING"};
+DateFormat const DateFormat::DEFAULT("%Y-%m-%d", "INVALID", "MISSING");
 DateFormat const DateFormat::ISO_CALENDAR_BASIC    = "%Y%m%d";
 DateFormat const DateFormat::ISO_CALENDAR_EXTENDED = "%Y-%m-%d";
 DateFormat const DateFormat::ISO_ORDINAL_BASIC     = "%Y%j";
@@ -485,6 +489,9 @@ DateFormat const DateFormat::ISO_WEEK_EXTENDED     = "%G-W%V-%w";
 // Class DaytimeFormat
 //------------------------------------------------------------------------------
 
+namespace daytime {
+
+DaytimeFormat const DaytimeFormat::DEFAULT("%H:%M:%S", "INVALID", "DEFAULT");
 DaytimeFormat const DaytimeFormat::ISO_BASIC("%H%M%S", "INVALD", "MISSNG");
 DaytimeFormat const DaytimeFormat::ISO_EXTENDED         = "%H:%M:%S";
 DaytimeFormat const DaytimeFormat::ISO_BASIC_MSEC       = "%H%M%.3S";
@@ -493,6 +500,8 @@ DaytimeFormat const DaytimeFormat::ISO_BASIC_USEC       = "%H%M%.6S";
 DaytimeFormat const DaytimeFormat::ISO_EXTENDED_USEC    = "%H:%M:%.6S";
 DaytimeFormat const DaytimeFormat::ISO_BASIC_NSEC       = "%H%M%.9S";
 DaytimeFormat const DaytimeFormat::ISO_EXTENDED_NSEC    = "%H:%M:%.9S";
+
+}  // namespace daytime
 
 //------------------------------------------------------------------------------
 

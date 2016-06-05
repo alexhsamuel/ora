@@ -153,23 +153,23 @@ TEST(TimeFormat, display_time_zone) {
 
   set_display_time_zone("US/Eastern");
   EXPECT_EQ("2013-07-28",       format0(time));
-  EXPECT_EQ("15:37:38 EDT",     format1(time));
+  EXPECT_EQ("15:37:38 EDT",     format1(time, DTZ));
 
   set_display_time_zone("US/Pacific");
   EXPECT_EQ("2013-07-28",       format0(time));
-  EXPECT_EQ("12:37:38 PDT",     format1(time));
+  EXPECT_EQ("12:37:38 PDT",     format1(time, DTZ));
 }
 
 TEST(TimeFormat, iso) {
   auto const tz = get_time_zone("US/Eastern");
   auto const time = from_local(2013/JUL/28, Daytime(15, 37, 38.0), *tz);
   set_display_time_zone("US/Eastern");
-  EXPECT_EQ("20130728T153738",              TimeFormat::ISO_LOCAL_BASIC(time));
-  EXPECT_EQ("2013-07-28T15:37:38",          TimeFormat::ISO_LOCAL_EXTENDED(time));
-  EXPECT_EQ("20130728T193738Z",             TimeFormat::ISO_UTC_BASIC(time, UTC));
-  EXPECT_EQ("2013-07-28T19:37:38Z",         TimeFormat::ISO_UTC_EXTENDED(time, UTC));
-  EXPECT_EQ("20130728T153738-0400",         TimeFormat::ISO_ZONE_BASIC(time));
-  EXPECT_EQ("2013-07-28T15:37:38-04:00",    TimeFormat::ISO_ZONE_EXTENDED(time));
+  EXPECT_EQ("20130728T153738",              TimeFormat::ISO_LOCAL_BASIC(time, DTZ));
+  EXPECT_EQ("2013-07-28T15:37:38",          TimeFormat::ISO_LOCAL_EXTENDED(time, DTZ));
+  EXPECT_EQ("20130728T193738Z",             TimeFormat::ISO_UTC_BASIC(time));
+  EXPECT_EQ("2013-07-28T19:37:38Z",         TimeFormat::ISO_UTC_EXTENDED(time));
+  EXPECT_EQ("20130728T153738-0400",         TimeFormat::ISO_ZONE_BASIC(time, DTZ));
+  EXPECT_EQ("2013-07-28T15:37:38-04:00",    TimeFormat::ISO_ZONE_EXTENDED(time, DTZ));
 }
 
 TEST(TimeFormat, iso_invalid) {

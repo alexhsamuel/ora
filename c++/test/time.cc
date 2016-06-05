@@ -181,47 +181,6 @@ TEST(Time, get_parts_display) {
   EXPECT_EQ(0 ,         parts.daytime.minute);
 }
 
-TEST(Time, default_format) {
-  EXPECT_EQ("%Y-%m-%d %H:%M:%S %~Z", TimeFormat::get_default().get_pattern());
-}
-
-TEST(Time, ostream) {
-  auto const tz = get_time_zone("US/Eastern");
-  auto const time = from_local(2013/JUL/29, Daytime(18, 27, 13.6316313), *tz);
-  set_display_time_zone(tz);
-
-  {
-    std::stringstream ss;
-    ss << time;
-    EXPECT_EQ("2013-07-29 18:27:14 EDT", ss.str());
-  }
-
-  {
-    std::stringstream ss;
-    ss << TimeFormat::ISO_LOCAL_BASIC(time);
-    EXPECT_EQ("20130729T182714", ss.str());
-  }
-  
-  {
-    std::stringstream ss;
-    ss << time;
-    EXPECT_EQ("2013-07-29 18:27:14 EDT", ss.str());
-  }
-}
-
-TEST(Time, to_string) {
-  auto const tz = get_time_zone("US/Eastern");
-  auto const time = from_local(2013/JUL/29, Daytime(18, 27, 13.6316313), *tz);
-
-  EXPECT_EQ("2013-07-29 18:27:14 EDT", to_string(time));
-  EXPECT_EQ("INVALID                ", to_string(Time::INVALID));
-  EXPECT_EQ("MISSING                ", to_string(Time::MISSING));
-
-  EXPECT_EQ("2013-07-29T18:27:14-04:00", TimeFormat::ISO_ZONE_EXTENDED(time));
-  EXPECT_EQ("INVALID                  ", TimeFormat::ISO_ZONE_EXTENDED(Time::INVALID));
-  EXPECT_EQ("MISSING                  ", TimeFormat::ISO_ZONE_EXTENDED(Time::MISSING));
-}
-
 //------------------------------------------------------------------------------
 // Class Unix32Time.
 

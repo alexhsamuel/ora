@@ -215,9 +215,9 @@ private:
   static GetSets<PyTime> tp_getsets_;
 
   /** Date format used to generate the repr.  */
-  static unique_ptr<cron::TimeFormat> repr_format_;
+  static unique_ptr<cron::time::TimeFormat> repr_format_;
   /** Date format used to generate the str.  */
-  static unique_ptr<cron::TimeFormat> str_format_;
+  static unique_ptr<cron::time::TimeFormat> str_format_;
 
   static Type build_type(string const& type_name);
 
@@ -244,7 +244,7 @@ PyTime<TIME>::add_to(
   auto const precision = std::min((size_t) log10(Time::DENOMINATOR), 15ul);
 
   // Build the repr format.
-  repr_format_ = make_unique<cron::TimeFormat>(
+  repr_format_ = make_unique<cron::time::TimeFormat>(
     name + "(%0Y, %0m, %0d, %0H, %0M, %0." + std::to_string(precision) + "S, UTC)",
     name + ".INVALID",
     name + ".MISSING");
@@ -256,7 +256,7 @@ PyTime<TIME>::add_to(
     pattern += std::to_string(precision);
   }
   pattern += "SZ";
-  str_format_ = make_unique<cron::TimeFormat>(pattern);
+  str_format_ = make_unique<cron::time::TimeFormat>(pattern);
 
   // Add in static data members.
   Dict* const dict = (Dict*) type_.tp_dict;
@@ -605,12 +605,12 @@ PyTime<TIME>::tp_getsets_
 //------------------------------------------------------------------------------
 
 template<typename TIME>
-unique_ptr<cron::TimeFormat>
+unique_ptr<cron::time::TimeFormat>
 PyTime<TIME>::repr_format_;
 
 
 template<typename TIME>
-unique_ptr<cron::TimeFormat>
+unique_ptr<cron::time::TimeFormat>
 PyTime<TIME>::str_format_;
 
 

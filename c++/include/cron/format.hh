@@ -106,7 +106,7 @@ class TimeFormat
 {
 public:
 
-  //static TimeFormat const DEFAULT;
+  static TimeFormat const DEFAULT;
   static TimeFormat const ISO_LOCAL_BASIC;
   static TimeFormat const ISO_LOCAL_EXTENDED;
   static TimeFormat const ISO_UTC_BASIC;
@@ -116,22 +116,11 @@ public:
 
   using Format::Format;
 
-  // FIXME: Remove.
-  static TimeFormat const& 
-  get_default() 
-  { 
-    static TimeFormat const format(
-      "%Y-%m-%d %H:%M:%S %~Z",
-      "INVALID                ",
-      "MISSING                ");
-    return format;
-  }
-
-  template<class TRAITS> 
+  template<class TIME>
   std::string
   operator()(
-    time::TimeTemplate<TRAITS> time, 
-    TimeZone const& time_zone) 
+    TIME const time, 
+    TimeZone const& time_zone=UTC) 
     const 
   { 
     if (time.is_invalid())
@@ -151,24 +140,23 @@ public:
     }
   }
 
-  template<class TRAITS> 
+  template<class TIME> 
   std::string
   operator()(
-    time::TimeTemplate<TRAITS> time, 
+    TIME const time, 
     std::string const& tz_name) 
     const 
   { 
     return operator()(time, get_time_zone(tz_name)); 
   }
 
-  // FIXME: No! Remove!!
-  template<class TRAITS> 
-  std::string
-  operator()(
-    time::TimeTemplate<TRAITS> time) 
-    const 
-  { 
-    return operator()(time, *get_display_time_zone()); 
+  template<class TIME>
+  std::string operator()(
+    TIME const time, 
+    _DisplayTimeZoneTag) 
+    const
+  {
+    return operator()(time, *get_display_time_zone());
   }
 
 };
@@ -177,9 +165,20 @@ public:
 template<class TRAITS>
 inline std::string
 to_string(
-  time::TimeTemplate<TRAITS> time)
+  TimeTemplate<TRAITS> const time,
+  TimeZone const& time_zone=UTC)
 {
-  return TimeFormat::get_default()(time);
+  return TimeFormat::DEFAULT(time, time_zone);
+}
+
+
+template<class TRAITS>
+inline std::string
+to_string(
+  TimeTemplate<TRAITS> const time,
+  _DisplayTimeZoneTag)
+{
+  return to_string(time, *get_display_time_zone());
 }
 
 
@@ -187,9 +186,9 @@ template<class TRAITS>
 inline std::ostream&
 operator<<(
   std::ostream& os,
-  time::TimeTemplate<TRAITS> time)
+  TimeTemplate<TRAITS> const time)
 {
-  os << to_string(time);
+  os << TimeFormat::DEFAULT(time);
   return os;
 }
 
@@ -257,11 +256,14 @@ operator<<(
 
 //------------------------------------------------------------------------------
 
+namespace daytime {
+
 class DaytimeFormat
   : public Format
 {
 public:
   
+  static DaytimeFormat const DEFAULT;
   static DaytimeFormat const ISO_BASIC;
   static DaytimeFormat const ISO_EXTENDED;
   static DaytimeFormat const ISO_BASIC_MSEC;
@@ -272,17 +274,6 @@ public:
   static DaytimeFormat const ISO_EXTENDED_NSEC;
 
   using Format::Format;
-
-  static DaytimeFormat const& 
-  get_default() 
-  { 
-    // Use representations for invalid and missing that are the same length.
-    static DaytimeFormat const format(
-      "%H:%M:%S", 
-      "INVALID ", 
-      "MISSING ");
-    return format;
-  }
 
   std::string 
   operator()(
@@ -315,7 +306,7 @@ inline std::string
 to_string(
   daytime::DaytimeTemplate<TRAITS> const daytime)
 {
-  return DaytimeFormat::get_default()(daytime);
+  return DaytimeFormat::DEFAULT(daytime);
 }
 
 
@@ -329,6 +320,8 @@ operator<<(
   return os;
 }
 
+
+}  // namespace daytime
 
 //------------------------------------------------------------------------------
 // Functions
