@@ -34,7 +34,7 @@ A few things to keep in mind about various date components:
 
 - Month, day, ordinal, and week are (according to tradition rather than reason) one-indexed.
 - Weekdays are counted from `MONDAY` = 0 through `SUNDAY` = 6; constants are provided for these.
-- The YMD and ordinal date representations share the same year, but the year in the week date representation may be different.
+- The YMD and ordinal date representations share the same year, but the "week year" in the week date representation may be different.
 
 If the arguments you provide are invalid, cron throws `InvalidDateError`.
 
