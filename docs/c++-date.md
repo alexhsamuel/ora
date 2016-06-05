@@ -176,7 +176,7 @@ catch (InvalidDateError err) {
 
 ## Safe functions
 
-The `cron::date::safe` namespace provides alternatives to all date functions that don't throw exceptions; instead, they return special values to indicate failure.
+The `cron::date::safe` namespace provides "safe" alternatives to all date functions, which don't throw exceptions; instead, they return special values to indicate failure.
 
 - Any function that returns a date will return `INVALID` instead.
 
