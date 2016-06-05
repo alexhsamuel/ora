@@ -48,18 +48,23 @@ def test_compare_datetime():
         (1918, 10, 27,  1,  0,  0, "US/Eastern"),
 
         (1969,  7, 20, 15, 18,  4, "US/Central"),
+
+        (2016,  3, 13,  1, 59, 59, "US/Eastern"),
+        (2016,  3, 13,  3,  0,  0, "US/Eastern"),
+        (2016, 11,  6,  0, 59, 59, "US/Eastern"),
+        (2016, 11,  6,  1,  0,  0, "US/Eastern"),
+            
     ):
         # Build localized times from parts, then convert to UTC.
         dt = datetime.datetime(yr, mo, da, ho, mi, se)
-        dt = pytz.timezone(tz).localize(dt)
+        # For ambiguous local times, our default is to use the first time.
+        # These amibguous cases occur when coming off DST, so we tell localize()
+        # to return the DST time rather than the regular time.
+        dt = pytz.timezone(tz).localize(dt, is_dst=True)
         dt = dt.astimezone(pytz.UTC)
         
         t = from_local((Date(yr, mo, da), Daytime(ho, mi, se)), tz)
         p = to_local(t, UTC)
-
-        print(format(dt, "%Y-%m-%dT%H:%M:%S.%fZ"))
-        print(t)
-        print()
 
         assert p.date.year      == dt.year
         assert p.date.month     == dt.month
@@ -67,5 +72,29 @@ def test_compare_datetime():
         assert p.daytime.hour   == dt.hour
         assert p.daytime.minute == dt.minute
         assert p.daytime.second == dt.second + 1e-6 * dt.microsecond
+
+
+def test_first():
+    tz = pytz.timezone("US/Eastern")
+
+    dt = datetime.datetime(2016, 11, 6, 1, 0, 0)
+    dt = tz.localize(dt, is_dst=True).astimezone(pytz.UTC)
+    t = Date(2016, 11, 6), Daytime(1, 0, 0)
+    t = to_local(from_local(t, tz, first=True), UTC)
+    assert t.date.year      == dt.year
+    assert t.date.month     == dt.month
+    assert t.date.day       == dt.day
+    assert t.daytime.hour   == dt.hour
+    assert t.daytime.minute == dt.minute
+
+    dt = datetime.datetime(2016, 11, 6, 1, 0, 0)
+    dt = tz.localize(dt, is_dst=False).astimezone(pytz.UTC)
+    t = Date(2016, 11, 6), Daytime(1, 0, 0)
+    t = to_local(from_local(t, tz, first=False), UTC)
+    assert t.date.year      == dt.year
+    assert t.date.month     == dt.month
+    assert t.date.day       == dt.day
+    assert t.daytime.hour   == dt.hour
+    assert t.daytime.minute == dt.minute
 
 
