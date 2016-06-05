@@ -10,24 +10,33 @@ A `cron::date::Date` represents a calendar date.  A calendar date represents a p
 
 ## Building dates
 
-Cron provides various date factory functions. The most common convention for specifying a date is the _YMD_ form, a triplet of year number, month number, and day of month.  (The components are, according to tradition rather than reason, one-indexed.)
+Cron provides various date factory functions. The most common convention for specifying a date is the _YMD_ form, a triplet of year number, month number, and day of month.  
 
 ```c++
-Date date = from_ymd(1973, 12, 3);
+Date date;
+date = from_ymd(1973, 12, 3);
 ```
 
-It is a sloppy but common convention to encode the year, month, and day into eight decimal digits of a 32-bit integer, which cron calls _YMDI_.
+It is a sloppy but common convention to encode YMD into eight decimal digits of a 32-bit integer, which cron calls _YMDI_.
 
 ```c++
 auto date = from_ymdi(19731203);
 ```
 
-Another date representation is the _ordinal date_, which specifies the year and the (one-indexed) day of the year.  Yet another is the (ISO) _week date_, which specifies the year, week number, and day of week.  The year in the week date may be different than the year in the YMD or ordinal representations.  The week number is counted from Monday = 0 through Sunday = 6; constants are provided for these.
+Another date representation is the _ordinal date_, which specifies the year and the (one-indexed) day of the year.  Yet another is the (ISO) _week date_, which specifies the year, week, and day of week.  
 
 ```c++
 auto date = from_ordinal(1973, 337);
 auto date = from_week_date(1973, 48, MONDAY);
 ```
+
+A few things to keep in mind about various date components:
+
+- Month, day, ordinal, and week are (according to tradition rather than reason) one-indexed.
+- Weekdays are counted from `MONDAY` = 0 through `SUNDAY` = 6; constants are provided for these.
+- The YMD and ordinal date representations share the same year, but the year in the week date representation may be different.
+
+If the arguments you provide are invalid, cron throws `InvalidDateError`.
 
 
 ### Date literals
@@ -116,3 +125,70 @@ The various dates are mutually conversion-constructible and -assignable, as long
 using namespace cron::ez;
 Date16 date = 1973/DEC/3;  // RHS is Date, so convert
 ```
+
+If you try to store a date in `Date16` that is outside the representable range, cron throws `DateRangeError`.
+
+```c++
+try {
+  Date16 date = 9999/Dec/31;
+}
+catch (DateRangeError err) {
+  // Oops!
+}
+```
+
+
+## Invalid dates
+
+Each date class provides two special values.
+
+- `INVALID` represents an uninitialized date or the result of a failed operation.
+- `MISSING` is a placeholder that you can use to represent a value that is not available; it is never produced by cron itself.
+
+
+```c++
+Date date;  // default ctor initializes to INVALID
+date = Date::INVALID;
+date = Date::MISSING;
+```
+
+The `is_invalid()` and `is_missing()` methods test for these two; `is_valid()` is true iff. the date is neither.
+
+```
+if (date.is_valid())
+  std::cout << date;
+else
+  std::cout << "something's wrong!";
+```
+
+If you call any function on a missing or invalid date, cron throws `InvalidDateError`.
+
+```c++
+Date date;  // default ctor initializes to INVALID
+try {
+  std::cout << get_year(date) << "\n";
+}
+catch (InvalidDateError err) {
+  // Oops!
+}
+```
+
+
+## Safe functions
+
+The `cron::date::safe` namespace provides alternatives to all date functions that don't throw exceptions; instead, they return special values to indicate failure.
+
+- Any function that returns a date will return `INVALID` instead.
+
+  ```c++
+auto date = safe::from_ymd(1980, 2, 31);    // no such thing as Feb 31 -> INVALID
+date = safe::days_after(Date::MISSING, 1);  // can't shift -> INVALID
+```
+
+- Accessors will return special invalid values instead.
+
+  ```c++
+auto year = safe::get_year(Date::INVALID);  // -> YEAR_INVALID
+auto ymdi = safe::get_ymdi(Date::MISSING);  // -> YMDI_INVALID
+```
+
