@@ -128,11 +128,8 @@ inline cron::OrdinalDate
 get_ordinal_date_(
   DATE const date)
 {
-  if (date.is_valid()) {
-    cron::OrdinalDate od = get_ordinal_date(date);
-    od.ordinal++;
-    return od;
-  }
+  if (date.is_valid()) 
+    return get_ordinal_date(date);
   else
     return cron::OrdinalDate{};
 }
@@ -143,11 +140,8 @@ inline cron::WeekDate
 get_week_date_(
   DATE const date)
 {
-  if (date.is_valid()) {
-    cron::WeekDate wd = get_week_date(date);
-    wd.week++;
-    return wd;
-  }
+  if (date.is_valid()) 
+    return get_week_date(date);
   else
     return cron::WeekDate{};
 }
@@ -158,12 +152,8 @@ inline cron::YmdDate
 get_ymd_(
   DATE const date)
 {
-  if (date.is_valid()) {
-    cron::YmdDate ymd = get_ymd(date);
-    ymd.month++;
-    ymd.day++;
-    return ymd;
-  }
+  if (date.is_valid()) 
+    return get_ymd(date);
   else
     return cron::YmdDate{};
 }
@@ -364,7 +354,7 @@ DateDtype<PYDATE>::API::function_date_from_ordinal_date(
   auto const o = ordinal_arr->get_const_ptr<cron::Ordinal>();
   auto const r = date_arr->get_ptr<Date>();
   for (npy_intp i = 0; i < size; ++i)
-    r[i] = cron::date::safe::from_ordinal_date<Date>(y[i], o[i] - 1);
+    r[i] = cron::date::safe::from_ordinal_date<Date>(y[i], o[i]);
 
   return std::move(date_arr);
 }
@@ -391,7 +381,7 @@ DateDtype<PYDATE>::API::function_date_from_week_date(
   auto const e = weekday_arr->get_const_ptr<cron::Weekday>();
   auto const r = date_arr->get_ptr<Date>();
   for (npy_intp i = 0; i < size; ++i)
-    r[i] = cron::date::safe::from_week_date<Date>(y[i], w[i] - 1, e[i]);
+    r[i] = cron::date::safe::from_week_date<Date>(y[i], w[i], e[i]);
 
   return std::move(date_arr);
 }
@@ -418,7 +408,7 @@ DateDtype<PYDATE>::API::function_date_from_ymd(
   auto const d = day_arr->get_const_ptr<cron::Day>();
   auto const r = date_arr->get_ptr<Date>();
   for (npy_intp i = 0; i < size; ++i)
-    r[i] = cron::date::safe::from_ymd<Date>(y[i], m[i] - 1, d[i] - 1);
+    r[i] = cron::date::safe::from_ymd<Date>(y[i], m[i], d[i]);
 
   return std::move(date_arr);
 }

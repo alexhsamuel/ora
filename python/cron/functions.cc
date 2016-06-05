@@ -34,7 +34,6 @@ days_per_month(
     sizeof(cron::Month) == sizeof(unsigned char), "wrong type for month");
   Arg::ParseTupleAndKeywords(args, kw_args, "Hb", arg_names, &year, &month);
 
-  --month;
   if (cron::year_is_valid(year) && cron::month_is_valid(month))
     return Long::FromLong(cron::days_per_month(year, month));
   else

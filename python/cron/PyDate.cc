@@ -47,8 +47,8 @@ make_ymd_date(
 {
   auto ymd_obj = get_ymd_date_type()->New();
   ymd_obj->initialize(0, Long::FromLong(ymd.year));
-  ymd_obj->initialize(1, get_month_obj(ymd.month + 1));
-  ymd_obj->initialize(2, Long::FromLong(ymd.day + 1));
+  ymd_obj->initialize(1, get_month_obj(ymd.month));
+  ymd_obj->initialize(2, Long::FromLong(ymd.day));
   return std::move(ymd_obj);
 }
 
@@ -62,9 +62,9 @@ get_month_obj(
   if (!initialized) {
     // Do a lazy one-time load of the 12 month constants.
     static auto month_type = import("cron", "Month");
-    for (int m = 0; m < 12; ++m) {
-      ref<Tuple> args = Tuple::builder << Long::FromLong(m + 1);
-      months[m] = month_type->CallObject(args);
+    for (cron::Month m = cron::MONTH_MIN; m < cron::MONTH_END; ++m) {
+      ref<Tuple> args = Tuple::builder << Long::from(m);
+      months[m - 1] = month_type->CallObject(args);
     }
     initialized = true;
   }

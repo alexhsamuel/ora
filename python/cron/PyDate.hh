@@ -520,7 +520,7 @@ PyDate<DATE>::method_from_ordinal_date(
   static_assert(sizeof(cron::Ordinal) == sizeof(short), "ordinal is not a short");
   Arg::ParseTupleAndKeywords(args, kw_args, "HH", arg_names, &year, &ordinal);
 
-  return create(cron::date::from_ordinal_date<DATE>(year, ordinal - 1), type);
+  return create(cron::date::from_ordinal_date<DATE>(year, ordinal), type);
 }
 
 
@@ -570,7 +570,7 @@ PyDate<DATE>::method_from_week_date(
     args, kw_args, "Hbb", arg_names, &week_year, &week, &weekday);
 
   return create(
-    cron::date::from_week_date<DATE>(week_year, week - 1, weekday), type);
+    cron::date::from_week_date<DATE>(week_year, week, weekday), type);
 }
 
 
@@ -640,7 +640,7 @@ PyDate<DATE>::get_day(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(get_ymd(self->date_).day + 1);
+  return Long::FromLong(get_ymd(self->date_).day);
 }
 
 
@@ -670,7 +670,7 @@ PyDate<DATE>::get_month(
   PyDate* const self,
   void* /* closure */)
 {
-  return get_month_obj(get_ymd(self->date_).month + 1);
+  return get_month_obj(get_ymd(self->date_).month);
 }
 
 
@@ -680,7 +680,7 @@ PyDate<DATE>::get_ordinal(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(get_ordinal_date(self->date_).ordinal + 1);
+  return Long::FromLong(get_ordinal_date(self->date_).ordinal);
 }
 
 
@@ -879,7 +879,7 @@ parts_to_date(
   long const year   = parts->GetItem(0)->long_value();
   long const month  = parts->GetItem(1)->long_value();
   long const day    = parts->GetItem(2)->long_value();
-  return cron::date::from_ymd<DATE>(year, month - 1, day - 1);
+  return cron::date::from_ymd<DATE>(year, month, day);
 }
 
 
@@ -890,7 +890,7 @@ ordinal_parts_to_date(
 {
   long const year       = parts->GetItem(0)->long_value();
   long const ordinal    = parts->GetItem(1)->long_value();
-  return cron::date::from_ordinal_date<DATE>(year, ordinal - 1);
+  return cron::date::from_ordinal_date<DATE>(year, ordinal);
 }
 
 
@@ -918,14 +918,14 @@ maybe_date(
   if (PyDate_Check(obj)) 
     return DATE(
       PyDateTime_GET_YEAR(obj),
-      PyDateTime_GET_MONTH(obj) - 1,
-      PyDateTime_GET_DAY(obj) - 1);
+      PyDateTime_GET_MONTH(obj),
+      PyDateTime_GET_DAY(obj));
 
   // Try for a date type that as a toordinal() method, to handle duck typing
   // for datetime.date.
   auto ordinal = obj->CallMethodObjArgs("toordinal", false);
   if (ordinal != nullptr)
-    return DATE::from_datenum(ordinal->long_value() - 1);
+    return DATE::from_datenum(ordinal->long_value());
 
   // Try for a date type that has a datenum attribute, to handle duck typing
   // for our PyDate.
