@@ -192,3 +192,5 @@ auto year = safe::get_year(Date::INVALID);  // -> YEAR_INVALID
 auto ymdi = safe::get_ymdi(Date::MISSING);  // -> YMDI_INVALID
 ```
 
+These safe variants are particularly useful when you are vectorizing date operations and don't want individual failures to throw you out of a loop.
+
