@@ -33,67 +33,67 @@ size_t constexpr    SECS_PER_DAY_BITS   = 17;
 
 using Second = double;
 Second constexpr    SECOND_MIN          = 0.0;
-Second constexpr    SECOND_BOUND        = 60.0;
-Second constexpr    SECOND_MAX          = 0x1.dffffffffffffp+5;  // = std::nextafter(SECOND_BOUND, SECOND_MIN)
+Second constexpr    SECOND_END          = 60.0;
+Second constexpr    SECOND_MAX          = 0x1.dffffffffffffp+5;  // = std::nextafter(SECOND_END, SECOND_MIN)
 Second constexpr    SECOND_INVALID      = std::numeric_limits<Second>::quiet_NaN();
-inline constexpr bool second_is_valid(Second second) { return in_interval(SECOND_MIN, second, SECOND_BOUND); }
+inline constexpr bool second_is_valid(Second second) { return in_interval(SECOND_MIN, second, SECOND_END); }
 
 using Minute = uint8_t;
 Minute constexpr    MINUTE_MIN          = 0;
-Minute constexpr    MINUTE_BOUND        = 60;
-Minute constexpr    MINUTE_MAX          = MINUTE_BOUND - 1;
+Minute constexpr    MINUTE_END          = 60;
+Minute constexpr    MINUTE_MAX          = MINUTE_END - 1;
 Minute constexpr    MINUTE_INVALID      = std::numeric_limits<Minute>::max();
-inline constexpr bool minute_is_valid(Minute minute) { return in_interval(MINUTE_MIN, minute, MINUTE_BOUND); }
+inline constexpr bool minute_is_valid(Minute minute) { return in_interval(MINUTE_MIN, minute, MINUTE_END); }
 
 using Hour = uint8_t;
 Hour constexpr      HOUR_MIN            = 0;
-Hour constexpr      HOUR_BOUND          = 24;
-Hour constexpr      HOUR_MAX            = HOUR_BOUND - 1;
+Hour constexpr      HOUR_END            = 24;
+Hour constexpr      HOUR_MAX            = HOUR_END - 1;
 Hour constexpr      HOUR_INVALID        = std::numeric_limits<Hour>::max();
-inline constexpr bool hour_is_valid(Hour hour) { return in_interval(HOUR_MIN, hour, HOUR_BOUND); }
+inline constexpr bool hour_is_valid(Hour hour) { return in_interval(HOUR_MIN, hour, HOUR_END); }
 
 using Day = uint8_t;
 Day constexpr       DAY_MIN             = 0;
-Day constexpr       DAY_BOUND           = 31;
-Day constexpr       DAY_MAX             = DAY_BOUND - 1;
+Day constexpr       DAY_END             = 31;
+Day constexpr       DAY_MAX             = DAY_END - 1;
 Day constexpr       DAY_INVALID         = std::numeric_limits<Day>::max();
 // FIXME: Maybe we shouldn't have this.
-inline constexpr bool day_is_valid(Day day) { return in_interval(DAY_MIN, day, DAY_BOUND); }
+inline constexpr bool day_is_valid(Day day) { return in_interval(DAY_MIN, day, DAY_END); }
 
 using Month = uint8_t;
 Month constexpr     MONTH_MIN           = 0;
-Month constexpr     MONTH_BOUND         = 12;
-Month constexpr     MONTH_MAX           = MONTH_BOUND - 1;
+Month constexpr     MONTH_END           = 12;
+Month constexpr     MONTH_MAX           = MONTH_END - 1;
 Month constexpr     MONTH_INVALID       = std::numeric_limits<Month>::max();
-inline constexpr bool month_is_valid(Month month) { return in_interval(MONTH_MIN, month, MONTH_BOUND); }
+inline constexpr bool month_is_valid(Month month) { return in_interval(MONTH_MIN, month, MONTH_END); }
 
 using Year = int16_t;
 Year constexpr      YEAR_MIN            = 1;
-Year constexpr      YEAR_BOUND          = 10000;
-Year constexpr      YEAR_MAX            = YEAR_BOUND - 1;
+Year constexpr      YEAR_END            = 10000;
+Year constexpr      YEAR_MAX            = YEAR_END - 1;
 Year constexpr      YEAR_INVALID        = std::numeric_limits<Year>::min();
-inline constexpr bool year_is_valid(Year year) { return in_interval(YEAR_MIN, year, YEAR_BOUND); }
+inline constexpr bool year_is_valid(Year year) { return in_interval(YEAR_MIN, year, YEAR_END); }
 
 using Ordinal = uint16_t;
 Ordinal constexpr   ORDINAL_MIN         = 0;
-Ordinal constexpr   ORDINAL_BOUND       = 366;
-Ordinal constexpr   ORDINAL_MAX         = ORDINAL_BOUND - 1;
+Ordinal constexpr   ORDINAL_END         = 366;
+Ordinal constexpr   ORDINAL_MAX         = ORDINAL_END - 1;
 Ordinal constexpr   ORDINAL_INVALID     = std::numeric_limits<Ordinal>::max();
-inline constexpr bool ordinal_is_valid(Ordinal ordinal) { return in_interval(ORDINAL_MIN, ordinal, ORDINAL_BOUND); }
+inline constexpr bool ordinal_is_valid(Ordinal ordinal) { return in_interval(ORDINAL_MIN, ordinal, ORDINAL_END); }
 
 using Week = uint8_t;
 Week constexpr      WEEK_MIN            = 0;
-Week constexpr      WEEK_BOUND          = 53;
-Week constexpr      WEEK_MAX            = WEEK_BOUND - 1;
+Week constexpr      WEEK_END            = 53;
+Week constexpr      WEEK_MAX            = WEEK_END - 1;
 Week constexpr      WEEK_INVALID        = std::numeric_limits<Week>::max();
-inline constexpr bool week_is_valid(Week week) { return in_interval(WEEK_MIN, week, WEEK_BOUND); }
+inline constexpr bool week_is_valid(Week week) { return in_interval(WEEK_MIN, week, WEEK_END); }
 
 using Weekday = uint8_t;
 Weekday constexpr   WEEKDAY_MIN         = 0;
-Weekday constexpr   WEEKDAY_BOUND       = 7;
-Weekday constexpr   WEEKDAY_MAX         = WEEKDAY_BOUND - 1;
+Weekday constexpr   WEEKDAY_END         = 7;
+Weekday constexpr   WEEKDAY_MAX         = WEEKDAY_END - 1;
 Weekday constexpr   WEEKDAY_INVALID     = std::numeric_limits<Weekday>::max();
-inline constexpr bool weekday_is_valid(Weekday weekday) { return in_interval(WEEKDAY_MIN, weekday, WEEKDAY_BOUND); }
+inline constexpr bool weekday_is_valid(Weekday weekday) { return in_interval(WEEKDAY_MIN, weekday, WEEKDAY_END); }
 
 Weekday constexpr   MONDAY              = 0;
 Weekday constexpr   TUESDAY             = 1;
@@ -109,8 +109,8 @@ using Daytick = uint64_t;
 Daytick constexpr   DAYTICK_PER_SEC     = (Daytick) 1 << (8 * sizeof(Daytick) - SECS_PER_DAY_BITS);
 double constexpr    DAYTICK_SEC         = 1. / DAYTICK_PER_SEC;
 Daytick constexpr   DAYTICK_MIN         = 0;
-Daytick constexpr   DAYTICK_BOUND       = SECS_PER_DAY * DAYTICK_PER_SEC;
-Daytick constexpr   DAYTICK_MAX         = DAYTICK_BOUND - 1;
+Daytick constexpr   DAYTICK_END         = SECS_PER_DAY * DAYTICK_PER_SEC;
+Daytick constexpr   DAYTICK_MAX         = DAYTICK_END - 1;
 Daytick constexpr   DAYTICK_INVALID     = std::numeric_limits<Daytick>::max();
 inline constexpr bool daytick_is_valid(Daytick const daytick)
   { return in_range(DAYTICK_MIN, daytick, DAYTICK_MAX); }
@@ -130,10 +130,10 @@ inline constexpr bool daytick_is_valid(Daytick const daytick)
 using Datenum = uint32_t;
 Datenum constexpr   DATENUM_MIN         =       0;   // 0001-01-01
 Datenum constexpr   DATENUM_MAX         = 3652058;   // 9999-12-31
-Datenum constexpr   DATENUM_BOUND       = DATENUM_MAX + 1;
+Datenum constexpr   DATENUM_END         = DATENUM_MAX + 1;
 Datenum constexpr   DATENUM_INVALID     = std::numeric_limits<Datenum>::max();
 Datenum constexpr   DATENUM_UNIX_EPOCH  =  719162;   // 1970-01-01
-inline bool constexpr datenum_is_valid(Datenum datenum) { return in_interval(DATENUM_MIN, datenum, DATENUM_BOUND); }
+inline bool constexpr datenum_is_valid(Datenum datenum) { return in_interval(DATENUM_MIN, datenum, DATENUM_END); }
 
 /*
  * YMDI, a year-month-day integer.
@@ -144,7 +144,7 @@ inline bool constexpr datenum_is_valid(Datenum datenum) { return in_interval(DAT
  */
 int constexpr       YMDI_MIN            = 10000000;
 int constexpr       YMDI_MAX            = 99999999;
-int constexpr       YMDI_BOUND          = YMDI_MAX + 1;
+int constexpr       YMDI_END            = YMDI_MAX + 1;
 int constexpr       YMDI_INVALID        = std::numeric_limits<int>::min();
 
 /**
@@ -155,10 +155,10 @@ int constexpr       YMDI_INVALID        = std::numeric_limits<int>::min();
  */
 using Ssm = double;
 Ssm constexpr       SSM_MIN             = 0;
-Ssm constexpr       SSM_BOUND           = SECS_PER_DAY;
-Ssm constexpr       SSM_MAX             = 0x1.517ffffffffffp+16;  // = std::nextafter(SSM_BOUND, SSM_MIN)
+Ssm constexpr       SSM_END             = SECS_PER_DAY;
+Ssm constexpr       SSM_MAX             = 0x1.517ffffffffffp+16;  // = std::nextafter(SSM_END, SSM_MIN)
 Ssm constexpr       SSM_INVALID         = std::numeric_limits<Ssm>::quiet_NaN();
-inline bool constexpr ssm_is_valid(Ssm ssm) { return in_interval(SSM_MIN, ssm, SSM_BOUND); }
+inline bool constexpr ssm_is_valid(Ssm ssm) { return in_interval(SSM_MIN, ssm, SSM_END); }
 
 inline Daytick constexpr ssm_to_daytick(Ssm ssm) { return (Daytick) (DAYTICK_PER_SEC * ssm + 0.5); }
 

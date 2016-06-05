@@ -291,7 +291,7 @@ ymdi_is_valid(
   int const ymdi)
 {
   return 
-       in_interval(YMDI_MIN, ymdi, YMDI_BOUND)
+       in_interval(YMDI_MIN, ymdi, YMDI_END)
     && ymd_is_valid(ymdi / 10000, ymdi / 100 % 100 - 1, ymdi % 100 - 1);
 }
 
