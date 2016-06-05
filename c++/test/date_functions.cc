@@ -477,6 +477,13 @@ TEST(date_inc_dec, range) {
   EXPECT_THROW(date += 1, DateRangeError);
 }
 
+TEST(date_inc_dec, range16) {
+  EXPECT_THROW(Date16::MIN - 1, DateRangeError);
+  EXPECT_THROW(Date16::MAX + 1, DateRangeError);
+  EXPECT_THROW(Date16::INVALID - 1, InvalidDateError);
+  EXPECT_THROW(Date16::INVALID + 1, InvalidDateError);
+}
+
 TEST(date_inc_dec, invalid) {
   Date date = Date::INVALID;
   EXPECT_THROW(date++, InvalidDateError);
