@@ -474,8 +474,8 @@ DateFormat const DateFormat::ISO_CALENDAR_BASIC    = "%Y%m%d";
 DateFormat const DateFormat::ISO_CALENDAR_EXTENDED = "%Y-%m-%d";
 DateFormat const DateFormat::ISO_ORDINAL_BASIC     = "%Y%j";
 DateFormat const DateFormat::ISO_ORDINAL_EXTENDED  = "%Y-%j";
-DateFormat const DateFormat::ISO_WEEK_BASIC        = "%GW%V%^w";
-DateFormat const DateFormat::ISO_WEEK_EXTENDED     = "%G-W%V-%^w";
+DateFormat const DateFormat::ISO_WEEK_BASIC        = "%GW%V%w";
+DateFormat const DateFormat::ISO_WEEK_EXTENDED     = "%G-W%V-%w";
 
 }  // namespace date
 
