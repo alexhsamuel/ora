@@ -100,7 +100,27 @@ int days_ago = today - past_date;
 ```
 
 
-## Date representations
+## String representations
+
+The default date format is the ISO 8601 _YYYY-MM-DD_ format.
+
+### Formatting
+
+Cron provides overloads for `to_string` and `operator<<` that render a date as in the default format.
+
+`DateFormat` provides flexible formatting of dates.  An instance takes an extended strftime-style format string; see [format.md](format.md) for codes.  Its `operator()` formats a date.
+
+```c++
+DateFormat fmt("%~^W, %0d %b %Y");
+std::cout << fmt(1973/DEC/3);  // prints 'MON, 3 December 1973'
+```
+
+### Parsing
+
+Not implemented yet.
+
+
+## Internals
 
 `Date` supports dates between 0001-01-01 (Jan 1 of the year 1 C.E.) and 9999-12-31 (Dec 31, 9999).  
 
