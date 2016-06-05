@@ -5,20 +5,20 @@ from   cron import *
 
 #-------------------------------------------------------------------------------
 
-def test_days_per_month():
+def test_days_in_month():
     for year in (1, 100, 400, 1900, 2000, 2001, 2002, 2003, 2004, 2005, 9999):
-        assert days_per_month(year, Jan) == 31
-        assert days_per_month(year, Feb) == 29 if is_leap_year(year) else 28
-        assert days_per_month(year, Mar) == 31
-        assert days_per_month(year, Apr) == 30
-        assert days_per_month(year, May) == 31
-        assert days_per_month(year, Jun) == 30
-        assert days_per_month(year, Jul) == 31
-        assert days_per_month(year, Aug) == 31
-        assert days_per_month(year, Sep) == 30
-        assert days_per_month(year, Oct) == 31
-        assert days_per_month(year, Nov) == 30
-        assert days_per_month(year, Dec) == 31
+        assert days_in_month(year, Jan) == 31
+        assert days_in_month(year, Feb) == 29 if is_leap_year(year) else 28
+        assert days_in_month(year, Mar) == 31
+        assert days_in_month(year, Apr) == 30
+        assert days_in_month(year, May) == 31
+        assert days_in_month(year, Jun) == 30
+        assert days_in_month(year, Jul) == 31
+        assert days_in_month(year, Aug) == 31
+        assert days_in_month(year, Sep) == 30
+        assert days_in_month(year, Oct) == 31
+        assert days_in_month(year, Nov) == 30
+        assert days_in_month(year, Dec) == 31
 
 
 def test_is_leap_year():

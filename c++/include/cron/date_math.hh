@@ -63,7 +63,7 @@ is_leap_year(
  * Returns the number of days in the year.
  */
 inline Ordinal constexpr
-days_per_year(
+days_in_year(
   Year const year)
 {
   return is_leap_year(year) ? 366 : 365;
@@ -80,7 +80,7 @@ ordinal_date_is_valid(
 {
   return 
        year_is_valid(year) 
-    && in_range(ORDINAL_MIN, ordinal, days_per_year(year));
+    && in_range(ORDINAL_MIN, ordinal, days_in_year(year));
 }
 
 
@@ -90,7 +90,7 @@ ordinal_date_is_valid(
  * The year is required to account for leap years.
  */
 inline Day constexpr
-days_per_month(
+days_in_month(
   Year const year,
   Month const month)
 {
@@ -113,7 +113,7 @@ ymd_is_valid(
   return 
        month_is_valid(month)
     && year_is_valid(year)
-    && in_range(DAY_MIN, day, days_per_month(year, month));
+    && in_range(DAY_MIN, day, days_in_month(year, month));
 }
 
 

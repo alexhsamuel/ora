@@ -170,7 +170,7 @@ TEST(get_week_date, invalid) {
 TEST(get_ymd, thorough_Date) {
   for (Year y = 1; y <= 9999; y += 13)
     for (Month m = MONTH_MIN; m < MONTH_END; ++m)
-      for (Day d = DAY_MIN; d <= days_per_month(y, m); d += 8) {
+      for (Day d = DAY_MIN; d <= days_in_month(y, m); d += 8) {
         auto const ymd = safe::get_ymd(Date(y, m, d));
         EXPECT_EQ(y, ymd.year);
         EXPECT_EQ(m, ymd.month);
@@ -181,7 +181,7 @@ TEST(get_ymd, thorough_Date) {
 TEST(get_ymd, thorough_Date16) {
   for (Year y = 1970; y <= 2149; y += 13)
     for (Month m = MONTH_MIN; m < MONTH_END; ++m)
-      for (Day d = DAY_MIN; d <= days_per_month(y, m); d += 8) {
+      for (Day d = DAY_MIN; d <= days_in_month(y, m); d += 8) {
         auto const ymd = safe::get_ymd(Date16(y, m, d));
         EXPECT_EQ(y, ymd.year);
         EXPECT_EQ(m, ymd.month);

@@ -25,7 +25,7 @@ __all__ = (
     "Weekday",
     "YmdDate",
 
-    "days_per_month",
+    "days_in_month",
     "is_leap_year",
     "from_local",
     "now",

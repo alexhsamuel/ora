@@ -20,7 +20,7 @@ namespace {
 //------------------------------------------------------------------------------
 
 ref<Object>
-days_per_month(
+days_in_month(
   Module* /* module */,
   Tuple* const args,
   Dict* const kw_args)
@@ -35,7 +35,7 @@ days_per_month(
   Arg::ParseTupleAndKeywords(args, kw_args, "Hb", arg_names, &year, &month);
 
   if (cron::year_is_valid(year) && cron::month_is_valid(month))
-    return Long::FromLong(cron::days_per_month(year, month));
+    return Long::FromLong(cron::days_in_month(year, month));
   else
     throw Exception(PyExc_ValueError, "invalid year");
 }
@@ -123,7 +123,7 @@ ordinals_per_year(
   Arg::ParseTupleAndKeywords(args, kw_args, "H", arg_names, &year);
 
   if (cron::year_is_valid(year))
-    return Long::FromLong(cron::days_per_year(year));
+    return Long::FromLong(cron::days_in_year(year));
   else
     throw py::ValueError("invalid year");
 }
@@ -210,7 +210,7 @@ add_functions(
   Methods<Module>& methods)
 {
   return methods
-    .add<days_per_month>            ("days_per_month")
+    .add<days_in_month>             ("days_in_month")
     .add<from_local>                ("from_local")
     .add<is_leap_year>              ("is_leap_year")
     .add<now>                       ("now")
