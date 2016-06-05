@@ -1,16 +1,14 @@
-# C++ API
-
-## Dates
+# C++ Date API
 
 ```c++
-#include "cron.hh"
+include "cron.hh"
 
 using cron::date;
 ```
 
 A `cron::date::Date` represents a calendar date.  A calendar date represents a period, usually (but not always) 24 hours long, in a specific location; as such, a date does not by itself correspond to any time or interval of times.
 
-### Building dates
+## Building dates
 
 Cron provides various date factory functions. The most common convention for specifying a date is the _YMD_ form, a triplet of year number, month number, and day of month.  (The components are, according to tradition rather than reason, one-indexed.)
 
@@ -32,7 +30,7 @@ auto date = from_week_date(1973, 48, MONDAY);
 ```
 
 
-#### Date literals
+### Date literals
 
 The `cron::ez` namespace adds syntactic sugar for specifying date literals.
 
@@ -43,7 +41,7 @@ auto date = 1973/DEC/3;
 
 Special three-letter month constants must be used (`JAN`, `FEB`, ...), and leading zeros are not allowed for the year and day.  
 
-### Date accessors
+## Date accessors
 
 Functions are provided to produce the various date representations.  These return structures with the relevant components.
 
@@ -69,7 +67,7 @@ Weekday weekday = get_weekday(date);
 ```
 
 
-### Shifting dates
+## Shifting dates
 
 The `days_after()` and `days_before()` functions shift a date forward or backward by some number of calendar days.  Negative shifts may be used; two functions are provided only for convenience.
 
@@ -93,7 +91,7 @@ int days_ago = today - past_date;
 ```
 
 
-### Date representations
+## Date representations
 
 `Date` supports dates between 0001-01-01 (Jan 1 of the year 1 C.E.) and 9999-12-31 (Dec 31, 9999).  
 
