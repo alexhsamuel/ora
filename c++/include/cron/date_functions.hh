@@ -11,6 +11,7 @@ namespace date {
 // Factory functions
 //------------------------------------------------------------------------------
 
+// Forward declarations.
 template<class DATE=Date> DATE from_ymd(Year, Month, Day);
 template<class DATE=Date> inline DATE from_ymd(YmdDate const& d)
   { return from_ymd<DATE>(d.year, d.month, d.day); }
