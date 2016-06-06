@@ -145,7 +145,7 @@ TEST(get_ymd, thorough_Date) {
   for (Year y = YEAR_MIN; y <= YEAR_MAX; y += 13)
     for (Month m = MONTH_MIN; m < MONTH_END; ++m)
       for (Day d = DAY_MIN; d <= days_in_month(y, m); d += 8) {
-        auto const ymd = get_ymd(Date(y, m, d));
+        auto const ymd = get_ymd(from_ymd(y, m, d));
         EXPECT_EQ(y, ymd.year);
         EXPECT_EQ(m, ymd.month);
         EXPECT_EQ(d, ymd.day);
@@ -156,7 +156,7 @@ TEST(get_ymd, thorough_Date16) {
   for (Year y = 1970; y <= 2149; y += 13)
     for (Month m = MONTH_MIN; m < MONTH_END; ++m)
       for (Day d = DAY_MIN; d <= days_in_month(y, m); d += 8) {
-        auto const ymd = get_ymd(Date16(y, m, d));
+        auto const ymd = get_ymd(from_ymd<Date16>(y, m, d));
         EXPECT_EQ(y, ymd.year);
         EXPECT_EQ(m, ymd.month);
         EXPECT_EQ(d, ymd.day);

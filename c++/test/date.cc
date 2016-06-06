@@ -259,6 +259,6 @@ TEST(Date16, from_ymd1) {
 // Easy literals.
 
 TEST(MonthLiteral, basic) {
-  EXPECT_EQ(Date(1973, 1, 3), 1973/JAN/3);
+  EXPECT_EQ(from_ymd(1973, 1, 3), 1973/JAN/3);
 }
 

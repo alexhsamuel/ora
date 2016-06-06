@@ -916,7 +916,7 @@ maybe_date(
   if (PyDateTimeAPI == nullptr)
     PyDateTime_IMPORT;
   if (PyDate_Check(obj)) 
-    return DATE(
+    return cron::date::from_ymd<DATE>(
       PyDateTime_GET_YEAR(obj),
       PyDateTime_GET_MONTH(obj),
       PyDateTime_GET_DAY(obj));

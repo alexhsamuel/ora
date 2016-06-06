@@ -1,12 +1,11 @@
 #pragma once
 
 #include "cron/date.hh"
+#include "cron/date_functions.hh"
 #include "cron/types.hh"
 
 namespace cron {
 namespace ez {
-
-using date::Date;
 
 //------------------------------------------------------------------------------
 // Syntactic sugar for date literals.
@@ -31,12 +30,12 @@ private:
       month_(month) 
     {}
     
-    Date 
+    date::Date 
     operator/(
       Day day) 
       const 
     { 
-      return Date(year_, month_, day); 
+      return date::from_ymd(year_, month_, day); 
     }
 
   private:

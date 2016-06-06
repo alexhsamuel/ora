@@ -8,6 +8,7 @@ using namespace aslib;
 using namespace cron;
 using namespace cron::ez;
 using namespace cron::time;
+using cron::date::Date;
 using cron::daytime::Daytime;
 
 //------------------------------------------------------------------------------

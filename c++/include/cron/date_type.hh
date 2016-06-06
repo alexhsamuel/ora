@@ -91,17 +91,6 @@ public:
   {
   }
 
-  /*
-   * Constructs from year, month, day components.
-   */
-  DateTemplate(
-    Year const year,
-    Month const month,
-    Day const day)
-  : DateTemplate(from_ymd(year, month, day))
-  {
-  }
-
   ~DateTemplate() = default;
 
   // Factory methods  ----------------------------------------------------------
