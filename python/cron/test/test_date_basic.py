@@ -40,7 +40,7 @@ def test_comparison():
 
 def test_comparison_sampled1():
     for parts in data.TEST_DATE_PARTS:
-        date = Date.from_parts(*parts)
+        date = Date.from_ymd(*parts)
         assert date.valid
 
         assert     date == date

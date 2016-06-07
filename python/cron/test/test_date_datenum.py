@@ -30,7 +30,7 @@ def test_vs_toordinal():
     Tests that datenum is one less than datetime.date's (1-indexed) ordinal.
     """
     for parts in data.TEST_DATE_PARTS:
-        datenum = Date.from_parts(*parts).datenum
+        datenum = Date.from_ymd(*parts).datenum
         ordinal = datetime.date(*parts).toordinal()
         assert datenum + 1 == ordinal
 

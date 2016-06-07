@@ -196,8 +196,7 @@ private:
   static ref<Object> method_from_datenum        (PyTypeObject*, Tuple*, Dict*);
   static ref<Object> method_from_iso_date       (PyTypeObject*, Tuple*, Dict*);
   static ref<Object> method_from_ordinal_date   (PyTypeObject*, Tuple*, Dict*);
-  // FIXME: Rename to from_ymd().
-  static ref<Object> method_from_parts          (PyTypeObject*, Tuple*, Dict*);
+  static ref<Object> method_from_ymd            (PyTypeObject*, Tuple*, Dict*);
   static ref<Object> method_from_week_date      (PyTypeObject*, Tuple*, Dict*);
   static ref<Object> method_from_ymdi           (PyTypeObject*, Tuple*, Dict*);
   static Methods<PyDate> tp_methods_;
@@ -525,13 +524,13 @@ PyDate<DATE>::method_from_ordinal_date(
 
 template<typename DATE>
 ref<Object>
-PyDate<DATE>::method_from_parts(
+PyDate<DATE>::method_from_ymd(
   PyTypeObject* const type,
   Tuple* const args,
   Dict* const kw_args)
 {
   if (kw_args != nullptr)
-    throw TypeError("from_parts() takes no keyword arguments");
+    throw TypeError("from_ymd() takes no keyword arguments");
 
   auto const num_args = args->Length();
   Sequence* parts;
@@ -544,7 +543,7 @@ PyDate<DATE>::method_from_parts(
   else if (num_args == 3)
     parts = args;
   else
-    throw TypeError("from_parts() takes one or three arguments");
+    throw TypeError("from_ymd() takes one or three arguments");
 
   return create(parts_to_date<Date>(parts), type);
 }
@@ -595,7 +594,7 @@ PyDate<DATE>::tp_methods_
     .template add_class<method_from_datenum>        ("from_datenum")
     .template add_class<method_from_iso_date>       ("from_iso_date")
     .template add_class<method_from_ordinal_date>   ("from_ordinal_date")
-    .template add_class<method_from_parts>          ("from_parts")
+    .template add_class<method_from_ymd>            ("from_ymd")
     .template add_class<method_from_week_date>      ("from_week_date")
     .template add_class<method_from_ymdi>           ("from_ymdi")
   ;

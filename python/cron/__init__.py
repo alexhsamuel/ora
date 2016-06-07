@@ -85,7 +85,7 @@ class MonthOfYear:
 
 
     def __truediv__(self, day):
-        return Date.from_parts(self.__year, self.__month, day)
+        return Date.from_ymd(self.__year, self.__month, day)
 
 
 
