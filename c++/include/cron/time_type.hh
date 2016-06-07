@@ -259,12 +259,15 @@ struct Time128Traits
 {
   using Offset = uint128_t;
 
+  // Denominator is 2^64, so ~54 zs resolution; note that this is smaller
+  // than 1 daytick.  (FIXME?)
+  // 
+  // Max is 1 daytick (2^-47 s ~= 7.1 fs) before 10000-01-01T00:00:00Z.
+
   static Datenum constexpr base         = 0;
   static Offset  constexpr denominator  = make_uint128(1, 0); 
-                                                            // 1 << 64
-  static Offset  constexpr min          = 0;                // 0001-01-01
-  static Offset  constexpr max          = make_uint128(0x497786387f, 0xffffffffffffffff); 
-                                                            // 9999-12-31 23:59:59.999...
+  static Offset  constexpr min          = 0;
+  static Offset  constexpr max          = make_uint128(      0x497786387f, 0xfffffffffffe0000);
   static Offset  constexpr invalid      = make_uint128(0xffffffffffffffff, 0xffffffffffffffff);
   static Offset  constexpr missing      = make_uint128(0xffffffffffffffff, 0xfffffffffffffffe);
 };
