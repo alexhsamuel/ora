@@ -235,6 +235,54 @@ template<class DATE> inline Day get_day(DATE const date) noexcept
   { return safe::get_ymd(date).day;   }
 
 //------------------------------------------------------------------------------
+// Comparisons
+//------------------------------------------------------------------------------
+
+template<class DATE>
+inline bool
+equal(
+  DATE const date0,
+  DATE const date1)
+  noexcept
+{
+  return date0.offset_ == date1.offset_;
+}
+
+
+template<class DATE>
+inline bool
+before(
+  DATE const date0,
+  DATE const date1)
+  noexcept
+{
+  if (safe::equal(date0, date1))
+    return false;
+  else if (date0.is_invalid())
+    return true;
+  else if (date1.is_invalid())
+    return false;
+  else if (date0.is_missing())
+    return true;
+  else if (date1.is_missing())
+    return false;
+  else 
+    return date0.get_offset() < date1.get_offset();
+}
+
+
+template<class DATE>
+inline int
+compare(
+  DATE const date0,
+  DATE const date1)
+  noexcept
+{
+  return safe::equal(date0, date1) ? 0 : safe::before(date0, date1) ? -1 : 1;
+}
+
+
+//------------------------------------------------------------------------------
 // Arithmetic
 //------------------------------------------------------------------------------
 
@@ -287,20 +335,6 @@ days_between(
       date0.is_valid() && date1.is_valid()
     ? (int) date1.get_offset() - date0.get_offset()
     : std::numeric_limits<int>::min();
-}
-
-
-//------------------------------------------------------------------------------
-// Comparisons
-//------------------------------------------------------------------------------
-
-template<class DATE>
-inline bool
-is(
-  DATE const date0,
-  DATE const date1)
-{
-  return date0.is(date1);
 }
 
 

@@ -263,6 +263,22 @@ TEST(get_ymdi, invalid) {
   EXPECT_EQ(YMDI_INVALID, safe::get_ymdi(Date16::MISSING));
 }
 
+TEST(Date, equal) {
+  Date const date0 = 1973/DEC/ 3;
+
+  EXPECT_TRUE (safe::equal(date0, date0));
+  EXPECT_FALSE(safe::equal(date0, Date::MISSING));
+  EXPECT_FALSE(safe::equal(date0, Date::INVALID));
+
+  EXPECT_FALSE(safe::equal(Date::MISSING, date0));
+  EXPECT_TRUE (safe::equal(Date::MISSING, Date::MISSING));
+  EXPECT_FALSE(safe::equal(Date::MISSING, Date::INVALID));
+
+  EXPECT_FALSE(safe::equal(Date::INVALID, date0));
+  EXPECT_FALSE(safe::equal(Date::INVALID, Date::MISSING));
+  EXPECT_TRUE (safe::equal(Date::INVALID, Date::INVALID));
+}
+
 TEST(days_after, Date) {
   EXPECT_EQ(   1/JAN/ 1, safe::days_after(   1/JAN/ 1,       0));
   EXPECT_EQ(   1/JAN/ 2, safe::days_after(   1/JAN/ 1,       1));

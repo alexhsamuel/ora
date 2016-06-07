@@ -200,7 +200,6 @@ private:
   static ref<Object> method_from_parts          (PyTypeObject*, Tuple*, Dict*);
   static ref<Object> method_from_week_date      (PyTypeObject*, Tuple*, Dict*);
   static ref<Object> method_from_ymdi           (PyTypeObject*, Tuple*, Dict*);
-  static ref<Object> method_is_same             (PyDate*, Tuple*, Dict*);
   static Methods<PyDate> tp_methods_;
 
   // Getsets.
@@ -589,23 +588,6 @@ PyDate<DATE>::method_from_ymdi(
 }
 
 
-// We call this method "is_same" because "is" is a keyword in Python.
-template<typename DATE>
-ref<Object>
-PyDate<DATE>::method_is_same(
-  PyDate* const self,
-  Tuple* const args,
-  Dict* const kw_args)
-{
-  static char const* const arg_names[] = {"other", nullptr};
-  Object* other;
-  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &other);
-
-  auto const other_date = maybe_date<Date>(other);
-  return Bool::from(other_date && self->date_.is(*other_date));
-}
-
-
 template<typename DATE>
 Methods<PyDate<DATE>>
 PyDate<DATE>::tp_methods_
@@ -616,7 +598,6 @@ PyDate<DATE>::tp_methods_
     .template add_class<method_from_parts>          ("from_parts")
     .template add_class<method_from_week_date>      ("from_week_date")
     .template add_class<method_from_ymdi>           ("from_ymdi")
-    .template add<method_is_same>                   ("is_same")
   ;
 
 

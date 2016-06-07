@@ -21,6 +21,22 @@ TEST(Date, default_ctor) {
   EXPECT_TRUE(date.is_invalid());
 }
 
+TEST(DATE, is_invalid) {
+  EXPECT_TRUE (Date::INVALID.is_invalid());
+  EXPECT_FALSE(Date::MISSING.is_invalid());
+  EXPECT_FALSE(Date::MIN    .is_invalid());
+  EXPECT_FALSE(Date::MAX    .is_invalid());
+  EXPECT_FALSE((2016/JUN/10).is_invalid());
+}
+
+TEST(DATE, is_missing) {
+  EXPECT_FALSE(Date::INVALID.is_missing());
+  EXPECT_TRUE (Date::MISSING.is_missing());
+  EXPECT_FALSE(Date::MIN    .is_missing());
+  EXPECT_FALSE(Date::MAX    .is_missing());
+  EXPECT_FALSE((2016/JUN/10).is_missing());
+}
+
 TEST(Date, range) {
   EXPECT_EQ("0001-01-01", to_string(Date::MIN));
   EXPECT_EQ("9999-12-31", to_string(Date::MAX));
@@ -64,28 +80,6 @@ TEST(Date, is_valid) {
   EXPECT_TRUE (Date::MAX.is_valid());
   EXPECT_FALSE(Date::MISSING.is_valid());
   EXPECT_FALSE(Date::INVALID.is_valid());
-}
-
-TEST(Date, is) {
-  Date const date0 = 1973/DEC/ 3;
-
-  EXPECT_TRUE (date0.is(date0));
-  EXPECT_FALSE(date0.is(Date::MISSING));
-  EXPECT_FALSE(date0.is_missing());
-  EXPECT_FALSE(date0.is(Date::INVALID));
-  EXPECT_FALSE(date0.is_invalid());
-
-  EXPECT_FALSE(Date::INVALID.is(date0));
-  EXPECT_TRUE (Date::MISSING.is(Date::MISSING));
-  EXPECT_TRUE (Date::MISSING.is_missing());
-  EXPECT_FALSE(Date::MISSING.is(Date::INVALID));
-  EXPECT_FALSE(Date::MISSING.is_invalid());
-
-  EXPECT_FALSE(Date::INVALID.is(date0));
-  EXPECT_FALSE(Date::INVALID.is(Date::MISSING));
-  EXPECT_FALSE(Date::INVALID.is_missing());
-  EXPECT_TRUE (Date::INVALID.is(Date::INVALID));
-  EXPECT_TRUE (Date::INVALID.is_invalid());
 }
 
 TEST(Date, invalid) {
@@ -135,10 +129,10 @@ TEST(Date, weekday) {
 TEST(Date, conversions) {
   EXPECT_EQ(from_ymd<Date16>(1973, 12, 3), Date16(1973/DEC/3));
 
-  EXPECT_TRUE(Date16(Date::INVALID).is(Date16::INVALID));
-  EXPECT_TRUE(Date16(Date::MISSING).is(Date16::MISSING));
-  EXPECT_TRUE(Date(Date16::INVALID).is(Date::INVALID));
-  EXPECT_TRUE(Date(Date16::MISSING).is(Date::MISSING));
+  EXPECT_TRUE(safe::equal(Date16(Date::INVALID), Date16::INVALID));
+  EXPECT_TRUE(safe::equal(Date16(Date::MISSING), Date16::MISSING));
+  EXPECT_TRUE(safe::equal(Date(Date16::INVALID), Date::INVALID));
+  EXPECT_TRUE(safe::equal(Date(Date16::MISSING), Date::MISSING));
 }
 
 TEST(Date, ostream) {
@@ -238,8 +232,6 @@ TEST(Date16, from_ymd0) {
   Date16 const date = from_ymd(1970, 1, 1);
   EXPECT_EQ(0, date.get_offset());
   EXPECT_EQ(Date16(1970/JAN/ 1), date);
-  EXPECT_TRUE(date.is(1970/JAN/ 1));
-  EXPECT_TRUE(date.is({1970/JAN/ 1}));
 
   auto const ymd = get_ymd(date);
   EXPECT_EQ(1970,   ymd.year);

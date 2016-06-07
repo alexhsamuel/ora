@@ -187,6 +187,61 @@ template<class DATE> inline Year get_year(DATE const date)
   { return get_ordinal_date(date).year; }
 
 //------------------------------------------------------------------------------
+// Comparisons
+//------------------------------------------------------------------------------
+
+template<class DATE>
+inline int
+compare(
+  DATE const date0,
+  DATE const date1)
+{
+  ensure_valid(date0);
+  ensure_valid(date1);
+  auto const offset0 = date0.get_offset();
+  auto const offset1 = date1.get_offset();
+  return offset0 < offset1 ? -1 : offset0 == offset1 ? 0 : 1;
+}
+
+
+template<class DATE>
+inline bool 
+equal(
+  DATE const date0,
+  DATE const date1)
+{ 
+  ensure_valid(date0);
+  ensure_valid(date1);
+  return date0.get_offset() == date1.get_offset();
+}
+
+
+template<class DATE>
+inline bool 
+before(
+  DATE const date0,
+  DATE const date1)
+{
+  ensure_valid(date0);
+  ensure_valid(date1);
+  return date0.get_offset() < date1.get_offset();
+}
+
+
+template<class T0, class T1> inline bool operator==(DateTemplate<T0> const d0, DateTemplate<T1> const d1)
+  { return equal(d0, DateTemplate<T0>(d1)); }
+template<class T0, class T1> inline bool operator!=(DateTemplate<T0> const d0, DateTemplate<T1> const d1)
+  { return !equal(d0, DateTemplate<T0>(d1)); }
+template<class T0, class T1> inline bool operator< (DateTemplate<T0> const d0, DateTemplate<T1> const d1)
+  { return before(d0, DateTemplate<T0>(d1)); }
+template<class T0, class T1> inline bool operator> (DateTemplate<T0> const d0, DateTemplate<T1> const d1)
+  { return before(DateTemplate<T0>(d1), d0); }
+template<class T0, class T1> inline bool operator<=(DateTemplate<T0> const d0, DateTemplate<T1> const d1)
+  { return !before(DateTemplate<T0>(d1), d0); }
+template<class T0, class T1> inline bool operator>=(DateTemplate<T0> const d0, DateTemplate<T1> const d1)
+  { return !before(d0, DateTemplate<T0>(d1)); }
+
+//------------------------------------------------------------------------------
 // Day arithmetic
 //------------------------------------------------------------------------------
 

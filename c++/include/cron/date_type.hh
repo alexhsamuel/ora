@@ -22,6 +22,7 @@ namespace safe {
 
 template<class DATE> DATE from_datenum(Datenum) noexcept;
 template<class DATE> DATE from_offset(typename DATE::Offset) noexcept;
+template<class DATE> bool equal(DATE, DATE) noexcept;
 
 }  // namespace safe
 
@@ -177,8 +178,8 @@ public:
     return in_range(Traits::min, offset_, Traits::max);
   }
 
-  bool is_invalid() const noexcept { return is(INVALID); }
-  bool is_missing() const noexcept { return is(MISSING); }
+  bool is_invalid() const noexcept { return offset_ == Traits::invalid; }
+  bool is_missing() const noexcept { return offset_ == Traits::missing; }
 
   Datenum 
   get_datenum() 
@@ -196,21 +197,7 @@ public:
     return offset_;
   }
 
-  // Comparisons  --------------------------------------------------------------
-
-  // FIXME: Move into date_functions.hh.
-  bool is(DateTemplate const& o) const { return offset_ == o.offset_; }
-  bool operator==(DateTemplate const& o) const { return is_valid() && o.is_valid() && offset_ == o.offset_; }
-  bool operator!=(DateTemplate const& o) const { return is_valid() && o.is_valid() && offset_ != o.offset_; }
-  bool operator< (DateTemplate const& o) const { return is_valid() && o.is_valid() && offset_ <  o.offset_; }
-  bool operator<=(DateTemplate const& o) const { return is_valid() && o.is_valid() && offset_ <= o.offset_; }
-  bool operator> (DateTemplate const& o) const { return is_valid() && o.is_valid() && offset_ >  o.offset_; }
-  bool operator>=(DateTemplate const& o) const { return is_valid() && o.is_valid() && offset_ >= o.offset_; }
-
 private:
-
-  template<class DATE> friend DATE cron::date::safe::from_datenum(Datenum) noexcept;
-  template<class DATE> friend DATE cron::date::safe::from_offset(typename DATE::Offset) noexcept;
 
   // State  --------------------------------------------------------------------
 
@@ -222,6 +209,10 @@ private:
   }
 
   Offset offset_ = Traits::invalid;
+
+  template<class DATE> friend DATE cron::date::safe::from_datenum(Datenum) noexcept;
+  template<class DATE> friend DATE cron::date::safe::from_offset(typename DATE::Offset) noexcept;
+  template<class DATE> friend bool cron::date::safe::equal(DATE, DATE) noexcept;
 
 public:
 

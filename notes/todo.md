@@ -1,5 +1,6 @@
 # Work List
 
+1. Python safe functions.  (?)
 1. C++ namespace reorg.
 1. Move formatters into correct namespace.
 1. The operator<<(ostream) story.
