@@ -28,15 +28,15 @@ public:
   Format(
     std::string const& pattern,
     std::string const& invalid="INVALID", 
-    std::string const& missing="MISSING") 
+    std::string const& missing="MISSING")
   : pattern_(pattern), 
     invalid_(invalid), 
-    missing_(missing) 
+    missing_(missing)
   {
   }
 
   Format(
-    char const* pattern) 
+    char const* pattern)
   : pattern_(pattern)
   {
     static Parts parts{
@@ -128,6 +128,7 @@ public:
     else if (time.is_missing())
       return get_missing();
     else {
+      // FIXME: Don't use daytick, which may lose precision.
       auto const ldd = to_local_datenum_daytick(time, time_zone);
       return format(Parts{
         .date           = datenum_to_full_date(ldd.datenum), 
