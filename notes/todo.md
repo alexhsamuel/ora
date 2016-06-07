@@ -1,7 +1,6 @@
 # Work List
 
 1. C++ namespace reorg.
-1. Make `offset_` a public member named `offset`.
 1. Move formatters into correct namespace.
 1. The operator<<(ostream) story.
 1. Just one cron.hh?
