@@ -57,8 +57,8 @@ PYTHON_CONFIG	= python3-config
 # Directories
 PY_DIR	    	= $(TOP)/python
 PY_PKGDIR   	= $(PY_DIR)/cron
-PY_PFXDIR    	= $(shell $(PYTHON_CONFIG) --prefix)
-NPY_INCDIRS 	= $(shell $(PYTHON) -c 'from numpy.distutils.misc_util import get_numpy_include_dirs as g; print(" ".join(g()));')
+PY_PFXDIR      := $(shell $(PYTHON_CONFIG) --prefix)
+NPY_INCDIRS    := $(shell $(PYTHON) -c 'from numpy.distutils.misc_util import get_numpy_include_dirs as g; print(" ".join(g()));')
 
 #-------------------------------------------------------------------------------
 # gtest
