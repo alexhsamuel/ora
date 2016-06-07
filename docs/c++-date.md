@@ -133,12 +133,18 @@ Not implemented yet.
 
 `Date` supports dates between 0001-01-01 (Jan 1 of the year 1 C.E.) and 9999-12-31 (Dec 31, 9999).  
 
+
+### Storate representation
+
 An instance stores the date as an `uint32_t` offset from 0001-01-01, and may efficiently be passed by value.  It has no virtual methods or other state, so `uint32_t*` may be cast to and from `Date*`, as long as the value corresponds to a valid offset.
 
 ```c++
 unsigned int offset = date.get_offset();
 Date* alias = (Date*) &offset;
 ```
+
+
+### Alternate date classes
 
 Cron also provides a 16-bit `Date16` class, which stores dates as `uint16_t` offsets from 1970-01-01; the last representable date is 2149-06-04.  All the factory functions accept the date type as a template argument.
 
