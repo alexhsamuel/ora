@@ -98,14 +98,11 @@ split(
   Offset const offset = time.get_offset() + tz.offset * TIME::DENOMINATOR;
   // Establish the date and daytime parts, using division rounded toward -inf
   // and a positive remainder.
-  Datenum const datenum   
-    =   (int64_t) (offset / secs_per_day)
-      + (offset < 0 ? -1 : 0)
-      + TIME::BASE;
-  auto const daytime_offset 
-    = offset % secs_per_day + (offset < 0 ? secs_per_day : 0);
+  auto const div = sgndiv(offset, secs_per_day);
+  // We may need signed addition to compute the datenum.
+  Datenum const datenum = (int64_t) div.quot + TIME::BASE; 
 
-  return std::make_tuple(datenum, daytime_offset, tz);
+  return std::make_tuple(datenum, div.rem, tz);
 }
 
 

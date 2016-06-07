@@ -165,6 +165,90 @@ rescale_int(
 }
 
 
+template<class T>
+struct div_t
+{
+  T quot;
+  T rem;
+};
+
+
+/*
+ * Like <std::div>, except the remainder has the same sign as the denominator.
+ *
+ * Returns `{quot, rem}` such that,
+ *
+ *     num == quot * den + rem
+ *     0 <= abs(rem) < abs(den)
+ *     sgn(rem) == sgn(den)
+ *
+ */
+template<class T>
+inline div_t<T>
+sgndiv(
+  T const num,
+  T const den)
+{
+  auto const res = std::div(num, den);
+  if ((den < 0) ^ (res.rem < 0)) 
+    return {.quot = res.quot - 1, .rem = res.rem + den};
+  else
+    return {.quot = res.quot, .rem = res.rem};
+}
+
+
+template<>
+inline div_t<unsigned int>
+sgndiv(
+  unsigned int const num,
+  unsigned int const den)
+{
+  return {
+    .quot   = num / den,
+    .rem    = num % den,
+  };
+}
+
+
+template<>
+inline div_t<unsigned long>
+sgndiv(
+  unsigned long const num,
+  unsigned long const den)
+{
+  return {
+    .quot   = num / den,
+    .rem    = num % den,
+  };
+}
+
+
+template<>
+inline div_t<unsigned long long>
+sgndiv(
+  unsigned long long const num,
+  unsigned long long const den)
+{
+  return {
+    .quot   = num / den,
+    .rem    = num % den,
+  };
+}
+
+
+template<>
+inline div_t<uint128_t>
+sgndiv(
+  uint128_t const num,
+  uint128_t const den)
+{
+  return {
+    .quot   = num / den,
+    .rem    = num % den,
+  };
+}
+
+
 //------------------------------------------------------------------------------
 
 inline bool add_overflow(unsigned int       a, unsigned int       b, unsigned int      & r) { return __builtin_uadd_overflow  (a, b, &r); }
@@ -223,7 +307,7 @@ mul_overflow(
 
 namespace std {
 
-// FIXME: Hack to print uint128_t.
+// FIXME: Hack to print uint128_t.  This is not allowed!
 inline std::ostream&
 operator<<(
   std::ostream& os,
