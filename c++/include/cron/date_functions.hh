@@ -80,7 +80,7 @@ from_week_date(
  * Throws <InvalidDateError> if the year, month, and day are invalid.
  * Throws <DateRangeError> if the date is out of range.
  */
-template<class DATE=Date> 
+template<class DATE> 
 inline DATE 
 from_ymd(
   Year const year,
