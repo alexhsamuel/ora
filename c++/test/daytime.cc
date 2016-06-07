@@ -101,25 +101,25 @@ TEST(Daytime, format) {
 }
 
 TEST(Daytime, ostream) {
-  auto const daytime = Daytime(15, 32, 0.7);
+  auto const daytime = Daytime(15, 32, 0.75);
   {
     std::stringstream ss;
     ss << daytime;
-    EXPECT_EQ("15:32:01", ss.str());
+    EXPECT_EQ("15:32:00", ss.str());
   }
 
   {
     std::stringstream ss;
     ss << DaytimeFormat::ISO_BASIC_MSEC(daytime);
-    EXPECT_EQ("153200.700", ss.str());
+    EXPECT_EQ("153200.750", ss.str());
   }
 }
 
 TEST(Daytime, to_string) {
-  auto const daytime = Daytime(15, 32, 0.7);
-  EXPECT_EQ("15:32:01", to_string(daytime));
-  EXPECT_EQ("3:32:00.70000 pm", to_string(DaytimeFormat("%0h:%M:%.5S %_p")(daytime)));
-  EXPECT_EQ("3:32:00.70000 pm", (std::string) DaytimeFormat("%0h:%M:%.5S %_p")(daytime));
+  auto const daytime = Daytime(15, 32, 0.75);
+  EXPECT_EQ("15:32:00", to_string(daytime));
+  EXPECT_EQ("3:32:00.75000 pm", to_string(DaytimeFormat("%0h:%M:%.5S %_p")(daytime)));
+  EXPECT_EQ("3:32:00.75000 pm", (std::string) DaytimeFormat("%0h:%M:%.5S %_p")(daytime));
 }
 
 //------------------------------------------------------------------------------

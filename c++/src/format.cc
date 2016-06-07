@@ -278,7 +278,7 @@ format_daytime(
   case 'S':
     {
       unsigned const prec = std::max(0, mods.precision);
-      unsigned long long const digits = daytime.second * pow10(prec) + 0.5;
+      unsigned long long const digits = daytime.second * pow10(prec);
       // Integer part.
       sb.format(digits / pow10(prec), mods.get_width(2), mods.get_pad('0'));
       if (mods.precision >= 0) {

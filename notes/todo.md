@@ -6,7 +6,7 @@
 1. Move formatters into correct namespace.
 1. The operator<<(ostream) story.
 1. Just one cron.hh?
-1. Times round to HH:MM:60!  Fix it!
+1. Daytime and Time rounding functions.
 1. Constants for months.
 1. Function (not method) APIs for dates, daytimes, and times.
 1. Global display time zone in Python API.

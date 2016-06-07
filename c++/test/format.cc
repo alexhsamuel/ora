@@ -82,10 +82,10 @@ TEST(TimeFormat, str_width) {
 TEST(TimeFormat, rounding) {
   auto const tz = get_time_zone("US/Eastern");
   auto const time = from_local(2013/JAN/1, Daytime(6, 7, 8.999999), *tz);
-  EXPECT_EQ("06:07:09",         TimeFormat("%H:%M:%S")(time, *tz));
-  EXPECT_EQ("06:07:09.0",       TimeFormat("%H:%M:%.1S")(time, *tz));
-  EXPECT_EQ("06:07:09.00",      TimeFormat("%H:%M:%.2S")(time, *tz));
-  EXPECT_EQ("06:07:09.000",     TimeFormat("%H:%M:%.3S")(time, *tz));
+  EXPECT_EQ("06:07:08",         TimeFormat("%H:%M:%S")(time, *tz));
+  EXPECT_EQ("06:07:08.9",       TimeFormat("%H:%M:%.1S")(time, *tz));
+  EXPECT_EQ("06:07:08.99",      TimeFormat("%H:%M:%.2S")(time, *tz));
+  EXPECT_EQ("06:07:08.999",     TimeFormat("%H:%M:%.3S")(time, *tz));
   EXPECT_EQ("06:07:08.999999",  TimeFormat("%H:%M:%.6S")(time, *tz));
 }
 
@@ -96,8 +96,8 @@ TEST(TimeFormat, precision) {
   EXPECT_EQ("06:07:08.",        TimeFormat("%H:%M:%.0S")(time, *tz));
   EXPECT_EQ("06:07:08.01",      TimeFormat("%H:%M:%.2S")(time, *tz));
   EXPECT_EQ("06:07:08.0123",    TimeFormat("%H:%M:%.4S")(time, *tz));
-  EXPECT_EQ("06:07:08.012346",  TimeFormat("%H:%M:%.6S")(time, *tz));
-  EXPECT_EQ("06:07:08.0123457", TimeFormat("%H:%M:%.7S")(time, *tz));
+  EXPECT_EQ("06:07:08.012345",  TimeFormat("%H:%M:%.6S")(time, *tz));
+  EXPECT_EQ("06:07:08.0123456", TimeFormat("%H:%M:%.7S")(time, *tz));
   EXPECT_EQ("8.0123",           TimeFormat("%1.4S")(time, *tz));
   EXPECT_EQ("08.0123",          TimeFormat("%2.4S")(time, *tz));
   EXPECT_EQ("0008.0123",        TimeFormat("%4.4S")(time, *tz));
@@ -187,14 +187,14 @@ TEST(TimeFormat, iso_invalid) {
 
 TEST(DaytimeFormat, iso) {
   Daytime const daytime(14, 5, 17.7890123456);
-  EXPECT_EQ("140518",               DaytimeFormat::ISO_BASIC(daytime));
-  EXPECT_EQ("14:05:18",             DaytimeFormat::ISO_EXTENDED(daytime));
+  EXPECT_EQ("140517",               DaytimeFormat::ISO_BASIC(daytime));
+  EXPECT_EQ("14:05:17",             DaytimeFormat::ISO_EXTENDED(daytime));
   EXPECT_EQ("140517.789",           DaytimeFormat::ISO_BASIC_MSEC(daytime));
   EXPECT_EQ("14:05:17.789",         DaytimeFormat::ISO_EXTENDED_MSEC(daytime));
   EXPECT_EQ("140517.789012",        DaytimeFormat::ISO_BASIC_USEC(daytime));
   EXPECT_EQ("14:05:17.789012",      DaytimeFormat::ISO_EXTENDED_USEC(daytime));
-  EXPECT_EQ("140517.789012346",     DaytimeFormat::ISO_BASIC_NSEC(daytime));
-  EXPECT_EQ("14:05:17.789012346",   DaytimeFormat::ISO_EXTENDED_NSEC(daytime));
+  EXPECT_EQ("140517.789012345",     DaytimeFormat::ISO_BASIC_NSEC(daytime));
+  EXPECT_EQ("14:05:17.789012345",   DaytimeFormat::ISO_EXTENDED_NSEC(daytime));
 }
 
 TEST(DaytimeFormat, iso_invalid) {
