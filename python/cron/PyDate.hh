@@ -774,7 +774,6 @@ PyDate<DATE>::tp_getsets_
     .template add_get<get_month>        ("month")
     .template add_get<get_offset>       ("offset")
     .template add_get<get_ordinal>      ("ordinal")
-    // FIXME: Remove this.
     .template add_get<get_ymd>          ("ymd")
     .template add_get<get_valid>        ("valid")
     .template add_get<get_week>         ("week")
