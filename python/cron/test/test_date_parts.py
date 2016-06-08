@@ -118,7 +118,7 @@ def test_week_date_invalid():
         Date.from_week_date(None, 1, Mon)
     with pytest.raises(TypeError):
         Date.from_week_date(1000, None, Mon)
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         Date.from_week_date(1000, 1, "Monday")
 
     with pytest.raises(ValueError):
