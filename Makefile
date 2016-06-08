@@ -220,6 +220,11 @@ test-python: 		$(PY_EXTMOD)
 .PHONY: force
 force: ;
 
+.PHONY: fixmes
+fixmes:
+	@find $(CXX_DIR) $(PY_DIR) -name \*.cc -o -name \*.hh -o -name \*.py \
+	| xargs grep FIXME
+
 #-------------------------------------------------------------------------------
 
 # Include autodependency makefles.
