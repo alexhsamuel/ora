@@ -342,17 +342,17 @@ days_between(
 
 //------------------------------------------------------------------------------
 
-template<class T0, class T1> inline bool operator==(DateTemplate<T0> const d0, DateTemplate<T1> const d1)
+template<class T0, class T1> inline bool operator==(DateTemplate<T0> const d0, DateTemplate<T1> const d1) noexcept
   { return safe::equal(d0, DateTemplate<T0>(d1)); }
-template<class T0, class T1> inline bool operator!=(DateTemplate<T0> const d0, DateTemplate<T1> const d1)
+template<class T0, class T1> inline bool operator!=(DateTemplate<T0> const d0, DateTemplate<T1> const d1) noexcept
   { return !safe::equal(d0, DateTemplate<T0>(d1)); }
-template<class T0, class T1> inline bool operator< (DateTemplate<T0> const d0, DateTemplate<T1> const d1)
+template<class T0, class T1> inline bool operator< (DateTemplate<T0> const d0, DateTemplate<T1> const d1) noexcept
   { return safe::before(d0, DateTemplate<T0>(d1)); }
-template<class T0, class T1> inline bool operator> (DateTemplate<T0> const d0, DateTemplate<T1> const d1)
+template<class T0, class T1> inline bool operator> (DateTemplate<T0> const d0, DateTemplate<T1> const d1) noexcept
   { return safe::before(DateTemplate<T0>(d1), d0); }
-template<class T0, class T1> inline bool operator<=(DateTemplate<T0> const d0, DateTemplate<T1> const d1)
+template<class T0, class T1> inline bool operator<=(DateTemplate<T0> const d0, DateTemplate<T1> const d1) noexcept
   { return !safe::before(DateTemplate<T0>(d1), d0); }
-template<class T0, class T1> inline bool operator>=(DateTemplate<T0> const d0, DateTemplate<T1> const d1)
+template<class T0, class T1> inline bool operator>=(DateTemplate<T0> const d0, DateTemplate<T1> const d1) noexcept
   { return !safe::before(d0, DateTemplate<T0>(d1)); }
 
 //------------------------------------------------------------------------------
