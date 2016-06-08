@@ -68,6 +68,25 @@ def test_ordinal_date():
         assert Date.from_ordinal_date(*od) == date
 
 
+def test_ordinal_date_invalid():
+    with pytest.raises(ValueError):
+        Date.INVALID.ordinal_date
+
+    with pytest.raises(TypeError):
+        Date.from_ordinal_date(None, 1)
+    with pytest.raises(TypeError):
+        Date.from_ordinal_date(1, None)
+
+    with pytest.raises(ValueError):
+        Date.from_ordinal_date(0, 1)
+    with pytest.raises(ValueError):
+        Date.from_ordinal_date(10000, 1)
+    with pytest.raises(ValueError):
+        Date.from_ordinal_date(1, 0)
+    with pytest.raises(ValueError):
+        Date.from_ordinal_date(1, 366)
+
+
 def test_week_date():
     for date, wd in (
         (Date.MIN   , (   1,  1, Mon)),
@@ -89,5 +108,30 @@ def test_week_date():
 
         assert Date.from_week_date(wd) == date
         assert Date.from_week_date(*wd) == date
+
+
+def test_week_date_invalid():
+    with pytest.raises(ValueError):
+        Date.INVALID.week_date
+
+    with pytest.raises(TypeError):
+        Date.from_week_date(None, 1, Mon)
+    with pytest.raises(TypeError):
+        Date.from_week_date(1000, None, Mon)
+    with pytest.raises(TypeError):
+        Date.from_week_date(1000, 1, "Monday")
+
+    with pytest.raises(ValueError):
+        Date.from_week_date(0, 1, Mon)
+    with pytest.raises(ValueError):
+        Date.from_week_date(10000, 1, Mon)
+    with pytest.raises(ValueError):
+        Date.from_week_date(1, 0, Mon)
+    with pytest.raises(ValueError):
+        Date.from_week_date(1, 53, Mon)
+    with pytest.raises(ValueError):
+        Date.from_week_date(1, 0, 7)
+    with pytest.raises(ValueError):
+        Date.from_week_date(1, 0, 7)
 
 
