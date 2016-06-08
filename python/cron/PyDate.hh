@@ -195,6 +195,7 @@ private:
   // Methods.
   static ref<Object> method_from_datenum        (PyTypeObject*, Tuple*, Dict*);
   static ref<Object> method_from_iso_date       (PyTypeObject*, Tuple*, Dict*);
+  static ref<Object> method_from_offset         (PyTypeObject*, Tuple*, Dict*);
   static ref<Object> method_from_ordinal_date   (PyTypeObject*, Tuple*, Dict*);
   static ref<Object> method_from_ymd            (PyTypeObject*, Tuple*, Dict*);
   static ref<Object> method_from_week_date      (PyTypeObject*, Tuple*, Dict*);
@@ -207,6 +208,7 @@ private:
   static ref<Object> get_invalid                (PyDate*, void*);
   static ref<Object> get_missing                (PyDate*, void*);
   static ref<Object> get_month                  (PyDate*, void*);
+  static ref<Object> get_offset                 (PyDate*, void*);
   static ref<Object> get_ordinal                (PyDate*, void*);
   static ref<Object> get_parts                  (PyDate*, void*);
   static ref<Object> get_valid                  (PyDate*, void*);
@@ -506,6 +508,22 @@ PyDate<DATE>::method_from_iso_date(
 
 template<typename DATE>
 ref<Object>
+PyDate<DATE>::method_from_offset(
+  PyTypeObject* const type,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  // Using long is probably OK for dates. (?)
+  static char const* const arg_names[] = {"offset", nullptr};
+  long offset;
+  Arg::ParseTupleAndKeywords(args, kw_args, "k", arg_names, &offset);
+
+  return create(cron::date::from_offset<DATE>(offset), type);
+}
+
+
+template<typename DATE>
+ref<Object>
 PyDate<DATE>::method_from_ordinal_date(
   PyTypeObject* const type,
   Tuple* const args,
@@ -593,6 +611,7 @@ PyDate<DATE>::tp_methods_
   = Methods<PyDate>()
     .template add_class<method_from_datenum>        ("from_datenum")
     .template add_class<method_from_iso_date>       ("from_iso_date")
+    .template add_class<method_from_offset>         ("from_offset")
     .template add_class<method_from_ordinal_date>   ("from_ordinal_date")
     .template add_class<method_from_ymd>            ("from_ymd")
     .template add_class<method_from_week_date>      ("from_week_date")
@@ -651,6 +670,16 @@ PyDate<DATE>::get_month(
   void* /* closure */)
 {
   return get_month_obj(get_ymd(self->date_).month);
+}
+
+
+template<typename DATE>
+ref<Object>
+PyDate<DATE>::get_offset(
+  PyDate* const self,
+  void* /* closure */)
+{
+  return Long::from(self->date_.get_offset());
 }
 
 
@@ -743,6 +772,7 @@ PyDate<DATE>::tp_getsets_
     .template add_get<get_invalid>      ("invalid")
     .template add_get<get_missing>      ("missing")
     .template add_get<get_month>        ("month")
+    .template add_get<get_offset>       ("offset")
     .template add_get<get_ordinal>      ("ordinal")
     // FIXME: Remove this.
     .template add_get<get_parts>        ("parts")

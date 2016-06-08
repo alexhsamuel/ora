@@ -1,8 +1,5 @@
 # Work List
 
-1. Python from_offset() functions.
-1. Python safe functions.  (?)
-1. C++ namespace reorg.
 1. Move formatters into correct namespace.
 1. The operator<<(ostream) story.
 1. Just one cron.hh?
@@ -26,6 +23,7 @@
 1. Rename `InvalidDateError` -> `BadDateError` _et fils_.
 1. Basic string parsing for `convert_to_*()` functions.
 1. `format()` method and `tp_format` for Date, Daytime, Time.
+1. Python namespace reorg.
 
 
 # C++ API
