@@ -208,6 +208,12 @@ catch (InvalidDateError err) {
 }
 ```
 
+### Comparisons
+
+The usual equality and ordering operators work with invalid and missing dates.  The order is,
+
+    Date::INVALID < Date::MISSING < Date::MIN < ... < Date::MAX
+
 
 ## Safe functions
 
