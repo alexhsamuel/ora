@@ -11,6 +11,59 @@ namespace aslib {
 //------------------------------------------------------------------------------
 
 StructSequenceType*
+get_ordinal_date_type()
+{
+  static StructSequenceType type;
+
+  if (type.tp_name == nullptr) {
+    // Lazy one-time initialization.
+    static PyStructSequence_Field fields[] = {
+      {(char*) "year"       , nullptr},
+      {(char*) "ordinal"    , nullptr},
+      {nullptr, nullptr}
+    };
+    static PyStructSequence_Desc desc{
+      (char*) "OrdinalDate",                                // name
+      nullptr,                                              // doc
+      fields,                                               // fields
+      2                                                     // n_in_sequence
+    };
+
+    StructSequenceType::InitType(&type, &desc);
+  }
+
+  return &type;
+}
+
+
+StructSequenceType*
+get_week_date_type()
+{
+  static StructSequenceType type;
+
+  if (type.tp_name == nullptr) {
+    // Lazy one-time initialization.
+    static PyStructSequence_Field fields[] = {
+      {(char*) "week_year"  , nullptr},
+      {(char*) "week"       , nullptr},
+      {(char*) "weekday"    , nullptr},
+      {nullptr, nullptr}
+    };
+    static PyStructSequence_Desc desc{
+      (char*) "WeekDate",                                   // name
+      nullptr,                                              // doc
+      fields,                                               // fields
+      3                                                     // n_in_sequence
+    };
+
+    StructSequenceType::InitType(&type, &desc);
+  }
+
+  return &type;
+}
+
+
+StructSequenceType*
 get_ymd_date_type()
 {
   static StructSequenceType type;
@@ -21,10 +74,6 @@ get_ymd_date_type()
       {(char*) "year"       , nullptr},
       {(char*) "month"      , nullptr},
       {(char*) "day"        , nullptr},
-      {(char*) "ordinal"    , nullptr},
-      {(char*) "week_year"  , nullptr},
-      {(char*) "week"       , nullptr},
-      {(char*) "weekday"    , nullptr},
       {nullptr, nullptr}
     };
     static PyStructSequence_Desc desc{
@@ -38,18 +87,6 @@ get_ymd_date_type()
   }
 
   return &type;
-}
-
-
-ref<Object>
-make_ymd_date(
-  cron::YmdDate const ymd)
-{
-  auto ymd_obj = get_ymd_date_type()->New();
-  ymd_obj->initialize(0, Long::FromLong(ymd.year));
-  ymd_obj->initialize(1, get_month_obj(ymd.month));
-  ymd_obj->initialize(2, Long::FromLong(ymd.day));
-  return std::move(ymd_obj);
 }
 
 
@@ -90,6 +127,41 @@ get_weekday_obj(
   }
 
   return weekdays[weekday].inc();
+}
+
+
+ref<Object>
+make_ordinal_date(
+  cron::OrdinalDate const ordinal_date)
+{
+  auto ordinal_date_obj = get_ordinal_date_type()->New();
+  ordinal_date_obj->initialize(0, Long::from(ordinal_date.year));
+  ordinal_date_obj->initialize(1, Long::from(ordinal_date.ordinal));
+  return std::move(ordinal_date_obj);
+}
+
+
+ref<Object>
+make_week_date(
+  cron::WeekDate const week_date)
+{
+  auto week_date_obj = get_week_date_type()->New();
+  week_date_obj->initialize(0, Long::from(week_date.week_year));
+  week_date_obj->initialize(1, Long::from(week_date.week));
+  week_date_obj->initialize(2, get_weekday_obj(week_date.weekday));
+  return std::move(week_date_obj);
+}
+
+
+ref<Object>
+make_ymd_date(
+  cron::YmdDate const ymd)
+{
+  auto ymd_obj = get_ymd_date_type()->New();
+  ymd_obj->initialize(0, Long::FromLong(ymd.year));
+  ymd_obj->initialize(1, get_month_obj(ymd.month));
+  ymd_obj->initialize(2, Long::FromLong(ymd.day));
+  return std::move(ymd_obj);
 }
 
 

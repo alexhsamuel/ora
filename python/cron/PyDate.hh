@@ -30,6 +30,8 @@ using std::unique_ptr;
 //------------------------------------------------------------------------------
 
 extern StructSequenceType* get_ymd_date_type();
+extern ref<Object> make_ordinal_date(cron::OrdinalDate);
+extern ref<Object> make_week_date(cron::WeekDate);
 extern ref<Object> make_ymd_date(cron::YmdDate);
 
 ref<Object> get_month_obj(int month);
@@ -210,12 +212,14 @@ private:
   static ref<Object> get_month                  (PyDate*, void*);
   static ref<Object> get_offset                 (PyDate*, void*);
   static ref<Object> get_ordinal                (PyDate*, void*);
-  static ref<Object> get_ymd                    (PyDate*, void*);
+  static ref<Object> get_ordinal_date           (PyDate*, void*);
   static ref<Object> get_valid                  (PyDate*, void*);
   static ref<Object> get_week                   (PyDate*, void*);
+  static ref<Object> get_week_date              (PyDate*, void*);
   static ref<Object> get_week_year              (PyDate*, void*);
   static ref<Object> get_weekday                (PyDate*, void*);
   static ref<Object> get_year                   (PyDate*, void*);
+  static ref<Object> get_ymd                    (PyDate*, void*);
   static ref<Object> get_ymdi                   (PyDate*, void*);
   static GetSets<PyDate> tp_getsets_;
 
@@ -689,17 +693,17 @@ PyDate<DATE>::get_ordinal(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(get_ordinal_date(self->date_).ordinal);
+  return Long::FromLong(cron::date::get_ordinal_date(self->date_).ordinal);
 }
 
 
 template<typename DATE>
 ref<Object>
-PyDate<DATE>::get_ymd(
+PyDate<DATE>::get_ordinal_date(
   PyDate* const self,
   void* /* closure */)
 {
-  return make_ymd_date(cron::date::get_ymd(self->date_));
+  return make_ordinal_date(cron::date::get_ordinal_date(self->date_));
 }
 
 
@@ -719,7 +723,17 @@ PyDate<DATE>::get_week(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(get_week_date(self->date_).week);
+  return Long::FromLong(cron::date::get_week_date(self->date_).week);
+}
+
+
+template<typename DATE>
+ref<Object>
+PyDate<DATE>::get_week_date(
+  PyDate* const self,
+  void* /* closure */)
+{
+  return make_week_date(cron::date::get_week_date(self->date_));
 }
 
 
@@ -729,7 +743,7 @@ PyDate<DATE>::get_week_year(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(get_week_date(self->date_).week_year);
+  return Long::FromLong(cron::date::get_week_date(self->date_).week_year);
 }
 
 
@@ -749,7 +763,17 @@ PyDate<DATE>::get_year(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(get_ordinal_date(self->date_).year);
+  return Long::FromLong(cron::date::get_ordinal_date(self->date_).year);
+}
+
+
+template<typename DATE>
+ref<Object>
+PyDate<DATE>::get_ymd(
+  PyDate* const self,
+  void* /* closure */)
+{
+  return make_ymd_date(cron::date::get_ymd(self->date_));
 }
 
 
@@ -774,13 +798,15 @@ PyDate<DATE>::tp_getsets_
     .template add_get<get_month>        ("month")
     .template add_get<get_offset>       ("offset")
     .template add_get<get_ordinal>      ("ordinal")
-    .template add_get<get_ymd>          ("ymd")
+    .template add_get<get_ordinal_date> ("ordinal_date")
     .template add_get<get_valid>        ("valid")
     .template add_get<get_week>         ("week")
+    .template add_get<get_week_date>    ("week_date")
     .template add_get<get_week_year>    ("week_year")
     .template add_get<get_weekday>      ("weekday")
     .template add_get<get_year>         ("year")
     .template add_get<get_ymdi>         ("ymdi")
+    .template add_get<get_ymd>          ("ymd")
   ;
 
 
