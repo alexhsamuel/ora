@@ -34,10 +34,10 @@ extern ref<Object> make_ordinal_date(cron::OrdinalDate);
 extern ref<Object> make_week_date(cron::WeekDate);
 extern ref<Object> make_ymd_date(cron::YmdDate);
 
-ref<Object> get_month_obj(int month);
-ref<Object> get_weekday_obj(int weekday);
+extern ref<Object> get_month_obj(int month);
+extern ref<Object> get_weekday_obj(int weekday);
 
-/**
+/*
  * Attempts to convert various kinds of Python date objects to Date.
  *
  * If 'obj' is a date object of some kind, returns the equivalent date;
@@ -50,7 +50,7 @@ ref<Object> get_weekday_obj(int weekday);
  */
 template<typename DATE> optional<DATE> maybe_date(Object*);
 
-/**
+/*
  * Converts various kinds of Python objects to Date.
  *
  * If 'obj' can be converted unambiguously to a date, returns it.  Otherwise,
@@ -125,11 +125,7 @@ private:
 // Type class
 //------------------------------------------------------------------------------
 
-// FIXME: Think carefully over when to return INVALID versus when to raise.
-
-// FIXME: Should we cache parts?
-
-/**
+/*
  * Template for a Python extension type wrapping a date class.
  *
  * 'DATE' is the wrapped date class, an instance of DateTemplate.  Invoke
@@ -144,26 +140,26 @@ public:
 
   using Date = DATE;
 
-  /** 
+  /* 
    * Readies the Python type and adds it to `module` as `name`.  
    *
    * Should only be called once; this is not checked.
    */
   static void add_to(Module& module, string const& name);
 
-  /**
+  /*
    * Creates an instance of the Python type.
    */
   static ref<PyDate> create(Date date, PyTypeObject* type=&type_);
 
-  /**
+  /*
    * Returns true if 'object' is an instance of this type.
    */
   static bool Check(PyObject* object);
 
   PyDate(Date date) : date_(date) {}
 
-  /**
+  /*
    * The wrapped date instance.
    *
    * This is the only non-static data member.
@@ -228,7 +224,7 @@ private:
   static ref<Object> get_ymdi                   (PyDate*, void*);
   static GetSets<PyDate> tp_getsets_;
 
-  /** Date format used to generate the repr.  */
+  // Date format used to generate the repr.
   static unique_ptr<cron::date::DateFormat> repr_format_;
 
   static Type build_type(string const& type_name);
@@ -388,8 +384,6 @@ PyDate<DATE>::tp_richcompare(
 //------------------------------------------------------------------------------
 // Number methods
 //------------------------------------------------------------------------------
-
-// FIXME: Should (MISSING - 1) -> INVALID?
 
 template<typename DATE>
 inline ref<Object>
