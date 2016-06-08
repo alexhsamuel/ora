@@ -8,8 +8,8 @@ using namespace aslib;
 using namespace cron;
 using namespace cron::ez;
 using namespace cron::time;
-using cron::date::Date;
-using cron::daytime::Daytime;
+using namespace cron::date;
+using namespace cron::daytime;
 
 //------------------------------------------------------------------------------
 // Class Time
@@ -57,7 +57,7 @@ TEST(Time, comparisons) {
 }
 
 TEST(Time, from_parts) {
-  Daytime const daytime(18, 27, 13);
+  auto const daytime = from_hms(18, 27, 13);
   auto const tz = get_time_zone("US/Eastern");
   auto const time0 = from_local<Unix32Time>(2013/JUL/29, daytime, *tz);
   EXPECT_EQ(1375136833, time0.get_offset());
@@ -70,7 +70,7 @@ TEST(Time, from_parts) {
   EXPECT_EQ(7, parts1.date.month);
   EXPECT_EQ(28, parts1.date.day);
 
-  auto const time2 = from_local(2013/JUL/28, Daytime(15, 37, 38), *tz);
+  auto const time2 = from_local(2013/JUL/28, from_hms(15, 37, 38), *tz);
   EXPECT_EQ(offset, time2.get_offset());
 
   auto const time3 = from_local_parts(2013, 7, 28, 15, 37, 38, *tz);
@@ -82,33 +82,33 @@ TEST(Time, from_parts_dst) {
 
   // Test transition to DST.
   Date const dst0 = 2013/MAR/10;
-  EXPECT_EQ(from_local(dst0, Daytime(6, 59, 0), UTC), from_local(dst0, Daytime(1, 59, 0), *tz));
-  EXPECT_EQ(from_local(dst0, Daytime(7,  0, 0), UTC), from_local(dst0, Daytime(3,  0, 0), *tz));
-  EXPECT_EQ(from_local(dst0, Daytime(7,  0, 0), UTC), from_local(dst0, Daytime(3,  0, 0), *tz, false));
+  EXPECT_EQ(from_local(dst0, from_hms(6, 59, 0), UTC), from_local(dst0, from_hms(1, 59, 0), *tz));
+  EXPECT_EQ(from_local(dst0, from_hms(7,  0, 0), UTC), from_local(dst0, from_hms(3,  0, 0), *tz));
+  EXPECT_EQ(from_local(dst0, from_hms(7,  0, 0), UTC), from_local(dst0, from_hms(3,  0, 0), *tz, false));
 
   // Test transition from DST.
   Date const dst1 = 2013/NOV/3;
-  EXPECT_EQ(from_local(dst1, Daytime(4, 59, 0), UTC), from_local(dst1, Daytime(0, 59, 0), *tz));
-  EXPECT_EQ(from_local(dst1, Daytime(5,  0, 0), UTC), from_local(dst1, Daytime(1,  0, 0), *tz));
-  EXPECT_EQ(from_local(dst1, Daytime(5,  0, 0), UTC), from_local(dst1, Daytime(1,  0, 0), *tz, true));
-  EXPECT_EQ(from_local(dst1, Daytime(5, 59, 0), UTC), from_local(dst1, Daytime(1, 59, 0), *tz));
-  EXPECT_EQ(from_local(dst1, Daytime(5, 59, 0), UTC), from_local(dst1, Daytime(1, 59, 0), *tz, true));
-  EXPECT_EQ(from_local(dst1, Daytime(6,  0, 0), UTC), from_local(dst1, Daytime(1,  0, 0), *tz, false));
-  EXPECT_EQ(from_local(dst1, Daytime(6, 59, 0), UTC), from_local(dst1, Daytime(1, 59, 0), *tz, false));
-  EXPECT_EQ(from_local(dst1, Daytime(7,  0, 0), UTC), from_local(dst1, Daytime(2,  0, 0), *tz));
-  EXPECT_EQ(from_local(dst1, Daytime(7,  0, 0), UTC), from_local(dst1, Daytime(2,  0, 0), *tz, false));
+  EXPECT_EQ(from_local(dst1, from_hms(4, 59, 0), UTC), from_local(dst1, from_hms(0, 59, 0), *tz));
+  EXPECT_EQ(from_local(dst1, from_hms(5,  0, 0), UTC), from_local(dst1, from_hms(1,  0, 0), *tz));
+  EXPECT_EQ(from_local(dst1, from_hms(5,  0, 0), UTC), from_local(dst1, from_hms(1,  0, 0), *tz, true));
+  EXPECT_EQ(from_local(dst1, from_hms(5, 59, 0), UTC), from_local(dst1, from_hms(1, 59, 0), *tz));
+  EXPECT_EQ(from_local(dst1, from_hms(5, 59, 0), UTC), from_local(dst1, from_hms(1, 59, 0), *tz, true));
+  EXPECT_EQ(from_local(dst1, from_hms(6,  0, 0), UTC), from_local(dst1, from_hms(1,  0, 0), *tz, false));
+  EXPECT_EQ(from_local(dst1, from_hms(6, 59, 0), UTC), from_local(dst1, from_hms(1, 59, 0), *tz, false));
+  EXPECT_EQ(from_local(dst1, from_hms(7,  0, 0), UTC), from_local(dst1, from_hms(2,  0, 0), *tz));
+  EXPECT_EQ(from_local(dst1, from_hms(7,  0, 0), UTC), from_local(dst1, from_hms(2,  0, 0), *tz, false));
 }
 
 TEST(Time, from_parts_invalid) {
   auto const tz = get_time_zone("US/Eastern");
 
-  EXPECT_THROW(from_local(Date::INVALID, Daytime(0, 0, 0), *tz), InvalidDateError);
-  EXPECT_THROW(from_local(Date::MISSING, Daytime(0, 0, 0), *tz), InvalidDateError);
+  EXPECT_THROW(from_local(Date::INVALID, from_hms(0, 0, 0), *tz), InvalidDateError);
+  EXPECT_THROW(from_local(Date::MISSING, from_hms(0, 0, 0), *tz), InvalidDateError);
 
   EXPECT_THROW(from_local(2013/JUL/28, Daytime::INVALID , *tz), InvalidDaytimeError);
-  EXPECT_THROW(from_local(2013/JUL/28, Daytime(24, 0, 0), *tz), InvalidDaytimeError);
-  EXPECT_THROW(from_local(2013/JUL/28, Daytime(0, 60, 0), *tz), InvalidDaytimeError);
-  EXPECT_THROW(from_local(2013/JUL/28, Daytime(0, 0, 60), *tz), InvalidDaytimeError);
+  EXPECT_THROW(from_local(2013/JUL/28, from_hms(24, 0, 0), *tz), InvalidDaytimeError);
+  EXPECT_THROW(from_local(2013/JUL/28, from_hms(0, 60, 0), *tz), InvalidDaytimeError);
+  EXPECT_THROW(from_local(2013/JUL/28, from_hms(0, 0, 60), *tz), InvalidDaytimeError);
 
   EXPECT_THROW(from_local_parts(10000,  1,  1,  0,  0,  0, *tz), InvalidDateError);
   EXPECT_THROW(from_local_parts( 2013, 13,  1,  0,  0,  0, *tz), InvalidDateError);
@@ -147,7 +147,7 @@ TEST(Time, get_parts_invalid) {
 }
 
 TEST(Time, get_parts_display) {
-  auto const time = from_utc(2016/MAY/28, Daytime(16, 30, 0));
+  auto const time = from_utc(2016/MAY/28, from_hms(16, 30, 0));
 
   set_display_time_zone("US/Eastern");  // EDT = UTC-04:00
   auto parts = get_parts(time, DTZ);

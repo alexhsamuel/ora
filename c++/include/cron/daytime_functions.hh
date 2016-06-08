@@ -14,15 +14,15 @@ namespace daytime {
 
 // Synonyms for static factory methods; included for completeness.
 
-template<class DAYTIME> inline DAYTIME from_offset(typename DAYTIME::Offset const o)
+template<class DAYTIME=Daytime> inline DAYTIME from_offset(typename DAYTIME::Offset const o)
   { return DAYTIME::from_offset(o); }
-template<class DAYTIME> inline DAYTIME from_hms(Hour const h, Minute const m, Second const s)
+template<class DAYTIME=Daytime> inline DAYTIME from_hms(Hour const h, Minute const m, Second const s=0)
   { return DAYTIME::from_hms(h, m, s); }
-template<class DAYTIME> inline DAYTIME from_hms(HmsDaytime const& d)
+template<class DAYTIME=Daytime> inline DAYTIME from_hms(HmsDaytime const& d)
   { return DAYTIME::from_hms(d); }
-template<class DAYTIME> inline DAYTIME from_daytick(Daytick const d)
+template<class DAYTIME=Daytime> inline DAYTIME from_daytick(Daytick const d)
   { return DAYTIME::from_daytick(d); }
-template<class DAYTIME> inline DAYTIME from_ssm(Ssm const s)
+template<class DAYTIME=Daytime> inline DAYTIME from_ssm(Ssm const s)
   { return DAYTIME::from_ssm(s); }
 
 //------------------------------------------------------------------------------

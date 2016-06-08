@@ -71,9 +71,9 @@ public:
   // Constructors  -------------------------------------------------------------
 
   // FIXME: Using '= default' causes instantiation problems?
-  constexpr DateTemplate() {}
+  constexpr DateTemplate() noexcept {}
 
-  constexpr DateTemplate(DateTemplate const&) = default;
+  constexpr DateTemplate(DateTemplate const&) noexcept = default;
 
   /*
    * Constructs from another date template instance.

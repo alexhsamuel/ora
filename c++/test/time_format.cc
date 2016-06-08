@@ -8,13 +8,13 @@ using namespace aslib;
 using namespace cron;
 using namespace cron::ez;
 using namespace cron::time;
-using cron::daytime::Daytime;
+using namespace cron::daytime;
 
 //------------------------------------------------------------------------------
 
 TEST(Time, ostream) {
   auto const tz = get_time_zone("US/Eastern");
-  auto const time = from_local(2013/JUL/29, Daytime(18, 27, 13.6316313), *tz);
+  auto const time = from_local(2013/JUL/29, from_hms(18, 27, 13.6316313), *tz);
   set_display_time_zone(tz);
 
   {
@@ -38,7 +38,7 @@ TEST(Time, ostream) {
 
 TEST(Time, to_string) {
   auto const tz = get_time_zone("US/Eastern");
-  auto const time = from_local(2013/JUL/29, Daytime(18, 27, 13.6316313), *tz);
+  auto const time = from_local(2013/JUL/29, from_hms(18, 27, 13.6316313), *tz);
 
   EXPECT_EQ("2013-07-29T22:27:13Z", to_string(time));
   EXPECT_EQ("INVALID", to_string(Time::INVALID));
@@ -62,7 +62,7 @@ TEST(Time, to_string_range) {
 
 TEST(Time, standard_formats) {
   auto const tz = get_time_zone("US/Eastern");
-  auto const time = from_local(2013/JUL/29, Daytime(18, 27, 13.6316313), *tz);
+  auto const time = from_local(2013/JUL/29, from_hms(18, 27, 13.6316313), *tz);
 
   EXPECT_EQ("2013-07-29T18:27:13-04:00", TimeFormat::ISO_ZONE_EXTENDED(time, *tz));
   EXPECT_EQ("INVALID                  ", TimeFormat::ISO_ZONE_EXTENDED(Time::INVALID, *tz));

@@ -37,7 +37,7 @@ TEST(Time, maxs) {
 
 TEST(Time, from_utc) {
   auto const d = 2016/MAY/29;
-  Daytime const y(23, 30, 15.5);
+  auto const y = from_hms(23, 30, 15.5);
   EXPECT_EQ(from_local(d, y, UTC), from_utc(d, y));
 
   EXPECT_EQ(from_local<Unix32Time>(d, y, UTC), from_utc<Unix32Time>(d, y));

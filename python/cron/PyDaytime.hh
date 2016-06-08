@@ -696,7 +696,7 @@ parts_to_daytime(
   long   const minute   = parts->GetItem(1)->long_value();
   double const second
     = parts->Length() > 2 ? parts->GetItem(2)->double_value() : 0;
-  return DAYTIME(hour, minute, second);
+  return cron::daytime::from_hms<DAYTIME>(hour, minute, second);
 }
 
 

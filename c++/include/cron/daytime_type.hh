@@ -1,10 +1,14 @@
+/*
+ * Template daytime (time of day) class.
+ */
+
 #pragma once
 
 #include <cstddef>
 
-#include "cron/types.hh"
-#include "cron/exceptions.hh"
 #include "cron/daytime_math.hh"
+#include "cron/exceptions.hh"
+#include "cron/types.hh"
 
 namespace cron {
 namespace daytime {
@@ -24,18 +28,17 @@ public:
   static Offset constexpr DENOMINATOR = Traits::denominator;
 
   static DaytimeTemplate const MIN;
+  static DaytimeTemplate const MIDNIGHT;
   static DaytimeTemplate const MAX;
   static DaytimeTemplate const INVALID;
   static DaytimeTemplate const MISSING;
 
-  static DaytimeTemplate const MIDNIGHT;
-
   // Constructors  -------------------------------------------------------------
 
   // FIXME: Using '= default' causes instantiation problems?
-  constexpr DaytimeTemplate() {}
+  constexpr DaytimeTemplate() noexcept {}
 
-  constexpr DaytimeTemplate(DaytimeTemplate const&) = default;
+  constexpr DaytimeTemplate(DaytimeTemplate const&) noexcept = default;
 
   /*
    * Constructs from another daytime template instance.
@@ -47,17 +50,6 @@ public:
         daytime.is_invalid() ? INVALID
       : daytime.is_missing() ? MISSING
       : from_daytick(daytime.get_daytick()))
-  {
-  }
-
-  /*
-   * Constructs from hour, minute, second components.
-   */
-  DaytimeTemplate(
-    Hour const hour,
-    Minute const minute,
-    Second const second=0)
-  : DaytimeTemplate(from_hms(hour, minute, second))
   {
   }
 
@@ -79,7 +71,7 @@ public:
   from_hms(
     Hour const hour,
     Minute const minute,
-    Second const second)
+    Second const second=0)
   {
     if (hms_is_valid(hour, minute, second)) {
       auto const offset =
@@ -248,6 +240,11 @@ DaytimeTemplate<TRAITS>::MIN
   {0};
 
 template<class TRAITS>
+DaytimeTemplate<TRAITS> const
+DaytimeTemplate<TRAITS>::MIDNIGHT
+  {0};
+
+template<class TRAITS>
 DaytimeTemplate<TRAITS> constexpr
 DaytimeTemplate<TRAITS>::MAX
   {MAX_OFFSET};
@@ -261,11 +258,6 @@ template<class TRAITS>
 DaytimeTemplate<TRAITS> constexpr
 DaytimeTemplate<TRAITS>::MISSING
   {MISSING_OFFSET};
-
-template<class TRAITS>
-DaytimeTemplate<TRAITS> const
-DaytimeTemplate<TRAITS>::MIDNIGHT
-  {0};
 
 //------------------------------------------------------------------------------
 // Daytime template instances
