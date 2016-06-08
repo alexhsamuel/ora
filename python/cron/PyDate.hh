@@ -59,7 +59,7 @@ template<typename DATE> DATE convert_to_date(Object*);
 /**
  * Helper for converting a 3-element sequence of date parts.
  */
-template<typename DATE> inline DATE parts_to_date(Sequence*);
+template<typename DATE> inline DATE ymd_to_date(Sequence*);
 
 /**
  * Helper for converting a 2-element sequence of ordinal date parts.
@@ -210,7 +210,7 @@ private:
   static ref<Object> get_month                  (PyDate*, void*);
   static ref<Object> get_offset                 (PyDate*, void*);
   static ref<Object> get_ordinal                (PyDate*, void*);
-  static ref<Object> get_parts                  (PyDate*, void*);
+  static ref<Object> get_ymd                    (PyDate*, void*);
   static ref<Object> get_valid                  (PyDate*, void*);
   static ref<Object> get_week                   (PyDate*, void*);
   static ref<Object> get_week_year              (PyDate*, void*);
@@ -310,7 +310,7 @@ PyDate<DATE>::tp_init(
   else if (num_args == 2)
     date = ordinal_parts_to_date<Date>(args);
   else if (num_args == 3)
-    date = parts_to_date<Date>(args);
+    date = ymd_to_date<Date>(args);
   else
     throw TypeError("function takes 0, 1, 2, or 3 arguments");
 
@@ -563,7 +563,7 @@ PyDate<DATE>::method_from_ymd(
   else
     throw TypeError("from_ymd() takes one or three arguments");
 
-  return create(parts_to_date<Date>(parts), type);
+  return create(ymd_to_date<Date>(parts), type);
 }
 
 
@@ -639,7 +639,7 @@ PyDate<DATE>::get_day(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(get_ymd(self->date_).day);
+  return Long::FromLong(cron::date::get_ymd(self->date_).day);
 }
 
 
@@ -669,7 +669,7 @@ PyDate<DATE>::get_month(
   PyDate* const self,
   void* /* closure */)
 {
-  return get_month_obj(get_ymd(self->date_).month);
+  return get_month_obj(cron::date::get_ymd(self->date_).month);
 }
 
 
@@ -695,11 +695,11 @@ PyDate<DATE>::get_ordinal(
 
 template<typename DATE>
 ref<Object>
-PyDate<DATE>::get_parts(
+PyDate<DATE>::get_ymd(
   PyDate* const self,
   void* /* closure */)
 {
-  return make_ymd_date(get_ymd(self->date_));
+  return make_ymd_date(cron::date::get_ymd(self->date_));
 }
 
 
@@ -775,7 +775,7 @@ PyDate<DATE>::tp_getsets_
     .template add_get<get_offset>       ("offset")
     .template add_get<get_ordinal>      ("ordinal")
     // FIXME: Remove this.
-    .template add_get<get_parts>        ("parts")
+    .template add_get<get_ymd>          ("ymd")
     .template add_get<get_valid>        ("valid")
     .template add_get<get_week>         ("week")
     .template add_get<get_week_year>    ("week_year")
@@ -883,7 +883,7 @@ make_date(
 
 template<typename DATE>
 inline DATE
-parts_to_date(
+ymd_to_date(
   Sequence* const parts)
 {
   long const year   = parts->GetItem(0)->long_value();
@@ -980,7 +980,7 @@ convert_to_date(
     auto const seq = static_cast<Sequence*>(obj);
     if (seq->Length() == 3) 
       // Interpret a three-element sequence as date parts.
-      return parts_to_date<DATE>(seq);
+      return ymd_to_date<DATE>(seq);
     else if (seq->Length() == 2) 
       // Interpret a two-element sequence as ordinal parts.
       return ordinal_parts_to_date<DATE>(seq);
