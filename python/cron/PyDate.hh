@@ -58,15 +58,20 @@ template<typename DATE> optional<DATE> maybe_date(Object*);
  */
 template<typename DATE> DATE convert_to_date(Object*);
 
-/**
+/*
+ * Helper for converting a 2-element sequence of ordinal date parts.
+ */
+template<typename DATE> inline DATE ordinal_date_to_date(Sequence*);
+
+/*
+ * Helper for converting a 3-element sequence of week date parts.
+ */
+template<typename DATE> inline DATE week_date_to_date(Sequence*);
+
+/*
  * Helper for converting a 3-element sequence of date parts.
  */
 template<typename DATE> inline DATE ymd_to_date(Sequence*);
-
-/**
- * Helper for converting a 2-element sequence of ordinal date parts.
- */
-template<typename DATE> inline DATE ordinal_parts_to_date(Sequence*);
 
 //------------------------------------------------------------------------------
 // Virtual API
@@ -312,7 +317,7 @@ PyDate<DATE>::tp_init(
   else if (num_args == 1)
     date = convert_to_date<Date>(args->GetItem(0));
   else if (num_args == 2)
-    date = ordinal_parts_to_date<Date>(args);
+    date = ordinal_date_to_date<Date>(args);
   else if (num_args == 3)
     date = ymd_to_date<Date>(args);
   else
@@ -533,14 +538,50 @@ PyDate<DATE>::method_from_ordinal_date(
   Tuple* const args,
   Dict* const kw_args)
 {
-  static char const* const arg_names[] = {"year", "ordinal", nullptr};
-  cron::Year year;
-  cron::Ordinal ordinal;
-  static_assert(sizeof(cron::Year) == sizeof(short), "year is not a short");
-  static_assert(sizeof(cron::Ordinal) == sizeof(short), "ordinal is not a short");
-  Arg::ParseTupleAndKeywords(args, kw_args, "HH", arg_names, &year, &ordinal);
+  if (kw_args != nullptr)
+    throw TypeError("from_ordinal_date() takes no keyword arguments");
 
-  return create(cron::date::from_ordinal_date<DATE>(year, ordinal), type);
+  auto const num_args = args->Length();
+  Sequence* parts;
+  // Accept either a single two-element sequence, or two args.
+  if (num_args == 1) {
+    parts = cast<Sequence>(args->GetItem(0));
+    if (parts->Length() != 2)
+      throw TypeError("arg must be a 2-element sequence");
+  }
+  else if (num_args == 2)
+    parts = args;
+  else
+    throw TypeError("from_week_date() takes 1 or 2 args");
+
+  return create(ordinal_date_to_date<Date>(parts), type);
+}
+
+
+template<typename DATE>
+ref<Object>
+PyDate<DATE>::method_from_week_date(
+  PyTypeObject* const type,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  if (kw_args != nullptr)
+    throw TypeError("from_week_date() takes no keyword arguments");
+
+  auto const num_args = args->Length();
+  Sequence* parts;
+  // Accept either a single three-element sequence, or three args.
+  if (num_args == 1) {
+    parts = cast<Sequence>(args->GetItem(0));
+    if (parts->Length() != 3)
+      throw TypeError("arg must be a 3-element sequence");
+  }
+  else if (num_args == 3)
+    parts = args;
+  else
+    throw TypeError("from_week_date() takes 1 or 3 args");
+
+  return create(week_date_to_date<Date>(parts), type);
 }
 
 
@@ -559,8 +600,8 @@ PyDate<DATE>::method_from_ymd(
   // Accept either a single three-element sequence, or three args.
   if (num_args == 1) {
     parts = cast<Sequence>(args->GetItem(0));
-    if (parts->Length() < 3)
-      throw TypeError("parts must be a 3-element (or longer) sequence");
+    if (parts->Length() != 3)
+      throw TypeError("arg must be a 3-element sequence");
   }
   else if (num_args == 3)
     parts = args;
@@ -568,29 +609,6 @@ PyDate<DATE>::method_from_ymd(
     throw TypeError("from_ymd() takes one or three arguments");
 
   return create(ymd_to_date<Date>(parts), type);
-}
-
-
-template<typename DATE>
-ref<Object>
-PyDate<DATE>::method_from_week_date(
-  PyTypeObject* const type,
-  Tuple* const args,
-  Dict* const kw_args)
-{
-  static char const* const arg_names[] 
-    = {"week_year", "week", "weekday", nullptr};
-  cron::Year week_year;
-  cron::Week week;
-  cron::Weekday weekday;
-  static_assert(sizeof(cron::Year) == sizeof(short), "year is not a short");
-  static_assert(sizeof(cron::Week) == sizeof(char), "week is not a char");
-  static_assert(sizeof(cron::Weekday) == sizeof(char), "week is not a char");
-  Arg::ParseTupleAndKeywords(
-    args, kw_args, "Hbb", arg_names, &week_year, &week, &weekday);
-
-  return create(
-    cron::date::from_week_date<DATE>(week_year, week, weekday), type);
 }
 
 
@@ -908,6 +926,29 @@ make_date(
 
 template<typename DATE>
 inline DATE
+ordinal_date_to_date(
+  Sequence* const parts)
+{
+  long const year       = parts->GetItem(0)->long_value();
+  long const ordinal    = parts->GetItem(1)->long_value();
+  return cron::date::from_ordinal_date<DATE>(year, ordinal);
+}
+
+
+template<typename DATE>
+inline DATE
+week_date_to_date(
+  Sequence* const parts)
+{
+  long const week_year  = parts->GetItem(0)->long_value();
+  long const week       = parts->GetItem(1)->long_value();
+  long const weekday    = parts->GetItem(2)->long_value();
+  return cron::date::from_week_date<DATE>(week_year, week, weekday);
+}
+
+
+template<typename DATE>
+inline DATE
 ymd_to_date(
   Sequence* const parts)
 {
@@ -915,17 +956,6 @@ ymd_to_date(
   long const month  = parts->GetItem(1)->long_value();
   long const day    = parts->GetItem(2)->long_value();
   return cron::date::from_ymd<DATE>(year, month, day);
-}
-
-
-template<typename DATE>
-inline DATE
-ordinal_parts_to_date(
-  Sequence* const parts)
-{
-  long const year       = parts->GetItem(0)->long_value();
-  long const ordinal    = parts->GetItem(1)->long_value();
-  return cron::date::from_ordinal_date<DATE>(year, ordinal);
 }
 
 
@@ -1008,7 +1038,7 @@ convert_to_date(
       return ymd_to_date<DATE>(seq);
     else if (seq->Length() == 2) 
       // Interpret a two-element sequence as ordinal parts.
-      return ordinal_parts_to_date<DATE>(seq);
+      return ordinal_date_to_date<DATE>(seq);
   }
 
   auto const long_obj = obj->Long(false);
