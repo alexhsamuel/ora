@@ -46,8 +46,8 @@ def test_arr():
     arr = np.array(dates, dtype=Date.dtype)
     assert len(arr) == len(dates)
     for i in range(len(arr)):
-        assert arr[i].is_same(dates[i])
-        assert dates[i].is_same(arr[i])
+        assert arr[i] == dates[i]
+        assert dates[i] == arr[i]
 
 
 def test_get_ordinal_date():
@@ -79,8 +79,11 @@ def test_date_from_ordinal_date0():
 def test_date_from_ordinal_date1():
     year, ordinal = zip(*( (d.year, d.ordinal) for d in valid_dates ))
     arr = cron.numpy.date_from_ordinal_date(year, ordinal)
-    assert cron.numpy.is_same(
-        arr, 
-        np.array(valid_dates, dtype=Date.dtype)).all()
+
+    # Should be:
+    # assert (arr == valid_dates).all()
+
+    for expected, date in zip(valid_dates, arr):
+        assert expected == date
 
 

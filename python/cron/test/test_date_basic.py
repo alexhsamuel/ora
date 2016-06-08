@@ -22,20 +22,19 @@ def test_max():
 
 
 def test_comparison():
-    assert     Date.MIN     == Date.MIN
-    assert     Date.MAX     != Date.MIN
-    assert     Date.MIN     != Date.MAX
-    assert     Date.MAX     == Date.MAX
-
-    with pytest.raises(ValueError):
-        Date.INVALID == Date.INVALID
-    with pytest.raises(ValueError):
-        Date.INVALID != Date.INVALID
-
-    with pytest.raises(ValueError):
-        Date.MISSING == Date.MISSING
-    with pytest.raises(ValueError):
-        Date.MISSING != Date.MISSING
+    dates = [
+        Date.INVALID, Date.MISSING, Date.MIN, 2016/Jun/7, 2016/Jul/4, Date.MAX,
+    ]
+    for i0 in range(len(dates)):
+        for i1 in range(len(dates)):
+            d0 = dates[i0]
+            d1 = dates[i1]
+            assert (i0 == i1) == (d0 == d1)
+            assert (i0 != i1) == (d0 != d1)
+            assert (i0 <  i1) == (d0 <  d1)
+            assert (i0 <= i1) == (d0 <= d1)
+            assert (i0 >  i1) == (d0 >  d1)
+            assert (i0 >= i1) == (d0 >= d1)
 
 
 def test_comparison_sampled1():

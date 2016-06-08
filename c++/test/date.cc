@@ -185,6 +185,24 @@ TEST(Date, from_iso_date_invalid_error) {
   EXPECT_THROW(from_iso_date<Date>("2015-13-01"), InvalidDateError);
 }
 
+TEST(Date, comparison) {
+  Date const dates[] = {
+    Date::INVALID, Date::MISSING, Date::MIN, 2016/JUN/7, 2016/JUL/4, Date::MAX
+  };
+  size_t const n = sizeof(dates) / sizeof(Date);
+  for (int i0 = 0; i0 < n; ++i0)
+    for (int i1 = 0; i1 < n; ++i1) {
+      auto const d0 = dates[i0];
+      auto const d1 = dates[i1];
+      EXPECT_EQ(i0 == i1, d0 == d1);
+      EXPECT_EQ(i0 != i1, d0 != d1);
+      EXPECT_EQ(i0 <  i1, d0 <  d1);
+      EXPECT_EQ(i0 <= i1, d0 <= d1);
+      EXPECT_EQ(i0 >  i1, d0 >  d1);
+      EXPECT_EQ(i0 >= i1, d0 >= d1);
+    }
+}
+
 TEST(Date16, from_iso_date) {
   EXPECT_EQ(from_iso_date<Date16>("1970-01-01"), from_ymd<Date16>(1970, 1, 1));
   EXPECT_EQ(from_iso_date<Date16>("19700101"  ), from_ymd<Date16>(1970, 1, 1));

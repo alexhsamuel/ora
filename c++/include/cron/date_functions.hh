@@ -228,19 +228,6 @@ before(
 }
 
 
-template<class T0, class T1> inline bool operator==(DateTemplate<T0> const d0, DateTemplate<T1> const d1)
-  { return equal(d0, DateTemplate<T0>(d1)); }
-template<class T0, class T1> inline bool operator!=(DateTemplate<T0> const d0, DateTemplate<T1> const d1)
-  { return !equal(d0, DateTemplate<T0>(d1)); }
-template<class T0, class T1> inline bool operator< (DateTemplate<T0> const d0, DateTemplate<T1> const d1)
-  { return before(d0, DateTemplate<T0>(d1)); }
-template<class T0, class T1> inline bool operator> (DateTemplate<T0> const d0, DateTemplate<T1> const d1)
-  { return before(DateTemplate<T0>(d1), d0); }
-template<class T0, class T1> inline bool operator<=(DateTemplate<T0> const d0, DateTemplate<T1> const d1)
-  { return !before(DateTemplate<T0>(d1), d0); }
-template<class T0, class T1> inline bool operator>=(DateTemplate<T0> const d0, DateTemplate<T1> const d1)
-  { return !before(d0, DateTemplate<T0>(d1)); }
-
 //------------------------------------------------------------------------------
 // Day arithmetic
 //------------------------------------------------------------------------------

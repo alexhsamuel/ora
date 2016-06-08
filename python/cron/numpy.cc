@@ -136,6 +136,7 @@ date_from_ymdi(
 }
 
 
+// FIXME: Use a 'date' namespace.
 auto
 functions 
   = Methods<Module>()

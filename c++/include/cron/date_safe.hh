@@ -338,9 +338,25 @@ days_between(
 }
 
 
+}  // namespace safe
+
 //------------------------------------------------------------------------------
 
-}  // namespace safe
+template<class T0, class T1> inline bool operator==(DateTemplate<T0> const d0, DateTemplate<T1> const d1)
+  { return safe::equal(d0, DateTemplate<T0>(d1)); }
+template<class T0, class T1> inline bool operator!=(DateTemplate<T0> const d0, DateTemplate<T1> const d1)
+  { return !safe::equal(d0, DateTemplate<T0>(d1)); }
+template<class T0, class T1> inline bool operator< (DateTemplate<T0> const d0, DateTemplate<T1> const d1)
+  { return safe::before(d0, DateTemplate<T0>(d1)); }
+template<class T0, class T1> inline bool operator> (DateTemplate<T0> const d0, DateTemplate<T1> const d1)
+  { return safe::before(DateTemplate<T0>(d1), d0); }
+template<class T0, class T1> inline bool operator<=(DateTemplate<T0> const d0, DateTemplate<T1> const d1)
+  { return !safe::before(DateTemplate<T0>(d1), d0); }
+template<class T0, class T1> inline bool operator>=(DateTemplate<T0> const d0, DateTemplate<T1> const d1)
+  { return !safe::before(d0, DateTemplate<T0>(d1)); }
+
+//------------------------------------------------------------------------------
+
 }  // namespace date
 }  // namespace cron
 
