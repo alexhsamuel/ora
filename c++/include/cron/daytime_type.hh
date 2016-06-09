@@ -58,39 +58,6 @@ public:
   // Factory methods  ----------------------------------------------------------
 
   static DaytimeTemplate 
-  from_offset(
-    Offset const offset)
-  {
-    if (in_range((Offset) 0, offset, MAX_OFFSET))
-      return DaytimeTemplate(offset);
-    else
-      throw DaytimeRangeError();
-  }
-
-  static DaytimeTemplate
-  from_hms(
-    Hour const hour,
-    Minute const minute,
-    Second const second=0)
-  {
-    if (hms_is_valid(hour, minute, second)) {
-      auto const offset =
-          (hour * SECS_PER_HOUR + minute * SECS_PER_MIN) * Traits::denominator
-        + (Offset) (second * Traits::denominator);
-      return DaytimeTemplate(offset);
-    }
-    else
-      throw InvalidDaytimeError();
-  }
-
-  static DaytimeTemplate
-  from_hms(
-    HmsDaytime const& hms)
-  {
-    return from_hms(hms.hour, hms.minute, hms.second);
-  }
-
-  static DaytimeTemplate 
   from_daytick(
     Daytick const daytick)
   {
@@ -104,13 +71,13 @@ public:
   }
 
   static DaytimeTemplate 
-  from_ssm(
-    Ssm const ssm)
+  from_offset(
+    Offset const offset)
   {
-    if (ssm_is_valid(ssm))
-      return DaytimeTemplate((Offset) round(ssm * DENOMINATOR));
+    if (in_range((Offset) 0, offset, MAX_OFFSET))
+      return DaytimeTemplate(offset);
     else
-      throw InvalidDaytimeError();
+      throw DaytimeRangeError();
   }
 
   // Assignment operators  -----------------------------------------------------

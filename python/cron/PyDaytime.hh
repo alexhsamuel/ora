@@ -280,7 +280,7 @@ PyDaytime<DAYTIME>::tp_richcompare(
   Object* const other,
   int const comparison)
 {
-  auto const opt = maybe_daytime<Daytime>(other);
+  auto const opt = maybe_daytime<DAYTIME>(other);
   if (!opt)
     return not_implemented_ref();
   
@@ -403,7 +403,7 @@ PyDaytime<DAYTIME>::method_from_daytick(
     sizeof(cron::Daytick) == sizeof(long), "daytick is not an long");
   Arg::ParseTupleAndKeywords(args, kw_args, "k", arg_names, &daytick);
 
-  return create(Daytime::from_daytick(daytick), type);
+  return create(cron::daytime::from_daytick<Daytime>(daytick), type);
 }
 
 
@@ -433,7 +433,7 @@ PyDaytime<DAYTIME>::method_from_hms(
   long   const minute = parts->GetItem(1)->long_value();
   double const second
     = args->Length() == 3 ? parts->GetItem(2)->double_value() : 0;
-  return create(Daytime::from_hms(hour, minute, second), type);
+  return create(cron::daytime::from_hms<Daytime>(hour, minute, second), type);
 }
 
 
@@ -448,7 +448,7 @@ PyDaytime<DAYTIME>::method_from_ssm(
   cron::Ssm ssm;
   Arg::ParseTupleAndKeywords(args, kw_args, "d", arg_names, &ssm);
 
-  return create(Daytime::from_ssm(ssm), type);
+  return create(cron::daytime::from_ssm<Daytime>(ssm), type);
 }
 
 
@@ -713,7 +713,7 @@ maybe_daytime(
   if (PyDateTimeAPI == nullptr)
     PyDateTime_IMPORT;
   if (PyTime_Check(obj))
-    return DAYTIME::from_hms(
+    return cron::daytime::from_hms<DAYTIME>(
       PyDateTime_TIME_GET_HOUR(obj),
       PyDateTime_TIME_GET_MINUTE(obj),
         PyDateTime_TIME_GET_SECOND(obj)
@@ -748,7 +748,7 @@ convert_to_daytime(
   auto const double_opt = obj->maybe_double_value();
   if (double_opt) 
     // Interpret as SSM.
-    return DAYTIME::from_ssm(*double_opt);
+    return cron::daytime::from_ssm<DAYTIME>(*double_opt);
       
   // FIXME: Parse strings.
 

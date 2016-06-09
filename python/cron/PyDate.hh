@@ -176,7 +176,7 @@ private:
     virtual cron::Datenum get_datenum(Object* const date) const
       { return ((PyDate*) date)->date_.get_datenum(); }
     virtual ref<Object> from_datenum(cron::Datenum const datenum) const
-      { return PyDate::create(Date::from_datenum(datenum)); }
+      { return PyDate::create(cron::date::from_datenum<Date>(datenum)); }
     virtual bool is_invalid(Object* const date) const
       { return ((PyDate*) date)->date_.is_invalid(); }
     virtual bool is_missing(Object* const date) const
@@ -490,7 +490,7 @@ PyDate<DATE>::method_from_datenum(
     "datenum is not an int");
   Arg::ParseTupleAndKeywords(args, kw_args, "i", arg_names, &datenum);
 
-  return create(Date::from_datenum(datenum), type);
+  return create(cron::date::from_datenum<Date>(datenum), type);
 }
 
 
@@ -505,7 +505,7 @@ PyDate<DATE>::method_from_iso_date(
   char* iso_date;
   Arg::ParseTupleAndKeywords(args, kw_args, "s", arg_names, &iso_date);
 
-  return create(cron::date::from_iso_date<DATE>(iso_date), type);
+  return create(cron::date::from_iso_date<Date>(iso_date), type);
 }
 
 
@@ -521,7 +521,7 @@ PyDate<DATE>::method_from_offset(
   long offset;
   Arg::ParseTupleAndKeywords(args, kw_args, "k", arg_names, &offset);
 
-  return create(cron::date::from_offset<DATE>(offset), type);
+  return create(cron::date::from_offset<Date>(offset), type);
 }
 
 
@@ -968,7 +968,7 @@ maybe_date(
     return 
         api->is_invalid(obj) ? DATE::INVALID
       : api->is_missing(obj) ? DATE::MISSING
-      : DATE::from_datenum(api->get_datenum(obj));
+      : cron::date::from_datenum<DATE>(api->get_datenum(obj));
 
   // Try for datetime.date.  Note that PyDateTimeAPI is declared to be static,
   // so we have to initialize it in each compilation unit.
@@ -984,13 +984,13 @@ maybe_date(
   // for datetime.date.
   auto ordinal = obj->CallMethodObjArgs("toordinal", false);
   if (ordinal != nullptr)
-    return DATE::from_datenum(ordinal->long_value());
+    return cron::date::from_datenum<DATE>(ordinal->long_value());
 
   // Try for a date type that has a datenum attribute, to handle duck typing
   // for our PyDate.
   auto datenum = obj->GetAttrString("datenum", false);
   if (datenum != nullptr) 
-    return DATE::from_datenum(datenum->long_value());
+    return cron::date::from_datenum<DATE>(datenum->long_value());
 
   // No type match.
   return {};

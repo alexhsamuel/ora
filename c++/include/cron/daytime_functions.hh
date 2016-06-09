@@ -12,18 +12,43 @@ namespace daytime {
 // Factory functions
 //------------------------------------------------------------------------------
 
-// Synonyms for static factory methods; included for completeness.
-
-template<class DAYTIME=Daytime> inline DAYTIME from_offset(typename DAYTIME::Offset const o)
-  { return DAYTIME::from_offset(o); }
-template<class DAYTIME=Daytime> inline DAYTIME from_hms(Hour const h, Minute const m, Second const s=0)
-  { return DAYTIME::from_hms(h, m, s); }
-template<class DAYTIME=Daytime> inline DAYTIME from_hms(HmsDaytime const& d)
-  { return DAYTIME::from_hms(d); }
+// Synonyms for static factory methods.
 template<class DAYTIME=Daytime> inline DAYTIME from_daytick(Daytick const d)
   { return DAYTIME::from_daytick(d); }
-template<class DAYTIME=Daytime> inline DAYTIME from_ssm(Ssm const s)
-  { return DAYTIME::from_ssm(s); }
+template<class DAYTIME=Daytime> inline DAYTIME from_offset(typename DAYTIME::Offset const o)
+  { return DAYTIME::from_offset(o); }
+
+template<class DAYTIME=Daytime> 
+inline DAYTIME
+from_hms(
+  Hour const hour,
+  Minute const minute,
+  Second const second=0)
+{ 
+  using Offset = typename DAYTIME::Offset;
+  if (hms_is_valid(hour, minute, second)) 
+    return from_offset<DAYTIME>(
+        (hour * SECS_PER_HOUR + minute * SECS_PER_MIN) * DAYTIME::DENOMINATOR
+      + (Offset) (second * DAYTIME::DENOMINATOR));
+  else
+    throw InvalidDaytimeError();
+}
+
+
+template<class DAYTIME=Daytime> inline DAYTIME from_hms(HmsDaytime const& hms)
+  { return from_hms<DAYTIME>(hms.hour, hms.minute, hms.second); }
+
+template<class DAYTIME=Daytime>
+inline DAYTIME
+from_ssm(
+  Ssm const ssm)
+{ 
+  if (ssm_is_valid(ssm))
+    return from_offset<DAYTIME>(round(ssm * DAYTIME::DENOMINATOR));
+  else
+    throw InvalidDaytimeError();
+}
+
 
 //------------------------------------------------------------------------------
 // Accessors

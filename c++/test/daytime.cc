@@ -29,7 +29,7 @@ TEST(Daytime, get_hms) {
   EXPECT_EQ(0, hms.minute);
   EXPECT_EQ(0, hms.second);
 
-  hms = get_hms(Daytime::from_ssm(60012.25));
+  hms = get_hms(from_ssm<Daytime>(60012.25));
   EXPECT_EQ(16, hms.hour);
   EXPECT_EQ(40, hms.minute);
   EXPECT_EQ(12.25, hms.second);
@@ -65,18 +65,18 @@ TEST(Daytime, from_hms_invalid) {
 }
 
 TEST(Daytime, from_ssm) {
-  EXPECT_EQ(from_hms( 0,  0,  0), Daytime::from_ssm(    0));
-  EXPECT_EQ(from_hms( 0,  0,  1), Daytime::from_ssm(    1));
-  EXPECT_EQ(from_hms( 0,  1,  0), Daytime::from_ssm(   60));
-  EXPECT_EQ(from_hms( 1,  0,  0), Daytime::from_ssm( 3600));
-  EXPECT_EQ(from_hms(23, 59, 59), Daytime::from_ssm(86399));
-  EXPECT_EQ(from_hms( 0,  0,  0.001), Daytime::from_ssm(0.001));
+  EXPECT_EQ(from_hms( 0,  0,  0), from_ssm<Daytime>(    0));
+  EXPECT_EQ(from_hms( 0,  0,  1), from_ssm<Daytime>(    1));
+  EXPECT_EQ(from_hms( 0,  1,  0), from_ssm<Daytime>(   60));
+  EXPECT_EQ(from_hms( 1,  0,  0), from_ssm<Daytime>( 3600));
+  EXPECT_EQ(from_hms(23, 59, 59), from_ssm<Daytime>(86399));
+  EXPECT_EQ(from_hms( 0,  0,  0.001), from_ssm<Daytime>(0.001));
 }
 
 TEST(Daytime, from_ssm_invalid) {
-  EXPECT_THROW(Daytime::from_ssm(86400), InvalidDaytimeError);
-  EXPECT_THROW(Daytime::from_ssm(-1), InvalidDaytimeError);
-  EXPECT_THROW(Daytime::from_ssm(NaN), InvalidDaytimeError);
+  EXPECT_THROW(from_ssm<Daytime>(86400), InvalidDaytimeError);
+  EXPECT_THROW(from_ssm<Daytime>(-1), InvalidDaytimeError);
+  EXPECT_THROW(from_ssm<Daytime>(NaN), InvalidDaytimeError);
 }
 
 TEST(Daytime, get_ssm) {
@@ -134,6 +134,7 @@ TEST(Daytime32, get_hms) {
   EXPECT_EQ(0, hms.minute);
   EXPECT_EQ(0, hms.second);
 
+  auto a = from_ssm<Daytime32>(60012.25);
   hms = get_hms(from_ssm<Daytime32>(60012.25));
   EXPECT_EQ(16, hms.hour);
   EXPECT_EQ(40, hms.minute);
