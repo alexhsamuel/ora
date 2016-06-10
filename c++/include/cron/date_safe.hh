@@ -22,7 +22,7 @@ template<class DATE> inline DATE from_ymd(YmdDate) noexcept;
 // Factory functions
 //------------------------------------------------------------------------------
 
-template<class DATE>
+template<class DATE=Date>
 inline DATE
 from_datenum(
   Datenum const datenum)
@@ -42,7 +42,7 @@ from_datenum(
 }
 
 
-template<class DATE>
+template<class DATE=Date>
 inline DATE
 from_iso_date(
   std::string const& date)
@@ -57,7 +57,7 @@ from_iso_date(
  *
  * Returns an invalid date if the offset is not valid.
  */
-template<class DATE>
+template<class DATE=Date>
 inline DATE
 from_offset(
   typename DATE::Offset const offset)
@@ -70,7 +70,7 @@ from_offset(
 }
 
 
-template<class DATE>
+template<class DATE=Date>
 inline DATE
 from_ordinal_date(
   Year const year,
@@ -84,7 +84,7 @@ from_ordinal_date(
 }
 
 
-template<class DATE>
+template<class DATE=Date>
 DATE
 from_week_date(
   Year const week_year,
@@ -99,7 +99,7 @@ from_week_date(
 }
 
 
-template<class DATE>
+template<class DATE=Date>
 inline DATE
 from_ymd(
   Year const year,
@@ -114,7 +114,7 @@ from_ymd(
 }
 
 
-template<class DATE>
+template<class DATE=Date>
 inline DATE
 from_ymd(
   YmdDate const date)
@@ -124,7 +124,7 @@ from_ymd(
 }
 
 
-template<class DATE>
+template<class DATE=Date>
 inline DATE
 from_ymdi(
   int const ymdi)

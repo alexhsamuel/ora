@@ -10,6 +10,70 @@ namespace daytime {
 namespace safe {
 
 //------------------------------------------------------------------------------
+// Factory functions
+//------------------------------------------------------------------------------
+
+template<class DAYTIME=Daytime>
+inline DAYTIME
+from_offset(
+  typename DAYTIME::Offset const offset)
+  noexcept
+{
+  using Offset = typename DAYTIME::Offset;
+  return 
+      in_range<Offset>(0, offset, DAYTIME::MAX_OFFSET)
+    ? DAYTIME(offset)
+    : DAYTIME::INVALID;
+}
+
+
+template<class DAYTIME=Daytime>
+inline DAYTIME
+from_daytick(
+  Daytick const daytick)
+  noexcept
+{
+  return 
+      daytick_is_valid(daytick)
+    ? DAYTIME(
+        rescale_int<Daytick, DAYTICK_PER_SEC, DAYTIME::DENOMINATOR>(daytick))
+    : DAYTIME::INVALID;
+}
+
+
+template<class DAYTIME=Daytime>
+inline DAYTIME
+from_hms(
+  Hour const hour,
+  Minute const minute,
+  Second const second=0)
+  noexcept
+{
+  using Offset = typename DAYTIME::Offset;
+  return 
+      hms_is_valid(hour, minute, second)
+    ? from_offset<DAYTIME>(
+        (hour * SECS_PER_HOUR + minute * SECS_PER_MIN) * DAYTIME::DENOMINATOR
+      + (Offset) (second * DAYTIME::DENOMINATOR))
+    : DAYTIME::INVALID;
+}
+
+
+template<class DAYTIME=Daytime> inline DAYTIME from_hms(HmsDaytime const& hms)
+  { return safe::from_hms<DAYTIME>(hms.hour, hms.minute, hms.second); }
+
+template<class DAYTIME=Daytime>
+inline DAYTIME
+from_ssm(
+  Ssm const ssm)
+  noexcept
+{
+  return 
+      ssm_is_valid(ssm)
+    ? from_offset<DAYTIME>(round(ssm * DAYTIME::DENOMINATOR))
+    : DAYTIME::INVALID;
+}
+
 
 //------------------------------------------------------------------------------
 // Comparisons

@@ -19,8 +19,8 @@ namespace daytime {
 
 namespace safe {
 
-// template<class DAYTIME> DAYTIME from_daytick(Daytick) noexcept;
-// template<class DAYTIME> DAYTIME from_offset(typename DAYTIME::Offset) noexcept;
+template<class DAYTIME> DAYTIME from_daytick(Daytick) noexcept;
+template<class DAYTIME> DAYTIME from_offset(typename DAYTIME::Offset) noexcept;
 template<class DAYTIME> bool equal(DAYTIME, DAYTIME) noexcept;
 
 }  // namespace safe
@@ -73,11 +73,9 @@ public:
   from_daytick(
     Daytick const daytick)
   {
-    if (daytick_is_valid(daytick)) {
-      auto const offset = 
-        rescale_int<Daytick, DAYTICK_PER_SEC, DENOMINATOR>(daytick);
-      return DaytimeTemplate(offset);
-    }
+    if (daytick_is_valid(daytick))
+      return DaytimeTemplate(
+        rescale_int<Daytick, DAYTICK_PER_SEC, DENOMINATOR>(daytick));
     else
       throw InvalidDaytimeError();
   }
@@ -160,6 +158,8 @@ private:
 
   Offset offset_ = INVALID_OFFSET;
 
+  template<class DAYTIME> friend DAYTIME cron::daytime::safe::from_daytick(Daytick) noexcept;
+  template<class DAYTIME> friend DAYTIME cron::daytime::safe::from_offset(typename DAYTIME::Offset) noexcept;
   template<class DAYTIME> friend bool cron::daytime::safe::equal(DAYTIME, DAYTIME) noexcept;
 
 public:

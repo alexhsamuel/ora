@@ -18,6 +18,9 @@ template<class DAYTIME=Daytime> inline DAYTIME from_daytick(Daytick const d)
 template<class DAYTIME=Daytime> inline DAYTIME from_offset(typename DAYTIME::Offset const o)
   { return DAYTIME::from_offset(o); }
 
+/*
+ * Creates a daytime from hour, minute, and second components.
+ */
 template<class DAYTIME=Daytime> 
 inline DAYTIME
 from_hms(
@@ -38,6 +41,9 @@ from_hms(
 template<class DAYTIME=Daytime> inline DAYTIME from_hms(HmsDaytime const& hms)
   { return from_hms<DAYTIME>(hms.hour, hms.minute, hms.second); }
 
+/*
+ * Creates a daytime from SSM (seconds since midnight).
+ */
 template<class DAYTIME=Daytime>
 inline DAYTIME
 from_ssm(
