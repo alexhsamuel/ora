@@ -85,6 +85,7 @@ public:
   DaytimeTemplate
   operator=(
     DaytimeTemplate const daytime)
+    noexcept
   {
     offset_ = daytime.offset_;
     return *this;
@@ -94,6 +95,7 @@ public:
   DaytimeTemplate
   operator=(
     DaytimeTemplate<OTHER_TRAITS> const daytime)
+    noexcept
   {
     return *this =
         daytime.is_invalid() ? INVALID
@@ -103,15 +105,13 @@ public:
 
   // Accessors  ----------------------------------------------------------------
 
-  bool 
-  is_valid() 
-    const noexcept 
+  Daytick 
+  get_daytick() 
+    const
   { 
-    return in_range((Offset) 0, offset_, MAX_OFFSET);
+    ensure_valid(*this);
+    return rescale_int<Daytick, DENOMINATOR, DAYTICK_PER_SEC>(offset_); 
   }
-
-  bool is_invalid() const noexcept { return is(INVALID); }
-  bool is_missing() const noexcept { return is(MISSING); }
 
   Offset 
   get_offset() 
@@ -121,18 +121,18 @@ public:
     return offset_;
   }
 
-  Daytick 
-  get_daytick() 
-    const
+  bool is_invalid() const noexcept { return offset_ == INVALID_OFFSET; }
+  bool is_missing() const noexcept { return offset_ == MISSING_OFFSET; }
+
+  bool 
+  is_valid() 
+    const noexcept 
   { 
-    ensure_valid(*this);
-    return rescale_int<Daytick, Traits::denominator, DAYTICK_PER_SEC>(offset_); 
+    return in_range<Offset>(0, offset_, MAX_OFFSET);
   }
 
   // Comparisons  --------------------------------------------------------------
 
-  // FIXME: Move into daytime_functions.hh.
-  bool is(DaytimeTemplate const& o)         const { return offset_ == o.offset_; }
   bool operator==(DaytimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ == o.offset_; }
   bool operator!=(DaytimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ != o.offset_; }
   bool operator< (DaytimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ <  o.offset_; }
@@ -142,7 +142,7 @@ public:
 
 private:
 
-  static Offset constexpr MAX_OFFSET = SECS_PER_DAY * Traits::denominator - 1;
+  static Offset constexpr MAX_OFFSET = SECS_PER_DAY * DENOMINATOR - 1;
   static Offset constexpr INVALID_OFFSET = std::numeric_limits<Offset>::max();
   static Offset constexpr MISSING_OFFSET = INVALID_OFFSET - 1;
 
@@ -162,7 +162,7 @@ public:
   /*
    * Returns true iff the type can represent all valid daytimes.
    */
-  static bool constexpr
+  static constexpr bool
   is_complete()
   {
     return 
@@ -173,7 +173,7 @@ public:
   /*
    * Returns true iff the memory layout is exactly the offset.
    */
-  static bool constexpr
+  static constexpr bool
   is_basic_layout()
   {
     return

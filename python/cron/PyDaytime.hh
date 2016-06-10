@@ -465,7 +465,7 @@ PyDaytime<DAYTIME>::method_is_same(
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &object);
 
   auto daytime_opt = maybe_daytime<Daytime>(object);
-  return Bool::from(daytime_opt && self->daytime_.is(*daytime_opt));
+  return Bool::from(daytime_opt && self->daytime_ == *daytime_opt);
 }
 
 
