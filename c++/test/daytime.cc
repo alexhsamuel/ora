@@ -134,7 +134,6 @@ TEST(Daytime32, get_hms) {
   EXPECT_EQ(0, hms.minute);
   EXPECT_EQ(0, hms.second);
 
-  auto a = from_ssm<Daytime32>(60012.25);
   hms = get_hms(from_ssm<Daytime32>(60012.25));
   EXPECT_EQ(16, hms.hour);
   EXPECT_EQ(40, hms.minute);
