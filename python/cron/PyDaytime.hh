@@ -179,6 +179,7 @@ PyDaytime<DAYTIME>::add_to(
   dict->SetItemString("EPSILON" , Float::FromDouble(1.0 / DAYTIME::DENOMINATOR));
   dict->SetItemString("INVALID" , create(Daytime::INVALID));
   dict->SetItemString("MAX"     , create(Daytime::MAX));
+  dict->SetItemString("MIDNIGHT", create(Daytime::MIDNIGHT));
   dict->SetItemString("MIN"     , create(Daytime::MIN));
   dict->SetItemString("MISSING" , create(Daytime::MISSING));
 
