@@ -143,6 +143,7 @@ public:
   DateTemplate
   operator=(
     DateTemplate const date)
+    noexcept
   {
     offset_ = date.offset_;
     return *this;
@@ -171,16 +172,6 @@ public:
 
   // Accessors  ----------------------------------------------------------------
 
-  bool 
-  is_valid()
-    const noexcept
-  {
-    return in_range(Traits::min, offset_, Traits::max);
-  }
-
-  bool is_invalid() const noexcept { return offset_ == Traits::invalid; }
-  bool is_missing() const noexcept { return offset_ == Traits::missing; }
-
   Datenum 
   get_datenum() 
     const 
@@ -195,6 +186,16 @@ public:
   { 
     ensure_valid(*this);
     return offset_;
+  }
+
+  bool is_invalid() const noexcept { return offset_ == Traits::invalid; }
+  bool is_missing() const noexcept { return offset_ == Traits::missing; }
+
+  bool 
+  is_valid()
+    const noexcept
+  {
+    return in_range(Traits::min, offset_, Traits::max);
   }
 
 private:
