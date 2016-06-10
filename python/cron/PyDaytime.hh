@@ -156,21 +156,24 @@ PyDaytime<DAYTIME>::add_to(
   // FIXME
   // PyDaytimeAPI::add(&type_, std::make_unique<API>());
 
+  // Choose precision for seconds that captures actual precision of the daytime
+  // class (up to 1 fs).
+  auto const precision 
+    = std::min((size_t) ceil(log10(DAYTIME::DENOMINATOR)), 15ul);
+  auto const sec_fmt = 
+    std::string("%0")
+    + (precision > 0 ? "." + std::to_string(precision) : "")
+    + "S";
+
   // Build the repr format.
   repr_format_ = make_unique<cron::daytime::DaytimeFormat>(
-    name + "(%0H, %0M, %0S)",
+    name + "(%0H, %0M, " + sec_fmt + ")",
     name + ".INVALID",
     name + ".MISSING");
 
   // Build the str format.  Choose precision for seconds that captures actual
   // precision of the daytime class.
-  std::string pattern = "%H:%M:%";
-  size_t const precision = (size_t) ceil(log10(Daytime::DENOMINATOR));
-  if (precision > 0) {
-    pattern += ".";
-    pattern += std::to_string(precision);
-  }
-  pattern += "S";
+  std::string pattern = "%H:%M:" + sec_fmt;
   str_format_ = make_unique<cron::daytime::DaytimeFormat>(pattern);
 
   // Add in static data members.
