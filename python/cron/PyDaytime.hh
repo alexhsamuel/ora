@@ -176,12 +176,13 @@ PyDaytime<DAYTIME>::add_to(
   // Add in static data members.
   auto const dict = (Dict*) type_.tp_dict;
   assert(dict != nullptr);
-  dict->SetItemString("EPSILON" , Float::FromDouble(1.0 / DAYTIME::DENOMINATOR));
-  dict->SetItemString("INVALID" , create(Daytime::INVALID));
-  dict->SetItemString("MAX"     , create(Daytime::MAX));
-  dict->SetItemString("MIDNIGHT", create(Daytime::MIDNIGHT));
-  dict->SetItemString("MIN"     , create(Daytime::MIN));
-  dict->SetItemString("MISSING" , create(Daytime::MISSING));
+  dict->SetItemString("DENOMINATOR" , Long::from(DAYTIME::DENOMINATOR));
+  dict->SetItemString("EPSILON"     , Float::FromDouble(1.0 / DAYTIME::DENOMINATOR));
+  dict->SetItemString("INVALID"     , create(Daytime::INVALID));
+  dict->SetItemString("MAX"         , create(Daytime::MAX));
+  dict->SetItemString("MIDNIGHT"    , create(Daytime::MIDNIGHT));
+  dict->SetItemString("MIN"         , create(Daytime::MIN));
+  dict->SetItemString("MISSING"     , create(Daytime::MISSING));
 
   // Add the type to the module.
   module.add(&type_);

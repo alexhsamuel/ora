@@ -262,6 +262,7 @@ PyTime<TIME>::add_to(
   Dict* const dict = (Dict*) type_.tp_dict;
   assert(dict != nullptr);
   dict->SetItemString("DENOMINATOR" , Long::from(Time::DENOMINATOR));
+  dict->SetItemString("EPSILON"     , Float::FromDouble(1.0 / TIME::DENOMINATOR));
   dict->SetItemString("INVALID"     , create(Time::INVALID));
   dict->SetItemString("MAX"         , create(Time::MAX));
   dict->SetItemString("MIN"         , create(Time::MIN));
