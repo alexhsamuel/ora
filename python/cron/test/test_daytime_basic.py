@@ -163,7 +163,7 @@ def test_parts0():
     p = Daytime.MAX.hms
     assert p.hour == 23
     assert p.minute == 59
-    assert (60 - p.second) < 2 * Daytime.EPSILON
+    assert (60 - p.second) < 2 * Daytime.RESOLUTION
 
 
 def test_invalid():
