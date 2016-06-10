@@ -28,6 +28,18 @@ make_uint128(
 
 //------------------------------------------------------------------------------
 
+/*
+ * Returns -1 if x0 < x1, 0 if x0 == x1, or 1 if x0 > x1.
+ */
+template<class T>
+inline int
+compare(
+  typename std::enable_if<std::is_integral<T>::value>::type const x0,
+  typename std::enable_if<std::is_integral<T>::value>::type const x1)
+{
+  return x0 == x1 ? 0 : x0 < x1 ? -1 : 1;
+}
+
 
 inline unsigned long
 pow10(

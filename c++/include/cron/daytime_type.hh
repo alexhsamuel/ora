@@ -14,6 +14,18 @@ namespace cron {
 namespace daytime {
 
 //------------------------------------------------------------------------------
+// Forward declarations
+//------------------------------------------------------------------------------
+
+namespace safe {
+
+// template<class DAYTIME> DAYTIME from_daytick(Daytick) noexcept;
+// template<class DAYTIME> DAYTIME from_offset(typename DAYTIME::Offset) noexcept;
+template<class DAYTIME> bool equal(DAYTIME, DAYTIME) noexcept;
+
+}  // namespace safe
+
+//------------------------------------------------------------------------------
 
 template<class TRAITS>
 class DaytimeTemplate
@@ -131,15 +143,6 @@ public:
     return in_range<Offset>(0, offset_, MAX_OFFSET);
   }
 
-  // Comparisons  --------------------------------------------------------------
-
-  bool operator==(DaytimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ == o.offset_; }
-  bool operator!=(DaytimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ != o.offset_; }
-  bool operator< (DaytimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ <  o.offset_; }
-  bool operator<=(DaytimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ <= o.offset_; }
-  bool operator> (DaytimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ >  o.offset_; }
-  bool operator>=(DaytimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ >= o.offset_; }
-
 private:
 
   static Offset constexpr MAX_OFFSET = SECS_PER_DAY * DENOMINATOR - 1;
@@ -156,6 +159,8 @@ private:
   }
 
   Offset offset_ = INVALID_OFFSET;
+
+  template<class DAYTIME> friend bool cron::daytime::safe::equal(DAYTIME, DAYTIME) noexcept;
 
 public:
 

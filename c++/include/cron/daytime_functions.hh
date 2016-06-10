@@ -90,6 +90,46 @@ template<class DAYTIME> inline Second get_second(DAYTIME const daytime)
   { return get_hms(daytime).second; }
 
 //------------------------------------------------------------------------------
+// Comparisons
+//------------------------------------------------------------------------------
+
+template<class DAYTIME>
+inline int
+compare(
+  DAYTIME const daytime0,
+  DAYTIME const daytime1)
+{
+  ensure_valid(daytime0);
+  ensure_valid(daytime1);
+  return compare(daytime0.get_offset(), daytime1.get_offset());
+}
+
+
+template<class DAYTIME>
+inline bool
+equal(
+  DAYTIME const daytime0,
+  DAYTIME const daytime1)
+{
+  ensure_valid(daytime0);
+  ensure_valid(daytime1);
+  return daytime0.get_offset() == daytime1.get_offset();
+}
+
+
+template<class DAYTIME>
+inline bool
+before(
+  DAYTIME const daytime0,
+  DAYTIME const daytime1)
+{
+  ensure_valid(daytime0);
+  ensure_valid(daytime1);
+  return daytime0.get_offset() < daytime1.get_offset();
+}
+
+
+//------------------------------------------------------------------------------
 // Arithemtic with seconds
 //------------------------------------------------------------------------------
 

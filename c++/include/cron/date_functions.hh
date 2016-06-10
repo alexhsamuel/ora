@@ -198,9 +198,7 @@ compare(
 {
   ensure_valid(date0);
   ensure_valid(date1);
-  auto const offset0 = date0.get_offset();
-  auto const offset1 = date1.get_offset();
-  return offset0 < offset1 ? -1 : offset0 == offset1 ? 0 : 1;
+  return compare(date0.get_offset(), date1.get_offset());
 }
 
 

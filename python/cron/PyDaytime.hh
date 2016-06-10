@@ -116,9 +116,8 @@ private:
 
   // Methods.
   static ref<Object> method_from_daytick        (PyTypeObject* type, Tuple* args, Dict* kw_args);
-  static ref<Object> method_from_hms          (PyTypeObject* type, Tuple* args, Dict* kw_args);
+  static ref<Object> method_from_hms            (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_ssm            (PyTypeObject* type, Tuple* args, Dict* kw_args);
-  static ref<Object> method_is_same             (PyDaytime*    self, Tuple* args, Dict* kw_args);
   static Methods<PyDaytime> tp_methods_;
 
   // Getsets.
@@ -452,23 +451,6 @@ PyDaytime<DAYTIME>::method_from_ssm(
 }
 
 
-// We call this method "is_same" because "is" is a keyword in Python.
-template<typename DAYTIME>
-ref<Object>
-PyDaytime<DAYTIME>::method_is_same(
-  PyDaytime* const self,
-  Tuple* const args,
-  Dict* const kw_args)
-{
-  static char const* const arg_names[] = {"object", nullptr};
-  Object* object;
-  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &object);
-
-  auto daytime_opt = maybe_daytime<Daytime>(object);
-  return Bool::from(daytime_opt && self->daytime_ == *daytime_opt);
-}
-
-
 template<typename DAYTIME>
 Methods<PyDaytime<DAYTIME>>
 PyDaytime<DAYTIME>::tp_methods_
@@ -476,7 +458,6 @@ PyDaytime<DAYTIME>::tp_methods_
     .template add_class<method_from_daytick>        ("from_daytick")
     .template add_class<method_from_hms>            ("from_hms")
     .template add_class<method_from_ssm>            ("from_ssm")
-    .template add      <method_is_same>             ("is_same")
   ;
 
 //------------------------------------------------------------------------------

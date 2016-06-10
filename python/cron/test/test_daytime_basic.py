@@ -12,7 +12,7 @@ from   util import *
 
 def near(a0, a1):
     return (
-           a0.is_same(a1)
+           a0 == a1 
         or (a0.valid and a1.valid and abs(a0.ssm - a1.ssm) % 86400 < 1e-6)
     )
 
@@ -214,35 +214,16 @@ def test_max():
     assert not a.missing
 
 
-def test_is_same():
-    a = Daytime(12, 34, 56.78)
-    assert     a.is_same(a)
-    assert not a.is_same(Daytime.MISSING)
-    assert not a.is_same(Daytime.INVALID)
-
-    assert     Daytime.INVALID.is_same(Daytime.INVALID)
-    assert not Daytime.INVALID.is_same(Daytime.MISSING)
-    assert not Daytime.INVALID.is_same(a)
-    assert not Daytime.MISSING.is_same(Daytime.INVALID)
-    assert not Daytime.MISSING.is_same(a)
-    assert     Daytime.MISSING.is_same(Daytime.MISSING)
-
-
 def test_comparison0():
     assert     Daytime.MIN     == Daytime.MIN
     assert     Daytime.MAX     != Daytime.MIN
     assert     Daytime.MIN     != Daytime.MAX
     assert     Daytime.MAX     == Daytime.MAX
-    assert     Daytime.MIN.is_same(Daytime.MIN)
-    assert     Daytime.MAX.is_same(Daytime.MAX)
-    assert not Daytime.MIN.is_same(Daytime.MAX)
 
-    assert     Daytime.INVALID.is_same(Daytime.INVALID)
-    assert not Daytime.INVALID == Daytime.INVALID
+    assert     Daytime.INVALID == Daytime.INVALID
     assert not Daytime.INVALID != Daytime.INVALID
 
-    assert     Daytime.MISSING.is_same(Daytime.MISSING)
-    assert not Daytime.MISSING == Daytime.MISSING
+    assert     Daytime.MISSING == Daytime.MISSING
     assert not Daytime.MISSING != Daytime.MISSING
 
 
@@ -251,9 +232,9 @@ def test_comparison1():
     a1 = Daytime( 0, 30,  0)
     a2 = Daytime(12,  0,  0)
 
-    assert     a0.is_same(a0)
-    assert     a1.is_same(a1)
-    assert     a2.is_same(a2)
+    assert     a0 == a0
+    assert     a1 == a1
+    assert     a2 == a2
 
     assert     Daytime.MIN  <  a0
     assert     Daytime.MIN  <= a0
@@ -261,7 +242,6 @@ def test_comparison1():
     assert     Daytime.MIN  != a0
     assert not Daytime.MIN  >  a0
     assert not Daytime.MIN  >= a0
-    assert not Daytime.MIN.is_same(a0)
     
     assert     a0           <  a1
     assert     a0           <= a1
@@ -269,7 +249,6 @@ def test_comparison1():
     assert     a0           != a1
     assert not a0           >  a1
     assert not a0           >= a1
-    assert not a0.is_same(a1)
     
     assert     a1           <  a2
     assert     a1           <= a2
@@ -277,7 +256,6 @@ def test_comparison1():
     assert     a1           != a2
     assert not a1           >  a2
     assert not a1           >= a2
-    assert not a1.is_same(a2)
     
     assert     a2           <  Daytime.MAX
     assert     a2           <= Daytime.MAX
@@ -285,7 +263,25 @@ def test_comparison1():
     assert     a2           != Daytime.MAX
     assert not a2           >  Daytime.MAX
     assert not a2           >= Daytime.MAX
-    assert not a2.is_same(Daytime.MAX)
+
+
+def test_comparison2():
+    daytimes = (
+        Daytime.INVALID, Daytime.MISSING,
+        Daytime.MIN, 
+        Daytime(0, 0, 1), Daytime(0, 1, 0), Daytime(1, 0, 0),
+        Daytime.MAX,
+    )
+    for i0 in range(len(daytimes)):
+        for i1 in range(len(daytimes)):
+            a0 = daytimes[i0]
+            a1 = daytimes[i1]
+            assert (i0 == i1) == (a0 == a1)
+            assert (i0 != i1) == (a0 != a1)
+            assert (i0 <  i1) == (a0 <  a1)
+            assert (i0 <= i1) == (a0 <= a1)
+            assert (i0 >  i1) == (a0 >  a1)
+            assert (i0 >= i1) == (a0 >= a1)
 
 
 def test_add0():
