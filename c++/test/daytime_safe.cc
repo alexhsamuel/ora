@@ -54,3 +54,11 @@ TEST(Daytime, from_hms_struct) {
   EXPECT_EQ(from_hms(23, 59, 59.99609375), safe::from_hms(hms));
 }
 
+TEST(Daytime, from_ssm) {
+  EXPECT_EQ(Daytime::INVALID                , safe::from_ssm(-0.01));
+  EXPECT_EQ(Daytime::MIDNIGHT               , safe::from_ssm(0));
+  EXPECT_EQ(from_hms(23, 59, 59)            , safe::from_ssm(86399));
+  EXPECT_EQ(from_hms(23, 59, 59.99609375)   , safe::from_ssm(86399.99609375));
+  EXPECT_EQ(Daytime::INVALID                , safe::from_ssm(86400));
+}
+
