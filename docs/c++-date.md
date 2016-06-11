@@ -139,8 +139,8 @@ Not implemented yet.
 An instance stores the date as an `uint32_t` offset from 0001-01-01, and may efficiently be passed by value.  It has no virtual methods or other state, so `uint32_t*` may be cast to and from `Date*`, as long as the value corresponds to a valid offset.
 
 ```c++
-unsigned int offset = date.get_offset();
-Date* alias = (Date*) &offset;
+uint32_t date_offsets[16];
+Date* dates = (Date*) &date_offsets[0];
 ```
 
 
