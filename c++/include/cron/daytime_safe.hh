@@ -1,3 +1,10 @@
+/*
+ * Safe (non-throwing) versions of daytime functions.
+ *
+ * All functions in `cron::daytime::safe` are `noexcept`; they return accept
+ * invalid arguments, and return invalid value on failure.
+ */
+
 #pragma once
 
 #include "aslib/math.hh"
@@ -59,7 +66,7 @@ from_hms(
 }
 
 
-template<class DAYTIME=Daytime> inline DAYTIME from_hms(HmsDaytime const& hms)
+template<class DAYTIME=Daytime> inline DAYTIME from_hms(HmsDaytime const& hms) noexcept
   { return safe::from_hms<DAYTIME>(hms.hour, hms.minute, hms.second); }
 
 template<class DAYTIME=Daytime>
@@ -74,6 +81,52 @@ from_ssm(
     : DAYTIME::INVALID;
 }
 
+
+//------------------------------------------------------------------------------
+// Accessors
+//------------------------------------------------------------------------------
+
+template<class DAYTIME>
+inline HmsDaytime 
+get_hms(
+  DAYTIME const daytime)  
+  noexcept
+{
+  if (daytime.is_valid()) {
+    auto const offset = daytime.get_offset();
+    auto const minutes = offset / (SECS_PER_MIN * DAYTIME::Traits::denominator);
+    auto const seconds = offset % (SECS_PER_MIN * DAYTIME::Traits::denominator);
+    return {
+      (Hour)   (minutes / MINS_PER_HOUR),
+      (Minute) (minutes % MINS_PER_HOUR),
+      (Second) seconds / DAYTIME::Traits::denominator
+    };
+  }
+  else
+    return HmsDaytime{};  // invalid
+}
+
+
+template<class DAYTIME>
+inline double 
+get_ssm(
+  DAYTIME const daytime)
+  noexcept
+{
+  return 
+      daytime.is_valid()
+    ? (double) daytime.get_offset() / DAYTIME::Traits::denominator
+    : SSM_INVALID;
+}
+
+
+// For convenience.
+template<class DAYTIME> inline Hour get_hour(DAYTIME const daytime) noexcept
+  { return safe::get_hms(daytime).hour; }
+template<class DAYTIME> inline Minute get_minute(DAYTIME const daytime) noexcept
+  { return safe::get_hms(daytime).minute; }
+template<class DAYTIME> inline Second get_second(DAYTIME const daytime) noexcept
+  { return safe::get_hms(daytime).second; }
 
 //------------------------------------------------------------------------------
 // Comparisons

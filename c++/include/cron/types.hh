@@ -230,6 +230,17 @@ struct HmsDaytime
 };
 
 
+inline bool constexpr 
+hms_is_valid(
+  HmsDaytime const& hms)
+{
+  return 
+       hour_is_valid(hms.hour) 
+    && minute_is_valid(hms.minute) 
+    && second_is_valid(hms.second);
+}
+
+
 /*
  * The state of a time zone at a specific time.
  */
