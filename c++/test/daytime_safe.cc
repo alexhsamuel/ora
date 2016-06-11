@@ -142,3 +142,49 @@ TEST(Daytime, get_hour_minute_second) {
   EXPECT_FALSE(second_is_valid(safe::get_second(Daytime::MISSING)));
 }
 
+TEST(Daytime, seconds_after) {
+  EXPECT_EQ(Daytime::INVALID, safe::seconds_after(Daytime::INVALID, 0));
+  EXPECT_EQ(Daytime::INVALID, safe::seconds_after(Daytime::MISSING, 1));
+
+  EXPECT_EQ(from_hms( 0,  1,  5), safe::seconds_after(from_hms( 0,  0, 55), 10));
+  EXPECT_EQ(from_hms(12,  0,  5), safe::seconds_after(from_hms(11, 59, 55), 10));
+
+  for (double sec = 0; sec < 86400; sec += 9.875) 
+    EXPECT_EQ(from_ssm(sec), safe::seconds_after(Daytime::MIDNIGHT, sec));
+
+  EXPECT_EQ(Daytime::INVALID, safe::seconds_after(Daytime::MIDNIGHT, 86400));
+  EXPECT_EQ(Daytime::INVALID, safe::seconds_after(from_hms(23, 59, 59.5), 0.6));
+}
+
+TEST(Daytime, seconds_before) {
+  EXPECT_EQ(Daytime::INVALID, safe::seconds_before(Daytime::INVALID, 0));
+  EXPECT_EQ(Daytime::INVALID, safe::seconds_before(Daytime::MISSING, 1));
+
+  EXPECT_EQ(from_hms( 0,  0, 55), safe::seconds_before(from_hms( 0,  1,  5), 10));
+  EXPECT_EQ(from_hms(11, 59, 55), safe::seconds_before(from_hms(12,  0,  5), 10));
+
+  for (double sec = 0; sec < 86400; sec += 9.875) 
+    EXPECT_EQ(Daytime::MIDNIGHT, safe::seconds_before(from_ssm(sec), sec));
+
+  EXPECT_EQ(Daytime::INVALID, safe::seconds_before(Daytime::MIDNIGHT, 0.1));
+  EXPECT_EQ(Daytime::INVALID, safe::seconds_before(Daytime::MAX, 86400.01));
+}
+
+TEST(Daytime, seconds_between) {
+  EXPECT_TRUE(std::isnan(safe::seconds_between(Daytime::INVALID, Daytime::MIN)));
+  EXPECT_TRUE(std::isnan(safe::seconds_between(Daytime::MISSING, Daytime::MIN)));
+  EXPECT_TRUE(std::isnan(safe::seconds_between(Daytime::MIN, Daytime::INVALID)));
+  EXPECT_TRUE(std::isnan(safe::seconds_between(Daytime::MIN, Daytime::MISSING)));
+
+  for (Ssm ssm = 0; ssm < 86400; ssm += 44.875) {
+    auto const daytime0 = from_ssm(ssm);
+    for (double sec = 0; sec < 1000; sec += 97.5) {
+      auto const daytime1 = safe::seconds_after(daytime0, sec);
+      if (daytime1.is_valid()) {
+        EXPECT_EQ( sec, seconds_between(daytime0, daytime1));
+        EXPECT_EQ(-sec, seconds_between(daytime1, daytime0));
+      }
+    }
+  }
+}
+

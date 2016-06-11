@@ -172,7 +172,7 @@ seconds_between(
   ensure_valid(daytime0);
   ensure_valid(daytime1);
   return 
-    ((double) daytime0.get_offset() - (double) daytime1.get_offset()) 
+    ((double) daytime1.get_offset() - (double) daytime0.get_offset()) 
     / DAYTIME::DENOMINATOR;
 }
 
@@ -181,7 +181,7 @@ template<class DAYTIME> inline DAYTIME operator+(DAYTIME const d, double const s
   { return seconds_after(d, secs); }
 template<class DAYTIME> inline DAYTIME operator-(DAYTIME const d, double const secs)
   { return seconds_before(d, secs); }
-template<class DAYTIME> inline int operator-(DAYTIME const d0, DAYTIME const d1)
+template<class DAYTIME> inline int operator-(DAYTIME const d1, DAYTIME const d0)
   { return seconds_between(d0, d1); } 
 
 template<class DAYTIME> inline DAYTIME operator+=(DAYTIME& d, int const secs) 

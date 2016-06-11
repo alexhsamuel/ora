@@ -179,6 +179,52 @@ compare(
 }
 
 
+//------------------------------------------------------------------------------
+// Arithmetic
+//------------------------------------------------------------------------------
+
+template<class DAYTIME>
+inline DAYTIME
+seconds_after(
+  DAYTIME const daytime,
+  double const seconds)
+{
+  return 
+      daytime.is_valid()
+    ? from_offset<DAYTIME>(
+        daytime.get_offset() + round(seconds * DAYTIME::DENOMINATOR))
+    : DAYTIME::INVALID;
+}
+
+
+template<class DAYTIME>
+inline DAYTIME
+seconds_before(
+  DAYTIME const daytime,
+  double const seconds)
+{
+  return 
+      daytime.is_valid()
+    ? from_offset<DAYTIME>(
+        daytime.get_offset() - round(seconds * DAYTIME::DENOMINATOR))
+    : DAYTIME::INVALID;
+}
+
+
+template<class DAYTIME>
+inline double
+seconds_between(
+  DAYTIME const daytime0,
+  DAYTIME const daytime1)
+{
+  return 
+      daytime0.is_valid() && daytime1.is_valid()
+    ? ((double) daytime1.get_offset() - (double) daytime0.get_offset()) 
+      / DAYTIME::DENOMINATOR
+    : std::numeric_limits<double>::quiet_NaN();
+}
+
+
 }  // namespace safe
 
 //------------------------------------------------------------------------------
