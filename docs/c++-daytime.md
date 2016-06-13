@@ -3,7 +3,7 @@
 ```c++
 #include "cron.hh"
 
-using cron::daytime;
+using namespace cron;
 ```
 
 A `cron::daytime::Daytime` represents an approximate time of day.  Daytime is a representation of a specific time within a specific day in a specific location, as one might read off an ordinary clock.
@@ -16,7 +16,7 @@ See [c++-localization](c++-localization.md) for how to use a daytime to build ti
 Cron provides several daytime factory functions. The most common convention for specifying a daytime is the _HMS_ form, a triplet of hour, minute, and second. 
 
 ```c++
-Daytime daytime;
+daytime::Daytime daytime;
 daytime = from_hms(10, 30, 0.0);
 daytime = from_hms(10, 30);       // same thing; seconds defaults to 0
 ```
@@ -24,7 +24,7 @@ daytime = from_hms(10, 30);       // same thing; seconds defaults to 0
 Another daytime representation is _SSM_ (_seconds since midnight_), the number of seconds that have passed since the previous midnight.
 
 ```c++
-auto const noon = from_ssm(43200.0); 
+auto const noon = daytime::from_ssm(43200.0); 
 ```
 
 Keep in mind:
