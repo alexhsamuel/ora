@@ -16,8 +16,8 @@ Cron provides several daytime factory functions. The most common convention for 
 
 ```c++
 daytime::Daytime daytime;
-daytime = from_hms(10, 30, 0.0);
-daytime = from_hms(10, 30);       // same thing; seconds defaults to 0
+daytime = daytime::from_hms(10, 30, 0.0);
+daytime = daytime::from_hms(10, 30);       // same thing; seconds defaults to 0
 ```
 
 Another daytime representation is _SSM_ (_seconds since midnight_), the number of seconds that have passed since the previous midnight.
