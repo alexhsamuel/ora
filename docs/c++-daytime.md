@@ -2,7 +2,6 @@
 
 ```c++
 #include "cron.hh"
-
 using namespace cron;
 ```
 
