@@ -320,6 +320,78 @@ datenum_to_ymdi(
 
 //------------------------------------------------------------------------------
 
-}  // namespace cron
+namespace weekday {
 
+/*
+ * Encoding convention of weekdays to integers.
+ *
+ * A convention is parameterized by `MIN`, the lowest-numbered weekday, and
+ * `VAL`, the integer value of `MIN`.
+ *
+ * The other weekdays are numbered sequentially up to `VAL` + 6.
+ *
+ * For example, a weekday numbering convention that assigns Sunday = -1,
+ * Monday = 0, ..., Saturday = 5, is given by,
+ *
+ *     Convention<SUNDAY, -1>
+ *
+ */
+template<Weekday MIN, int VAL>
+class Convention
+{
+public:
+
+  static constexpr bool 
+  is_valid(
+    int const c)
+  {
+    return in_interval(VAL, c, VAL + 7);
+  }
+
+  static constexpr int 
+  encode(
+    Weekday const c)
+  {
+    return 
+      VAL + (c < MIN ? (int) c - (MIN - 7) : (int) c - MIN);
+  }
+
+  static constexpr Weekday
+  decode(
+    int const c)
+  {
+    return c - VAL + MIN >= 7 ? c - VAL + (MIN - 7) : c - VAL + MIN;
+  }
+
+private:
+
+  // May not be instantiated.
+  Convention()                  = delete;
+  Convention(Convention const&) = delete;
+  Convention(Convention&&)      = delete;
+  ~Convention()                 = delete;
+
+};
+
+/*
+ * Cron's own weekday convention.
+ */
+using ENCODING_CRON     = Convention<MONDAY, 0>;
+
+/* 
+ * ISO 8601 weekday convention.
+ */
+using ENCODING_ISO      = Convention<MONDAY, 1>;
+
+/*
+ * The C library's (i.e. `struct tm`) convention.
+ */
+using ENCODING_CLIB     = Convention<SUNDAY, 0>;
+
+};
+
+
+//------------------------------------------------------------------------------
+
+}  // namespace cron
 

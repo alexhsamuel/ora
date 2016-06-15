@@ -3,7 +3,7 @@
 ```c++
 #include "cron.hh"
 
-using cron::date;
+using namespace cron::date;
 ```
 
 A `cron::date::Date` represents a calendar date.  A calendar date represents a period, usually (but not always) 24 hours long, in a specific location; as such, a date does not by itself correspond to any time or interval of times.
@@ -49,6 +49,7 @@ auto date = 1973/DEC/3;
 ```
 
 Special three-letter month constants must be used (`JAN`, `FEB`, ...), and leading zeros are not allowed for the year and day.  
+
 
 ## Date accessors
 

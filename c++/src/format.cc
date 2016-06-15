@@ -186,7 +186,7 @@ format_date(
   case 'w':
     // FIXME: Generalize?
     sb.format(
-      (date.week_date.weekday + (7 - SUNDAY)) % 7, 
+      weekday::ENCODING_ISO::encode(date.week_date.weekday),
       mods.get_width(1), mods.get_pad('0'));
     break;
 
