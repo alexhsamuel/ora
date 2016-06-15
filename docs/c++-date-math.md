@@ -22,7 +22,7 @@ method convers a `Weekday` to an integer with the specified convention, and
 For example,
 
 ```c++
-Weekday weekday = weekday:ENCODING_ISO::encode(TUESDAY);
-int w = weekday::ENCODING_CLIB::decode(weekday);
+int w = weekday:ENCODING_ISO::encode(TUESDAY);
+Weekday w = weekday::ENCODING_CLIB::decode(4);
 ```
 
