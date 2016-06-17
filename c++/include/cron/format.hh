@@ -264,7 +264,7 @@ public:
 template<class TRAITS>
 inline std::string
 to_string(
-  date::DateTemplate<TRAITS> date)
+  DateTemplate<TRAITS> date)
 {
   return DateFormat::DEFAULT(date);
 }
@@ -274,7 +274,7 @@ template<class TRAITS>
 inline std::ostream&
 operator<<(
   std::ostream& os,
-  date::DateTemplate<TRAITS> date)
+  DateTemplate<TRAITS> date)
 {
   os << to_string(date);
   return os;
@@ -318,7 +318,7 @@ public:
   template<class TRAITS> 
   std::string
   operator()(
-    daytime::DaytimeTemplate<TRAITS> const daytime) 
+    DaytimeTemplate<TRAITS> const daytime) 
     const 
   { 
     return
@@ -333,7 +333,7 @@ public:
 template<class TRAITS>
 inline std::string
 to_string(
-  daytime::DaytimeTemplate<TRAITS> const daytime)
+  DaytimeTemplate<TRAITS> const daytime)
 {
   return DaytimeFormat::DEFAULT(daytime);
 }
@@ -343,7 +343,7 @@ template<class TRAITS>
 inline std::ostream&
 operator<<(
   std::ostream& os,
-  daytime::DaytimeTemplate<TRAITS> const daytime)
+  DaytimeTemplate<TRAITS> const daytime)
 {
   os << to_string(daytime);
   return os;
