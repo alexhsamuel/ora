@@ -1,7 +1,6 @@
 # Work List
 
 1. Collision of safe:: namespaces.
-1. The operator<<(ostream) story.
 1. Just one cron.hh?
 1. C++ constants for months.
 1. Global display time zone in Python API.
