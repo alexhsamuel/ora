@@ -393,6 +393,8 @@ format_time(
 
 //------------------------------------------------------------------------------
 
+namespace _impl {
+
 void 
 Format::format(
   StringBuilder& sb,
@@ -456,6 +458,8 @@ Format::format(
   }
 }
 
+
+}  // namespace _impl
 
 //------------------------------------------------------------------------------
 // Class TimeFormat

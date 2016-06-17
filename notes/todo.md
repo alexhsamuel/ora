@@ -1,8 +1,6 @@
 # Work List
 
 1. Collision of safe:: namespaces.
-1. Check Monday=0 or Monday=1 convention??!
-1. Move formatters into correct namespace.
 1. The operator<<(ostream) story.
 1. Just one cron.hh?
 1. C++ constants for months.

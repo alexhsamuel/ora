@@ -17,9 +17,35 @@
 
 namespace cron {
 
-using namespace aslib;
+//------------------------------------------------------------------------------
+// Functions
+//------------------------------------------------------------------------------
+
+extern std::string const& get_month_name(Month month);
+extern Month parse_month_name(std::string const& str);
+extern std::string const& get_month_abbr(Month month);
+extern Month parse_month_abbr(std::string const& str);
+
+/*
+ * Returns the military / nautical time zone offset letter.
+ *
+ * Returns the one letter code of the [military time
+ * zone](http://en.wikipedia.org/wiki/List_of_military_time_zones)
+ * corresponding to an offset.  If there is no military time zone, returns an
+ * unspecified nonalphabetic character.
+ */
+extern char get_time_zone_offset_letter(TimeZoneOffset);
+
+extern std::string const& get_weekday_name(Weekday weekday);
+extern Weekday parse_weekday_name(std::string const& str);
+extern std::string const& get_weekday_abbr(Weekday weekday);
+extern Weekday parse_weekday_abbr(std::string const& str);
 
 //------------------------------------------------------------------------------
+
+namespace _impl {
+
+using namespace aslib;
 
 class Format
 {
@@ -97,12 +123,14 @@ private:
 };
 
 
+}  // namespace _impl
+
 //------------------------------------------------------------------------------
 
 namespace time {
 
 class TimeFormat
-  : public Format
+  : public _impl::Format
 {
 public:
 
@@ -201,7 +229,7 @@ operator<<(
 namespace date {
 
 class DateFormat
-  : public Format
+  : public _impl::Format
 {
 public:
 
@@ -260,7 +288,7 @@ operator<<(
 namespace daytime {
 
 class DaytimeFormat
-  : public Format
+  : public _impl::Format
 {
 public:
   
@@ -323,30 +351,6 @@ operator<<(
 
 
 }  // namespace daytime
-
-//------------------------------------------------------------------------------
-// Functions
-//------------------------------------------------------------------------------
-
-extern std::string const& get_month_name(Month month);
-extern Month parse_month_name(std::string const& str);
-extern std::string const& get_month_abbr(Month month);
-extern Month parse_month_abbr(std::string const& str);
-
-/*
- * Returns the military / nautical time zone offset letter.
- *
- * Returns the one letter code of the [military time
- * zone](http://en.wikipedia.org/wiki/List_of_military_time_zones)
- * corresponding to an offset.  If there is no military time zone, returns an
- * unspecified nonalphabetic character.
- */
-extern char get_time_zone_offset_letter(TimeZoneOffset);
-
-extern std::string const& get_weekday_name(Weekday weekday);
-extern Weekday parse_weekday_name(std::string const& str);
-extern std::string const& get_weekday_abbr(Weekday weekday);
-extern Weekday parse_weekday_abbr(std::string const& str);
 
 //------------------------------------------------------------------------------
 
