@@ -1,18 +1,19 @@
 # Work List
 
+1. Clean up C++ Time and localization functions; document.
 1. Collision of safe:: namespaces.
 1. C++ constants for months.
 1. Default precision for C++ time, daytime formats (fractional secs?).
+   Or make the default daytime format mutable?
 1. Global display time zone in Python API.
-1. Add epsilon or precision class attributes.
 1. Adjust the definition of TimeTraits.
 1. Add hash functions for all Python types.
-1. Make hms_daytime dtype.
-1. Add it to the global module.
+1. Make hms_daytime dtype. Add it to the module.
+1. Basic string parsing for `convert_to_*()` functions.
+1. Full parsing support.
+1. `format()` method and `tp_format` for Date, Daytime, Time.
 1. Check Time128 second precision in C++ and Python.
 1. Rename `InvalidDateError` -> `BadDateError` _et fils_.
-1. Basic string parsing for `convert_to_*()` functions.
-1. `format()` method and `tp_format` for Date, Daytime, Time.
 1. Daytime and Time rounding functions.
 1. Python namespace reorg.
 
