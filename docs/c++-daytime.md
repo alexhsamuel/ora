@@ -175,7 +175,7 @@ The `cron::daytime::safe` namespace provides "safe" alternatives to all daytime 
 - Any function that returns a daytime will return `INVALID` instead.
 
   ```c++
-auto daytime = safe::from_hms(30, 0, 0);    // no such thing as 30 hours -> INVALID
+auto daytime = safe::from_hms(30, 0, 0);             // no 30 hours -> INVALID
 daytime = safe::seconds_after(Daytime::MISSING, 1);  // can't shift -> INVALID
 ```
 
@@ -183,6 +183,7 @@ daytime = safe::seconds_after(Daytime::MISSING, 1);  // can't shift -> INVALID
 
   ```c++
 auto hour = safe::get_hour(Daytime::INVALID);  // -> HOUR_INVALID
+auto ssm  = safe::get_ssm(Daytime::INVALID);   // -> SSM_INVALID
 ```
 
 These safe variants are particularly useful when you are vectorizing daytime operations and don't want individual failures to throw you out of a loop.
