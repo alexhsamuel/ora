@@ -38,6 +38,7 @@ public:
   // Constants  ----------------------------------------------------------------
 
   static Offset constexpr DENOMINATOR = Traits::denominator;
+  static double constexpr RESOLUTION  = 1.0 / Traits::denominator;
 
   static Offset constexpr OFFSET_END = SECS_PER_DAY * DENOMINATOR;
   static Offset constexpr OFFSET_MAX = OFFSET_END - 1;

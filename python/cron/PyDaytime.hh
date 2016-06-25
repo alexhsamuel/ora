@@ -185,7 +185,7 @@ PyDaytime<DAYTIME>::add_to(
   dict->SetItemString("MIDNIGHT"    , create(Daytime::MIDNIGHT));
   dict->SetItemString("MIN"         , create(Daytime::MIN));
   dict->SetItemString("MISSING"     , create(Daytime::MISSING));
-  dict->SetItemString("RESOLUTION"  , Float::FromDouble(1.0 / DAYTIME::DENOMINATOR));
+  dict->SetItemString("RESOLUTION"  , Float::FromDouble(DAYTIME::RESOLUTION));
 
   // Add the type to the module.
   module.add(&type_);
