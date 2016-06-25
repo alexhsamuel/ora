@@ -2,6 +2,7 @@
 
 1. Collision of safe:: namespaces.
 1. C++ constants for months.
+1. Default precision for C++ time, daytime formats (fractional secs?).
 1. Global display time zone in Python API.
 1. Add epsilon or precision class attributes.
 1. Adjust the definition of TimeTraits.
