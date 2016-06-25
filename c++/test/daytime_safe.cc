@@ -152,8 +152,8 @@ TEST(Daytime, seconds_after) {
   for (double sec = 0; sec < 86400; sec += 9.875) 
     EXPECT_EQ(from_ssm(sec), safe::seconds_after(Daytime::MIDNIGHT, sec));
 
-  EXPECT_EQ(Daytime::INVALID, safe::seconds_after(Daytime::MIDNIGHT, 86400));
-  EXPECT_EQ(Daytime::INVALID, safe::seconds_after(from_hms(23, 59, 59.5), 0.6));
+  EXPECT_EQ(Daytime::MIDNIGHT, safe::seconds_after(Daytime::MIDNIGHT, 86400));
+  EXPECT_EQ(from_hms(0, 0, 0.125), safe::seconds_after(from_hms(23, 59, 59.5), 0.625));
 }
 
 TEST(Daytime, seconds_before) {
@@ -166,8 +166,8 @@ TEST(Daytime, seconds_before) {
   for (double sec = 0; sec < 86400; sec += 9.875) 
     EXPECT_EQ(Daytime::MIDNIGHT, safe::seconds_before(from_ssm(sec), sec));
 
-  EXPECT_EQ(Daytime::INVALID, safe::seconds_before(Daytime::MIDNIGHT, 0.1));
-  EXPECT_EQ(Daytime::INVALID, safe::seconds_before(Daytime::MAX, 86400.01));
+  EXPECT_EQ(from_hms(23, 59, 59.875), safe::seconds_before(Daytime::MIDNIGHT, 0.125));
+  EXPECT_EQ(from_hms(23, 59, 59.875), safe::seconds_before(Daytime::MIDNIGHT, 86400.125));
 }
 
 TEST(Daytime, seconds_between) {
@@ -176,15 +176,17 @@ TEST(Daytime, seconds_between) {
   EXPECT_TRUE(std::isnan(safe::seconds_between(Daytime::MIN, Daytime::INVALID)));
   EXPECT_TRUE(std::isnan(safe::seconds_between(Daytime::MIN, Daytime::MISSING)));
 
-  for (Ssm ssm = 0; ssm < 86400; ssm += 44.875) {
-    auto const daytime0 = from_ssm(ssm);
-    for (double sec = 0; sec < 1000; sec += 97.5) {
-      auto const daytime1 = safe::seconds_after(daytime0, sec);
-      if (daytime1.is_valid()) {
-        EXPECT_EQ( sec, seconds_between(daytime0, daytime1));
-        EXPECT_EQ(-sec, seconds_between(daytime1, daytime0));
-      }
-    }
-  }
+  auto const a0 = Daytime::MIDNIGHT;
+  auto const a1 = from_hms( 0,  0,  0.25);
+  auto const a2 = from_hms(23,  0,  0);
+  EXPECT_EQ(     0.0 , safe::seconds_between(a0, a0));
+  EXPECT_EQ(     0.0 , safe::seconds_between(a1, a1));
+  EXPECT_EQ(     0.0 , safe::seconds_between(a2, a2));
+  EXPECT_EQ(     0.25, safe::seconds_between(a0, a1));
+  EXPECT_EQ(    -0.25, safe::seconds_between(a1, a0));
+  EXPECT_EQ( 82800.0 , safe::seconds_between(a0, a2));
+  EXPECT_EQ(-82800.0 , safe::seconds_between(a2, a0));
+  EXPECT_EQ( 82799.75, safe::seconds_between(a1, a2));
+  EXPECT_EQ(-82799.75, safe::seconds_between(a2, a1));
 }
 

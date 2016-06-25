@@ -28,7 +28,7 @@ from_offset(
 {
   using Offset = typename DAYTIME::Offset;
   return 
-      in_range<Offset>(0, offset, DAYTIME::MAX_OFFSET)
+      in_range<Offset>(0, offset, DAYTIME::OFFSET_MAX)
     ? DAYTIME(offset)
     : DAYTIME::INVALID;
 }
@@ -183,6 +183,11 @@ compare(
 // Arithmetic
 //------------------------------------------------------------------------------
 
+/*
+ * Shifts `daytime` forward by `seconds`.
+ *
+ * The result is modulo a standard 24-hour day.
+ */
 template<class DAYTIME>
 inline DAYTIME
 seconds_after(
@@ -191,12 +196,16 @@ seconds_after(
 {
   return 
       daytime.is_valid()
-    ? from_offset<DAYTIME>(
-        daytime.get_offset() + round(seconds * DAYTIME::DENOMINATOR))
+    ? cron::daytime::seconds_after(daytime, seconds)
     : DAYTIME::INVALID;
 }
 
 
+/*
+ * Shifts `daytime` backward by `seconds`.
+ *
+ * The result is modulo a standard 24-hour day.
+ */
 template<class DAYTIME>
 inline DAYTIME
 seconds_before(
@@ -205,12 +214,17 @@ seconds_before(
 {
   return 
       daytime.is_valid()
-    ? from_offset<DAYTIME>(
-        daytime.get_offset() - round(seconds * DAYTIME::DENOMINATOR))
+    ? cron::daytime::seconds_before(daytime, seconds)
     : DAYTIME::INVALID;
 }
 
 
+/*
+ * The number of seconds between `daytime0` and `daytime1` on the same day.
+ *
+ * Assumes both are in a single ordinary 24-hour day.  If `daytime1` is earlier,
+ * the result is negative.
+ */
 template<class DAYTIME>
 inline double
 seconds_between(
@@ -219,8 +233,7 @@ seconds_between(
 {
   return 
       daytime0.is_valid() && daytime1.is_valid()
-    ? ((double) daytime1.get_offset() - (double) daytime0.get_offset()) 
-      / DAYTIME::DENOMINATOR
+    ? cron::daytime::seconds_between(daytime0, daytime1)
     : std::numeric_limits<double>::quiet_NaN();
 }
 

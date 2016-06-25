@@ -53,3 +53,24 @@ Second second   = get_second(daytime);
 Ssm ssm         = get_ssm(daytime);
 ```
 
+
+# Shifting daytimes
+
+The `seconds_after()` and `seconds_before()` functions shift a daytime forward or backward by some number of seconds.  Negative shifts may be used; two functions are provided only for convenience.  Shifted daytimes are computed modulo a standard 24-hour day.
+
+```c++
+auto in_an_hour   = seconds_after(now, SECS_PER_HOUR);
+auto an_hour_ago  = seconds_before(now, SECS_PER_HOUR);
+
+assert now == seconds_after(now, SECS_PER_DAY);  // no-op
+```
+
+The addition and subtraction operators are overloaded as synonyms of these two, respectively.
+
+```c++
+auto tock = tick + 1;  // one second later
+```
+
+`seconds_between(daytime0, daytime1)` returns the number of seconds by which `daytime0` must be shifted forward to arrive at `daytime1`.  The result is positive iff. `daytime0` precedes `daytime1` assuming the same day.
+
+

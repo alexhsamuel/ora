@@ -51,10 +51,10 @@ TEST(daytime_add, limits) {
 }
 
 TEST(daytime_add, range) {
-  EXPECT_THROW(Daytime::MIDNIGHT + -1, DaytimeRangeError);
-  EXPECT_THROW(Daytime::MIDNIGHT + 86400, DaytimeRangeError);
-  EXPECT_THROW(from_hms(23, 59, 59) + 1, DaytimeRangeError);
-  EXPECT_THROW(from_hms(23, 59, 59.999) + 0.001, DaytimeRangeError);
+  EXPECT_EQ(from_hms(23, 59, 59), Daytime::MIDNIGHT + -1);
+  EXPECT_EQ(Daytime::MIDNIGHT, Daytime::MIDNIGHT + 86400);
+  EXPECT_EQ(Daytime::MIDNIGHT, from_hms(23, 59, 59) + 1);
+  EXPECT_EQ(Daytime::MIDNIGHT, from_hms(23, 59, 59.999) + 0.001);
 }
 
 TEST(daytime_add, invalid) {

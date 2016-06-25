@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 #include "aslib/math.hh"
 
 #include "cron/types.hh"
@@ -139,30 +141,52 @@ before(
 // Arithemtic with seconds
 //------------------------------------------------------------------------------
 
+/*
+ * Shifts `daytime` forward by `seconds`.
+ *
+ * The result is modulo a standard 24-hour day.
+ */
 template<class DAYTIME>
 inline DAYTIME
 seconds_after(
   DAYTIME const daytime,
   double const seconds)
 {
+  using Offset = typename DAYTIME::Offset;
+
   ensure_valid(daytime);
-  return from_offset<DAYTIME>(
-    daytime.get_offset() + round(seconds * DAYTIME::DENOMINATOR));
+  double offset = daytime.get_offset() + seconds * DAYTIME::DENOMINATOR;
+
+  double const day_offset = DAYTIME::OFFSET_END;
+  if (offset >= 0)
+    offset = fmod(offset, day_offset);
+  else
+    offset = fmod(offset, day_offset) + day_offset;
+  return from_offset<DAYTIME>((Offset) round(offset));
 }
 
 
+/*
+ * Shifts `daytime` backward by `seconds`.
+ *
+ * The result is modulo a standard 24-hour day.
+ */
 template<class DAYTIME>
 inline DAYTIME
 seconds_before(
   DAYTIME const daytime,
   double const seconds)
 {
-  ensure_valid(daytime);
-  return from_offset<DAYTIME>(
-    daytime.get_offset() - round(seconds * DAYTIME::DENOMINATOR));
+  return seconds_after(daytime, -seconds);
 }
 
 
+/*
+ * The number of seconds between `daytime0` and `daytime1` on the same day.
+ *
+ * Assumes both are in a single ordinary 24-hour day.  If `daytime1` is earlier,
+ * the result is negative.
+ */
 template<class DAYTIME>
 inline double
 seconds_between(
@@ -171,8 +195,11 @@ seconds_between(
 {
   ensure_valid(daytime0);
   ensure_valid(daytime1);
+
+  auto const off0 = daytime0.get_offset();
+  auto const off1 = daytime1.get_offset();
   return 
-    ((double) daytime1.get_offset() - (double) daytime0.get_offset()) 
+    (off1 >= off0 ? (double) (off1 - off0) : -(double) (off0 - off1)) 
     / DAYTIME::DENOMINATOR;
 }
 

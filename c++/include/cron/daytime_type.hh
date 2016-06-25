@@ -39,6 +39,9 @@ public:
 
   static Offset constexpr DENOMINATOR = Traits::denominator;
 
+  static Offset constexpr OFFSET_END = SECS_PER_DAY * DENOMINATOR;
+  static Offset constexpr OFFSET_MAX = OFFSET_END - 1;
+
   static DaytimeTemplate const MIN;
   static DaytimeTemplate const MIDNIGHT;
   static DaytimeTemplate const MAX;
@@ -84,7 +87,7 @@ public:
   from_offset(
     Offset const offset)
   {
-    if (in_range((Offset) 0, offset, MAX_OFFSET))
+    if (in_range((Offset) 0, offset, OFFSET_MAX))
       return DaytimeTemplate(offset);
     else
       throw DaytimeRangeError();
@@ -138,12 +141,11 @@ public:
   is_valid() 
     const noexcept 
   { 
-    return in_range<Offset>(0, offset_, MAX_OFFSET);
+    return in_range<Offset>(0, offset_, OFFSET_MAX);
   }
 
 private:
 
-  static Offset constexpr MAX_OFFSET = SECS_PER_DAY * DENOMINATOR - 1;
   static Offset constexpr INVALID_OFFSET = std::numeric_limits<Offset>::max();
   static Offset constexpr MISSING_OFFSET = INVALID_OFFSET - 1;
 
@@ -219,7 +221,7 @@ DaytimeTemplate<TRAITS>::MIDNIGHT
 template<class TRAITS>
 DaytimeTemplate<TRAITS> constexpr
 DaytimeTemplate<TRAITS>::MAX
-  {MAX_OFFSET};
+  {OFFSET_MAX};
 
 template<class TRAITS>
 DaytimeTemplate<TRAITS> constexpr
