@@ -74,3 +74,116 @@ auto tock = tick + 1;  // one second later
 `seconds_between(daytime0, daytime1)` returns the number of seconds by which `daytime0` must be shifted forward to arrive at `daytime1`.  The result is positive iff. `daytime0` precedes `daytime1` assuming the same day.
 
 
+## Daytime representations
+
+The default daytime format is the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) _HH:MM:SS_ format.
+
+### Formatting
+
+Cron provides overloads for `to_string` and `operator<<` that render a daytime in the default format.
+
+`DaytimeFormat` provides flexible formatting of daytimes.  An instance takes an extended [strftime](http://man7.org/linux/man-pages/man3/strftime.3.html)-style format string; see [format.md](format.md) for codes.  Notably, you may specify `printf`-style precision with `%S` to show fractional seconds, for example `%.5S` for five decimal places of precision.
+
+`DaytimeFormat::operator()` formats a daytime.
+
+```c++
+DaytimeFormat fmt("%h:%M:%.1S %p");
+std::cout << fmt(from_hms(23, 45, 6.78));  // prints '11:45:06.7 PM'
+```
+
+
+### Parsing
+
+Not implemented yet.
+
+
+## Internals
+
+`Daytime` supports daytimes between midnight and the following midnight, inclusive of the former.  The resolution is `Daytime::RESOLUTION`, around 7 fs.  The largest representable daytime is a very small amount of time before midnight.
+
+
+### Storate representation
+
+An instance stores the daytime as an `uint64_t` offset from midnight, and may efficiently be passed by value.  It has no virtual methods or other state, so `uint64_t*` may be cast to and from `Daytime*`, as long as the value corresponds to a valid offset.
+
+
+### Alternate daytime classes
+
+Cron also provides a 32-bit `Daytime32` class, which stores dates as `uint32_t`, with a resolution of about 31 µs.  All the factory functions accept the daytime type as a template argument.
+
+```c++
+Daytime32 date = from_hms<Daytime32>(12, 30);
+```
+
+Each daytime class has `MIN` and `MAX` static attributes containing the earliest and latest representable dates.  Other than this, the date classes have identical APIs.
+
+The daytime types are mutually conversion-constructible and -assignable, as long as the actual dates are representable.
+
+```c++
+Daytime32 date = from_hms(12, 30);  // RHS is Daytime, so convert
+```
+
+
+## Invalid daytimes
+
+Each daytime class provides two special values.
+
+- `INVALID` represents an uninitialized daytime or the result of a failed operation.
+- `MISSING` is a placeholder that you can use to represent a value that is not available; it is never produced by cron itself.
+
+
+```c++
+Daytime daytime;  // default ctor initializes to INVALID
+daytime = Daytime::INVALID;
+daytime = Daytime::MISSING;
+```
+
+The `is_invalid()` and `is_missing()` methods test for these two; `is_valid()` is true iff. the daytime is neither.
+
+```
+if (daytime.is_valid())
+  std::cout << daytime;
+else
+  std::cout << "something's wrong!";
+```
+
+If you call a function on a missing or invalid daytime, cron throws `InvalidDaytimeError`.
+
+```c++
+Daytime daytime;  // default ctor initializes to INVALID
+try {
+  std::cout << get_year(daytime) << "\n";
+}
+catch (InvalidDaytimeError err) {
+  // Oops!
+}
+```
+
+### Comparisons
+
+The usual equality and ordering operators work with invalid and missing daytimes.  The order is,
+
+```c++
+Daytime::INVALID < Daytime::MISSING < Daytime::MIN < ... < Daytime::MAX
+```
+
+
+## Safe functions
+
+The `cron::daytime::safe` namespace provides "safe" alternatives to all daytime functions, which don't throw exceptions; instead, they return special values to indicate failure.
+
+- Any function that returns a daytime will return `INVALID` instead.
+
+  ```c++
+auto daytime = safe::from_hms(30, 0, 0);    // no such thing as 30 hours -> INVALID
+daytime = safe::seconds_after(Daytime::MISSING, 1);  // can't shift -> INVALID
+```
+
+- Accessors will return special invalid values instead.
+
+  ```c++
+auto hour = safe::get_hour(Daytime::INVALID);  // -> HOUR_INVALID
+```
+
+These safe variants are particularly useful when you are vectorizing daytime operations and don't want individual failures to throw you out of a loop.
+
