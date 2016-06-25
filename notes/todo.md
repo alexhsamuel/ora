@@ -6,10 +6,6 @@
 1. Global display time zone in Python API.
 1. Add epsilon or precision class attributes.
 1. Adjust the definition of TimeTraits.
-1. Add default template args to ctor functions, e.g.
-   ```c++
-   template<class TIME=Time> inline TIME local(...) { ... }
-   ```
 1. Add hash functions for all Python types.
 1. Make hms_daytime dtype.
 1. Add it to the global module.
