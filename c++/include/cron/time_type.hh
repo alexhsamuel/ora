@@ -1,3 +1,7 @@
+/*
+ * Template time class.
+ */
+
 #pragma once
 
 #include <limits>
@@ -41,6 +45,17 @@ using namespace aslib;
  *     128    u  1<<64     1      many  0001-9999     54 zs      Time128
  */
 
+/*
+ * Represents an approximate instant of time.
+ *
+ * Each template instance is a non-virtual class with a single integer data
+ * member, the offset, and no nontrivial destructor behavior.  The class is
+ * designed so that a pointer to the underlying integer type can safely be cast
+ * to the time class.
+ *
+ * The offset represents the number of ticks, of a fixed resolution, since an
+ * arbitrary zero point, which is UTC midnight on a given date.
+ */
 template<class TRAITS>
 class TimeTemplate
 {
@@ -48,6 +63,8 @@ public:
 
   using Traits = TRAITS;
   using Offset = typename Traits::Offset;
+
+  // Constants -----------------------------------------------------------------
 
   static Datenum      constexpr BASE        = Traits::base;
   static Offset       constexpr DENOMINATOR = Traits::denominator;
@@ -57,13 +74,20 @@ public:
   static TimeTemplate const     MISSING;
   static double       constexpr RESOLUTION  = 1.0 / Traits::denominator;
 
-  // Constructors
+  // Constructors --------------------------------------------------------------
 
   // FIXME: Using '= default' causes instantiation problems?
-  constexpr TimeTemplate() {}  
+  constexpr TimeTemplate() noexcept {}  
 
-  constexpr TimeTemplate(TimeTemplate const&) = default;
+  constexpr TimeTemplate(TimeTemplate const&) noexcept = default;
 
+  /*
+   * Constructs from another time template instance.
+   *
+   * If `time` is invalid or missing, constructs a corresponding invalid or
+   * missing time.  If the time is valid but cannot be represented byt his time
+   * type, throws <TimeRangeError>.
+   */
   template<class OTHER_TRAITS> 
   TimeTemplate(
     TimeTemplate<OTHER_TRAITS> const time)
@@ -71,11 +95,14 @@ public:
         time.is_invalid() ? INVALID
       : time.is_missing() ? MISSING
       : from_offset(
+          // FIXME: This does not detect arithmetic overflow.
           convert_offset(
             time.get_offset(), OTHER_TRAITS::denominator, OTHER_TRAITS::base,
             DENOMINATOR, BASE)))
   {
   }
+
+  ~TimeTemplate() noexcept = default;
 
   // Factory methods  ----------------------------------------------------------
 
@@ -89,21 +116,26 @@ public:
       throw TimeRangeError();
   }
 
-  // Comparisons
+  // Assignment operators ------------------------------------------------------
 
-  bool is_valid()   const { return in_range(MIN.offset_, offset_, MAX.offset_); }
-  bool is_invalid() const { return is(INVALID); }
-  bool is_missing() const { return is(MISSING); }
+  TimeTemplate
+  operator=(
+    TimeTemplate const time)
+    noexcept
+  {
+    offset_ = time.offset_;
+    return *this;
+  }
 
-  bool is(TimeTemplate const& o) const { return offset_ == o.offset_; }
-  bool operator==(TimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ == o.offset_; }
-  bool operator!=(TimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ != o.offset_; }
-  bool operator< (TimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ <  o.offset_; }
-  bool operator<=(TimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ <= o.offset_; }
-  bool operator> (TimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ >  o.offset_; }
-  bool operator>=(TimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ >= o.offset_; }
+  template<class OTHER_TRAITS>
+  TimeTemplate
+  operator=(
+    TimeTemplate<OTHER_TRAITS> const time)
+  {
+    return *this = TimeTemplate(time);
+  }
 
-  // Accessors
+  // Accessors -----------------------------------------------------------------
 
   Offset
   get_offset()
@@ -112,6 +144,26 @@ public:
     ensure_valid(*this);
     return offset_;
   }
+
+  bool is_invalid() const noexcept { return offset_ == Traits::invalid; }
+  bool is_missing() const noexcept { return offset_ == Traits::missing; }
+
+  bool is_valid()
+    const noexcept 
+  { 
+    return in_range(Traits::min, offset_, Traits::max); 
+  }
+
+  // FIXME: Remove this.
+  bool is(TimeTemplate const& o) const { return offset_ == o.offset_; }
+
+  // FIXME: Move these.
+  bool operator==(TimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ == o.offset_; }
+  bool operator!=(TimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ != o.offset_; }
+  bool operator< (TimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ <  o.offset_; }
+  bool operator<=(TimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ <= o.offset_; }
+  bool operator> (TimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ >  o.offset_; }
+  bool operator>=(TimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ >= o.offset_; }
 
 private:
 

@@ -92,7 +92,7 @@ public:
   {
   }
 
-  ~DateTemplate() = default;
+  ~DateTemplate() noexcept = default;
 
   // Factory methods  ----------------------------------------------------------
 

@@ -69,7 +69,7 @@ public:
   {
   }
 
-  ~DaytimeTemplate() = default;
+  ~DaytimeTemplate() noexcept = default;
 
   // Factory methods  ----------------------------------------------------------
 
@@ -109,7 +109,6 @@ public:
   DaytimeTemplate
   operator=(
     DaytimeTemplate<OTHER_TRAITS> const daytime)
-    noexcept
   {
     return *this =
         daytime.is_invalid() ? INVALID
