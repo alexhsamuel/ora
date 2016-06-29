@@ -204,7 +204,6 @@ private:
 
   // Methods.
   static ref<Object>    method_get_parts            (PyTime*, Tuple*, Dict*);
-  static ref<Object>    method_is_same              (PyTime*, Tuple*, Dict*);
   static Methods<PyTime> tp_methods_;
 
   // Getsets.
@@ -520,29 +519,11 @@ PyTime<TIME>::method_get_parts(
 }
 
 
-// We call this method "is_same" because "is" is a keyword in Python.
-template<typename TIME>
-ref<Object>
-PyTime<TIME>::method_is_same(
-  PyTime* const self,
-  Tuple* const args,
-  Dict* const kw_args)
-{
-  static char const* const arg_names[] = {"other", nullptr};
-  Object* other;
-  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &other);
-
-  auto const other_time = maybe_time<Time>(other);
-  return Bool::from(other_time && self->time_.is(*other_time));
-}
-
-
 template<typename TIME>
 Methods<PyTime<TIME>>
 PyTime<TIME>::tp_methods_
   = Methods<PyTime>()
     .template add<method_get_parts>                     ("get_parts")
-    .template add<method_is_same>                       ("is_same")
   ;
 
 

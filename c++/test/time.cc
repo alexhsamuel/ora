@@ -23,10 +23,10 @@ TEST(Time, comparisons) {
   EXPECT_FALSE(t <  t);
   EXPECT_FALSE(t <  i);
   EXPECT_FALSE(t <  m);
-  EXPECT_FALSE(i <  t);
+  EXPECT_TRUE (i <  t);
   EXPECT_FALSE(i <  i);
-  EXPECT_FALSE(i <  m);
-  EXPECT_FALSE(m <  t);
+  EXPECT_TRUE (i <  m);
+  EXPECT_TRUE (m <  t);
   EXPECT_FALSE(m <  i);
   EXPECT_FALSE(m <  m);
 
@@ -34,21 +34,21 @@ TEST(Time, comparisons) {
   EXPECT_FALSE(t == i);
   EXPECT_FALSE(t == m);
   EXPECT_FALSE(i == t);
-  EXPECT_FALSE(i == i);
+  EXPECT_TRUE (i == i);
   EXPECT_FALSE(i == m);
   EXPECT_FALSE(m == t);
   EXPECT_FALSE(m == i);
-  EXPECT_FALSE(m == m);
+  EXPECT_TRUE (m == m);
 
   EXPECT_TRUE (t >= t);
-  EXPECT_FALSE(t >= i);
-  EXPECT_FALSE(t >= m);
+  EXPECT_TRUE (t >= i);
+  EXPECT_TRUE (t >= m);
   EXPECT_FALSE(i >= t);
-  EXPECT_FALSE(i >= i);
+  EXPECT_TRUE (i >= i);
   EXPECT_FALSE(i >= m);
   EXPECT_FALSE(m >= t);
-  EXPECT_FALSE(m >= i);
-  EXPECT_FALSE(m >= m);
+  EXPECT_TRUE (m >= i);
+  EXPECT_TRUE (m >= m);
 
   EXPECT_TRUE (t == from_local_parts(2013, 6, 29, 18, 27, 13,   "US/Eastern"));
   EXPECT_TRUE (t >  from_local_parts(2013, 6, 28, 18, 27, 13,   "US/Eastern"));

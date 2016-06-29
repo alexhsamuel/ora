@@ -25,18 +25,15 @@ def test_comparison():
     assert     Time.MAX     != Time.MIN
     assert     Time.MIN     != Time.MAX
     assert     Time.MAX     == Time.MAX
-    assert     Time.MIN.is_same(Time.MIN)
-    assert     Time.MAX.is_same(Time.MAX)
-    assert not Time.MIN.is_same(Time.MAX)
-    assert not Time.MAX.is_same(Time.MIN)
 
-    assert     Time.INVALID.is_same(Time.INVALID)
-    assert not Time.INVALID == Time.INVALID
+    assert     Time.INVALID == Time.INVALID
     assert not Time.INVALID != Time.INVALID
 
-    assert     Time.MISSING.is_same(Time.MISSING)
-    assert not Time.MISSING == Time.MISSING
+    assert     Time.MISSING == Time.MISSING
     assert not Time.MISSING != Time.MISSING
+
+    assert     Time.INVALID < Time.MISSING < Time.MIN < Time.MAX
+    assert     Time.MAX > Time.MIN > Time.MISSING > Time.INVALID
 
 
 def test_zero():

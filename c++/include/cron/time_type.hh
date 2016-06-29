@@ -16,6 +16,16 @@ namespace time {
 using namespace aslib;
 
 //------------------------------------------------------------------------------
+// Forward declarations
+//------------------------------------------------------------------------------
+
+namespace safe {
+
+template<class TIME> bool equal(TIME, TIME) noexcept;
+
+}  // namespace safe
+
+//------------------------------------------------------------------------------
 
 /**
  *  This table shows some sample configurations for time representation.  The
@@ -154,22 +164,13 @@ public:
     return in_range(Traits::min, offset_, Traits::max); 
   }
 
-  // FIXME: Remove this.
-  bool is(TimeTemplate const& o) const { return offset_ == o.offset_; }
-
-  // FIXME: Move these.
-  bool operator==(TimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ == o.offset_; }
-  bool operator!=(TimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ != o.offset_; }
-  bool operator< (TimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ <  o.offset_; }
-  bool operator<=(TimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ <= o.offset_; }
-  bool operator> (TimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ >  o.offset_; }
-  bool operator>=(TimeTemplate const& o) const { return is_valid() && o.is_valid() && offset_ >= o.offset_; }
-
 private:
 
   constexpr TimeTemplate(Offset offset) : offset_(offset) {}
 
   Offset offset_ = Traits::invalid;
+
+  template<class TIME> friend bool cron::time::safe::equal(TIME, TIME) noexcept;
 
 };
 
