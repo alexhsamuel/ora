@@ -109,7 +109,7 @@ compare(
 {
   ensure_valid(daytime0);
   ensure_valid(daytime1);
-  return compare(daytime0.get_offset(), daytime1.get_offset());
+  return aslib::compare(daytime0.get_offset(), daytime1.get_offset());
 }
 
 

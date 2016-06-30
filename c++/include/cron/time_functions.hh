@@ -11,6 +11,7 @@
 #endif
 
 #include "aslib/exc.hh"
+#include "aslib/math.hh"
 #include "aslib/printable.hh"
 #include "cron/date.hh"
 #include "cron/daytime.hh"
@@ -62,6 +63,46 @@ now()
       success
     ? TIME::from_offset(cron::time::timespec_to_offset<TIME>(ts)) 
     : TIME::INVALID;
+}
+
+
+//------------------------------------------------------------------------------
+// Comparisons
+//------------------------------------------------------------------------------
+
+template<class TIME>
+inline int
+compare(
+  TIME const time0,
+  TIME const time1)
+{
+  ensure_valid(time0);
+  ensure_valid(time1);
+  return aslib::compare<typename TIME::Offset>(time0.get_offset(), time1.get_offset());
+}
+
+
+template<class TIME>
+inline bool
+equal(
+  TIME const time0,
+  TIME const time1)
+{
+  ensure_valid(time0);
+  ensure_valid(time1);
+  return time0.get_offset() == time1.get_offset();
+}
+
+
+template<class TIME>
+inline bool
+before(
+  TIME const time0,
+  TIME const time1)
+{
+  ensure_valid(time0);
+  ensure_valid(time1);
+  return time0.get_offset() < time1.get_offset();
 }
 
 
