@@ -166,7 +166,14 @@ public:
 
 private:
 
-  constexpr TimeTemplate(Offset offset) : offset_(offset) {}
+  // State ---------------------------------------------------------------------
+
+  constexpr 
+  TimeTemplate(
+    Offset const offset) 
+  : offset_(offset) 
+  {
+  }
 
   Offset offset_ = Traits::invalid;
 
