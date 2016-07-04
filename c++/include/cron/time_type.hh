@@ -179,6 +179,19 @@ private:
 
   template<class TIME> friend bool cron::time::safe::equal(TIME, TIME) noexcept;
 
+public:
+
+  /*
+   * Returns true iff the memory layout is exactly the offset.
+   */
+  static bool constexpr 
+  is_basic_layout()
+  {
+    return 
+         sizeof(TimeTemplate) == sizeof(Offset)
+      && offsetof(TimeTemplate, offset_) == 0;
+  }
+
 };
 
 
@@ -249,7 +262,9 @@ struct TimeTraits
 
 extern template class TimeTemplate<TimeTraits>;
 using Time =  TimeTemplate<TimeTraits>;
+static_assert(Time::is_basic_layout(), "wrong memory layout for Time");
 
+//------------------------------------------------------------------------------
 
 struct SmallTimeTraits
 {
@@ -265,7 +280,9 @@ struct SmallTimeTraits
 
 extern template class TimeTemplate<SmallTimeTraits>;
 using SmallTime = TimeTemplate<SmallTimeTraits>;
+static_assert(Time::is_basic_layout(), "wrong memory layout for SmallTime");
 
+//------------------------------------------------------------------------------
 
 struct NsecTimeTraits
 {
@@ -281,7 +298,9 @@ struct NsecTimeTraits
 
 extern template class TimeTemplate<NsecTimeTraits>;
 using NsecTime = TimeTemplate<NsecTimeTraits>;
+static_assert(Time::is_basic_layout(), "wrong memory layout for NsecTime");
 
+//------------------------------------------------------------------------------
 
 struct Unix32TimeTraits
 {
@@ -297,7 +316,9 @@ struct Unix32TimeTraits
 
 extern template class TimeTemplate<Unix32TimeTraits>;
 using Unix32Time = TimeTemplate<Unix32TimeTraits>;
+static_assert(Time::is_basic_layout(), "wrong memory layout for Unix32Time");
 
+//------------------------------------------------------------------------------
 
 struct Unix64TimeTraits
 {
@@ -313,7 +334,9 @@ struct Unix64TimeTraits
 
 extern template class TimeTemplate<Unix64TimeTraits>;
 using Unix64Time = TimeTemplate<Unix64TimeTraits>;
+static_assert(Time::is_basic_layout(), "wrong memory layout for Unix64Time");
 
+//------------------------------------------------------------------------------
 
 struct Time128Traits
 {
@@ -334,7 +357,7 @@ struct Time128Traits
 
 extern template class TimeTemplate<Time128Traits>;
 using Time128 = TimeTemplate<Time128Traits>;
-
+static_assert(Time::is_basic_layout(), "wrong memory layout for Time128");
 
 //------------------------------------------------------------------------------
 
