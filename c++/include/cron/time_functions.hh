@@ -22,6 +22,14 @@ namespace cron {
 namespace time {
 
 //------------------------------------------------------------------------------
+// Factory functions
+//------------------------------------------------------------------------------
+
+// Synonyms for static factory methods.
+template<class TIME=Time> inline TIME from_offset(typename TIME::Offset const o)
+  { return TIME::from_offset(o); }
+
+//------------------------------------------------------------------------------
 
 /*
  * Returns the closest UNIX epoch time.
@@ -107,53 +115,81 @@ before(
 
 
 //------------------------------------------------------------------------------
+// Arithemtic with seconds
+//------------------------------------------------------------------------------
 
-template<class TRAITS>
-inline TimeTemplate<TRAITS>
-operator+(
-  TimeTemplate<TRAITS> const time,
-  double const shift)
+/*
+ * Shifts `time` forward by `seconds`.
+ */
+template<class TIME>
+inline TIME
+seconds_after(
+  TIME const time,
+  double const seconds)
 {
-  using Time = TimeTemplate<TRAITS>;
-  using Offset = typename Time::Offset;
-  return
-      time.is_invalid() || time.is_missing() ? time
-    : Time::from_offset(
-        time.get_offset() + (Offset) (shift * Time::DENOMINATOR));
+  using Offset = typename TIME::Offset;
+  ensure_valid(time);
+  // FIXME: Check for overflow.
+  return from_offset<TIME>(
+    time.get_offset() + (Offset) round(seconds * TIME::DENOMINATOR));
 }
 
 
-template<class TRAITS>
-inline TimeTemplate<TRAITS>
-operator-(
-  TimeTemplate<TRAITS> const time,
-  double const shift)
+/*
+ * Shifts `time` backward by `seconds`.
+ */
+template<class TIME>
+inline TIME
+seconds_before(
+  TIME const time,
+  double const seconds)
 {
-  using Time = TimeTemplate<TRAITS>;
-  using Offset = typename Time::Offset;
-  return
-      time.is_invalid() || time.is_missing() ? time
-    : Time::from_offset(
-        time.get_offset() - (Offset) (shift * Time::DENOMINATOR));
+  using Offset = typename TIME::Offset;
+  ensure_valid(time);
+  // FIXME: Check for overflow.
+  return from_offset<TIME>(
+    time.get_offset() - (Offset) round(seconds * TIME::DENOMINATOR));
 }
 
 
-template<class TRAITS>
+/*
+ * The number of seconds between `time0` and `time1.
+ */
+template<class TIME>
 inline double
-operator-(
-  TimeTemplate<TRAITS> const time0,
-  TimeTemplate<TRAITS> const time1)
+seconds_between(
+  TIME const time0,
+  TIME const time1)
 {
-  using Time = TimeTemplate<TRAITS>;
-
-  if (time0.is_valid() && time1.is_valid())
-    return 
-        (double) time0.get_offset() / Time::DENOMINATOR
-      - (double) time1.get_offset() / Time::DENOMINATOR;
-  else
-    throw cron::ValueError("can't subtract invalid times");
+  ensure_valid(time0);
+  ensure_valid(time1);
+  return ((double) time1.get_offset() - time0.get_offset()) / TIME::DENOMINATOR;
 }
 
+
+//------------------------------------------------------------------------------
+// Addition and subtraction
+//------------------------------------------------------------------------------
+
+template<class TRAITS> inline TimeTemplate<TRAITS> operator+(TimeTemplate<TRAITS> const t, double const secs)
+  { return seconds_after(t, secs); }
+template<class TRAITS> inline TimeTemplate<TRAITS> operator-(TimeTemplate<TRAITS> const t, double const secs)
+  { return seconds_before(t, secs); }
+template<class TRAITS> inline int operator-(TimeTemplate<TRAITS> const t1, TimeTemplate<TRAITS> const t0)
+  { return seconds_between(t0, t1); } 
+
+template<class TRAITS> inline TimeTemplate<TRAITS> operator+=(TimeTemplate<TRAITS>& t, int const secs) 
+  { return t = t + secs; }
+template<class TRAITS> inline TimeTemplate<TRAITS> operator++(TimeTemplate<TRAITS>& t) 
+  { return t = t + 1; }
+template<class TRAITS> inline TimeTemplate<TRAITS> operator++(TimeTemplate<TRAITS>& t, int /* tag */) 
+  { auto old = t; t = t + 1; return old; }
+template<class TRAITS> inline TimeTemplate<TRAITS> operator-=(TimeTemplate<TRAITS>& t, int const secs) 
+  { return t = t - secs; }
+template<class TRAITS> inline TimeTemplate<TRAITS> operator--(TimeTemplate<TRAITS>& t) 
+  { return t = t - 1; }
+template<class TRAITS> inline TimeTemplate<TRAITS> operator--(TimeTemplate<TRAITS>& t, int /* tag */) 
+  { auto old = t; t = t - 1; return old; }
 
 //------------------------------------------------------------------------------
 

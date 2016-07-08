@@ -204,6 +204,10 @@ seconds_between(
 }
 
 
+//------------------------------------------------------------------------------
+// Addition and subtraction
+//------------------------------------------------------------------------------
+
 template<class DAYTIME> inline DAYTIME operator+(DAYTIME const d, double const secs)
   { return seconds_after(d, secs); }
 template<class DAYTIME> inline DAYTIME operator-(DAYTIME const d, double const secs)
@@ -218,7 +222,7 @@ template<class DAYTIME> inline DAYTIME operator++(DAYTIME& d)
 template<class DAYTIME> inline DAYTIME operator++(DAYTIME& d, int /* tag */) 
   { auto old = d; d = d + 1; return old; }
 template<class DAYTIME> inline DAYTIME operator-=(DAYTIME& d, int const secs) 
-  { return d = d -secs; }
+  { return d = d - secs; }
 template<class DAYTIME> inline DAYTIME operator--(DAYTIME& d) 
   { return d = d - 1; }
 template<class DAYTIME> inline DAYTIME operator--(DAYTIME& d, int /* tag */) 
