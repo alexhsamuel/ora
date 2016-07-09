@@ -5,12 +5,12 @@ namespace time {
 
 //------------------------------------------------------------------------------
 
-template class TimeTemplate<TimeTraits>;
-template class TimeTemplate<SmallTimeTraits>;
-template class TimeTemplate<NsecTimeTraits>;
-template class TimeTemplate<Unix32TimeTraits>;
-template class TimeTemplate<Unix64TimeTraits>;
-template class TimeTemplate<Time128Traits>;
+template class TimeType<TimeTraits>;
+template class TimeType<SmallTimeTraits>;
+template class TimeType<NsecTimeTraits>;
+template class TimeType<Unix32TimeTraits>;
+template class TimeType<Unix64TimeTraits>;
+template class TimeType<Time128Traits>;
 
 //------------------------------------------------------------------------------
 

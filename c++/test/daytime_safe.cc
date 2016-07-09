@@ -21,14 +21,18 @@ check(
 //------------------------------------------------------------------------------
 
 TEST(Daytime, from_offset) {
-  EXPECT_EQ(Daytime::INVALID, safe::from_offset(-1));
+  EXPECT_EQ(
+    Daytime::INVALID, 
+    safe::from_offset(std::numeric_limits<Daytime::Offset>::max()));
   EXPECT_EQ(Daytime::MIN, safe::from_offset(0));
   EXPECT_EQ(from_offset(10000), safe::from_offset(10000));
   EXPECT_EQ(Daytime::INVALID, safe::from_offset(Daytime::MAX.get_offset() + 1));
 }
 
 TEST(Daytime, from_daytick) {
-  EXPECT_EQ(Daytime::INVALID, safe::from_daytick(-1));
+  EXPECT_EQ(
+    Daytime::INVALID, 
+    safe::from_daytick(std::numeric_limits<Daytime::Offset>::max()));
   EXPECT_EQ(Daytime::MIN, safe::from_daytick(0));
   EXPECT_EQ(from_daytick(10000000), safe::from_daytick(10000000));
   EXPECT_EQ(Daytime::INVALID, safe::from_daytick(Daytime::MAX.get_daytick() + 1));

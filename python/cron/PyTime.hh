@@ -339,7 +339,7 @@ void
 PyTime<TIME>::tp_dealloc(
   PyTime* const self)
 {
-  self->time_.~TimeTemplate();
+  self->time_.~TimeType();
   self->ob_type->tp_free(self);
 }
 

@@ -65,18 +65,18 @@ compare(
 // Comparison operators
 //------------------------------------------------------------------------------
 
-template<class T0, class T1> inline bool operator==(TimeTemplate<T0> const t0, TimeTemplate<T1> const t1) noexcept
-  { return safe::equal(t0, TimeTemplate<T0>(t1)); }
-template<class T0, class T1> inline bool operator!=(TimeTemplate<T0> const t0, TimeTemplate<T1> const t1) noexcept
-  { return !safe::equal(t0, TimeTemplate<T0>(t1)); }
-template<class T0, class T1> inline bool operator< (TimeTemplate<T0> const t0, TimeTemplate<T1> const t1) noexcept
-  { return safe::before(t0, TimeTemplate<T0>(t1)); }
-template<class T0, class T1> inline bool operator> (TimeTemplate<T0> const t0, TimeTemplate<T1> const t1) noexcept
-  { return safe::before(TimeTemplate<T0>(t1), t0); }
-template<class T0, class T1> inline bool operator<=(TimeTemplate<T0> const t0, TimeTemplate<T1> const t1) noexcept
-  { return !safe::before(TimeTemplate<T0>(t1), t0); }
-template<class T0, class T1> inline bool operator>=(TimeTemplate<T0> const t0, TimeTemplate<T1> const t1) noexcept
-  { return !safe::before(t0, TimeTemplate<T0>(t1)); }
+template<class T0, class T1> inline bool operator==(TimeType<T0> const t0, TimeType<T1> const t1) noexcept
+  { return safe::equal(t0, TimeType<T0>(t1)); }
+template<class T0, class T1> inline bool operator!=(TimeType<T0> const t0, TimeType<T1> const t1) noexcept
+  { return !safe::equal(t0, TimeType<T0>(t1)); }
+template<class T0, class T1> inline bool operator< (TimeType<T0> const t0, TimeType<T1> const t1) noexcept
+  { return safe::before(t0, TimeType<T0>(t1)); }
+template<class T0, class T1> inline bool operator> (TimeType<T0> const t0, TimeType<T1> const t1) noexcept
+  { return safe::before(TimeType<T0>(t1), t0); }
+template<class T0, class T1> inline bool operator<=(TimeType<T0> const t0, TimeType<T1> const t1) noexcept
+  { return !safe::before(TimeType<T0>(t1), t0); }
+template<class T0, class T1> inline bool operator>=(TimeType<T0> const t0, TimeType<T1> const t1) noexcept
+  { return !safe::before(t0, TimeType<T0>(t1)); }
 
 //------------------------------------------------------------------------------
 

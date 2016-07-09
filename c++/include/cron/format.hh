@@ -194,7 +194,7 @@ public:
 template<class TRAITS>
 inline std::string
 to_string(
-  TimeTemplate<TRAITS> const time,
+  TimeType<TRAITS> const time,
   TimeZone const& time_zone=UTC)
 {
   return TimeFormat::DEFAULT(time, time_zone);
@@ -204,7 +204,7 @@ to_string(
 template<class TRAITS>
 inline std::string
 to_string(
-  TimeTemplate<TRAITS> const time,
+  TimeType<TRAITS> const time,
   _DisplayTimeZoneTag)
 {
   return to_string(time, *get_display_time_zone());
@@ -215,7 +215,7 @@ template<class TRAITS>
 inline std::ostream&
 operator<<(
   std::ostream& os,
-  TimeTemplate<TRAITS> const time)
+  TimeType<TRAITS> const time)
 {
   os << TimeFormat::DEFAULT(time);
   return os;

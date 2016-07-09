@@ -67,7 +67,7 @@ template<class TIME> bool equal(TIME, TIME) noexcept;
  * arbitrary zero point, which is UTC midnight on a given date.
  */
 template<class TRAITS>
-class TimeTemplate
+class TimeType
 {
 public:
 
@@ -78,18 +78,18 @@ public:
 
   static Datenum      constexpr BASE        = Traits::base;
   static Offset       constexpr DENOMINATOR = Traits::denominator;
-  static TimeTemplate const     MIN;
-  static TimeTemplate const     MAX;
-  static TimeTemplate const     INVALID;
-  static TimeTemplate const     MISSING;
+  static TimeType     const     MIN;
+  static TimeType     const     MAX;
+  static TimeType     const     INVALID;
+  static TimeType     const     MISSING;
   static double       constexpr RESOLUTION  = 1.0 / Traits::denominator;
 
   // Constructors --------------------------------------------------------------
 
   // FIXME: Using '= default' causes instantiation problems?
-  constexpr TimeTemplate() noexcept {}  
+  constexpr TimeType() noexcept {}  
 
-  constexpr TimeTemplate(TimeTemplate const&) noexcept = default;
+  constexpr TimeType(TimeType const&) noexcept = default;
 
   /*
    * Constructs from another time template instance.
@@ -99,9 +99,9 @@ public:
    * type, throws <TimeRangeError>.
    */
   template<class OTHER_TRAITS> 
-  TimeTemplate(
-    TimeTemplate<OTHER_TRAITS> const time)
-  : TimeTemplate(
+  TimeType(
+    TimeType<OTHER_TRAITS> const time)
+  : TimeType(
         time.is_invalid() ? INVALID
       : time.is_missing() ? MISSING
       : from_offset(
@@ -112,25 +112,25 @@ public:
   {
   }
 
-  ~TimeTemplate() noexcept = default;
+  ~TimeType() noexcept = default;
 
   // Factory methods  ----------------------------------------------------------
 
-  static TimeTemplate 
+  static TimeType 
   from_offset(
     Offset const offset)
   {
     if (in_range(Traits::min, offset, Traits::max))
-      return TimeTemplate(offset);
+      return TimeType(offset);
     else
       throw TimeRangeError();
   }
 
   // Assignment operators ------------------------------------------------------
 
-  TimeTemplate
+  TimeType
   operator=(
-    TimeTemplate const time)
+    TimeType const time)
     noexcept
   {
     offset_ = time.offset_;
@@ -138,11 +138,11 @@ public:
   }
 
   template<class OTHER_TRAITS>
-  TimeTemplate
+  TimeType
   operator=(
-    TimeTemplate<OTHER_TRAITS> const time)
+    TimeType<OTHER_TRAITS> const time)
   {
-    return *this = TimeTemplate(time);
+    return *this = TimeType(time);
   }
 
   // Accessors -----------------------------------------------------------------
@@ -169,7 +169,7 @@ private:
   // State ---------------------------------------------------------------------
 
   constexpr 
-  TimeTemplate(
+  TimeType(
     Offset const offset) 
   : offset_(offset) 
   {
@@ -188,8 +188,8 @@ public:
   is_basic_layout()
   {
     return 
-         sizeof(TimeTemplate) == sizeof(Offset)
-      && offsetof(TimeTemplate, offset_) == 0;
+         sizeof(TimeType) == sizeof(Offset)
+      && offsetof(TimeType, offset_) == 0;
   }
 
 };
@@ -214,35 +214,35 @@ ensure_valid(
 
 template<class TRAITS>
 Datenum constexpr
-TimeTemplate<TRAITS>::BASE;
+TimeType<TRAITS>::BASE;
 
 template<class TRAITS>
-typename TimeTemplate<TRAITS>::Offset constexpr
-TimeTemplate<TRAITS>::DENOMINATOR;
+typename TimeType<TRAITS>::Offset constexpr
+TimeType<TRAITS>::DENOMINATOR;
 
 template<class TRAITS>
-TimeTemplate<TRAITS> constexpr
-TimeTemplate<TRAITS>::MIN
+TimeType<TRAITS> constexpr
+TimeType<TRAITS>::MIN
   {TRAITS::min};
 
 template<class TRAITS>
-TimeTemplate<TRAITS> constexpr
-TimeTemplate<TRAITS>::MAX
+TimeType<TRAITS> constexpr
+TimeType<TRAITS>::MAX
   {TRAITS::max};
 
 template<class TRAITS>
-TimeTemplate<TRAITS> constexpr
-TimeTemplate<TRAITS>::INVALID
+TimeType<TRAITS> constexpr
+TimeType<TRAITS>::INVALID
   {TRAITS::invalid};
 
 template<class TRAITS>
-TimeTemplate<TRAITS> constexpr
-TimeTemplate<TRAITS>::MISSING
+TimeType<TRAITS> constexpr
+TimeType<TRAITS>::MISSING
   {TRAITS::missing};
 
 template<class TRAITS>
 double constexpr
-TimeTemplate<TRAITS>::RESOLUTION;
+TimeType<TRAITS>::RESOLUTION;
 
 //------------------------------------------------------------------------------
 // Concrete time classes
@@ -260,8 +260,8 @@ struct TimeTraits
   static Offset  constexpr max          = std::numeric_limits<Offset>::max() - 2;
 };
 
-extern template class TimeTemplate<TimeTraits>;
-using Time =  TimeTemplate<TimeTraits>;
+extern template class TimeType<TimeTraits>;
+using Time =  TimeType<TimeTraits>;
 static_assert(Time::is_basic_layout(), "wrong memory layout for Time");
 
 //------------------------------------------------------------------------------
@@ -278,8 +278,8 @@ struct SmallTimeTraits
   static Offset  constexpr max          = std::numeric_limits<Offset>::max() - 2;
 };
 
-extern template class TimeTemplate<SmallTimeTraits>;
-using SmallTime = TimeTemplate<SmallTimeTraits>;
+extern template class TimeType<SmallTimeTraits>;
+using SmallTime = TimeType<SmallTimeTraits>;
 static_assert(Time::is_basic_layout(), "wrong memory layout for SmallTime");
 
 //------------------------------------------------------------------------------
@@ -296,8 +296,8 @@ struct NsecTimeTraits
   static Offset  constexpr max          = std::numeric_limits<Offset>::max() - 2;
 };
 
-extern template class TimeTemplate<NsecTimeTraits>;
-using NsecTime = TimeTemplate<NsecTimeTraits>;
+extern template class TimeType<NsecTimeTraits>;
+using NsecTime = TimeType<NsecTimeTraits>;
 static_assert(Time::is_basic_layout(), "wrong memory layout for NsecTime");
 
 //------------------------------------------------------------------------------
@@ -314,8 +314,8 @@ struct Unix32TimeTraits
   static Offset  constexpr max          = std::numeric_limits<Offset>::max() - 2;
 };
 
-extern template class TimeTemplate<Unix32TimeTraits>;
-using Unix32Time = TimeTemplate<Unix32TimeTraits>;
+extern template class TimeType<Unix32TimeTraits>;
+using Unix32Time = TimeType<Unix32TimeTraits>;
 static_assert(Time::is_basic_layout(), "wrong memory layout for Unix32Time");
 
 //------------------------------------------------------------------------------
@@ -332,8 +332,8 @@ struct Unix64TimeTraits
   static Offset  constexpr missing      = 253402300801l;
 };
 
-extern template class TimeTemplate<Unix64TimeTraits>;
-using Unix64Time = TimeTemplate<Unix64TimeTraits>;
+extern template class TimeType<Unix64TimeTraits>;
+using Unix64Time = TimeType<Unix64TimeTraits>;
 static_assert(Time::is_basic_layout(), "wrong memory layout for Unix64Time");
 
 //------------------------------------------------------------------------------
@@ -355,8 +355,8 @@ struct Time128Traits
   static Offset  constexpr missing      = make_uint128(0xffffffffffffffff, 0xfffffffffffffffe);
 };
 
-extern template class TimeTemplate<Time128Traits>;
-using Time128 = TimeTemplate<Time128Traits>;
+extern template class TimeType<Time128Traits>;
+using Time128 = TimeType<Time128Traits>;
 static_assert(Time::is_basic_layout(), "wrong memory layout for Time128");
 
 //------------------------------------------------------------------------------

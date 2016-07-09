@@ -171,24 +171,24 @@ seconds_between(
 // Addition and subtraction
 //------------------------------------------------------------------------------
 
-template<class TRAITS> inline TimeTemplate<TRAITS> operator+(TimeTemplate<TRAITS> const t, double const secs)
+template<class TRAITS> inline TimeType<TRAITS> operator+(TimeType<TRAITS> const t, double const secs)
   { return seconds_after(t, secs); }
-template<class TRAITS> inline TimeTemplate<TRAITS> operator-(TimeTemplate<TRAITS> const t, double const secs)
+template<class TRAITS> inline TimeType<TRAITS> operator-(TimeType<TRAITS> const t, double const secs)
   { return seconds_before(t, secs); }
-template<class TRAITS> inline int operator-(TimeTemplate<TRAITS> const t1, TimeTemplate<TRAITS> const t0)
+template<class TRAITS> inline int operator-(TimeType<TRAITS> const t1, TimeType<TRAITS> const t0)
   { return seconds_between(t0, t1); } 
 
-template<class TRAITS> inline TimeTemplate<TRAITS> operator+=(TimeTemplate<TRAITS>& t, int const secs) 
+template<class TRAITS> inline TimeType<TRAITS> operator+=(TimeType<TRAITS>& t, int const secs) 
   { return t = t + secs; }
-template<class TRAITS> inline TimeTemplate<TRAITS> operator++(TimeTemplate<TRAITS>& t) 
+template<class TRAITS> inline TimeType<TRAITS> operator++(TimeType<TRAITS>& t) 
   { return t = t + 1; }
-template<class TRAITS> inline TimeTemplate<TRAITS> operator++(TimeTemplate<TRAITS>& t, int /* tag */) 
+template<class TRAITS> inline TimeType<TRAITS> operator++(TimeType<TRAITS>& t, int /* tag */) 
   { auto old = t; t = t + 1; return old; }
-template<class TRAITS> inline TimeTemplate<TRAITS> operator-=(TimeTemplate<TRAITS>& t, int const secs) 
+template<class TRAITS> inline TimeType<TRAITS> operator-=(TimeType<TRAITS>& t, int const secs) 
   { return t = t - secs; }
-template<class TRAITS> inline TimeTemplate<TRAITS> operator--(TimeTemplate<TRAITS>& t) 
+template<class TRAITS> inline TimeType<TRAITS> operator--(TimeType<TRAITS>& t) 
   { return t = t - 1; }
-template<class TRAITS> inline TimeTemplate<TRAITS> operator--(TimeTemplate<TRAITS>& t, int /* tag */) 
+template<class TRAITS> inline TimeType<TRAITS> operator--(TimeType<TRAITS>& t, int /* tag */) 
   { auto old = t; t = t - 1; return old; }
 
 //------------------------------------------------------------------------------
