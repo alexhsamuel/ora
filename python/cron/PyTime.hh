@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cmath>
-#include <experimental/optional>
 #include <iostream>
 #include <unordered_map>
 
@@ -25,7 +24,6 @@ namespace aslib {
 using namespace py;
 using namespace std::literals;
 
-using std::experimental::optional;
 using std::make_unique;
 using std::string;
 using std::unique_ptr;
@@ -58,7 +56,7 @@ template<typename TIME> inline TIME parts_to_time(Sequence*);
  *   - PyTime instances
  *   - datetime.datetime instances
  */
-template<typename TIME> inline optional<TIME> maybe_time(Object*);
+template<typename TIME> inline std::pair<bool, TIME> maybe_time(Object*);
 
 /**
  * Converts an object to a time.  Beyond 'maybe_time()', recognizes the 
@@ -371,11 +369,11 @@ PyTime<TIME>::tp_richcompare(
   int const comparison)
 {
   auto const other_time = maybe_time<Time>(other);
-  if (!other_time)
+  if (!other_time.first)
     return not_implemented_ref();
 
   Time const t0 = self->time_;
-  Time const t1 = *other_time;
+  Time const t1 = other_time.second;
 
   bool result;
   switch (comparison) {
@@ -423,9 +421,9 @@ PyTime<TIME>::nb_subtract(
     return not_implemented_ref();
 
   auto const other_time = maybe_time<Time>(other);
-  if (other_time)
-    if (self->time_.is_valid() && other_time->is_valid())
-      return Float::from(self->time_ - *other_time);
+  if (other_time.first)
+    if (self->time_.is_valid() && other_time.second.is_valid())
+      return Float::from(self->time_ - other_time.second);
     else
       return none_ref();
 
@@ -712,18 +710,18 @@ parts_to_time(
 
 
 template<class TIME>
-optional<TIME>
+std::pair<bool, TIME>
 maybe_time(
   Object* const obj)
 {
   // An object of the same type?
   if (PyTime<TIME>::Check(obj))
-    return cast<PyTime<TIME>>(obj)->time_;
+    return {true, cast<PyTime<TIME>>(obj)->time_};
 
   // A different instance of the time class?
   auto const api = PyTimeAPI::get(obj);
   if (api != nullptr) 
-    return TIME(api->get_time128(obj));
+    return {true, TIME(api->get_time128(obj))};
 
   // A 'datetime.datetime'?
   if (PyDateTimeAPI == nullptr)
@@ -739,7 +737,7 @@ maybe_time(
         string("unknown tzinfo: ") + tzinfo->Repr()->as_utf8_string());
     
     // FIXME: Provide a all-integer ctor with (sec, usec).
-    return cron::from_local_parts<TIME>(
+    auto const time = cron::from_local_parts<TIME>(
       PyDateTime_GET_YEAR(obj),
       PyDateTime_GET_MONTH(obj) - 1,
       PyDateTime_GET_DAY(obj) - 1,
@@ -749,10 +747,11 @@ maybe_time(
       + PyDateTime_DATE_GET_MICROSECOND(obj) * 1e-6,
       *tz,
       true);
+    return {true, time};
   }
 
   // No type match.
-  return {};
+  return {false, TIME::INVALID};
 }
 
 
@@ -766,8 +765,8 @@ convert_to_time(
     return TIME{};
 
   auto time = maybe_time<TIME>(obj);
-  if (time)
-    return *time;
+  if (time.first)
+    return time.second;
 
   if (Sequence::Check(obj)) {
     auto const parts = cast<Sequence>(obj);
