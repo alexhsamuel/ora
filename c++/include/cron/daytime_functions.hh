@@ -245,3 +245,14 @@ template<class DAYTIME> inline DAYTIME operator--(DAYTIME& d, int /* tag */)
 }  // namespace daytime
 }  // namespace cron
 
+//------------------------------------------------------------------------------
+// Namespace imports
+//------------------------------------------------------------------------------
+
+namespace cron {
+
+using daytime::from_hms;
+using daytime::from_ssm;
+
+}  // namespace cron
+

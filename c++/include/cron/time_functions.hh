@@ -2,9 +2,6 @@
 
 #include "aslib/exc.hh"
 #include "aslib/math.hh"
-#include "aslib/printable.hh"
-#include "cron/date.hh"
-#include "cron/daytime.hh"
 #include "cron/time_math.hh"
 #include "cron/time_nex.hh"
 #include "cron/time_type.hh"
@@ -154,23 +151,6 @@ seconds_between(
   return ((double) time1.get_offset() - time0.get_offset()) / TIME::DENOMINATOR;
 }
 
-
-//------------------------------------------------------------------------------
-// Comparison operators
-//------------------------------------------------------------------------------
-
-template<class T0, class T1> inline bool operator==(TimeType<T0> const t0, TimeType<T1> const t1) noexcept
-  { return nex::equal(t0, TimeType<T0>(t1)); }
-template<class T0, class T1> inline bool operator!=(TimeType<T0> const t0, TimeType<T1> const t1) noexcept
-  { return !nex::equal(t0, TimeType<T0>(t1)); }
-template<class T0, class T1> inline bool operator< (TimeType<T0> const t0, TimeType<T1> const t1) noexcept
-  { return nex::before(t0, TimeType<T0>(t1)); }
-template<class T0, class T1> inline bool operator> (TimeType<T0> const t0, TimeType<T1> const t1) noexcept
-  { return nex::before(TimeType<T0>(t1), t0); }
-template<class T0, class T1> inline bool operator<=(TimeType<T0> const t0, TimeType<T1> const t1) noexcept
-  { return !nex::before(TimeType<T0>(t1), t0); }
-template<class T0, class T1> inline bool operator>=(TimeType<T0> const t0, TimeType<T1> const t1) noexcept
-  { return !nex::before(t0, TimeType<T0>(t1)); }
 
 //------------------------------------------------------------------------------
 // Addition and subtraction

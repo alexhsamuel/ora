@@ -8,10 +8,7 @@
 #include <datetime.h>
 
 #include "aslib/math.hh"
-#include "cron/format.hh"
-#include "cron/localization.hh"
-#include "cron/time.hh"
-#include "cron/time_zone.hh"
+#include "cron.hh"
 #include "py.hh"
 #include "PyDate.hh"
 #include "PyDaytime.hh"

@@ -2,7 +2,7 @@
 
 #include <Python.h>
 
-#include "cron/types.hh"
+#include "cron.hh"
 #include "py.hh"
 #include "PyDate.hh"
 #include "PyDaytime.hh"

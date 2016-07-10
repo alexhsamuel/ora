@@ -30,11 +30,13 @@
 
 #pragma once
 
+#include <cstddef>
 #include <limits>
 
 #include "aslib/exc.hh"
 #include "aslib/math.hh"
-#include "cron/time_functions.hh"
+#include "cron/exceptions.hh"
+#include "cron/time_math.hh"
 
 namespace cron {
 namespace time {

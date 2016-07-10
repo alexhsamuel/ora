@@ -7,7 +7,7 @@
 
 #include "aslib/file.hh"
 #include "aslib/filename.hh"
-#include "cron/time.hh"
+#include "cron/time_type.hh"
 #include "cron/time_zone.hh"
 #include "cron/tzfile.hh"
 

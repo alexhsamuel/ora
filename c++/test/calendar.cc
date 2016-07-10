@@ -1,8 +1,8 @@
 #pragma GCC diagnostic ignored "-Wparentheses"
 
 #include "aslib/filename.hh"
+#include "cron.hh"
 #include "cron/calendar.hh"
-#include "cron/ez.hh"
 #include "gtest/gtest.h"
 
 using namespace aslib;

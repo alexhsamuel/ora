@@ -11,7 +11,7 @@
 #include "aslib/string_builder.hh"
 #include "cron/date.hh"
 #include "cron/daytime.hh"
-#include "cron/time.hh"
+#include "cron/time_type.hh"
 #include "cron/time_zone.hh"
 #include "cron/types.hh"
 

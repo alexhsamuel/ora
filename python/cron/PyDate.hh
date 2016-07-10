@@ -11,8 +11,7 @@
 #include <Python.h>
 #include <datetime.h>
 
-#include "cron/date.hh"
-#include "cron/format.hh"
+#include "cron.hh"
 #include "py.hh"
 
 namespace aslib {

@@ -1,6 +1,4 @@
-#include "cron/ez.hh"
-#include "cron/format.hh"
-#include "cron/localization.hh"
+#include "cron.hh"
 #include "gtest/gtest.h"
 
 using namespace cron;

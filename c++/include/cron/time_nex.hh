@@ -91,9 +91,27 @@ compare(
 }
 
 
+}  // namespace nex
+
+//------------------------------------------------------------------------------
+// Comparison operators
 //------------------------------------------------------------------------------
 
-}  // namespace nex
+template<class T0, class T1> inline bool operator==(TimeType<T0> const t0, TimeType<T1> const t1) noexcept
+  { return nex::equal(t0, TimeType<T0>(t1)); }
+template<class T0, class T1> inline bool operator!=(TimeType<T0> const t0, TimeType<T1> const t1) noexcept
+  { return !nex::equal(t0, TimeType<T0>(t1)); }
+template<class T0, class T1> inline bool operator< (TimeType<T0> const t0, TimeType<T1> const t1) noexcept
+  { return nex::before(t0, TimeType<T0>(t1)); }
+template<class T0, class T1> inline bool operator> (TimeType<T0> const t0, TimeType<T1> const t1) noexcept
+  { return nex::before(TimeType<T0>(t1), t0); }
+template<class T0, class T1> inline bool operator<=(TimeType<T0> const t0, TimeType<T1> const t1) noexcept
+  { return !nex::before(TimeType<T0>(t1), t0); }
+template<class T0, class T1> inline bool operator>=(TimeType<T0> const t0, TimeType<T1> const t1) noexcept
+  { return !nex::before(t0, TimeType<T0>(t1)); }
+
+//------------------------------------------------------------------------------
+
 }  // namespace time
 }  // namespace cron
 

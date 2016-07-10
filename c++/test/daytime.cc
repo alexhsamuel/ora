@@ -1,8 +1,7 @@
 #include <string>
 
+#include "cron.hh"
 #include "gtest/gtest.h"
-#include "cron/daytime.hh"
-#include "cron/format.hh"
 
 using namespace aslib;
 using namespace cron;

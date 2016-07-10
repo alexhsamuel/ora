@@ -8,9 +8,7 @@
 #include <Python.h>
 #include <datetime.h>
 
-#include "cron/format.hh"
-#include "cron/daytime.hh"
-#include "cron/time_zone.hh"
+#include "cron.hh"
 #include "py.hh"
 
 namespace aslib {

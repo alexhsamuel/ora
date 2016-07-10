@@ -2,7 +2,7 @@
 #include <Python.h>
 
 #include "aslib/mem.hh"
-#include "cron/date.hh"
+#include "cron.hh"
 #include "py.hh"
 #include "np_types.hh"
 #include "numpy.hh"

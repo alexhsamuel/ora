@@ -17,13 +17,11 @@ namespace daytime {
 // Forward declarations
 //------------------------------------------------------------------------------
 
-namespace safe {
+namespace nex {
 
-template<class DAYTIME> DAYTIME from_daytick(Daytick) noexcept;
-template<class DAYTIME> DAYTIME from_offset(typename DAYTIME::Offset) noexcept;
 template<class DAYTIME> bool equal(DAYTIME, DAYTIME) noexcept;
 
-}  // namespace safe
+}  // namespace nex
 
 //------------------------------------------------------------------------------
 
@@ -160,9 +158,7 @@ private:
 
   Offset offset_ = INVALID_OFFSET;
 
-  template<class DAYTIME> friend DAYTIME cron::daytime::safe::from_daytick(Daytick) noexcept;
-  template<class DAYTIME> friend DAYTIME cron::daytime::safe::from_offset(typename DAYTIME::Offset) noexcept;
-  template<class DAYTIME> friend bool cron::daytime::safe::equal(DAYTIME, DAYTIME) noexcept;
+  template<class DAYTIME> friend bool cron::daytime::nex::equal(DAYTIME, DAYTIME) noexcept;
 
 public:
 

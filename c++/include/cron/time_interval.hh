@@ -1,8 +1,6 @@
 #pragma once
 
-#include "cron/daytime.hh"
-#include "cron/time.hh"
-#include "cron/types.hh"
+#include "cron.hh"
 
 namespace cron {
 

@@ -1,5 +1,4 @@
-#include "cron/time.hh"
-#include "cron/time_zone.hh"
+#include "cron.hh"
 #include "gtest/gtest.h"
 
 using namespace aslib;

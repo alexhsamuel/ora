@@ -14,7 +14,7 @@
 
 namespace cron {
 namespace daytime {
-namespace safe {
+namespace nex {
 
 //------------------------------------------------------------------------------
 // Factory functions
@@ -29,7 +29,7 @@ from_offset(
   using Offset = typename DAYTIME::Offset;
   return 
       in_range<Offset>(0, offset, DAYTIME::OFFSET_MAX)
-    ? DAYTIME(offset)
+    ? DAYTIME::from_offset(offset)
     : DAYTIME::INVALID;
 }
 
@@ -42,8 +42,7 @@ from_daytick(
 {
   return 
       daytick_is_valid(daytick)
-    ? DAYTIME(
-        rescale_int<Daytick, DAYTICK_PER_SEC, DAYTIME::DENOMINATOR>(daytick))
+    ? DAYTIME::from_daytick(daytick)
     : DAYTIME::INVALID;
 }
 
@@ -67,7 +66,7 @@ from_hms(
 
 
 template<class DAYTIME=Daytime> inline DAYTIME from_hms(HmsDaytime const& hms) noexcept
-  { return safe::from_hms<DAYTIME>(hms.hour, hms.minute, hms.second); }
+  { return nex::from_hms<DAYTIME>(hms.hour, hms.minute, hms.second); }
 
 template<class DAYTIME=Daytime>
 inline DAYTIME
@@ -122,11 +121,11 @@ get_ssm(
 
 // For convenience.
 template<class DAYTIME> inline Hour get_hour(DAYTIME const daytime) noexcept
-  { return safe::get_hms(daytime).hour; }
+  { return nex::get_hms(daytime).hour; }
 template<class DAYTIME> inline Minute get_minute(DAYTIME const daytime) noexcept
-  { return safe::get_hms(daytime).minute; }
+  { return nex::get_hms(daytime).minute; }
 template<class DAYTIME> inline Second get_second(DAYTIME const daytime) noexcept
-  { return safe::get_hms(daytime).second; }
+  { return nex::get_hms(daytime).second; }
 
 //------------------------------------------------------------------------------
 // Comparisons
@@ -150,7 +149,7 @@ before(
   DAYTIME const daytime1)
   noexcept
 {
-  if (safe::equal(daytime0, daytime1))
+  if (nex::equal(daytime0, daytime1))
     return false;
   else if (daytime0.is_invalid())
     return true;
@@ -173,8 +172,8 @@ compare(
   noexcept
 {
   return 
-      safe::equal(daytime0, daytime1) ? 0 
-    : safe::before(daytime0, daytime1) ? -1 
+      nex::equal(daytime0, daytime1) ? 0 
+    : nex::before(daytime0, daytime1) ? -1 
     : 1;
 }
 
@@ -238,37 +237,27 @@ seconds_between(
 }
 
 
-}  // namespace safe
+}  // namespace nex
 
 //------------------------------------------------------------------------------
 // Comparison operators
 //------------------------------------------------------------------------------
 
 template<class T0, class T1> inline bool operator==(DaytimeTemplate<T0> const d0, DaytimeTemplate<T1> const d1) noexcept
-  { return safe::equal(d0, DaytimeTemplate<T0>(d1)); }
+  { return nex::equal(d0, DaytimeTemplate<T0>(d1)); }
 template<class T0, class T1> inline bool operator!=(DaytimeTemplate<T0> const d0, DaytimeTemplate<T1> const d1) noexcept
-  { return !safe::equal(d0, DaytimeTemplate<T0>(d1)); }
+  { return !nex::equal(d0, DaytimeTemplate<T0>(d1)); }
 template<class T0, class T1> inline bool operator< (DaytimeTemplate<T0> const d0, DaytimeTemplate<T1> const d1) noexcept
-  { return safe::before(d0, DaytimeTemplate<T0>(d1)); }
+  { return nex::before(d0, DaytimeTemplate<T0>(d1)); }
 template<class T0, class T1> inline bool operator> (DaytimeTemplate<T0> const d0, DaytimeTemplate<T1> const d1) noexcept
-  { return safe::before(DaytimeTemplate<T0>(d1), d0); }
+  { return nex::before(DaytimeTemplate<T0>(d1), d0); }
 template<class T0, class T1> inline bool operator<=(DaytimeTemplate<T0> const d0, DaytimeTemplate<T1> const d1) noexcept
-  { return !safe::before(DaytimeTemplate<T0>(d1), d0); }
+  { return !nex::before(DaytimeTemplate<T0>(d1), d0); }
 template<class T0, class T1> inline bool operator>=(DaytimeTemplate<T0> const d0, DaytimeTemplate<T1> const d1) noexcept
-  { return !safe::before(d0, DaytimeTemplate<T0>(d1)); }
+  { return !nex::before(d0, DaytimeTemplate<T0>(d1)); }
+
+//------------------------------------------------------------------------------
 
 }  // namespace daytime
-}  // namespace cron
-
-//------------------------------------------------------------------------------
-// Namespace imports
-//------------------------------------------------------------------------------
-
-namespace cron {
-namespace safe {
-
-using namespace daytime::safe;
-
-}  // namespace safe
 }  // namespace cron
 

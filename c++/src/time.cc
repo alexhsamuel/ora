@@ -1,4 +1,4 @@
-#include "cron/time.hh"
+#include "cron/time_type.hh"
 
 namespace cron {
 namespace time {

@@ -1,6 +1,5 @@
+#include "cron.hh"
 #include "gtest/gtest.h"
-#include "cron/daytime.hh"
-#include "cron/format.hh"
 
 using namespace cron;
 using namespace cron::daytime;

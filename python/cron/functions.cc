@@ -2,10 +2,7 @@
 #include <cstring>
 #include <time.h>
 
-#include "cron/date.hh"
-#include "cron/time.hh"
-#include "cron/time_zone.hh"
-#include "cron/types.hh"
+#include "cron.hh"
 #include "py.hh"
 #include "PyTime.hh"
 #include "util.hh"
