@@ -186,6 +186,7 @@ private:
   static void           tp_init(PyDate* self, Tuple* args, Dict* kw_args);
   static void           tp_dealloc(PyDate* self);
   static ref<Unicode>   tp_repr(PyDate* self);
+  static Py_hash_t      tp_hash(PyDate* self);
   static ref<Unicode>   tp_str(PyDate* self);
   static ref<Object>    tp_richcompare(PyDate* self, Object* other, int comparison);
 
@@ -338,6 +339,18 @@ PyDate<DATE>::tp_repr(
   PyDate* const self)
 {
   return Unicode::from((*repr_format_)(self->date_));
+}
+
+
+template<typename DATE>
+Py_hash_t
+PyDate<DATE>::tp_hash(
+  PyDate* const self)
+{
+  return 
+      self->date_.is_invalid() ? std::numeric_limits<Py_hash_t>::max()
+    : self->date_.is_missing() ? std::numeric_limits<Py_hash_t>::max() - 1
+    : self->date_.get_offset();
 }
 
 
@@ -853,7 +866,7 @@ PyDate<DATE>::build_type(
     (PyNumberMethods*)    &tp_as_number_,                 // tp_as_number
     (PySequenceMethods*)  nullptr,                        // tp_as_sequence
     (PyMappingMethods*)   nullptr,                        // tp_as_mapping
-    (hashfunc)            nullptr,                        // tp_hash
+    (hashfunc)            wrap<PyDate, tp_hash>,          // tp_hash
     (ternaryfunc)         nullptr,                        // tp_call
     (reprfunc)            wrap<PyDate, tp_str>,           // tp_str
     (getattrofunc)        nullptr,                        // tp_getattro

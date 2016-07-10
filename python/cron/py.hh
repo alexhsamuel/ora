@@ -1301,6 +1301,11 @@ using
 RichcmpfuncPtr
   = ref<Object> (*)(CLASS* self, Object* other, int comparison);
 
+template<class CLASS>
+using
+HashfuncPtr
+  = Py_hash_t (*)(CLASS* self);
+
 template<typename CLASS>
 using MethodPtr = ref<Object> (*)(CLASS* self, Tuple* args, Dict* kw_args);
 
@@ -1461,6 +1466,34 @@ wrap(
   }
   assert(result != nullptr);
   return result.release();
+}
+
+
+/*
+ * Wraps a hashfunc.
+ */
+template<class CLASS, HashfuncPtr<CLASS> HASHFUNC>
+Py_hash_t
+wrap(
+  PyObject* self)
+{
+  Py_hash_t result;
+  try {
+    try {
+      result = HASHFUNC(static_cast<CLASS*>(self));
+    }
+    catch (Exception) {
+      return -1;
+    }
+    catch (...) {
+      ExceptionTranslator::translate();
+    }
+  }
+  catch (Exception) {
+    return -1;
+  }
+  assert(result != -1);
+  return result;
 }
 
 

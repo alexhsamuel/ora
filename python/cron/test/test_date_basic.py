@@ -106,3 +106,11 @@ def test_from_iso_date():
 
 
 
+def test_hash():
+    dates = (
+          [ 2016/Jul/10 + n for n in range(100) ]
+        + [Date.INVALID, Date.MISSING])
+    hashes = frozenset( hash(d) for d in dates )
+    assert len(hashes) > len(dates) // 2
+
+
