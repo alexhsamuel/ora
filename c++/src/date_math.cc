@@ -6,7 +6,7 @@
 #include <sstream>
 
 #include "aslib/exc.hh"
-#include "cron/date.hh"
+#include "cron.hh"
 
 namespace cron {
 

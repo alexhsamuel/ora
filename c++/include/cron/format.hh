@@ -9,7 +9,7 @@
 #include "aslib/exc.hh"
 #include "aslib/ptr.hh"
 #include "aslib/string_builder.hh"
-#include "cron/date.hh"
+#include "cron/date_type.hh"
 #include "cron/daytime_type.hh"
 #include "cron/time_type.hh"
 #include "cron/time_zone.hh"

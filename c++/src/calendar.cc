@@ -5,6 +5,7 @@
 
 #include "aslib/string.hh"
 #include "cron/calendar.hh"
+#include "cron/date_nex.hh"
 
 namespace cron {
 

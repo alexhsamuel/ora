@@ -7,7 +7,8 @@
 #include <vector>
 
 #include "aslib/filename.hh"
-#include "cron/date.hh"
+#include "cron/date_functions.hh"
+#include "cron/date_type.hh"
 
 namespace cron {
 

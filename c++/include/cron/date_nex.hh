@@ -3,8 +3,8 @@
 #include <string>
 
 #include "aslib/math.hh"
-#include "cron/date.hh"
 #include "cron/date_math.hh"
+#include "cron/date_type.hh"
 #include "cron/types.hh"
 
 namespace cron {
