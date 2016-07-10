@@ -189,6 +189,7 @@ private:
   static void           tp_init(PyTime*, Tuple* args, Dict* kw_args);
   static void           tp_dealloc(PyTime*);
   static ref<Unicode>   tp_repr(PyTime*);
+  static Py_hash_t      tp_hash(PyTime*);
   static ref<Unicode>   tp_str(PyTime*);
   static ref<Object>    tp_richcompare(PyTime*, Object*, int);
 
@@ -345,6 +346,18 @@ PyTime<TIME>::tp_repr(
   PyTime* const self)
 {
   return Unicode::from((*repr_format_)(self->time_, cron::UTC));
+}
+
+
+template<typename TIME>
+Py_hash_t
+PyTime<TIME>::tp_hash(
+  PyTime* const self)
+{
+  return 
+      self->time_.is_invalid() ? std::numeric_limits<Py_hash_t>::max()
+    : self->time_.is_missing() ? std::numeric_limits<Py_hash_t>::max() - 1
+    : self->time_.get_offset();
 }
 
 
@@ -614,7 +627,7 @@ PyTime<TIME>::build_type(
     (PyNumberMethods*)    &tp_as_number_,                 // tp_as_number
     (PySequenceMethods*)  nullptr,                        // tp_as_sequence
     (PyMappingMethods*)   nullptr,                        // tp_as_mapping
-    (hashfunc)            nullptr,                        // tp_hash
+    (hashfunc)            wrap<PyTime, tp_hash>,          // tp_hash
     (ternaryfunc)         nullptr,                        // tp_call
     (reprfunc)            wrap<PyTime, tp_str>,           // tp_str
     (getattrofunc)        nullptr,                        // tp_getattro

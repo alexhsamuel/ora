@@ -7,7 +7,6 @@
    Or make the default daytime format mutable?
 1. Global display time zone in Python API.
 1. Adjust the definition of TimeTraits.
-1. Add hash functions for all Python types.
 1. Make hms_daytime dtype. Add it to the module.
 1. Basic string parsing for `convert_to_*()` functions.
 1. Full parsing support.

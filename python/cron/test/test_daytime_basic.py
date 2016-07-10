@@ -330,3 +330,11 @@ def test_subtract2():
     assert near(a - 1     , Daytime(23, 59, 58.9990))
     
 
+def test_hash():
+    daytimes = (
+          [ Daytime.MIDNIGHT + n for n in range(0, 86400, 300) ]
+        + [Daytime.INVALID, Daytime.MISSING])
+    hashes = frozenset( hash(d) for d in daytimes )
+    assert len(hashes) > len(daytimes) // 2
+
+

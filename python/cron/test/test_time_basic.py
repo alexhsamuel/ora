@@ -52,3 +52,11 @@ def test_zero():
     assert t == from_local((1/Jan/1, MIDNIGHT), UTC)
 
 
+def test_hash():
+    times = (
+          [ Time.MIN + n for n in range(0, 270000000, 3000000) ]
+        + [Time.INVALID, Time.MISSING])
+    hashes = frozenset( hash(t) for t in times )
+    assert len(hashes) > len(times) // 2
+
+

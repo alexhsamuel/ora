@@ -104,6 +104,7 @@ private:
   static void tp_init(PyDaytime* self, Tuple* args, Dict* kw_args);
   static void tp_dealloc(PyDaytime* self);
   static ref<Unicode> tp_repr(PyDaytime* self);
+  static Py_hash_t    tp_hash(PyDaytime* self);
   static ref<Unicode> tp_str(PyDaytime* self);
   static ref<Object> tp_richcompare(PyDaytime* self, Object* other, int comparison);
 
@@ -263,6 +264,18 @@ PyDaytime<DAYTIME>::tp_repr(
   PyDaytime* const self)
 {
   return Unicode::from((*repr_format_)(self->daytime_));
+}
+
+
+template<typename DAYTIME>
+Py_hash_t
+PyDaytime<DAYTIME>::tp_hash(
+  PyDaytime* const self)
+{
+  return 
+      self->daytime_.is_invalid() ? std::numeric_limits<Py_hash_t>::max()
+    : self->daytime_.is_missing() ? std::numeric_limits<Py_hash_t>::max() - 1
+    : self->daytime_.get_offset();
 }
 
 
@@ -609,7 +622,7 @@ PyDaytime<DAYTIME>::build_type(
     (PyNumberMethods*)    &tp_as_number_,                 // tp_as_number
     (PySequenceMethods*)  nullptr,                        // tp_as_sequence
     (PyMappingMethods*)   nullptr,                        // tp_as_mapping
-    (hashfunc)            nullptr,                        // tp_hash
+    (hashfunc)            wrap<PyDaytime, tp_hash>,       // tp_hash
     (ternaryfunc)         nullptr,                        // tp_call
     (reprfunc)            wrap<PyDaytime, tp_str>,        // tp_str
     (getattrofunc)        nullptr,                        // tp_getattro
