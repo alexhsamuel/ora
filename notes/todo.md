@@ -1,7 +1,7 @@
 # Work List
 
 1. Clean up C++ Time and localization functions; document.
-1. Collision of safe:: namespaces and from_offset() functions.
+1. Update docs for nex, namespaces, includes.
 1. C++ constants for months.
 1. Default precision for C++ time, daytime formats (fractional secs?).
    Or make the default daytime format mutable?
