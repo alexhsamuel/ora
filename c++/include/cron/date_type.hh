@@ -18,13 +18,11 @@ namespace date {
 // Forward declarations
 //------------------------------------------------------------------------------
 
-namespace safe {
+namespace nex {
 
-template<class DATE> DATE from_datenum(Datenum) noexcept;
-template<class DATE> DATE from_offset(typename DATE::Offset) noexcept;
 template<class DATE> bool equal(DATE, DATE) noexcept;
 
-}  // namespace safe
+}  // namespace nex
 
 //------------------------------------------------------------------------------
 // Generic date type
@@ -35,7 +33,7 @@ template<class DATE> bool equal(DATE, DATE) noexcept;
  *
  * Each template instance is a non-virtual class with a single integer data
  * member, the offset, and no nontrivial destructor behavior.  The class is
- * designed so that a pointer to the underlying integer type can safely be cast
+ * designed so that a pointer to the underlying integer type can nexly be cast
  * to the date class.
  *
  * A template instance is customized by `TRAITS`, which specifies the following:
@@ -211,9 +209,7 @@ private:
 
   Offset offset_ = Traits::invalid;
 
-  template<class DATE> friend DATE cron::date::safe::from_datenum(Datenum) noexcept;
-  template<class DATE> friend DATE cron::date::safe::from_offset(typename DATE::Offset) noexcept;
-  template<class DATE> friend bool cron::date::safe::equal(DATE, DATE) noexcept;
+  template<class DATE> friend bool cron::date::nex::equal(DATE, DATE) noexcept;
 
 public:
 

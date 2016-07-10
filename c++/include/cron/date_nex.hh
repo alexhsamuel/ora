@@ -9,7 +9,7 @@
 
 namespace cron {
 namespace date {
-namespace safe {
+namespace nex {
 
 //------------------------------------------------------------------------------
 // Forward declarations
@@ -28,13 +28,11 @@ from_datenum(
   Datenum const datenum)
   noexcept
 {
-  using Offset = typename DATE::Offset;
-
   if (datenum_is_valid(datenum)) {
-    auto offset = (long) datenum - (long) DATE::Traits::base;
+    auto offset = (int64_t) datenum - (int64_t) DATE::Traits::base;
     return 
-        in_range((long) DATE::Traits::min, offset, (long) DATE::Traits::max)
-      ? DATE((Offset) offset)
+        in_range<int64_t>(DATE::Traits::min, offset, DATE::Traits::max)
+      ? DATE::from_datenum(datenum)
       : DATE::INVALID;
   }
   else
@@ -65,7 +63,7 @@ from_offset(
 {
   return 
       in_range(DATE::Traits::min, offset, DATE::Traits::max)
-    ? DATE(offset)
+    ? DATE::from_offset(offset)
     : DATE::INVALID;
 }
 
@@ -222,17 +220,17 @@ get_ymdi(
 
 
 template<class DATE> inline Year get_year(DATE const date) noexcept 
-  { return safe::get_ordinal_date(date).year;  }
+  { return nex::get_ordinal_date(date).year;  }
 template<class DATE> inline Month get_month(DATE const date) noexcept 
-  { return safe::get_ymd(date).month; }
+  { return nex::get_ymd(date).month; }
 template<class DATE> inline Ordinal get_ordinal(DATE const date) noexcept
-  { return safe::get_ordinal_date(date).ordinal; }
+  { return nex::get_ordinal_date(date).ordinal; }
 template<class DATE> inline Week get_week(DATE const date) noexcept
-  { return safe::get_week_date(date).week; }
+  { return nex::get_week_date(date).week; }
 template<class DATE> inline Year get_week_year(DATE const date) noexcept
-  { return safe::get_week_date(date).week_year; }
+  { return nex::get_week_date(date).week_year; }
 template<class DATE> inline Day get_day(DATE const date) noexcept 
-  { return safe::get_ymd(date).day;   }
+  { return nex::get_ymd(date).day;   }
 
 //------------------------------------------------------------------------------
 // Comparisons
@@ -256,7 +254,7 @@ before(
   DATE const date1)
   noexcept
 {
-  if (safe::equal(date0, date1))
+  if (nex::equal(date0, date1))
     return false;
   else if (date0.is_invalid())
     return true;
@@ -278,7 +276,7 @@ compare(
   DATE const date1)
   noexcept
 {
-  return safe::equal(date0, date1) ? 0 : safe::before(date0, date1) ? -1 : 1;
+  return nex::equal(date0, date1) ? 0 : nex::before(date0, date1) ? -1 : 1;
 }
 
 
@@ -313,7 +311,7 @@ days_before(
   int const days)
   noexcept
 {
-  return safe::days_after(date, -days);
+  return nex::days_after(date, -days);
 }  
 
 
@@ -338,24 +336,24 @@ days_between(
 }
 
 
-}  // namespace safe
+}  // namespace nex
 
 //------------------------------------------------------------------------------
 // Comparison operators
 //------------------------------------------------------------------------------
 
 template<class T0, class T1> inline bool operator==(DateTemplate<T0> const d0, DateTemplate<T1> const d1) noexcept
-  { return safe::equal(d0, DateTemplate<T0>(d1)); }
+  { return nex::equal(d0, DateTemplate<T0>(d1)); }
 template<class T0, class T1> inline bool operator!=(DateTemplate<T0> const d0, DateTemplate<T1> const d1) noexcept
-  { return !safe::equal(d0, DateTemplate<T0>(d1)); }
+  { return !nex::equal(d0, DateTemplate<T0>(d1)); }
 template<class T0, class T1> inline bool operator< (DateTemplate<T0> const d0, DateTemplate<T1> const d1) noexcept
-  { return safe::before(d0, DateTemplate<T0>(d1)); }
+  { return nex::before(d0, DateTemplate<T0>(d1)); }
 template<class T0, class T1> inline bool operator> (DateTemplate<T0> const d0, DateTemplate<T1> const d1) noexcept
-  { return safe::before(DateTemplate<T0>(d1), d0); }
+  { return nex::before(DateTemplate<T0>(d1), d0); }
 template<class T0, class T1> inline bool operator<=(DateTemplate<T0> const d0, DateTemplate<T1> const d1) noexcept
-  { return !safe::before(DateTemplate<T0>(d1), d0); }
+  { return !nex::before(DateTemplate<T0>(d1), d0); }
 template<class T0, class T1> inline bool operator>=(DateTemplate<T0> const d0, DateTemplate<T1> const d1) noexcept
-  { return !safe::before(d0, DateTemplate<T0>(d1)); }
+  { return !nex::before(d0, DateTemplate<T0>(d1)); }
 
 //------------------------------------------------------------------------------
 

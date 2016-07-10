@@ -127,10 +127,10 @@ TEST(Date, weekday) {
 TEST(Date, conversions) {
   EXPECT_EQ(from_ymd<Date16>(1973, 12, 3), Date16(1973/DEC/3));
 
-  EXPECT_TRUE(safe::equal(Date16(Date::INVALID), Date16::INVALID));
-  EXPECT_TRUE(safe::equal(Date16(Date::MISSING), Date16::MISSING));
-  EXPECT_TRUE(safe::equal(Date(Date16::INVALID), Date::INVALID));
-  EXPECT_TRUE(safe::equal(Date(Date16::MISSING), Date::MISSING));
+  EXPECT_TRUE(nex::equal(Date16(Date::INVALID), Date16::INVALID));
+  EXPECT_TRUE(nex::equal(Date16(Date::MISSING), Date16::MISSING));
+  EXPECT_TRUE(nex::equal(Date(Date16::INVALID), Date::INVALID));
+  EXPECT_TRUE(nex::equal(Date(Date16::MISSING), Date::MISSING));
 }
 
 TEST(Date, ostream) {
@@ -188,8 +188,8 @@ TEST(Date, comparison) {
     Date::INVALID, Date::MISSING, Date::MIN, 2016/JUN/7, 2016/JUL/4, Date::MAX
   };
   size_t const n = sizeof(dates) / sizeof(Date);
-  for (int i0 = 0; i0 < n; ++i0)
-    for (int i1 = 0; i1 < n; ++i1) {
+  for (size_t i0 = 0; i0 < n; ++i0)
+    for (size_t i1 = 0; i1 < n; ++i1) {
       auto const d0 = dates[i0];
       auto const d1 = dates[i1];
       EXPECT_EQ(i0 == i1, d0 == d1);

@@ -66,9 +66,9 @@ parse_holiday_calendar(
       auto const date = date::from_iso_date<Date>(parts.first);
       dates.push_back(date);
       // Keep track of the min and max dates we've seen.
-      if (!date::safe::before(date_min, date))
+      if (!date::nex::before(date_min, date))
         date_min = date;
-      if (!date::safe::before(date, date_max))
+      if (!date::nex::before(date, date_max))
         date_max = date + 1;
     }
   }
