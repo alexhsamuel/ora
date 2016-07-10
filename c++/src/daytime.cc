@@ -1,4 +1,4 @@
-#include "cron/daytime.hh"
+#include "cron/daytime_type.hh"
 
 namespace cron {
 namespace daytime {
