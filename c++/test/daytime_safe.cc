@@ -1,9 +1,7 @@
+#include "cron.hh"
 #include "gtest/gtest.h"
-#include "cron/daytime.hh"
-#include "cron/format.hh"
 
 using namespace cron;
-using namespace cron::daytime;
 
 //------------------------------------------------------------------------------
 
@@ -21,21 +19,21 @@ check(
 //------------------------------------------------------------------------------
 
 TEST(Daytime, from_offset) {
+  EXPECT_EQ(Daytime::MIN, daytime::safe::from_offset(0));
+  EXPECT_EQ(daytime::from_offset(10000), daytime::safe::from_offset(10000));
   EXPECT_EQ(
     Daytime::INVALID, 
-    safe::from_offset(std::numeric_limits<Daytime::Offset>::max()));
-  EXPECT_EQ(Daytime::MIN, safe::from_offset(0));
-  EXPECT_EQ(from_offset(10000), safe::from_offset(10000));
-  EXPECT_EQ(Daytime::INVALID, safe::from_offset(Daytime::MAX.get_offset() + 1));
+    daytime::safe::from_offset(Daytime::MAX.get_offset() + 1));
 }
 
 TEST(Daytime, from_daytick) {
+  EXPECT_EQ(Daytime::MIN, daytime::safe::from_daytick(0));
+  EXPECT_EQ(
+    daytime::from_daytick(10000000), 
+    daytime::safe::from_daytick(10000000));
   EXPECT_EQ(
     Daytime::INVALID, 
-    safe::from_daytick(std::numeric_limits<Daytime::Offset>::max()));
-  EXPECT_EQ(Daytime::MIN, safe::from_daytick(0));
-  EXPECT_EQ(from_daytick(10000000), safe::from_daytick(10000000));
-  EXPECT_EQ(Daytime::INVALID, safe::from_daytick(Daytime::MAX.get_daytick() + 1));
+    daytime::safe::from_daytick(Daytime::MAX.get_daytick() + 1));
 }
 
 TEST(Daytime, from_hms) {

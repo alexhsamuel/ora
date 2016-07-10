@@ -1,8 +1,7 @@
-#include "gtest/gtest.h"
 #include "cron.hh"
+#include "gtest/gtest.h"
 
 using namespace cron;
-using namespace cron::time;
 
 //------------------------------------------------------------------------------
 

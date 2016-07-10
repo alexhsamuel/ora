@@ -1,12 +1,9 @@
-#include "cron/time.hh"
-#include "cron/format.hh"
-#include "cron/localization.hh"
+#include "cron.hh"
 #include "cron/time_interval.hh"
 #include "gtest/gtest.h"
 
 using namespace aslib;
 using namespace cron;
-using namespace cron::time;
 
 //------------------------------------------------------------------------------
 // Class TimeInterval

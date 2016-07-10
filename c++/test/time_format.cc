@@ -1,13 +1,9 @@
-#include "cron/ez.hh"
-#include "cron/format.hh"
-#include "cron/localization.hh"
-#include "cron/time.hh"
+#include "cron.hh"
 #include "gtest/gtest.h"
 
 using namespace aslib;
 using namespace cron;
 using namespace cron::ez;
-using namespace cron::time;
 using namespace cron::daytime;
 
 //------------------------------------------------------------------------------

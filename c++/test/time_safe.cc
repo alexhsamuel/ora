@@ -2,7 +2,6 @@
 #include "cron.hh"
 
 using namespace cron;
-using namespace cron::time;
 
 //------------------------------------------------------------------------------
 

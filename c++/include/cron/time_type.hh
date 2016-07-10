@@ -1,33 +1,6 @@
 /*
  * Template time class.
- */
-
-#pragma once
-
-#include <limits>
-
-#include "aslib/exc.hh"
-#include "aslib/math.hh"
-#include "cron/time_functions.hh"
-
-namespace cron {
-namespace time {
-
-using namespace aslib;
-
-//------------------------------------------------------------------------------
-// Forward declarations
-//------------------------------------------------------------------------------
-
-namespace safe {
-
-template<class TIME> bool equal(TIME, TIME) noexcept;
-
-}  // namespace safe
-
-//------------------------------------------------------------------------------
-
-/**
+ *
  *  This table shows some sample configurations for time representation.  The
  *  first four columns give the number of bits used for storage, 'u' for
  *  unsigned or 's' for signed, the denominator to convert the storage
@@ -54,6 +27,33 @@ template<class TIME> bool equal(TIME, TIME) noexcept;
  *      64    u  1<<26     1      8716  0001-8717     15 ns      Time
  *     128    u  1<<64     1      many  0001-9999     54 zs      Time128
  */
+
+#pragma once
+
+#include <limits>
+
+#include "aslib/exc.hh"
+#include "aslib/math.hh"
+#include "cron/time_functions.hh"
+
+namespace cron {
+namespace time {
+
+using namespace aslib;
+
+//------------------------------------------------------------------------------
+// Forward declarations
+//------------------------------------------------------------------------------
+
+namespace safe {
+
+template<class TIME> bool equal(TIME, TIME) noexcept;
+
+}  // namespace safe
+
+//------------------------------------------------------------------------------
+// Time type
+//------------------------------------------------------------------------------
 
 /*
  * Represents an approximate instant of time.
@@ -261,7 +261,7 @@ struct TimeTraits
 };
 
 extern template class TimeType<TimeTraits>;
-using Time =  TimeType<TimeTraits>;
+using Time = TimeType<TimeTraits>;
 static_assert(Time::is_basic_layout(), "wrong memory layout for Time");
 
 //------------------------------------------------------------------------------
@@ -359,8 +359,21 @@ extern template class TimeType<Time128Traits>;
 using Time128 = TimeType<Time128Traits>;
 static_assert(Time::is_basic_layout(), "wrong memory layout for Time128");
 
+}  // namespace time
+}  // namespace cron
+
+//------------------------------------------------------------------------------
+// Namespace imports
 //------------------------------------------------------------------------------
 
-}  // namespace time
+namespace cron {
+
+using time::Time;
+using time::SmallTime;
+using time::NsecTime;
+using time::Unix32Time;
+using time::Unix64Time;
+using time::Time128;
+
 }  // namespace cron
 

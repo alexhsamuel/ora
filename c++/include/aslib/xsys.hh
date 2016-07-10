@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <cstdlib>
 #include <fcntl.h>
 #include <sys/resource.h>
 #include <sys/stat.h>

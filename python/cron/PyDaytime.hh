@@ -665,10 +665,10 @@ make_daytime(
   // Special case fast path for the default daytime type.
   if (type == &PyDaytimeDefault::type_)
     return PyDaytimeDefault::create(
-      PyDaytimeDefault::Daytime::from_daytick(daytick));
+      cron::daytime::from_daytick<PyDaytimeDefault::Daytime>(daytick));
   else
-    return ((Object*) type)->CallMethodObjArgs(
-      "from_daytick", Long::FromUnsignedLong(daytick));
+    return 
+      ((Object*) type)->CallMethodObjArgs("from_daytick", Long::from(daytick));
 }
 
 
@@ -708,7 +708,7 @@ maybe_daytime(
   // Try for a daytime type that has a 'daytick' attribute.
   auto daytick = obj->GetAttrString("daytick", false);
   if (daytick != nullptr)
-    return DAYTIME::from_daytick(daytick->long_value());
+    return cron::daytime::from_daytick<DAYTIME>(daytick->long_value());
 
   // No type match.
   return {};

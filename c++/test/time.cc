@@ -7,7 +7,6 @@
 using namespace aslib;
 using namespace cron;
 using namespace cron::ez;
-using namespace cron::time;
 using namespace cron::date;
 using namespace cron::daytime;
 
@@ -63,7 +62,7 @@ TEST(Time, from_parts) {
   EXPECT_EQ(1375136833, time0.get_offset());
 
   Time::Offset const offset = 4262126704878682112l;
-  Time const time1 = Time::from_offset(offset);
+  Time const time1 = time_from_offset(offset);
   EXPECT_EQ(offset, time1.get_offset());
   TimeParts const parts1 = get_parts(time1, "US/Eastern");
   EXPECT_EQ(2013, parts1.date.year);
@@ -126,7 +125,7 @@ TEST(Time, from_parts_invalid) {
 
 TEST(Time, get_parts) {
   // 2013 July 28 15:37:38.125 EDT [UTC-4].
-  auto const time = Time::from_offset(4262126704887070720l);
+  auto const time = time_from_offset(4262126704887070720l);
   EXPECT_EQ(1375040258, Unix64Time(time).get_offset());
 
   auto const time_zone = get_time_zone("US/Eastern");
@@ -186,7 +185,7 @@ TEST(Time, get_parts_display) {
 // Class Unix32Time.
 
 TEST(Unix32Time, zero) {
-  auto const time = Unix32Time::from_offset(1374522232);
+  auto const time = time_from_offset<Unix32Time>(1374522232);
 
   auto const date = get_utc_date<Date>(time);
   auto const ymd = get_ymd(date);

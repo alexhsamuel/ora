@@ -3,6 +3,7 @@
 #include <string>
 
 #include "cron/date.hh"
+#include "cron/date_functions.hh"
 #include "cron/daytime.hh"
 #include "cron/time.hh"
 #include "cron/time_zone.hh"
@@ -161,8 +162,8 @@ to_local(
   if (time.is_valid()) {
     auto const ldd = to_local_datenum_daytick(time, tz);
     return {
-      DATE::from_datenum(ldd.datenum), 
-      DAYTIME::from_daytick(ldd.daytick),
+      date::from_datenum<DATE>(ldd.datenum), 
+      daytime::from_daytick<DAYTIME>(ldd.daytick),
       ldd.time_zone
     };
   }

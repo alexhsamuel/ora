@@ -257,8 +257,18 @@ template<class T0, class T1> inline bool operator<=(DaytimeTemplate<T0> const d0
 template<class T0, class T1> inline bool operator>=(DaytimeTemplate<T0> const d0, DaytimeTemplate<T1> const d1) noexcept
   { return !safe::before(d0, DaytimeTemplate<T0>(d1)); }
 
+}  // namespace daytime
+}  // namespace cron
+
+//------------------------------------------------------------------------------
+// Namespace imports
 //------------------------------------------------------------------------------
 
-}  // namespace daytime
+namespace cron {
+namespace safe {
+
+using namespace daytime::safe;
+
+}  // namespace safe
 }  // namespace cron
 

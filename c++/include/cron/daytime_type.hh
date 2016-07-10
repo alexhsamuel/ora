@@ -272,3 +272,14 @@ static_assert(Daytime32::is_basic_layout(), "wrong memory layout for Daytime32")
 }  // namespace daytime
 }  // namespace cron
 
+//------------------------------------------------------------------------------
+// Namespace imports
+//------------------------------------------------------------------------------
+
+namespace cron {
+
+using daytime::Daytime;
+using daytime::Daytime32;
+
+}  // namespace cron
+
