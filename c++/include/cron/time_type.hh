@@ -364,18 +364,3 @@ static_assert(Time::is_basic_layout(), "wrong memory layout for Time128");
 }  // namespace time
 }  // namespace cron
 
-//------------------------------------------------------------------------------
-// Namespace imports
-//------------------------------------------------------------------------------
-
-namespace cron {
-
-using time::Time;
-using time::SmallTime;
-using time::NsecTime;
-using time::Unix32Time;
-using time::Unix64Time;
-using time::Time128;
-
-}  // namespace cron
-

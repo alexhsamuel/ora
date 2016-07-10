@@ -5,7 +5,6 @@
 
 using namespace aslib;
 using namespace cron;
-using namespace cron::date;
 using namespace cron::ez;
 
 using std::string;
@@ -48,18 +47,18 @@ TEST(Date, from_ymd) {
 }
 
 TEST(Date, offsets) {
-  EXPECT_EQ(Date::MIN, from_offset<Date>(Date::MIN.get_offset()));
+  EXPECT_EQ(Date::MIN, date::from_offset<Date>(Date::MIN.get_offset()));
   EXPECT_EQ(Date::MIN, from_datenum<Date>(Date::MIN.get_datenum()));
 
-  EXPECT_EQ(Date::MAX, from_offset<Date>(Date::MAX.get_offset()));
+  EXPECT_EQ(Date::MAX, date::from_offset<Date>(Date::MAX.get_offset()));
   EXPECT_EQ(Date::MAX, from_datenum<Date>(Date::MAX.get_datenum()));
 
   auto const date1 = from_ymd(1600, 3, 1);
-  EXPECT_EQ(date1, from_offset<Date>(date1.get_offset()));
+  EXPECT_EQ(date1, date::from_offset<Date>(date1.get_offset()));
   EXPECT_EQ(date1, from_datenum<Date>(date1.get_datenum()));
 
   auto const date2 = from_ymd(2000, 3, 1);
-  EXPECT_EQ(date2, from_offset<Date>(date2.get_offset()));
+  EXPECT_EQ(date2, date::from_offset<Date>(date2.get_offset()));
   EXPECT_EQ(date2, from_datenum<Date>(date2.get_datenum()));
 }
 
@@ -127,10 +126,10 @@ TEST(Date, weekday) {
 TEST(Date, conversions) {
   EXPECT_EQ(from_ymd<Date16>(1973, 12, 3), Date16(1973/DEC/3));
 
-  EXPECT_TRUE(nex::equal(Date16(Date::INVALID), Date16::INVALID));
-  EXPECT_TRUE(nex::equal(Date16(Date::MISSING), Date16::MISSING));
-  EXPECT_TRUE(nex::equal(Date(Date16::INVALID), Date::INVALID));
-  EXPECT_TRUE(nex::equal(Date(Date16::MISSING), Date::MISSING));
+  EXPECT_TRUE(date::nex::equal(Date16(Date::INVALID), Date16::INVALID));
+  EXPECT_TRUE(date::nex::equal(Date16(Date::MISSING), Date16::MISSING));
+  EXPECT_TRUE(date::nex::equal(Date(Date16::INVALID), Date::INVALID));
+  EXPECT_TRUE(date::nex::equal(Date(Date16::MISSING), Date::MISSING));
 }
 
 TEST(Date, ostream) {

@@ -5,7 +5,6 @@
 
 using namespace aslib;
 using namespace cron;
-using namespace cron::daytime;
 
 using std::string;
 
@@ -23,7 +22,7 @@ format(
 }
 
 TEST(Daytime, get_hms) {
-  auto hms = get_hms(Daytime::from_offset(0));
+  auto hms = get_hms(daytime::from_offset(0));
   EXPECT_EQ(0, hms.hour);
   EXPECT_EQ(0, hms.minute);
   EXPECT_EQ(0, hms.second);
@@ -128,7 +127,7 @@ TEST(Daytime, to_string) {
 // FIXME: Template tests?
 
 TEST(Daytime32, get_hms) {
-  auto hms = get_hms(from_offset<Daytime32>(0));
+  auto hms = get_hms(daytime::from_offset<Daytime32>(0));
   EXPECT_EQ(0, hms.hour);
   EXPECT_EQ(0, hms.minute);
   EXPECT_EQ(0, hms.second);

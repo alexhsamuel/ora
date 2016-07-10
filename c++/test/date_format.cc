@@ -2,7 +2,6 @@
 #include "gtest/gtest.h"
 
 using namespace cron;
-using namespace cron::date;
 using namespace cron::ez;
 
 using std::string;

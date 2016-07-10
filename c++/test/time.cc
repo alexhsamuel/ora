@@ -4,8 +4,6 @@
 using namespace aslib;
 using namespace cron;
 using namespace cron::ez;
-using namespace cron::date;
-using namespace cron::daytime;
 
 //------------------------------------------------------------------------------
 // Class Time
