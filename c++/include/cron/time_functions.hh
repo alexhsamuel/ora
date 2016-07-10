@@ -1,15 +1,5 @@
 #pragma once
 
-#include <time.h>
-
-#ifdef __MACH__
-#include <mach/clock.h>
-#include <mach/mach.h>
-// I don't f***ing believe it.
-#undef TRUE
-#undef FALSE
-#endif
-
 #include "aslib/exc.hh"
 #include "aslib/math.hh"
 #include "aslib/printable.hh"
@@ -25,9 +15,23 @@ namespace time {
 // Factory functions
 //------------------------------------------------------------------------------
 
-// Synonyms for static factory methods.
-template<class TIME=Time> inline TIME from_offset(typename TIME::Offset const o)
-  { return TIME::from_offset(o); }
+template<class TIME=Time>
+inline TIME 
+from_offset(
+  typename TIME::Offset const offset)
+{ 
+  return TIME::from_offset(offset);
+}
+
+
+template<class TIME=Time>
+inline TIME
+from_timespec(
+  timespec const ts)
+{
+  return from_offset(timespec_to_offset<TIME>(ts));
+}
+
 
 //------------------------------------------------------------------------------
 
@@ -41,9 +45,7 @@ inline int64_t
 get_epoch_time(
   TIME const time)
 {
-  return convert_offset(
-    time.get_offset(), TIME::DENOMINATOR, TIME::BASE,
-    1, DATENUM_UNIX_EPOCH);
+  return Unix64Time(time).get_offset();
 }
 
 
@@ -51,24 +53,9 @@ template<class TIME=Time>
 inline TIME
 now()
 {
-  struct timespec ts;
-  bool success;
-
-#ifdef __MACH__
-  clock_serv_t cclock;
-  mach_timespec_t mts;
-  success = 
-       host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock) == 0
-    && clock_get_time(cclock, &mts) == 0;
-  mach_port_deallocate(mach_task_self(), cclock);
-  ts.tv_sec = mts.tv_sec;
-  ts.tv_nsec = mts.tv_nsec;
-#else
-  success = clock_gettime(CLOCK_REALTIME, &ts) == 0;
-#endif
-
+  auto const ts = now_timespec();
   return 
-      success
+      ts.tv_nsec >= 0
     ? from_offset<TIME>(timespec_to_offset<TIME>(ts)) 
     : TIME::INVALID;
 }
@@ -77,18 +64,6 @@ now()
 //------------------------------------------------------------------------------
 // Comparisons
 //------------------------------------------------------------------------------
-
-template<class TIME>
-inline int
-compare(
-  TIME const time0,
-  TIME const time1)
-{
-  ensure_valid(time0);
-  ensure_valid(time1);
-  return aslib::compare<typename TIME::Offset>(time0.get_offset(), time1.get_offset());
-}
-
 
 template<class TIME>
 inline bool
@@ -111,6 +86,18 @@ before(
   ensure_valid(time0);
   ensure_valid(time1);
   return time0.get_offset() < time1.get_offset();
+}
+
+
+template<class TIME>
+inline int
+compare(
+  TIME const time0,
+  TIME const time1)
+{
+  ensure_valid(time0);
+  ensure_valid(time1);
+  return aslib::compare(time0.get_offset(), time1.get_offset());
 }
 
 
@@ -166,6 +153,117 @@ seconds_between(
   return ((double) time1.get_offset() - time0.get_offset()) / TIME::DENOMINATOR;
 }
 
+
+//------------------------------------------------------------------------------
+// Non-throwing versions
+//------------------------------------------------------------------------------
+
+namespace nex {
+
+template<class TIME=Time>
+inline TIME
+from_offset(
+  typename TIME::Offset const offset)
+  noexcept
+{
+  return 
+      in_range(TIME::Traits::min, offset, TIME::Traits::max)
+    ? time::from_offset(offset)
+    : TIME::INVALID;
+}
+
+
+template<class TIME=Time>
+inline TIME
+from_timespec(
+  timespec const ts)
+{
+  return nex::from_offset(timespec_to_offset<TIME>(ts));
+}
+
+
+/*
+ * Returns the closest UNIX epoch time.
+ *
+ * Returns the rounded (signed) number of seconds since 1970-01-01T00:00:00Z.
+ */
+template<class TIME>
+inline EpochTime
+get_epoch_time(
+  TIME const time)
+  noexcept
+{
+  return
+      time.is_valid() 
+    ? Unix64Time(time).get_offset()
+    : EPOCH_TIME_INVALID;
+}
+
+
+template<class TIME>
+inline bool
+equal(
+  TIME const time0,
+  TIME const time1)
+  noexcept
+{
+  return time0.offset_ == time1.offset_;
+}
+
+
+template<class TIME>
+inline bool
+before(
+  TIME const time0,
+  TIME const time1)
+  noexcept
+{
+  if (nex::equal(time0, time1))
+    return false;
+  else if (time0.is_invalid())
+    return true;
+  else if (time1.is_invalid())
+    return false;
+  else if (time0.is_missing())
+    return true;
+  else if (time1.is_missing())
+    return false;
+  else
+    return time0.get_offset() < time1.get_offset();
+}
+
+
+template<class TIME>
+inline int
+compare(
+  TIME const time0,
+  TIME const time1)
+{
+  return
+      nex::equal(time0, time1) ? 0
+    : nex::before(time0, time1) ? -1
+    : 1;
+}
+
+
+}  // namespace nex
+
+//------------------------------------------------------------------------------
+// Comparison operators
+//------------------------------------------------------------------------------
+
+template<class T0, class T1> inline bool operator==(TimeType<T0> const t0, TimeType<T1> const t1) noexcept
+  { return nex::equal(t0, TimeType<T0>(t1)); }
+template<class T0, class T1> inline bool operator!=(TimeType<T0> const t0, TimeType<T1> const t1) noexcept
+  { return !nex::equal(t0, TimeType<T0>(t1)); }
+template<class T0, class T1> inline bool operator< (TimeType<T0> const t0, TimeType<T1> const t1) noexcept
+  { return nex::before(t0, TimeType<T0>(t1)); }
+template<class T0, class T1> inline bool operator> (TimeType<T0> const t0, TimeType<T1> const t1) noexcept
+  { return nex::before(TimeType<T0>(t1), t0); }
+template<class T0, class T1> inline bool operator<=(TimeType<T0> const t0, TimeType<T1> const t1) noexcept
+  { return !nex::before(TimeType<T0>(t1), t0); }
+template<class T0, class T1> inline bool operator>=(TimeType<T0> const t0, TimeType<T1> const t1) noexcept
+  { return !nex::before(t0, TimeType<T0>(t1)); }
 
 //------------------------------------------------------------------------------
 // Addition and subtraction

@@ -1,5 +1,15 @@
 #pragma once
 
+#include <time.h>
+
+#ifdef __MACH__
+#include <mach/clock.h>
+#include <mach/mach.h>
+// I don't f***ing believe it.
+#undef TRUE
+#undef FALSE
+#endif
+
 #include "cron/time_zone.hh"
 #include "cron/types.hh"
 
@@ -74,6 +84,34 @@ datenum_daytick_to_offset(
     throw TimeRangeError();
   else
     return offset;
+}
+
+
+inline timespec
+now_timespec()
+{
+  timespec ts;
+
+#ifdef __MACH__
+  clock_serv_t cclock;
+  mach_timespec_t mts;
+  // FIXME: Should we keep the clock service around?
+  bool const success = 
+       host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock) == 0
+    && clock_get_time(cclock, &mts) == 0;
+  mach_port_deallocate(mach_task_self(), cclock);
+  if (success) {
+    ts.tv_sec = mts.tv_sec;
+    ts.tv_nsec = mts.tv_nsec;
+  }
+  else 
+    ts.tv_nsec = -1;
+#else
+  if (clock_gettime(CLOCK_REALTIME, &ts) != 0)
+    ts.tv_nsec = -1;
+#endif
+
+  return ts;
 }
 
 

@@ -14,7 +14,7 @@ using std::string;
 //------------------------------------------------------------------------------
 
 TEST(TimeFormat, basic) {
-  Time const time = time_from_offset(4262126704878682112l);
+  Time const time = time::from_offset(4262126704878682112l);
   auto const tz = get_time_zone("US/Eastern");
   EXPECT_EQ("2013-07-28",       TimeFormat("%Y-%m-%d")(time, *tz));
   EXPECT_EQ("15:37:38",         TimeFormat("%H:%M:%S")(time, *tz));
@@ -53,7 +53,7 @@ TEST(TimeFormat, all) {
   EXPECT_EQ("EDT",              TimeFormat("%~Z")(time, *tz));
 
   // One Time tick is a bit less than 15 nsec.
-  auto const time1 = time_from_offset(time.get_offset() + 1);
+  auto const time1 = time::from_offset(time.get_offset() + 1);
   EXPECT_EQ(".000 000 014", TimeFormat(".%k %K %l")(time1));
 }
 

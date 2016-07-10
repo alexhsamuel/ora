@@ -136,6 +136,12 @@ Datenum constexpr   DATENUM_UNIX_EPOCH  =  719162;   // 1970-01-01
 inline bool constexpr datenum_is_valid(Datenum datenum) { return in_interval(DATENUM_MIN, datenum, DATENUM_END); }
 
 /*
+ * Traditional UNIX time representation: seconds since midnight 1970-01-01 UTC.
+ */
+using EpochTime = int64_t;
+EpochTime constexpr EPOCH_TIME_INVALID  = std::numeric_limits<EpochTime>::min();
+
+/*
  * YMDI, a year-month-day integer.
  *
  * A YMDI encodes year, month, day as eight decimal digits YYYYMMDD.  To avoid

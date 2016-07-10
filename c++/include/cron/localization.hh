@@ -2,11 +2,7 @@
 
 #include <string>
 
-#include "cron/date.hh"
-#include "cron/date_functions.hh"
-#include "cron/daytime.hh"
-#include "cron/time.hh"
-#include "cron/time_zone.hh"
+#include "cron.hh"
 
 namespace cron {
 
@@ -25,7 +21,7 @@ from_local(
   if (! daytick_is_valid(daytick))
     throw InvalidDaytimeError();
 
-  return TIME::from_offset(
+  return time::from_offset<TIME>(
     time::datenum_daytick_to_offset<typename TIME::Traits>(
       datenum, daytick, time_zone, first));
 }
@@ -64,7 +60,7 @@ from_local_parts(
   if (! hms_is_valid(hour, minute, second))
     throw InvalidDaytimeError();
 
-  return TIME::from_offset(
+  return time::from_offset<TIME>(
     time::datenum_daytick_to_offset<typename TIME::Traits>(
       ymd_to_datenum(year, month, day), 
       hms_to_daytick(hour, minute, second), 

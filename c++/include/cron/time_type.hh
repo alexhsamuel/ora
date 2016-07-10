@@ -45,11 +45,11 @@ using namespace aslib;
 // Forward declarations
 //------------------------------------------------------------------------------
 
-namespace safe {
+namespace nex {
 
 template<class TIME> bool equal(TIME, TIME) noexcept;
 
-}  // namespace safe
+}  // namespace nex
 
 //------------------------------------------------------------------------------
 // Time type
@@ -114,18 +114,6 @@ public:
 
   ~TimeType() noexcept = default;
 
-  // Factory methods  ----------------------------------------------------------
-
-  static TimeType 
-  from_offset(
-    Offset const offset)
-  {
-    if (in_range(Traits::min, offset, Traits::max))
-      return TimeType(offset);
-    else
-      throw TimeRangeError();
-  }
-
   // Assignment operators ------------------------------------------------------
 
   TimeType
@@ -143,6 +131,18 @@ public:
     TimeType<OTHER_TRAITS> const time)
   {
     return *this = TimeType(time);
+  }
+
+  // Factory methods -----------------------------------------------------------
+
+  static TimeType
+  from_offset(
+    Offset const offset)
+  {
+    if (in_range(Traits::min, offset, Traits::max))
+      return TimeType(offset);
+    else
+      throw TimeRangeError();
   }
 
   // Accessors -----------------------------------------------------------------
@@ -177,7 +177,7 @@ private:
 
   Offset offset_ = Traits::invalid;
 
-  template<class TIME> friend bool cron::time::safe::equal(TIME, TIME) noexcept;
+  template<class TIME> friend bool nex::equal(TIME, TIME) noexcept;
 
 public:
 
