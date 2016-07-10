@@ -12,4 +12,5 @@ Other libraries that provide date and time functionality.
 - [dateutil](https://dateutil.readthedocs.org/en/latest/)
 - [mxDateTime](http://www.egenix.com/products/python/mxBase/mxDateTime/)
 - [Delorean](http://delorean.readthedocs.org/en/latest/quickstart.html)
+- [Arrow](http://crsmithdev.com/arrow/)
 
