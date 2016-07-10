@@ -40,7 +40,9 @@ get_epoch_time(
 {
   return
       time.is_valid() 
-    ? Unix64Time(time).get_offset()
+    ? convert_offset(
+        time.get_offset(), TIME::DENOMINATOR, TIME::BASE,
+        1, DATENUM_UNIX_EPOCH)
     : EPOCH_TIME_INVALID;
 }
 

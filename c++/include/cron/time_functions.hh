@@ -43,7 +43,9 @@ inline int64_t
 get_epoch_time(
   TIME const time)
 {
-  return Unix64Time(time).get_offset();
+  return convert_offset(
+    time.get_offset(), TIME::DENOMINATOR, TIME::BASE,
+    1, DATENUM_UNIX_EPOCH);
 }
 
 
