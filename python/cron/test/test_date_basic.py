@@ -105,12 +105,24 @@ def test_from_iso_date():
         Date.from_iso_date("1973-02-31")
 
 
-
 def test_hash():
     dates = (
           [ 2016/Jul/10 + n for n in range(100) ]
         + [Date.INVALID, Date.MISSING])
     hashes = frozenset( hash(d) for d in dates )
     assert len(hashes) > len(dates) // 2
+
+
+def test_format():
+    date = 2016/Jul/10
+    assert format(date, "%Y-%m-%d")             == "2016-07-10"
+    assert format(date, "%Y/%m/%d")             == "2016/07/10"
+    assert format(date, "%d#%d")                == "10#10"
+    assert format(date, "%G~%V~%_~W")           == "2016~27~sun"
+
+    assert format(Date.INVALID, "%Y-%m-%d")     == "INVALID   "
+    assert format(Date.INVALID, "%Y/%m/%d")     == "INVALID   "
+    assert format(Date.MISSING, "%d#%d")        == "MISSI"
+    assert format(Date.MISSING, "%G~%V~%^~W")   == "MISSING    "
 
 

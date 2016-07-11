@@ -196,6 +196,7 @@ private:
   static PyNumberMethods tp_as_number_;
 
   // Methods.
+  static ref<Object> method___format__          (PyDate*, Tuple*, Dict*);
   static ref<Object> method_from_datenum        (PyTypeObject*, Tuple*, Dict*);
   static ref<Object> method_from_iso_date       (PyTypeObject*, Tuple*, Dict*);
   static ref<Object> method_from_offset         (PyTypeObject*, Tuple*, Dict*);
@@ -488,6 +489,21 @@ PyDate<DATE>::tp_as_number_ = {
 // Methods
 //------------------------------------------------------------------------------
 
+template<class DATE>
+ref<Object>
+PyDate<DATE>::method___format__(
+  PyDate* const self,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  if (args->GetLength() != 1 || kw_args != nullptr)
+    throw TypeError("__format__() takes one argument");
+  auto const fmt = args->GetItem(0)->Str()->as_utf8();
+
+  return Unicode::from(cron::DateFormat(fmt)(self->date_));
+}
+
+
 template<typename DATE>
 ref<Object>
 PyDate<DATE>::method_from_datenum(
@@ -637,6 +653,7 @@ template<typename DATE>
 Methods<PyDate<DATE>>
 PyDate<DATE>::tp_methods_
   = Methods<PyDate>()
+    .template add<method___format__>                ("__format__")
     .template add_class<method_from_datenum>        ("from_datenum")
     .template add_class<method_from_iso_date>       ("from_iso_date")
     .template add_class<method_from_offset>         ("from_offset")
