@@ -12,7 +12,7 @@
 1. Check Time128 second precision in C++ and Python.
 1. Rename `InvalidDateError` -> `BadDateError` _et fils_.
 1. Daytime and Time rounding functions.
-1. Python namespace reorg.
+1. timezone etc. namespace cleanup
 
 
 # C++ API
@@ -95,6 +95,8 @@
 - Investigate why `cal` doesn't agree for older dates
 
 - Make a 'zoneinfo dir' abstraction; load time zones from there.
+
+- typename -> class
 
 # Maybe / someday
 
