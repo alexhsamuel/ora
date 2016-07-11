@@ -9,7 +9,6 @@
 1. Adjust the definition of TimeTraits.
 1. Basic string parsing for `convert_to_*()` functions.
 1. Full parsing support.
-1. `format()` method and `tp_format` for Date, Daytime, Time.
 1. Check Time128 second precision in C++ and Python.
 1. Rename `InvalidDateError` -> `BadDateError` _et fils_.
 1. Daytime and Time rounding functions.
@@ -26,6 +25,8 @@
 
 - Rename `DayInterval` to `DayDuration`.
 - Make `first` a keyword-only argument everywhere.
+- Add wrappers for formatters.  This would be for efficiency?  Or does this go
+  in [fixfmt](http://github.com/alexhsamuel/fixfmt)?
 
 ## PyDate
 
