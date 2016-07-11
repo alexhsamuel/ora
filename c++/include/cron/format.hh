@@ -65,7 +65,8 @@ public:
     char const* pattern)
   : pattern_(pattern)
   {
-    static Parts parts{
+    // Find the length of a formatted string.
+    auto const parts = Parts{
       .date = FullDate{
         {YEAR_MIN, ORDINAL_MIN}, 
         {YEAR_MIN, MONTH_MIN, DAY_MIN}, 
@@ -77,10 +78,13 @@ public:
       .have_time_zone = true,
     };
     size_t const width = format(parts).length();
+
+    // Truncate or pad the invalid and missing strings.
+    size_t const len = std::min(width, 7ul);
     invalid_ = std::string(width, ' ');
-    invalid_.replace(0, 7, "INVALID");
+    invalid_.replace(0, len, "INVALID", len);
     missing_ = std::string(width, ' ');
-    missing_.replace(0, 7, "MISSING");
+    missing_.replace(0, len, "MISSING", len);
   }
 
   std::string const& get_pattern() const { return pattern_; }
