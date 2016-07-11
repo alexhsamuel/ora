@@ -114,6 +114,7 @@ private:
   static PyNumberMethods tp_as_number_;
 
   // Methods.
+  static ref<Object> method___format__          (PyDaytime*, Tuple*, Dict*);
   static ref<Object> method_from_daytick        (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_hms            (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_ssm            (PyTypeObject* type, Tuple* args, Dict* kw_args);
@@ -405,6 +406,21 @@ PyDaytime<DAYTIME>::tp_as_number_ = {
 // Methods
 //------------------------------------------------------------------------------
 
+template<class DAYTIME>
+ref<Object>
+PyDaytime<DAYTIME>::method___format__(
+  PyDaytime* const self,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  if (args->GetLength() != 1 || kw_args != nullptr)
+    throw TypeError("__format__() takes one argument");
+  auto const fmt = args->GetItem(0)->Str()->as_utf8();
+
+  return Unicode::from(cron::DaytimeFormat(fmt)(self->daytime_));
+}
+
+
 template<typename DAYTIME>
 ref<Object>
 PyDaytime<DAYTIME>::method_from_daytick(
@@ -471,6 +487,7 @@ template<typename DAYTIME>
 Methods<PyDaytime<DAYTIME>>
 PyDaytime<DAYTIME>::tp_methods_
   = Methods<PyDaytime>()
+    .template add<method___format__>                ("__format__")
     .template add_class<method_from_daytick>        ("from_daytick")
     .template add_class<method_from_hms>            ("from_hms")
     .template add_class<method_from_ssm>            ("from_ssm")

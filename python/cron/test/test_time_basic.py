@@ -71,3 +71,16 @@ def test_hash():
     assert len(hashes) > len(times) // 2
 
 
+def test_format():
+    time = (2016/Jul/11, Daytime(9, 34, 15.625)) @ UTC
+    assert format(time, "%Y,%m,%d,%H,%M,%S")            == "2016,07,11,09,34,15"
+    assert format(time, "%1H%M %^p")                    == "934 AM"
+    assert format(time, "%%%%%H%M%.5S%%%%")             == "%%093415.62500%%"
+    assert format(time, "%~_W!")                        == "mon!"
+
+    assert format(Time.INVALID, "%Y,%m,%d,%H,%M,%S")    == "INVALID            "
+    assert format(Time.INVALID, "%1H%M %^p")            == "INVALI"
+    assert format(Time.MISSING, "%%%%%H%M%.5S%%%%")     == "MISSING         "
+    assert format(Time.MISSING, "%~W!")                 == "MISS"
+
+

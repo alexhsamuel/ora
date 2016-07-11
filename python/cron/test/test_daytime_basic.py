@@ -338,3 +338,16 @@ def test_hash():
     assert len(hashes) > len(daytimes) // 2
 
 
+def test_format():
+    daytime = Daytime(9, 34, 15.625)
+    assert format(daytime, "%H%M")                  == "0934"
+    assert format(daytime, "%H::%M::%S")            == "09::34::15"
+    assert format(daytime, "%H%M%.5S")              == "093415.62500"
+    assert format(daytime, "%1H%_p")                == "9am"
+
+    assert format(Daytime.INVALID, "%H%M")          == "INVA"
+    assert format(Daytime.INVALID, "%H::%M::%S")    == "INVALID   "
+    assert format(Daytime.MISSING, "%H%M%.5S")      == "MISSING     "
+    assert format(Daytime.MISSING, "%1H%_p")        == "MIS"
+
+

@@ -199,6 +199,7 @@ private:
   static PyNumberMethods tp_as_number_;
 
   // Methods.
+  static ref<Object>    method___format__           (PyTime*, Tuple*, Dict*);
   static ref<Object>    method_get_parts            (PyTime*, Tuple*, Dict*);
   static Methods<PyTime> tp_methods_;
 
@@ -496,6 +497,21 @@ PyTime<TIME>::tp_as_number_ = {
 // Methods
 //------------------------------------------------------------------------------
 
+template<class TIME>
+ref<Object>
+PyTime<TIME>::method___format__(
+  PyTime* const self,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  if (args->GetLength() != 1 || kw_args != nullptr)
+    throw TypeError("__format__() takes one argument");
+  auto const fmt = args->GetItem(0)->Str()->as_utf8();
+
+  return Unicode::from(cron::TimeFormat(fmt)(self->time_));
+}
+
+
 template<typename TIME>
 ref<Object>
 PyTime<TIME>::method_get_parts(
@@ -531,6 +547,7 @@ template<typename TIME>
 Methods<PyTime<TIME>>
 PyTime<TIME>::tp_methods_
   = Methods<PyTime>()
+    .template add<method___format__>                    ("__format__")
     .template add<method_get_parts>                     ("get_parts")
   ;
 
