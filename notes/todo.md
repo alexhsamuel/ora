@@ -36,7 +36,6 @@
 
   - Rationalize C++ and Python APIs.
 
-- `__format__()` method and support
 - shifts by year, month, hour, minute
 - "Thursday of the last week of the month"-style function
 - docstrings
@@ -45,10 +44,6 @@
 ## PyDaytime
 
 - parsing strings
-
-## Formatting
-
-...?
 
 ## PyTimeZone
 
