@@ -31,11 +31,6 @@
 ## PyDate
 
 - parsing strings
-
-- API
-
-  - Rationalize C++ and Python APIs.
-
 - shifts by year, month, hour, minute
 - "Thursday of the last week of the month"-style function
 - docstrings
