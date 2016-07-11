@@ -5,6 +5,7 @@ import pytest
 import cron
 from   cron import *
 import data
+from   tools import *
 
 #-------------------------------------------------------------------------------
 
@@ -50,6 +51,16 @@ def test_zero():
     assert p.time_zone.is_dst       == False
 
     assert t == from_local((1/Jan/1, MIDNIGHT), UTC)
+
+
+def test_sub():
+    t = (2016/Jul/11, Daytime(8, 32, 15)) @ UTC
+    assert t - t == 0.0
+    assert (t + 1) - t == 1.0
+    assert xeq((t + 12345.675) - t,  12345.675, 8)
+    assert xeq((t - 12345.675) - t, -12345.675, 8)
+    assert xeq(t - (t + 12345.675), -12345.675, 8)
+    assert xeq(t - (t - 12345.675),  12345.675, 8)
 
 
 def test_hash():

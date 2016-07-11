@@ -24,10 +24,14 @@ TEST(Time, maxs) {
   EXPECT_EQ(Unix32Time::MAX , from_local_parts<Unix32Time>(2038, 1, 19, 3, 14, 5, UTC));
   EXPECT_EQ(Unix64Time::MAX , from_local_parts<Unix64Time>(9999, 12, 31, 23, 59, 59, UTC));
   EXPECT_EQ(SmallTime::MAX  , from_local_parts<SmallTime> (2106, 2, 7, 6, 28, 13, UTC));
+}
 
-  auto max128 = from_local_parts<Time128>(9999, 12, 31, 23, 59, 59.99999999999, UTC);
-  // FIXME: Difference should not be zero!
-  EXPECT_TRUE(std::abs(Time128::MAX - max128) < 1E-12);
+TEST(Time, max128) {
+  // 1E-11 sec before midnight.
+  auto near128 = from_local_parts<Time128>(9999, 12, 31, 23, 59, 59.99999999999, UTC);
+  auto diff = std::abs(Time128::MAX - near128);
+  EXPECT_TRUE(0 < diff);
+  EXPECT_TRUE(diff < 2E-11);
 }
 
 TEST(Time, from_utc) {

@@ -148,9 +148,13 @@ seconds_between(
   TIME const time0,
   TIME const time1)
 {
-  ensure_valid(time0);
-  ensure_valid(time1);
-  return ((double) time1.get_offset() - time0.get_offset()) / TIME::DENOMINATOR;
+  auto const off0 = time0.get_offset();
+  auto const off1 = time1.get_offset();
+  // Needs to work for unsigned offsets.
+  return
+    off1 >= off0
+    ?   (off1 - off0) * TIME::RESOLUTION
+    : -((off0 - off1) * TIME::RESOLUTION);
 }
 
 
@@ -162,7 +166,7 @@ template<class TRAITS> inline TimeType<TRAITS> operator+(TimeType<TRAITS> const 
   { return seconds_after(t, secs); }
 template<class TRAITS> inline TimeType<TRAITS> operator-(TimeType<TRAITS> const t, double const secs)
   { return seconds_before(t, secs); }
-template<class TRAITS> inline int operator-(TimeType<TRAITS> const t1, TimeType<TRAITS> const t0)
+template<class TRAITS> inline double operator-(TimeType<TRAITS> const t1, TimeType<TRAITS> const t0)
   { return seconds_between(t0, t1); } 
 
 template<class TRAITS> inline TimeType<TRAITS> operator+=(TimeType<TRAITS>& t, int const secs) 
