@@ -34,17 +34,17 @@ StructSequenceType* get_time_parts_type();
 /**
  * Helper for converting a (localtime, tz) sequence to a time.
  */
-template<typename TIME> inline TIME localtime_to_time(Sequence*);
+template<class TIME> inline TIME localtime_to_time(Sequence*);
 
 /**
  * Helper for converting a (date, daytime, tz) sequence to a time.
  */
-template<typename TIME> inline TIME date_daytime_to_time(Sequence*);
+template<class TIME> inline TIME date_daytime_to_time(Sequence*);
 
 /**
  * Helper for converting a (Y,m,d,H,M,S,tz) sequence to a time.
  */
-template<typename TIME> inline TIME parts_to_time(Sequence*);
+template<class TIME> inline TIME parts_to_time(Sequence*);
 
 /**
  * Attempts to decode various time objects.  The following objects are
@@ -53,7 +53,7 @@ template<typename TIME> inline TIME parts_to_time(Sequence*);
  *   - PyTime instances
  *   - datetime.datetime instances
  */
-template<typename TIME> inline std::pair<bool, TIME> maybe_time(Object*);
+template<class TIME> inline std::pair<bool, TIME> maybe_time(Object*);
 
 /**
  * Converts an object to a time.  Beyond 'maybe_time()', recognizes the 
@@ -63,7 +63,7 @@ template<typename TIME> inline std::pair<bool, TIME> maybe_time(Object*);
  *
  * If the argument cannot be converted, raises a Python exception.
  */
-template<typename TIME> inline TIME convert_to_time(Object*);
+template<class TIME> inline TIME convert_to_time(Object*);
 
 //------------------------------------------------------------------------------
 // Virtual API
@@ -120,7 +120,7 @@ private:
 // Type class
 //------------------------------------------------------------------------------
 
-template<typename TIME>
+template<class TIME>
 class PyTime
   : public ExtensionType
 {
@@ -222,7 +222,7 @@ private:
 
 //------------------------------------------------------------------------------
 
-template<typename TIME>
+template<class TIME>
 void
 PyTime<TIME>::add_to(
   Module& module,
@@ -270,7 +270,7 @@ PyTime<TIME>::add_to(
 }
 
 
-template<typename TIME>
+template<class TIME>
 ref<PyTime<TIME>>
 PyTime<TIME>::create(
   Time const time,
@@ -285,12 +285,12 @@ PyTime<TIME>::create(
 }
 
 
-template<typename TIME>
+template<class TIME>
 Type
 PyTime<TIME>::type_;
 
 
-template<typename TIME>
+template<class TIME>
 bool
 PyTime<TIME>::Check(
   PyObject* const other)
@@ -303,7 +303,7 @@ PyTime<TIME>::Check(
 // Standard type methods
 //------------------------------------------------------------------------------
 
-template<typename TIME>
+template<class TIME>
 void
 PyTime<TIME>::tp_init(
   PyTime* const self,
@@ -331,7 +331,7 @@ PyTime<TIME>::tp_init(
 }
 
 
-template<typename TIME>
+template<class TIME>
 void
 PyTime<TIME>::tp_dealloc(
   PyTime* const self)
@@ -341,7 +341,7 @@ PyTime<TIME>::tp_dealloc(
 }
 
 
-template<typename TIME>
+template<class TIME>
 ref<Unicode>
 PyTime<TIME>::tp_repr(
   PyTime* const self)
@@ -350,7 +350,7 @@ PyTime<TIME>::tp_repr(
 }
 
 
-template<typename TIME>
+template<class TIME>
 Py_hash_t
 PyTime<TIME>::tp_hash(
   PyTime* const self)
@@ -362,7 +362,7 @@ PyTime<TIME>::tp_hash(
 }
 
 
-template<typename TIME>
+template<class TIME>
 ref<Unicode>
 PyTime<TIME>::tp_str(
   PyTime* const self)
@@ -372,7 +372,7 @@ PyTime<TIME>::tp_str(
 }
 
 
-template<typename TIME>
+template<class TIME>
 ref<Object>
 PyTime<TIME>::tp_richcompare(
   PyTime* const self,
@@ -404,7 +404,7 @@ PyTime<TIME>::tp_richcompare(
 // Number methods
 //------------------------------------------------------------------------------
 
-template<typename TIME>
+template<class TIME>
 inline ref<Object>
 PyTime<TIME>::nb_add(
   PyTime* const self,
@@ -421,7 +421,7 @@ PyTime<TIME>::nb_add(
 }
 
 
-template<typename TIME>
+template<class TIME>
 inline ref<Object>
 PyTime<TIME>::nb_subtract(
   PyTime* const self,
@@ -449,7 +449,7 @@ PyTime<TIME>::nb_subtract(
 }
 
 
-template<typename TIME>
+template<class TIME>
 PyNumberMethods
 PyTime<TIME>::tp_as_number_ = {
   (binaryfunc)  wrap<PyTime, nb_add>,           // nb_add
@@ -512,7 +512,7 @@ PyTime<TIME>::method___format__(
 }
 
 
-template<typename TIME>
+template<class TIME>
 ref<Object>
 PyTime<TIME>::method_get_parts(
   PyTime* const self,
@@ -543,7 +543,7 @@ PyTime<TIME>::method_get_parts(
 }
 
 
-template<typename TIME>
+template<class TIME>
 Methods<PyTime<TIME>>
 PyTime<TIME>::tp_methods_
   = Methods<PyTime>()
@@ -556,7 +556,7 @@ PyTime<TIME>::tp_methods_
 // Getsets
 //------------------------------------------------------------------------------
 
-template<typename TIME>
+template<class TIME>
 ref<Object>
 PyTime<TIME>::get_invalid(
   PyTime* const self,
@@ -566,7 +566,7 @@ PyTime<TIME>::get_invalid(
 }
 
 
-template<typename TIME>
+template<class TIME>
 ref<Object>
 PyTime<TIME>::get_missing(
   PyTime* const self,
@@ -576,7 +576,7 @@ PyTime<TIME>::get_missing(
 }
 
 
-template<typename TIME>
+template<class TIME>
 ref<Object>
 PyTime<TIME>::get_offset(
   PyTime* const self,
@@ -586,7 +586,7 @@ PyTime<TIME>::get_offset(
 }
 
 
-template<typename TIME>
+template<class TIME>
 ref<Object>
 PyTime<TIME>::get_valid(
   PyTime* const self,
@@ -596,7 +596,7 @@ PyTime<TIME>::get_valid(
 }
 
 
-template<typename TIME>
+template<class TIME>
 GetSets<PyTime<TIME>>
 PyTime<TIME>::tp_getsets_ 
   = GetSets<PyTime>()
@@ -611,12 +611,12 @@ PyTime<TIME>::tp_getsets_
 // Other members
 //------------------------------------------------------------------------------
 
-template<typename TIME>
+template<class TIME>
 unique_ptr<cron::time::TimeFormat>
 PyTime<TIME>::repr_format_;
 
 
-template<typename TIME>
+template<class TIME>
 unique_ptr<cron::time::TimeFormat>
 PyTime<TIME>::str_format_;
 
@@ -625,7 +625,7 @@ PyTime<TIME>::str_format_;
 // Type object
 //------------------------------------------------------------------------------
 
-template<typename TIME>
+template<class TIME>
 Type
 PyTime<TIME>::build_type(
   string const& type_name)

@@ -37,7 +37,7 @@ extern ref<Object> make_hms_daytime(cron::HmsDaytime);
  *  - PyDaytimeTemplate instances
  *  - 'datetime.time` instances
  */
-template<typename DAYTIME> optional<DAYTIME> maybe_daytime(Object*);
+template<class DAYTIME> optional<DAYTIME> maybe_daytime(Object*);
 
 /**
  * Converts various kinds of Python objects to Daytime.
@@ -45,12 +45,12 @@ template<typename DAYTIME> optional<DAYTIME> maybe_daytime(Object*);
  * If 'obj' can be converted unambiguously to a daytime, returns it; otherwise
  * rasies a Python exception.
  */
-template<typename DAYTIME> DAYTIME convert_to_daytime(Object*);
+template<class DAYTIME> DAYTIME convert_to_daytime(Object*);
 
 /**
  * Helper for converting a 2- or 3-eleme4nt sequence of daytime parts.
  */
-template<typename DAYTIME> inline DAYTIME parts_to_daytime(Sequence*);
+template<class DAYTIME> inline DAYTIME parts_to_daytime(Sequence*);
 
 //------------------------------------------------------------------------------
 // Type class
@@ -63,7 +63,7 @@ template<typename DAYTIME> inline DAYTIME parts_to_daytime(Sequence*);
  * Invoke add_to() to construct the type's PyTypeObject, ready it, and add it 
  * to a module.
  */
-template<typename DAYTIME>
+template<class DAYTIME>
 class PyDaytime
   : public ExtensionType
 {
@@ -141,7 +141,7 @@ private:
 };
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 void
 PyDaytime<DAYTIME>::add_to(
   Module& module,
@@ -192,7 +192,7 @@ PyDaytime<DAYTIME>::add_to(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 ref<PyDaytime<DAYTIME>>
 PyDaytime<DAYTIME>::create(
   Daytime const daytime,
@@ -207,12 +207,12 @@ PyDaytime<DAYTIME>::create(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 Type
 PyDaytime<DAYTIME>::type_;
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 bool
 PyDaytime<DAYTIME>::Check(
   PyObject* const other)
@@ -225,7 +225,7 @@ PyDaytime<DAYTIME>::Check(
 // Standard type methods
 //------------------------------------------------------------------------------
 
-template<typename DAYTIME>
+template<class DAYTIME>
 void
 PyDaytime<DAYTIME>::tp_init(
   PyDaytime* const self,
@@ -249,7 +249,7 @@ PyDaytime<DAYTIME>::tp_init(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 void
 PyDaytime<DAYTIME>::tp_dealloc(
   PyDaytime* const self)
@@ -259,7 +259,7 @@ PyDaytime<DAYTIME>::tp_dealloc(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 ref<Unicode>
 PyDaytime<DAYTIME>::tp_repr(
   PyDaytime* const self)
@@ -268,7 +268,7 @@ PyDaytime<DAYTIME>::tp_repr(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 Py_hash_t
 PyDaytime<DAYTIME>::tp_hash(
   PyDaytime* const self)
@@ -280,7 +280,7 @@ PyDaytime<DAYTIME>::tp_hash(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 ref<Unicode>
 PyDaytime<DAYTIME>::tp_str(
   PyDaytime* const self)
@@ -289,7 +289,7 @@ PyDaytime<DAYTIME>::tp_str(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 ref<Object>
 PyDaytime<DAYTIME>::tp_richcompare(
   PyDaytime* const self,
@@ -321,7 +321,7 @@ PyDaytime<DAYTIME>::tp_richcompare(
 // Number methods
 //------------------------------------------------------------------------------
 
-template<typename DAYTIME>
+template<class DAYTIME>
 inline ref<Object>
 PyDaytime<DAYTIME>::nb_add(
   PyDaytime* const self,
@@ -338,7 +338,7 @@ PyDaytime<DAYTIME>::nb_add(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 inline ref<Object>
 PyDaytime<DAYTIME>::nb_subtract(
   PyDaytime* const self,
@@ -358,7 +358,7 @@ PyDaytime<DAYTIME>::nb_subtract(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 PyNumberMethods
 PyDaytime<DAYTIME>::tp_as_number_ = {
   (binaryfunc)  wrap<PyDaytime, nb_add>,        // nb_add
@@ -421,7 +421,7 @@ PyDaytime<DAYTIME>::method___format__(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 ref<Object>
 PyDaytime<DAYTIME>::method_from_daytick(
   PyTypeObject* const type,
@@ -438,7 +438,7 @@ PyDaytime<DAYTIME>::method_from_daytick(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 ref<Object>
 PyDaytime<DAYTIME>::method_from_hms(
   PyTypeObject* const type,
@@ -468,7 +468,7 @@ PyDaytime<DAYTIME>::method_from_hms(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 ref<Object>
 PyDaytime<DAYTIME>::method_from_ssm(
   PyTypeObject* const type,
@@ -483,7 +483,7 @@ PyDaytime<DAYTIME>::method_from_ssm(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 Methods<PyDaytime<DAYTIME>>
 PyDaytime<DAYTIME>::tp_methods_
   = Methods<PyDaytime>()
@@ -497,7 +497,7 @@ PyDaytime<DAYTIME>::tp_methods_
 // Getsets
 //------------------------------------------------------------------------------
 
-template<typename DAYTIME>
+template<class DAYTIME>
 ref<Object>
 PyDaytime<DAYTIME>::get_daytick(
   PyDaytime* self,
@@ -508,7 +508,7 @@ PyDaytime<DAYTIME>::get_daytick(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 ref<Object>
 PyDaytime<DAYTIME>::get_hour(
   PyDaytime* self,
@@ -518,7 +518,7 @@ PyDaytime<DAYTIME>::get_hour(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 ref<Object>
 PyDaytime<DAYTIME>::get_invalid(
   PyDaytime* self,
@@ -528,7 +528,7 @@ PyDaytime<DAYTIME>::get_invalid(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 ref<Object>
 PyDaytime<DAYTIME>::get_minute(
   PyDaytime* self,
@@ -538,7 +538,7 @@ PyDaytime<DAYTIME>::get_minute(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 ref<Object>
 PyDaytime<DAYTIME>::get_missing(
   PyDaytime* self,
@@ -548,7 +548,7 @@ PyDaytime<DAYTIME>::get_missing(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 ref<Object>
 PyDaytime<DAYTIME>::get_hms(
   PyDaytime* self,
@@ -558,7 +558,7 @@ PyDaytime<DAYTIME>::get_hms(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 ref<Object>
 PyDaytime<DAYTIME>::get_second(
   PyDaytime* self,
@@ -568,7 +568,7 @@ PyDaytime<DAYTIME>::get_second(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 ref<Object>
 PyDaytime<DAYTIME>::get_ssm(
   PyDaytime* self,
@@ -578,7 +578,7 @@ PyDaytime<DAYTIME>::get_ssm(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 ref<Object>
 PyDaytime<DAYTIME>::get_valid(
   PyDaytime* self,
@@ -588,7 +588,7 @@ PyDaytime<DAYTIME>::get_valid(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 GetSets<PyDaytime<DAYTIME>>
 PyDaytime<DAYTIME>::tp_getsets_ 
   = GetSets<PyDaytime>()
@@ -608,11 +608,11 @@ PyDaytime<DAYTIME>::tp_getsets_
 // Other members
 //------------------------------------------------------------------------------
 
-template<typename DAYTIME>
+template<class DAYTIME>
 unique_ptr<cron::daytime::DaytimeFormat>
 PyDaytime<DAYTIME>::repr_format_;
 
-template<typename DAYTIME>
+template<class DAYTIME>
 unique_ptr<cron::daytime::DaytimeFormat>
 PyDaytime<DAYTIME>::str_format_;
 
@@ -620,7 +620,7 @@ PyDaytime<DAYTIME>::str_format_;
 // Type object
 //------------------------------------------------------------------------------
 
-template<typename DAYTIME>
+template<class DAYTIME>
 Type
 PyDaytime<DAYTIME>::build_type(
   string const& type_name)
@@ -700,7 +700,7 @@ make_daytime(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 inline DAYTIME
 parts_to_daytime(
   Sequence* const parts)
@@ -714,7 +714,7 @@ parts_to_daytime(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 inline optional<DAYTIME>
 maybe_daytime(
   Object* const obj)
@@ -743,7 +743,7 @@ maybe_daytime(
 }
 
 
-template<typename DAYTIME>
+template<class DAYTIME>
 inline DAYTIME
 convert_to_daytime(
   Object* const obj)

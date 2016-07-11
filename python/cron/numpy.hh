@@ -38,9 +38,9 @@ public:
 
   npy_intp size()
     { return PyArray_SIZE(array_this()); }
-  template<typename T> T const* get_const_ptr()
+  template<class T> T const* get_const_ptr()
     { return reinterpret_cast<T*>(PyArray_DATA(array_this())); }
-  template<typename T> T* get_ptr()
+  template<class T> T* get_ptr()
     { return reinterpret_cast<T*>(PyArray_DATA(array_this())); }
 
 private:
@@ -209,7 +209,7 @@ create_or_get_ufunc(
 /*
  * Wraps a unary function `FN(ARG0) -> RET0` in a ufunc loop function
  */
-template<typename ARG0, typename RET0, RET0 (*FN)(ARG0)>
+template<class ARG0, class RET0, RET0 (*FN)(ARG0)>
 void
 ufunc_loop_1(
   char** const args,
@@ -234,7 +234,7 @@ ufunc_loop_1(
 /*
  * Wraps a unary function `FN(ARG0, ARG1) -> RET0` in a ufunc loop function
  */
-template<typename ARG0, typename ARG1, typename RET0, RET0 (*FN)(ARG0, ARG1)>
+template<class ARG0, class ARG1, class RET0, RET0 (*FN)(ARG0, ARG1)>
 void
 ufunc_loop_2(
   char** const args,

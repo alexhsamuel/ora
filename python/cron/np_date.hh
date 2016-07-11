@@ -37,7 +37,7 @@ public:
 };
 
 
-template<typename PYDATE>
+template<class PYDATE>
 class DateDtype
 {
 public:
@@ -81,7 +81,7 @@ private:
 };
 
 
-template<typename PYDATE>
+template<class PYDATE>
 PyArray_Descr*
 DateDtype<PYDATE>::get()
 {
@@ -123,7 +123,7 @@ DateDtype<PYDATE>::get()
 // FIXME: Remove these once Month, Day, Ordinal, Week are 1-indexed.
 namespace {
 
-template<typename DATE>
+template<class DATE>
 inline cron::OrdinalDate
 get_ordinal_date_(
   DATE const date)
@@ -135,7 +135,7 @@ get_ordinal_date_(
 }
 
 
-template<typename DATE>
+template<class DATE>
 inline cron::WeekDate
 get_week_date_(
   DATE const date)
@@ -147,7 +147,7 @@ get_week_date_(
 }
 
 
-template<typename DATE>
+template<class DATE>
 inline cron::YmdDate
 get_ymd_(
   DATE const date)
@@ -162,7 +162,7 @@ get_ymd_(
 }  // anonymous namespace
 
 
-template<typename PYDATE>
+template<class PYDATE>
 void
 DateDtype<PYDATE>::add(
   Module* const module)
@@ -205,7 +205,7 @@ DateDtype<PYDATE>::add(
 //------------------------------------------------------------------------------
 // numpy array functions
 
-template<typename PYDATE>
+template<class PYDATE>
 void
 DateDtype<PYDATE>::copyswap(
   Date* const dst,
@@ -222,7 +222,7 @@ DateDtype<PYDATE>::copyswap(
 }
 
 
-template<typename PYDATE>
+template<class PYDATE>
 void 
 DateDtype<PYDATE>::copyswapn(
   Date* const dst, 
@@ -268,7 +268,7 @@ DateDtype<PYDATE>::copyswapn(
 }
 
 
-template<typename PYDATE>
+template<class PYDATE>
 Object*
 DateDtype<PYDATE>::getitem(
   Date const* const data,
@@ -280,7 +280,7 @@ DateDtype<PYDATE>::getitem(
 }
 
 
-template<typename PYDATE>
+template<class PYDATE>
 int
 DateDtype<PYDATE>::setitem(
   Object* const item,
@@ -299,7 +299,7 @@ DateDtype<PYDATE>::setitem(
 }
 
 
-template<typename PYDATE>
+template<class PYDATE>
 int 
 DateDtype<PYDATE>::compare(
   Date const* const d0, 
@@ -322,7 +322,7 @@ DateDtype<PYDATE>::compare(
 
 //------------------------------------------------------------------------------
 
-template<typename PYDATE>
+template<class PYDATE>
 ref<Object>
 DateDtype<PYDATE>::API::function_date_from_ordinal_date(
   Array* const year_arr,
@@ -347,7 +347,7 @@ DateDtype<PYDATE>::API::function_date_from_ordinal_date(
 }
 
 
-template<typename PYDATE>
+template<class PYDATE>
 ref<Object>
 DateDtype<PYDATE>::API::function_date_from_week_date(
   Array* const week_year_arr,
@@ -374,7 +374,7 @@ DateDtype<PYDATE>::API::function_date_from_week_date(
 }
 
 
-template<typename PYDATE>
+template<class PYDATE>
 ref<Object>
 DateDtype<PYDATE>::API::function_date_from_ymd(
   Array* const year_arr,
@@ -401,7 +401,7 @@ DateDtype<PYDATE>::API::function_date_from_ymd(
 }
 
 
-template<typename PYDATE>
+template<class PYDATE>
 ref<Object>
 DateDtype<PYDATE>::API::function_date_from_ymdi(
   Array* const ymdi_arr)
@@ -423,7 +423,7 @@ DateDtype<PYDATE>::API::function_date_from_ymdi(
 
 //------------------------------------------------------------------------------
 
-template<typename PYDATE>
+template<class PYDATE>
 PyArray_Descr*
 DateDtype<PYDATE>::descr_
   = nullptr;

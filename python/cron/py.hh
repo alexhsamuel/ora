@@ -35,7 +35,7 @@ public:
     PyErr_SetString(exception, message);
   }
 
-  template<typename A>
+  template<class A>
   Exception(PyObject* exception, A&& message)
   {
     PyErr_SetString(exception, std::string(std::forward<A>(message)).c_str());
@@ -58,7 +58,7 @@ class ExceptionWrapper
 {
 public:
 
-  template<typename A>
+  template<class A>
   ExceptionWrapper(A&& message)
     : Exception(*EXC, std::forward<A>(message))
   {}
@@ -120,7 +120,7 @@ check_one(
 /**
  * Raises 'Exception' if 'value' is -1; returns it otherwise.
  */
-template<typename TYPE>
+template<class TYPE>
 inline TYPE check_not_minus_one(TYPE value)
 {
   if (value == -1)
@@ -163,7 +163,7 @@ inline Type* check_not_null(PyTypeObject* type)
 
 //------------------------------------------------------------------------------
 
-template<typename T>
+template<class T>
 inline T* 
 cast(PyObject* obj)
 {
@@ -237,7 +237,7 @@ protected:
 // with extra helpers, from a BaseObject type that derives from the concrete
 // PyObject.
 
-template<typename T>
+template<class T>
 class ref
   : public baseref
 {
@@ -286,7 +286,7 @@ public:
   /** 
    * Move ctor from another ref type.  
    */
-  template<typename U>
+  template<class U>
   ref(ref<U>&& ref)
     : baseref(ref.release()) {}
 
@@ -338,7 +338,7 @@ inline ref<Object> not_implemented_ref()
 }
 
 
-template<typename TYPE>
+template<class TYPE>
 inline ref<TYPE>
 take_not_null(
   PyObject* obj)
@@ -352,7 +352,7 @@ take_not_null(
 
 //------------------------------------------------------------------------------
 
-template<typename T>
+template<class T>
 inline ref<T>
 cast(ref<Object>&& obj)
 {
@@ -498,7 +498,7 @@ Object::maybe_get_attr(
 }
 
 
-template<typename T>
+template<class T>
 inline std::ostream& operator<<(std::ostream& os, ref<T>& ref)
 {
   os << ref->Str()->as_utf8();
@@ -1276,27 +1276,27 @@ private:
 
 //==============================================================================
 
-template<typename CLASS>
+template<class CLASS>
 using
 BinaryfuncPtr
   = ref<Object> (*)(CLASS* self, Object* other, bool right);
 
-template<typename CLASS>
+template<class CLASS>
 using
 DestructorPtr
   = void (*)(CLASS* self);
 
-template<typename CLASS>
+template<class CLASS>
 using 
 InitprocPtr
   = void (*)(CLASS* self, Tuple* args, Dict* kw_args);
 
-template<typename CLASS>
+template<class CLASS>
 using
 ReprfuncPtr
   = ref<Unicode> (*)(CLASS* self);
 
-template<typename CLASS>
+template<class CLASS>
 using
 RichcmpfuncPtr
   = ref<Object> (*)(CLASS* self, Object* other, int comparison);
@@ -1306,7 +1306,7 @@ using
 HashfuncPtr
   = Py_hash_t (*)(CLASS* self);
 
-template<typename CLASS>
+template<class CLASS>
 using MethodPtr = ref<Object> (*)(CLASS* self, Tuple* args, Dict* kw_args);
 
 using StaticMethodPtr = ref<Object> (*)(Tuple* args, Dict* kw_args);
@@ -1317,7 +1317,7 @@ using ClassMethodPtr = ref<Object> (*)(PyTypeObject* class_, Tuple* args, Dict* 
 /**
  * Wraps a binaryfunc.
  */
-template<typename CLASS, BinaryfuncPtr<CLASS> FUNCTION>
+template<class CLASS, BinaryfuncPtr<CLASS> FUNCTION>
 PyObject*
 wrap(
   PyObject* lhs,
@@ -1353,7 +1353,7 @@ wrap(
 /**
  * Wraps a destructor.
  */
-template<typename CLASS, DestructorPtr<CLASS> FUNCTION>
+template<class CLASS, DestructorPtr<CLASS> FUNCTION>
 void
 wrap(
   PyObject* self)
@@ -1380,7 +1380,7 @@ wrap(
 /**
  * Wraps an initproc.
  */
-template<typename CLASS, InitprocPtr<CLASS> FUNCTION>
+template<class CLASS, InitprocPtr<CLASS> FUNCTION>
 int
 wrap(
   PyObject* self,
@@ -1411,7 +1411,7 @@ wrap(
 /**
  * Wraps a reprfunc.
  */
-template<typename CLASS, ReprfuncPtr<CLASS> FUNCTION>
+template<class CLASS, ReprfuncPtr<CLASS> FUNCTION>
 PyObject*
 wrap(
   PyObject* self)
@@ -1439,7 +1439,7 @@ wrap(
 /**
  * Wraps a richcmpfunc.
  */
-template<typename CLASS, RichcmpfuncPtr<CLASS> FUNCTION>
+template<class CLASS, RichcmpfuncPtr<CLASS> FUNCTION>
 PyObject*
 wrap(
   PyObject* const self,
@@ -1500,7 +1500,7 @@ wrap(
 /**
  * Wraps a method that takes args and kw_args and returns an object.
  */
-template<typename CLASS, MethodPtr<CLASS> METHOD>
+template<class CLASS, MethodPtr<CLASS> METHOD>
 PyObject* wrap(PyObject* self, PyObject* args, PyObject* kw_args)
 {
   ref<Object> result;
@@ -1587,7 +1587,7 @@ wrap_class_method(
 
 //------------------------------------------------------------------------------
 
-template<typename CLASS>
+template<class CLASS>
 class Methods
 {
 public:
@@ -1656,11 +1656,11 @@ private:
 
 //------------------------------------------------------------------------------
 
-template<typename CLASS>
+template<class CLASS>
 using GetPtr = ref<Object> (*)(CLASS* self, void* closure);
 
 
-template<typename CLASS, GetPtr<CLASS> METHOD>
+template<class CLASS, GetPtr<CLASS> METHOD>
 PyObject* wrap_get(PyObject* self, void* closure)
 {
   ref<Object> result;
@@ -1683,7 +1683,7 @@ PyObject* wrap_get(PyObject* self, void* closure)
 }
 
 
-template<typename CLASS>
+template<class CLASS>
 class GetSets
 {
 public:

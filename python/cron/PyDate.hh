@@ -47,7 +47,7 @@ extern ref<Object> get_weekday_obj(int weekday);
  *  - objects with a 'datenum' attribute
  *  - objects with a 'toordinal()' method
  */
-template<typename DATE> optional<DATE> maybe_date(Object*);
+template<class DATE> optional<DATE> maybe_date(Object*);
 
 /*
  * Converts various kinds of Python objects to Date.
@@ -55,22 +55,22 @@ template<typename DATE> optional<DATE> maybe_date(Object*);
  * If 'obj' can be converted unambiguously to a date, returns it.  Otherwise,
  * raises a Python exception.
  */
-template<typename DATE> DATE convert_to_date(Object*);
+template<class DATE> DATE convert_to_date(Object*);
 
 /*
  * Helper for converting a 2-element sequence of ordinal date parts.
  */
-template<typename DATE> inline DATE ordinal_date_to_date(Sequence*);
+template<class DATE> inline DATE ordinal_date_to_date(Sequence*);
 
 /*
  * Helper for converting a 3-element sequence of week date parts.
  */
-template<typename DATE> inline DATE week_date_to_date(Sequence*);
+template<class DATE> inline DATE week_date_to_date(Sequence*);
 
 /*
  * Helper for converting a 3-element sequence of date parts.
  */
-template<typename DATE> inline DATE ymd_to_date(Sequence*);
+template<class DATE> inline DATE ymd_to_date(Sequence*);
 
 //------------------------------------------------------------------------------
 // Virtual API
@@ -131,7 +131,7 @@ private:
  * add_to() to construct the type's PyTypeObject, ready it, and add it to a
  * module.
  */
-template<typename DATE>
+template<class DATE>
 class PyDate
   : public ExtensionType
 {
@@ -237,7 +237,7 @@ public:
 };
 
 
-template<typename DATE>
+template<class DATE>
 void
 PyDate<DATE>::add_to(
   Module& module,
@@ -270,7 +270,7 @@ PyDate<DATE>::add_to(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<PyDate<DATE>>
 PyDate<DATE>::create(
   Date date,
@@ -285,7 +285,7 @@ PyDate<DATE>::create(
 }
 
 
-template<typename DATE>
+template<class DATE>
 bool
 PyDate<DATE>::Check(
   PyObject* other)
@@ -298,7 +298,7 @@ PyDate<DATE>::Check(
 // Standard type methods
 //------------------------------------------------------------------------------
 
-template<typename DATE>
+template<class DATE>
 void
 PyDate<DATE>::tp_init(
   PyDate* const self, 
@@ -324,7 +324,7 @@ PyDate<DATE>::tp_init(
 }
 
 
-template<typename DATE>
+template<class DATE>
 void
 PyDate<DATE>::tp_dealloc(
   PyDate* const self)
@@ -334,7 +334,7 @@ PyDate<DATE>::tp_dealloc(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Unicode>
 PyDate<DATE>::tp_repr(
   PyDate* const self)
@@ -343,7 +343,7 @@ PyDate<DATE>::tp_repr(
 }
 
 
-template<typename DATE>
+template<class DATE>
 Py_hash_t
 PyDate<DATE>::tp_hash(
   PyDate* const self)
@@ -355,7 +355,7 @@ PyDate<DATE>::tp_hash(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Unicode>
 PyDate<DATE>::tp_str(
   PyDate* const self)
@@ -366,7 +366,7 @@ PyDate<DATE>::tp_str(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::tp_richcompare(
   PyDate* const self,
@@ -398,7 +398,7 @@ PyDate<DATE>::tp_richcompare(
 // Number methods
 //------------------------------------------------------------------------------
 
-template<typename DATE>
+template<class DATE>
 inline ref<Object>
 PyDate<DATE>::nb_add(
   PyDate* const self,
@@ -416,7 +416,7 @@ PyDate<DATE>::nb_add(
 }
 
 
-template<typename DATE>
+template<class DATE>
 inline ref<Object>
 PyDate<DATE>::nb_subtract(
   PyDate* const self,
@@ -441,7 +441,7 @@ PyDate<DATE>::nb_subtract(
 }
 
 
-template<typename DATE>
+template<class DATE>
 PyNumberMethods
 PyDate<DATE>::tp_as_number_ = {
   (binaryfunc)  wrap<PyDate, nb_add>,           // nb_add
@@ -504,7 +504,7 @@ PyDate<DATE>::method___format__(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::method_from_datenum(
   PyTypeObject* const type,
@@ -522,7 +522,7 @@ PyDate<DATE>::method_from_datenum(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::method_from_iso_date(
   PyTypeObject* const type,
@@ -537,7 +537,7 @@ PyDate<DATE>::method_from_iso_date(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::method_from_offset(
   PyTypeObject* const type,
@@ -553,7 +553,7 @@ PyDate<DATE>::method_from_offset(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::method_from_ordinal_date(
   PyTypeObject* const type,
@@ -580,7 +580,7 @@ PyDate<DATE>::method_from_ordinal_date(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::method_from_week_date(
   PyTypeObject* const type,
@@ -607,7 +607,7 @@ PyDate<DATE>::method_from_week_date(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::method_from_ymd(
   PyTypeObject* const type,
@@ -634,7 +634,7 @@ PyDate<DATE>::method_from_ymd(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::method_from_ymdi(
   PyTypeObject* const type,
@@ -649,7 +649,7 @@ PyDate<DATE>::method_from_ymdi(
 }
 
 
-template<typename DATE>
+template<class DATE>
 Methods<PyDate<DATE>>
 PyDate<DATE>::tp_methods_
   = Methods<PyDate>()
@@ -668,7 +668,7 @@ PyDate<DATE>::tp_methods_
 // Getsets
 //------------------------------------------------------------------------------
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::get_datenum(
   PyDate* const self,
@@ -678,7 +678,7 @@ PyDate<DATE>::get_datenum(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::get_day(
   PyDate* const self,
@@ -688,7 +688,7 @@ PyDate<DATE>::get_day(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::get_invalid(
   PyDate* const self,
@@ -698,7 +698,7 @@ PyDate<DATE>::get_invalid(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::get_missing(
   PyDate* const self,
@@ -708,7 +708,7 @@ PyDate<DATE>::get_missing(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::get_month(
   PyDate* const self,
@@ -718,7 +718,7 @@ PyDate<DATE>::get_month(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::get_offset(
   PyDate* const self,
@@ -728,7 +728,7 @@ PyDate<DATE>::get_offset(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::get_ordinal(
   PyDate* const self,
@@ -738,7 +738,7 @@ PyDate<DATE>::get_ordinal(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::get_ordinal_date(
   PyDate* const self,
@@ -748,7 +748,7 @@ PyDate<DATE>::get_ordinal_date(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::get_valid(
   PyDate* const self,
@@ -758,7 +758,7 @@ PyDate<DATE>::get_valid(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::get_week(
   PyDate* const self,
@@ -768,7 +768,7 @@ PyDate<DATE>::get_week(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::get_week_date(
   PyDate* const self,
@@ -778,7 +778,7 @@ PyDate<DATE>::get_week_date(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::get_week_year(
   PyDate* const self,
@@ -788,7 +788,7 @@ PyDate<DATE>::get_week_year(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::get_weekday(
   PyDate* const self,
@@ -798,7 +798,7 @@ PyDate<DATE>::get_weekday(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::get_year(
   PyDate* const self,
@@ -808,7 +808,7 @@ PyDate<DATE>::get_year(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::get_ymd(
   PyDate* const self,
@@ -818,7 +818,7 @@ PyDate<DATE>::get_ymd(
 }
 
 
-template<typename DATE>
+template<class DATE>
 ref<Object>
 PyDate<DATE>::get_ymdi(
   PyDate* const self,
@@ -828,7 +828,7 @@ PyDate<DATE>::get_ymdi(
 }
 
 
-template<typename DATE>
+template<class DATE>
 GetSets<PyDate<DATE>>
 PyDate<DATE>::tp_getsets_ 
   = GetSets<PyDate>()
@@ -855,7 +855,7 @@ PyDate<DATE>::tp_getsets_
 // Other members
 //------------------------------------------------------------------------------
 
-template<typename DATE>
+template<class DATE>
 unique_ptr<cron::date::DateFormat>
 PyDate<DATE>::repr_format_;
 
@@ -864,7 +864,7 @@ PyDate<DATE>::repr_format_;
 // Type object
 //------------------------------------------------------------------------------
 
-template<typename DATE>
+template<class DATE>
 Type
 PyDate<DATE>::build_type(
   string const& type_name)
@@ -923,7 +923,7 @@ PyDate<DATE>::build_type(
 }
 
 
-template<typename DATE>
+template<class DATE>
 Type
 PyDate<DATE>::type_;
 
@@ -947,7 +947,7 @@ make_date(
 }
 
 
-template<typename DATE>
+template<class DATE>
 inline DATE
 ordinal_date_to_date(
   Sequence* const parts)
@@ -958,7 +958,7 @@ ordinal_date_to_date(
 }
 
 
-template<typename DATE>
+template<class DATE>
 inline DATE
 week_date_to_date(
   Sequence* const parts)
@@ -970,7 +970,7 @@ week_date_to_date(
 }
 
 
-template<typename DATE>
+template<class DATE>
 inline DATE
 ymd_to_date(
   Sequence* const parts)
@@ -982,7 +982,7 @@ ymd_to_date(
 }
 
 
-template<typename DATE>
+template<class DATE>
 inline optional<DATE>
 maybe_date(
   Object* const obj)
@@ -1026,7 +1026,7 @@ maybe_date(
 }
 
 
-template<typename DATE>
+template<class DATE>
 inline DATE
 convert_to_date(
   Object* const obj)
