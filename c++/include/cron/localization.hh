@@ -101,7 +101,6 @@ get_parts(
 }
 
 
-// FIXME: Remove?
 template<class TIME>
 inline TimeParts 
 get_parts(
