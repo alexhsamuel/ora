@@ -18,7 +18,7 @@
 // that is otherwise not used, this may result in an unused variable warning.
 // Redefine the NDEBUG assert() to suppress this.
 
-// FIXME: Elsewhere.  (Where?)
+// FIXME: Bad idea!!  Add check_*() functions instead.
 #ifdef NDEBUG
 # undef assert
 # define assert(e) do { (void) (e); } while (false)
