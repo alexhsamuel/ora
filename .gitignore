@@ -6,3 +6,4 @@
 tmp/
 share/
 cfg.sh
+/build
