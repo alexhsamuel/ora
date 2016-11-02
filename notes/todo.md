@@ -1,5 +1,6 @@
 # Work List
 
+1. Use `fold` attribute per [PEP-495](https://www.python.org/dev/peps/pep-0495/)
 1. Clean up C++ Time and localization functions; document.
 1. Update docs for nex, namespaces, includes.
 1. C++ constants for months.
