@@ -1,6 +1,6 @@
 import enum
 
-import pln.py
+import aslib.py
 
 from   .ext import *
 
@@ -81,7 +81,7 @@ class MonthOfYear:
 
 
     def __repr__(self):
-        return pln.py.format_ctor(self, self.__year, self.__month)
+        return aslib.py.format_ctor(self, self.__year, self.__month)
 
 
     def __truediv__(self, day):
