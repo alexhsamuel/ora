@@ -29,6 +29,22 @@ using std::unique_ptr;
 //------------------------------------------------------------------------------
 
 extern char const* const PyDate_doc;
+extern char const* const PyDate_datenum_doc;
+extern char const* const PyDate_day_doc;
+extern char const* const PyDate_invalid_doc;
+extern char const* const PyDate_missing_doc;
+extern char const* const PyDate_month_doc;
+extern char const* const PyDate_offset_doc;
+extern char const* const PyDate_ordinal_doc;
+extern char const* const PyDate_ordinal_date_doc;
+extern char const* const PyDate_valid_doc;
+extern char const* const PyDate_week_doc;
+extern char const* const PyDate_week_date_doc;
+extern char const* const PyDate_week_year_doc;
+extern char const* const PyDate_weekday_doc;
+extern char const* const PyDate_year_doc;
+extern char const* const PyDate_ymdi_doc;
+extern char const* const PyDate_ymd_doc;
 
 extern StructSequenceType* get_ymd_date_type();
 extern ref<Object> make_ordinal_date(cron::OrdinalDate);
@@ -837,22 +853,22 @@ template<class DATE>
 GetSets<PyDate<DATE>>
 PyDate<DATE>::tp_getsets_ 
   = GetSets<PyDate>()
-    .template add_get<get_datenum>      ("datenum")
-    .template add_get<get_day>          ("day")
-    .template add_get<get_invalid>      ("invalid")
-    .template add_get<get_missing>      ("missing")
-    .template add_get<get_month>        ("month")
-    .template add_get<get_offset>       ("offset")
-    .template add_get<get_ordinal>      ("ordinal")
-    .template add_get<get_ordinal_date> ("ordinal_date")
-    .template add_get<get_valid>        ("valid")
-    .template add_get<get_week>         ("week")
-    .template add_get<get_week_date>    ("week_date")
-    .template add_get<get_week_year>    ("week_year")
-    .template add_get<get_weekday>      ("weekday")
-    .template add_get<get_year>         ("year")
-    .template add_get<get_ymdi>         ("ymdi")
-    .template add_get<get_ymd>          ("ymd")
+    .template add_get<get_datenum>      ("datenum"      , PyDate_datenum_doc)
+    .template add_get<get_day>          ("day"          , PyDate_day_doc)
+    .template add_get<get_invalid>      ("invalid"      , PyDate_invalid_doc)
+    .template add_get<get_missing>      ("missing"      , PyDate_missing_doc)
+    .template add_get<get_month>        ("month"        , PyDate_month_doc)
+    .template add_get<get_offset>       ("offset"       , PyDate_offset_doc)
+    .template add_get<get_ordinal>      ("ordinal"      , PyDate_ordinal_doc)
+    .template add_get<get_ordinal_date> ("ordinal_date" , PyDate_ordinal_date_doc)
+    .template add_get<get_valid>        ("valid"        , PyDate_valid_doc)
+    .template add_get<get_week>         ("week"         , PyDate_week_doc)
+    .template add_get<get_week_date>    ("week_date"    , PyDate_week_date_doc)
+    .template add_get<get_week_year>    ("week_year"    , PyDate_week_year_doc)
+    .template add_get<get_weekday>      ("weekday"      , PyDate_weekday_doc)
+    .template add_get<get_year>         ("year"         , PyDate_year_doc)
+    .template add_get<get_ymdi>         ("ymdi"         , PyDate_ymdi_doc)
+    .template add_get<get_ymd>          ("ymd"          , PyDate_ymd_doc)
   ;
 
 
