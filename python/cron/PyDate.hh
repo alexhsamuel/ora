@@ -28,6 +28,8 @@ using std::unique_ptr;
 // Declarations
 //------------------------------------------------------------------------------
 
+extern char const* const PyDate_doc;
+
 extern StructSequenceType* get_ymd_date_type();
 extern ref<Object> make_ordinal_date(cron::OrdinalDate);
 extern ref<Object> make_week_date(cron::WeekDate);
@@ -123,6 +125,9 @@ private:
 //------------------------------------------------------------------------------
 // Type class
 //------------------------------------------------------------------------------
+
+// FIXME: Elsewhere.
+#define MULTILINE(...) #__VA_ARGS__
 
 /*
  * Template for a Python extension type wrapping a date class.
@@ -869,6 +874,16 @@ Type
 PyDate<DATE>::build_type(
   string const& type_name)
 {
+  auto const doc_len    = strlen(PyDate_doc) + 64;
+  auto const doc        = new char[doc_len];
+  auto const dot        = type_name.find_last_of('.');
+  auto unqualified_name = 
+    dot == string::npos ? type_name : type_name.substr(dot + 1);
+  snprintf(
+    doc, doc_len, PyDate_doc,
+    unqualified_name.c_str(),
+    to_string(DATE::MIN).c_str(), to_string(DATE::MAX).c_str());
+
   return PyTypeObject{
     PyVarObject_HEAD_INIT(nullptr, 0)
     (char const*)         strdup(type_name.c_str()),      // tp_name
@@ -891,7 +906,7 @@ PyDate<DATE>::build_type(
     (PyBufferProcs*)      nullptr,                        // tp_as_buffer
     (unsigned long)       Py_TPFLAGS_DEFAULT
                           | Py_TPFLAGS_BASETYPE,          // tp_flags
-    (char const*)         nullptr,                        // tp_doc
+    (char const*)         doc,                            // tp_doc
     (traverseproc)        nullptr,                        // tp_traverse
     (inquiry)             nullptr,                        // tp_clear
     (richcmpfunc)         wrap<PyDate, tp_richcompare>,   // tp_richcompare
