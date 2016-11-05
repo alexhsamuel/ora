@@ -10,7 +10,9 @@ will have a `dtype` attribute.  For example:
   >>> import numpy as np
   >>> from cron import Date
   >>> import cron.numpy
-  >>> array = np.zeroes(8, dtype=Date.dtype)
+  >>> array = np.zeros(3, dtype=Date.dtype)
+  >>> array
+  array([Date(1, Jan, 1), Date(1, Jan, 1), Date(1, Jan, 1)], dtype=Date)
 
 """
 
