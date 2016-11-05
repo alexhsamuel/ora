@@ -13,6 +13,7 @@
 
 #include "cron.hh"
 #include "py.hh"
+#include "PyDate_doc.hh"
 
 namespace aslib {
 
@@ -27,25 +28,6 @@ using std::unique_ptr;
 //------------------------------------------------------------------------------
 // Declarations
 //------------------------------------------------------------------------------
-
-extern char const* const PyDate_doc;
-extern char const* const PyDate_datenum_doc;
-extern char const* const PyDate_day_doc;
-extern char const* const PyDate_invalid_doc;
-extern char const* const PyDate_missing_doc;
-extern char const* const PyDate_month_doc;
-extern char const* const PyDate_offset_doc;
-extern char const* const PyDate_ordinal_doc;
-extern char const* const PyDate_ordinal_date_doc;
-extern char const* const PyDate_valid_doc;
-extern char const* const PyDate_week_doc;
-extern char const* const PyDate_week_date_doc;
-extern char const* const PyDate_week_year_doc;
-extern char const* const PyDate_weekday_doc;
-extern char const* const PyDate_year_doc;
-extern char const* const PyDate_ymdi_doc;
-extern char const* const PyDate_ymd_doc;
-extern char const* const YmdDate_doc;
 
 extern StructSequenceType* get_ymd_date_type();
 extern ref<Object> make_ordinal_date(cron::OrdinalDate);
@@ -854,22 +836,22 @@ template<class DATE>
 GetSets<PyDate<DATE>>
 PyDate<DATE>::tp_getsets_ 
   = GetSets<PyDate>()
-    .template add_get<get_datenum>      ("datenum"      , PyDate_datenum_doc)
-    .template add_get<get_day>          ("day"          , PyDate_day_doc)
-    .template add_get<get_invalid>      ("invalid"      , PyDate_invalid_doc)
-    .template add_get<get_missing>      ("missing"      , PyDate_missing_doc)
-    .template add_get<get_month>        ("month"        , PyDate_month_doc)
-    .template add_get<get_offset>       ("offset"       , PyDate_offset_doc)
-    .template add_get<get_ordinal>      ("ordinal"      , PyDate_ordinal_doc)
-    .template add_get<get_ordinal_date> ("ordinal_date" , PyDate_ordinal_date_doc)
-    .template add_get<get_valid>        ("valid"        , PyDate_valid_doc)
-    .template add_get<get_week>         ("week"         , PyDate_week_doc)
-    .template add_get<get_week_date>    ("week_date"    , PyDate_week_date_doc)
-    .template add_get<get_week_year>    ("week_year"    , PyDate_week_year_doc)
-    .template add_get<get_weekday>      ("weekday"      , PyDate_weekday_doc)
-    .template add_get<get_year>         ("year"         , PyDate_year_doc)
-    .template add_get<get_ymdi>         ("ymdi"         , PyDate_ymdi_doc)
-    .template add_get<get_ymd>          ("ymd"          , PyDate_ymd_doc)
+    .template add_get<get_datenum>      ("datenum"      , docstring::pydate::datenum)
+    .template add_get<get_day>          ("day"          , docstring::pydate::day)
+    .template add_get<get_invalid>      ("invalid"      , docstring::pydate::invalid)
+    .template add_get<get_missing>      ("missing"      , docstring::pydate::missing)
+    .template add_get<get_month>        ("month"        , docstring::pydate::month)
+    .template add_get<get_offset>       ("offset"       , docstring::pydate::offset)
+    .template add_get<get_ordinal>      ("ordinal"      , docstring::pydate::ordinal)
+    .template add_get<get_ordinal_date> ("ordinal_date" , docstring::pydate::ordinal_date)
+    .template add_get<get_valid>        ("valid"        , docstring::pydate::valid)
+    .template add_get<get_week>         ("week"         , docstring::pydate::week)
+    .template add_get<get_week_date>    ("week_date"    , docstring::pydate::week_date)
+    .template add_get<get_week_year>    ("week_year"    , docstring::pydate::week_year)
+    .template add_get<get_weekday>      ("weekday"      , docstring::pydate::weekday)
+    .template add_get<get_year>         ("year"         , docstring::pydate::year)
+    .template add_get<get_ymdi>         ("ymdi"         , docstring::pydate::ymdi)
+    .template add_get<get_ymd>          ("ymd"          , docstring::pydate::ymd)
   ;
 
 
@@ -891,13 +873,13 @@ Type
 PyDate<DATE>::build_type(
   string const& type_name)
 {
-  auto const doc_len    = strlen(PyDate_doc) + 64;
+  auto const doc_len    = strlen(docstring::pydate::type) + 64;
   auto const doc        = new char[doc_len];
   auto const dot        = type_name.find_last_of('.');
   auto unqualified_name = 
     dot == string::npos ? type_name : type_name.substr(dot + 1);
   snprintf(
-    doc, doc_len, PyDate_doc,
+    doc, doc_len, docstring::pydate::type,
     unqualified_name.c_str(),
     to_string(DATE::MIN).c_str(), to_string(DATE::MAX).c_str());
 

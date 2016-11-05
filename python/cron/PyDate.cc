@@ -78,7 +78,7 @@ get_ymd_date_type()
     };
     static PyStructSequence_Desc desc{
       (char*) "YmdDate",                                    // name
-      (char*) YmdDate_doc,                                  // doc
+      (char*) docstring::ymddate::type,                     // doc
       fields,                                               // fields
       3                                                     // n_in_sequence
     };
