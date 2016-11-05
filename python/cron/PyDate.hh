@@ -45,6 +45,7 @@ extern char const* const PyDate_weekday_doc;
 extern char const* const PyDate_year_doc;
 extern char const* const PyDate_ymdi_doc;
 extern char const* const PyDate_ymd_doc;
+extern char const* const YmdDate_doc;
 
 extern StructSequenceType* get_ymd_date_type();
 extern ref<Object> make_ordinal_date(cron::OrdinalDate);

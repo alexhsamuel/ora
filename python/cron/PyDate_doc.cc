@@ -146,5 +146,22 @@ PyDate_ymd_doc =
 ;
 
 
+extern auto const
+YmdDate_doc =
+"A (year, month, date) tuple containing components of the Gregorian date.\n"
+"\n"
+"  >>> ymd = YmdDate(1973, Dec, 3)\n"
+"  >>> y, m, d = ymd\n"
+"  >>> list(ymd)\n"
+"  [1973, Dec, 3]\n"
+"\n"
+"The components are also accessible by name.\n"
+"\n"
+"  >>> ymd.year\n"
+"  1973\n"
+"\n"
+;
+
+
 }  // namespace aslib
 
