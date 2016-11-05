@@ -658,8 +658,8 @@ Methods<PyDate<DATE>>
 PyDate<DATE>::tp_methods_
   = Methods<PyDate>()
     .template add<method___format__>                ("__format__")
-    .template add_class<method_from_datenum>        ("from_datenum")
-    .template add_class<method_from_iso_date>       ("from_iso_date")
+    .template add_class<method_from_datenum>        ("from_datenum", docstring::pydate::from_datenum)
+    .template add_class<method_from_iso_date>       ("from_iso_date", docstring::pydate::from_iso_date)
     .template add_class<method_from_offset>         ("from_offset")
     .template add_class<method_from_ordinal_date>   ("from_ordinal_date")
     .template add_class<method_from_ymd>            ("from_ymd")

@@ -45,22 +45,58 @@ type =
 "  >>> %1$s(\"2004-11-02\")\n"
 "  %1$s(2004, 11, 2)\n"
 "\n"
+"### Datenum\n"
+"\n"
+"Cron defines _datenum_, the number of days elapsed since 0001 January 1.\n"
+"(This is before the Gregorian calendar was adopted, but we use the\n"
+"\"proleptic\" Gregorian calendar, which projects backward.)\n"
+"Use the `datenum` attribute to get this value, and `from_datenum` to\n"
+"to construct a date from a datenum.\n"
+"\n"
 ;
 
 
 doc_t
 datenum = 
-"The \"datenum\" of this date.\n"
+"The _datenum_ of this date.\n"
 "\n"
-"Cron performs date computations on \"datenums\", the number of days elapsed\n"
-"since 0001 January 1.  (This is before the Gregorian calendar was adopted,\n"
-"but we use the \"proleptic\" Gregorian calendar, which projects backward.)\n"
+"  >>> Date(2004, 11, 2).datenum\n"
+"  731886\n"
+"\n"
 ;
 
 
 doc_t
 day =
 "The day of the month.\n"
+;
+
+
+doc_t
+from_datenum =
+"Constructs a date from a _datenum_.\n"
+"\n"
+"  >>> Date.from_datenum(731866)\n"
+"  Date(2004, 11, 2)\n"
+"\n"
+"@signature\n"
+"  from_datenum(datenum)\n"
+"\n"
+;
+
+
+doc_t
+from_iso_date =
+"Constructs a date from an ISO-formatted date string.\n"
+"\n"
+"  >>> Date.from_iso_date(\"2014-11-02\")\n"
+"  Date(2014, 11, 2)\n"
+"\n"
+"@signature\n"
+"  from_iso_date(iso_date)\n"
+"@raise ValueError\n"
+"  `iso_date` is not an ISO-formatted date string.\n"
+"\n"
 ;
 
 
