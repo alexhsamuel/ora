@@ -47,6 +47,8 @@ __all__ = (
 class Weekday(enum.IntEnum):
     """
     A day of the (seven-day) week.
+
+    Integer values are counted from Monday = 0.
     """
 
     Mon = 0
@@ -73,6 +75,26 @@ globals().update(Weekday.__members__)
 class MonthOfYear:
     """
     A calendar month in a specific year.
+
+      >>> MonthOfYear(1973, Dec)
+      MonthOfYear(1973, Dec)
+
+    Division is overloaded so that division of a year and month produce an
+    instance of `MonthOfYear`.
+
+      >>> 1973 / Dec
+      MonthOfYear(1973, Dec)
+
+    Division is further overloaded to return a specific day of that month.
+
+      >>> MonthOfYear(1973, Dec) / 3
+      Date(1973, Dec, 3)
+
+    Combining these,
+
+      >>> 1973 / Dec / 3
+      Date(1973, Dec, 3)
+
     """
 
     def __init__(self, year, month):
@@ -81,7 +103,8 @@ class MonthOfYear:
 
 
     def __repr__(self):
-        return aslib.py.format_ctor(self, self.__year, self.__month)
+        return "{}({}, {})".format(
+            self.__class__.__name__, self.__year, self.__month.name)
 
 
     def __truediv__(self, day):
@@ -90,6 +113,9 @@ class MonthOfYear:
 
 
 class Month(enum.IntEnum):
+    """
+    A Gregorian month.
+    """
 
     Jan =  1
     Feb =  2
