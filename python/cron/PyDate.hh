@@ -662,9 +662,9 @@ PyDate<DATE>::tp_methods_
     .template add_class<method_from_iso_date>       ("from_iso_date",       docstring::pydate::from_iso_date)
     .template add_class<method_from_offset>         ("from_offset",         docstring::pydate::from_offset)
     .template add_class<method_from_ordinal_date>   ("from_ordinal_date",   docstring::pydate::from_ordinal_date)
-    .template add_class<method_from_ymd>            ("from_ymd")
-    .template add_class<method_from_week_date>      ("from_week_date")
-    .template add_class<method_from_ymdi>           ("from_ymdi")
+    .template add_class<method_from_week_date>      ("from_week_date",      docstring::pydate::from_week_date)
+    .template add_class<method_from_ymd>            ("from_ymd",            docstring::pydate::from_ymd)
+    .template add_class<method_from_ymdi>           ("from_ymdi",           docstring::pydate::from_ymdi)
   ;
 
 

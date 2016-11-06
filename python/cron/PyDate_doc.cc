@@ -53,6 +53,16 @@ type =
 "Use the `datenum` attribute to get this value, and `from_datenum` to\n"
 "to construct a date from a _datenum_.\n"
 "\n"
+"### Exceptions\n"
+"\n"
+"Methods may raise these exceptions:\n"
+"\n"
+"- `TypeError`: The number of arguments is wrong, or an arguments could not\n"
+"  be converted to the right type.\n"
+"- `ValueError`: An argument's value is invalid, e.g. month number 15.\n"
+"- `OverflowError`: The method produced a date that it out of range for\n"
+"  `%1$s`.\n"
+"\n"
 ;
 
 
@@ -94,8 +104,6 @@ from_iso_date =
 "\n"
 "@signature\n"
 "  from_iso_date(iso_date)\n"
-"@raise ValueError\n"
-"  `iso_date` is not an ISO-formatted date string.\n"
 "\n"
 ;
 
@@ -132,6 +140,58 @@ from_ordinal_date =
 "  from_ordinal_date(year, ordinal)\n"
 "@param ordinal\n"
 "  The one-indexed day ordinal within the year.\n"
+"\n"
+;
+
+
+doc_t
+from_week_date =
+"Constructs a date from an ISO-8601 week date.\n"
+"\n"
+"  >>> Date.from_week_date(2004, 45, Tue)\n"
+"  Date(2004, Nov, 2)\n"
+"\n"
+"The components may also be given as a three-element sequence.\n"
+"\n"
+"  >>> Date.from_week_date([2004, 45, Tue])\n"
+"  Date(2004, Nov, 2)\n"
+"\n"
+":warning: The week year is not the same as the ordinary year; see \n"
+"`cron.date`.\n"
+"\n"
+"@signature\n"
+"  from_week_date(week_year, week, weekday)\n"
+"\n"
+;
+
+
+doc_t
+from_ymd =
+"Constructs a date from a year, month, and day.\n"
+"\n"
+"  >>> Date.from_ymd(2004, Nov, 2)\n"
+"  Date(2004, Nov, 2)\n"
+"\n"
+"The components may also be given as a three-element sequence.\n"
+"\n"
+"  >>> Date.from_ymd([2004, Nov, 2])\n"
+"  Date(2004, Nov, 2)\n"
+"\n"
+"@signature\n"
+"  from_ymd(year, month, day)\n"
+"\n"
+;
+
+
+doc_t
+from_ymdi =
+"Constructs a date from a _YMDI_ (YYYYMMDD-encoded integer).\n"
+"\n"
+"  >>> Date.from_ymdi(20041102)\n"
+"  Date(2004, Nov, 2)\n"
+"\n"
+"@signature\n"
+"  from_ymdi(ymdi)\n"
 "\n"
 ;
 
@@ -215,7 +275,7 @@ year =
 
 doc_t
 ymdi =
-"The date encoded as an 8-decimal digit \"YYYYMMDD\" integer.\n"
+"The date as a _YMDI_ (YYYYMMDD-encoded integer).\n"
 ;
 
 
