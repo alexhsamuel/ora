@@ -76,8 +76,8 @@ doc_t
 from_datenum =
 "Constructs a date from a _datenum_.\n"
 "\n"
-"  >>> Date.from_datenum(731866)\n"
-"  Date(2004, 11, 2)\n"
+"  >>> Date.from_datenum(731886)\n"
+"  Date(2004, Nov, 2)\n"
 "\n"
 "@signature\n"
 "  from_datenum(datenum)\n"
@@ -90,12 +90,48 @@ from_iso_date =
 "Constructs a date from an ISO-formatted date string.\n"
 "\n"
 "  >>> Date.from_iso_date(\"2014-11-02\")\n"
-"  Date(2014, 11, 2)\n"
+"  Date(2014, Nov, 2)\n"
 "\n"
 "@signature\n"
 "  from_iso_date(iso_date)\n"
 "@raise ValueError\n"
 "  `iso_date` is not an ISO-formatted date string.\n"
+"\n"
+;
+
+
+doc_t
+from_offset =
+"Constructs a date from an offset.\n"
+"\n"
+"The offset is an implementation detail of the type.\n"
+"\n"
+"@signature\n"
+"  from_offset(offset)\n"
+"@raise ValueError\n"
+"  `offset` is not a valid offset.\n"
+"\n"
+;
+
+
+doc_t 
+from_ordinal_date =
+"Constructs a date from an ordinal date.\n"
+"\n"
+"  >>> Date.from_ordinal_date(2000, 1)\n"
+"  Date(2000, Jan, 1)\n"
+"  >>> Date.from_ordinal_date(2004, 307)\n"
+"  Date(2004, Nov, 2)\n"
+"\n"
+"The year and ordinal may also be given as a two-element sequence.\n"
+"\n"
+"  >>> Date.from_ordinal_date([2004, 307])\n"
+"  Date(2004, Nov, 2)\n"
+"\n"
+"@signature\n"
+"  from_ordinal_date(year, ordinal)\n"
+"@param ordinal\n"
+"  The one-indexed day ordinal within the year.\n"
 "\n"
 ;
 

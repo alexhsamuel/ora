@@ -14,6 +14,8 @@ extern doc_t datenum;
 extern doc_t day;
 extern doc_t from_datenum;
 extern doc_t from_iso_date;
+extern doc_t from_offset;
+extern doc_t from_ordinal_date;
 extern doc_t invalid;
 extern doc_t missing;
 extern doc_t month;
