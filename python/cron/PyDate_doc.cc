@@ -51,7 +51,7 @@ type =
 "(This is before the Gregorian calendar was adopted, but we use the\n"
 "\"proleptic\" Gregorian calendar, which projects backward.)\n"
 "Use the `datenum` attribute to get this value, and `from_datenum` to\n"
-"to construct a date from a datenum.\n"
+"to construct a date from a _datenum_.\n"
 "\n"
 ;
 
