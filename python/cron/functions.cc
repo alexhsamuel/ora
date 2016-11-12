@@ -3,6 +3,7 @@
 #include <time.h>
 
 #include "cron.hh"
+#include "functions_doc.hh"
 #include "py.hh"
 #include "PyTime.hh"
 #include "util.hh"
@@ -207,7 +208,7 @@ add_functions(
   Methods<Module>& methods)
 {
   return methods
-    .add<days_in_month>             ("days_in_month")
+    .add<days_in_month>             ("days_in_month", docstring::days_in_month)
     .add<from_local>                ("from_local")
     .add<is_leap_year>              ("is_leap_year")
     .add<now>                       ("now")

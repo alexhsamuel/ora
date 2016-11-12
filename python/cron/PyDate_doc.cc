@@ -186,6 +186,8 @@ from_ymdi =
 "\n"
 "@signature\n"
 "  from_ymdi(ymdi)\n"
+"@type ymdi\n"
+"  `int`\n"
 "\n"
 ;
 
