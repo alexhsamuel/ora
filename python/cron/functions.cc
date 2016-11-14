@@ -208,9 +208,9 @@ add_functions(
   Methods<Module>& methods)
 {
   return methods
-    .add<days_in_month>             ("days_in_month", docstring::days_in_month)
-    .add<from_local>                ("from_local")
-    .add<is_leap_year>              ("is_leap_year")
+    .add<days_in_month>             ("days_in_month",           docstring::days_in_month)
+    .add<from_local>                ("from_local",              docstring::from_local)
+    .add<is_leap_year>              ("is_leap_year",            docstring::is_leap_year)
     .add<now>                       ("now")
     .add<ordinals_per_year>         ("ordinals_per_year")
     .add<to_local>                  ("to_local")
