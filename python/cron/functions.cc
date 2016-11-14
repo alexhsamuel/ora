@@ -40,6 +40,25 @@ days_in_month(
 
 
 ref<Object>
+days_in_year(
+  Module* /* module */,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* arg_names[] = {"year", nullptr};
+  cron::Year year;
+  static_assert(
+    sizeof(cron::Year) == sizeof(unsigned short), "wrong type for year");
+  Arg::ParseTupleAndKeywords(args, kw_args, "H", arg_names, &year);
+
+  if (cron::year_is_valid(year))
+    return Long::FromLong(cron::days_in_year(year));
+  else
+    throw py::ValueError("invalid year");
+}
+
+
+ref<Object>
 from_local(
   Module* /* module */,
   Tuple* const args,
@@ -105,25 +124,6 @@ now(
     throw TypeError("not a time type");
 
   return api->now();
-}
-
-
-ref<Object>
-ordinals_per_year(
-  Module* /* module */,
-  Tuple* const args,
-  Dict* const kw_args)
-{
-  static char const* arg_names[] = {"year", nullptr};
-  cron::Year year;
-  static_assert(
-    sizeof(cron::Year) == sizeof(unsigned short), "wrong type for year");
-  Arg::ParseTupleAndKeywords(args, kw_args, "H", arg_names, &year);
-
-  if (cron::year_is_valid(year))
-    return Long::FromLong(cron::days_in_year(year));
-  else
-    throw py::ValueError("invalid year");
 }
 
 
@@ -209,10 +209,10 @@ add_functions(
 {
   return methods
     .add<days_in_month>             ("days_in_month",           docstring::days_in_month)
+    .add<days_in_year>              ("days_in_year",            docstring::days_in_year)
     .add<from_local>                ("from_local",              docstring::from_local)
     .add<is_leap_year>              ("is_leap_year",            docstring::is_leap_year)
-    .add<now>                       ("now")
-    .add<ordinals_per_year>         ("ordinals_per_year")
+    .add<now>                       ("now",                     docstring::now)
     .add<to_local>                  ("to_local")
     .add<to_local_datenum_daytick>  ("to_local_datenum_daytick")
     .add<today>                     ("today")

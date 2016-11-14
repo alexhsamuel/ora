@@ -26,6 +26,20 @@ days_in_month =
 ;
 
 doc_t
+days_in_year =
+"Returns the number of days in a year dates.\n"
+"\n"
+"  >>> days_in_year(2016)\n"
+"  366\n"
+"  >>> days_in_year(2017)\n"
+"  365\n"
+"\n"
+"@signature\n"
+"  days_in_year(year)\n"
+"\n"
+;
+
+doc_t
 from_local =
 "Computes time from local time (date and daytime) and a time zone.\n"
 "\n"
@@ -64,6 +78,17 @@ is_leap_year =
 "\n"
 "@signature\n"
 "  is_leap_year(year)\n"
+"\n"
+;
+
+doc_t
+now =
+"Returns the current time.\n"
+"\n"
+"@signature\n"
+"  now(Time=Time)\n"
+"@param Time\n"
+"  The time type to return.\n"
 "\n"
 ;
 

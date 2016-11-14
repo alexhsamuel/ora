@@ -43,8 +43,8 @@ def test_is_leap_year():
         is_leap_year(None)
 
 
-def test_ordinals_per_year():
+def test_days_in_year():
     for year in range(1, 10000):
-        assert ordinals_per_year(year) == 366 if is_leap_year(year) else 355
+        assert days_in_year(year) == 366 if is_leap_year(year) else 355
 
 

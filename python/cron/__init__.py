@@ -26,10 +26,10 @@ __all__ = (
     "YmdDate",
 
     "days_in_month",
+    "days_in_year",
     "is_leap_year",
     "from_local",
     "now",
-    "ordinals_per_year",
     "to_local",
     "to_local_datenum_daytick",
     "today",
