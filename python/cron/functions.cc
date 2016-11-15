@@ -213,8 +213,8 @@ add_functions(
     .add<from_local>                ("from_local",              docstring::from_local)
     .add<is_leap_year>              ("is_leap_year",            docstring::is_leap_year)
     .add<now>                       ("now",                     docstring::now)
-    .add<to_local>                  ("to_local")
-    .add<to_local_datenum_daytick>  ("to_local_datenum_daytick")
+    .add<to_local>                  ("to_local",                docstring::to_local)
+    .add<to_local_datenum_daytick>  ("to_local_datenum_daytick",docstring::to_local_datenum_daytick)
     .add<today>                     ("today")
     ;
 }
