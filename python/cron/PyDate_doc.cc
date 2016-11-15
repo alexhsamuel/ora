@@ -47,6 +47,8 @@ type =
 "  >>> %1$s(\"2004-11-02\")\n"
 "  %1$s(2004, 11, 2)\n"
 "\n"
+"Call `cron.today()` to get the current date in a time zone.\n"
+"\n"
 "# Exceptions\n"
 "\n"
 "Methods may raise these exceptions:\n"
