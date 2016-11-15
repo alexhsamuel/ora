@@ -194,20 +194,21 @@ private:
   static ref<Object>    tp_richcompare(PyTime*, Object*, int);
 
   // Number methods.
-  static ref<Object>    nb_add                      (PyTime*, Object*, bool);
-  static ref<Object>    nb_subtract                 (PyTime*, Object*, bool);
+  static ref<Object>    nb_add                  (PyTime*, Object*, bool);
+  static ref<Object>    nb_subtract             (PyTime*, Object*, bool);
   static PyNumberMethods tp_as_number_;
 
   // Methods.
-  static ref<Object>    method___format__           (PyTime*, Tuple*, Dict*);
-  static ref<Object>    method_get_parts            (PyTime*, Tuple*, Dict*);
+  static ref<Object>    method___format__       (PyTime*, Tuple*, Dict*);
+  static ref<Object>    method_from_offset      (PyTypeObject*, Tuple*, Dict*);
+  static ref<Object>    method_get_parts        (PyTime*, Tuple*, Dict*);
   static Methods<PyTime> tp_methods_;
 
   // Getsets.
-  static ref<Object> get_invalid                    (PyTime*, void*);
-  static ref<Object> get_missing                    (PyTime*, void*);
-  static ref<Object> get_offset                     (PyTime*, void*);
-  static ref<Object> get_valid                      (PyTime*, void*);
+  static ref<Object> get_invalid                (PyTime*, void*);
+  static ref<Object> get_missing                (PyTime*, void*);
+  static ref<Object> get_offset                 (PyTime*, void*);
+  static ref<Object> get_valid                  (PyTime*, void*);
   static GetSets<PyTime> tp_getsets_;
 
   /** Date format used to generate the repr.  */
@@ -514,6 +515,26 @@ PyTime<TIME>::method___format__(
 
 template<class TIME>
 ref<Object>
+PyTime<TIME>::method_from_offset(
+  PyTypeObject* const type,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] = {"from_offset", nullptr};
+  Object* offset_arg;
+  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &offset_arg);
+  
+  // int128_t still fits the valid range of Time128::Offset (i.e. uint128_t)
+  // comfortably, due to the the overall date range limit.
+  auto const offset = (int128_t) *offset_arg->Long();
+  if (offset < TIME::MIN.get_offset() || offset > TIME::MAX.get_offset())
+    throw OverflowError("time out of range");
+  return create(TIME::from_offset((typename TIME::Offset) offset));
+}
+
+
+template<class TIME>
+ref<Object>
 PyTime<TIME>::method_get_parts(
   PyTime* const self,
   Tuple* const args,
@@ -548,6 +569,7 @@ Methods<PyTime<TIME>>
 PyTime<TIME>::tp_methods_
   = Methods<PyTime>()
     .template add<method___format__>                    ("__format__")
+    .template add_class<method_from_offset>             ("from_offset")
     .template add<method_get_parts>                     ("get_parts")
   ;
 

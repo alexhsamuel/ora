@@ -84,3 +84,34 @@ def test_format():
     assert format(Time.MISSING, "%~W!")                 == "MISS"
 
 
+def test_from_offset():
+    assert SmallTime.from_offset(SmallTime.MIN.offset) == SmallTime.MIN
+    assert SmallTime.from_offset(SmallTime.MAX.offset) == SmallTime.MAX
+
+    assert Unix32Time.from_offset(Unix32Time.MIN.offset) == Unix32Time.MIN
+    assert Unix32Time.from_offset(Unix32Time.MAX.offset) == Unix32Time.MAX
+
+    assert Time.from_offset(Time.MIN.offset) == Time.MIN
+    assert Time.from_offset(Time.MAX.offset) == Time.MAX
+
+    assert Time128.from_offset(Time128.MIN.offset) == Time128.MIN
+    assert Time128.from_offset(Time128.MAX.offset) == Time128.MAX
+
+
+def test_from_offset_range():
+    with pytest.raises(OverflowError):
+        SmallTime.from_offset(0x100000000)
+    with pytest.raises(OverflowError):
+        SmallTime.from_offset(0x1000000000)
+
+    with pytest.raises(OverflowError):
+        Time.from_offset(Time.MIN.offset - 1)
+    with pytest.raises(OverflowError):
+        Time.from_offset(Time.MAX.offset + 1)
+
+    with pytest.raises(OverflowError):
+        Time128.from_offset(Time128.MIN.offset - 1)
+    with pytest.raises(OverflowError):
+        Time128.from_offset(Time128.MAX.offset + 1)
+
+
