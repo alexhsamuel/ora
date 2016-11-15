@@ -190,6 +190,16 @@ UNIX_EPOCH = (1970/Jan/1, MIDNIGHT) @ UTC
 #-------------------------------------------------------------------------------
 
 def random_date(Date=Date, min=None, max=None):
+    """
+    Returns a random date between `min` and `max`, inclusive.
+
+    @param Date
+      The date type to return.
+    @param min
+      The earliest date to return.  If `None`, uses `Date.MIN`.
+    @param max
+      The latest date to return.  If `None`, uses `Date.MAX`.
+    """
     from random import randint
 
     if min is None:
@@ -197,7 +207,7 @@ def random_date(Date=Date, min=None, max=None):
     else:
         min = Date.convert(min)
     if max is None:
-        max = Date.LAST
+        max = Date.MAX
     else:
         max = Date.convert(max)
     return Date.from_datenum(randint(min.datenum, max.datenum))
