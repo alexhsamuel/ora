@@ -10,6 +10,7 @@
 
 #include "cron.hh"
 #include "py.hh"
+#include "PyDaytime_doc.hh"
 
 namespace aslib {
 
@@ -463,7 +464,7 @@ PyDaytime<DAYTIME>::method_from_hms(
   long   const hour   = parts->GetItem(0)->long_value();
   long   const minute = parts->GetItem(1)->long_value();
   double const second
-    = args->Length() == 3 ? parts->GetItem(2)->double_value() : 0;
+    = parts->Length() == 3 ? parts->GetItem(2)->double_value() : 0;
   return create(cron::daytime::from_hms<Daytime>(hour, minute, second), type);
 }
 
@@ -488,9 +489,9 @@ Methods<PyDaytime<DAYTIME>>
 PyDaytime<DAYTIME>::tp_methods_
   = Methods<PyDaytime>()
     .template add<method___format__>                ("__format__")
-    .template add_class<method_from_daytick>        ("from_daytick")
-    .template add_class<method_from_hms>            ("from_hms")
-    .template add_class<method_from_ssm>            ("from_ssm")
+    .template add_class<method_from_daytick>        ("from_daytick",    docstring::pydaytime::from_daytick)
+    .template add_class<method_from_hms>            ("from_hms",        docstring::pydaytime::from_hms)
+    .template add_class<method_from_ssm>            ("from_ssm",        docstring::pydaytime::from_ssm)
   ;
 
 //------------------------------------------------------------------------------
