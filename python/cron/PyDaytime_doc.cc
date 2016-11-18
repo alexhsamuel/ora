@@ -20,6 +20,17 @@ type =
 "An object of this daytime class can represent a time of day with\n"
 "approximately %2$.1e second precision.\n"
 "\n"
+"# Constructor\n"
+"\n"
+"Construct a `%1$s` instance with any of these:\n"
+"\n"
+"- An instance of `%1$s`.\n"
+"- An instance of another daytime type.\n"
+"- The hour, minute, and second parts, as three arguments or a sequence.\n"
+"- The hour and minute, as two arguments or a sequence.\n"
+"- A double value, as _seconds since midnight_ (SSM).\n"
+"- With no arguments, which constructs the value is `INVALID`.\n"
+"\n"
 ;
 
 
