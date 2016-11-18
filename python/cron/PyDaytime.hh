@@ -626,6 +626,17 @@ Type
 PyDaytime<DAYTIME>::build_type(
   string const& type_name)
 {
+  // FIXME: Factor out somewhere.
+  auto const doc_len    = strlen(docstring::pydaytime::type) + 64;
+  auto const doc        = new char[doc_len];
+  auto const dot        = type_name.find_last_of('.');
+  auto unqualified_name = 
+    dot == string::npos ? type_name : type_name.substr(dot + 1);
+  snprintf(
+    doc, doc_len, docstring::pydaytime::type,
+    unqualified_name.c_str(),
+    DAYTIME::RESOLUTION);
+
   return PyTypeObject{
     PyVarObject_HEAD_INIT(nullptr, 0)
     (char const*)         strdup(type_name.c_str()),      // tp_name
@@ -648,7 +659,7 @@ PyDaytime<DAYTIME>::build_type(
     (PyBufferProcs*)      nullptr,                        // tp_as_buffer
     (unsigned long)       Py_TPFLAGS_DEFAULT
                           | Py_TPFLAGS_BASETYPE,          // tp_flags
-    (char const*)         nullptr,                        // tp_doc
+    (char const*)         doc,                            // tp_doc
     (traverseproc)        nullptr,                        // tp_traverse
     (inquiry)             nullptr,                        // tp_clear
     (richcmpfunc)         wrap<PyDaytime, tp_richcompare>,// tp_richcompare

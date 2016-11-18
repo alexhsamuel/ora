@@ -8,6 +8,22 @@ namespace docstring {
 namespace pydaytime {
 
 doc_t
+type =
+"A time of day.\n"
+"\n"
+"A daytime represents a time of day.  Daytime is a representation of a\n"
+"specific time within a specific day in a specific location, as one might\n"
+"read off an ordinary clock.  A daytime is an approximation to a specific\n"
+"time of day, in the sense that a floating point number is an approximation\n"
+"to a real number.\n"
+"\n"
+"An object of this daytime class can represent a time of day with\n"
+"approximately %2$.1e second precision.\n"
+"\n"
+;
+
+
+doc_t
 from_daytick =
 "Constructs a daytime from _dayticks_.\n"
 "\n"
