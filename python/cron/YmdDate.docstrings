@@ -1,3 +1,5 @@
+#-*- python -*-
+
 type = """
 A (year, month, date) tuple containing components of the Gregorian date.
 

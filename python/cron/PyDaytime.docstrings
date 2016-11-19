@@ -1,3 +1,5 @@
+#-*- python -*-
+
 type = """
 A time of day.
 

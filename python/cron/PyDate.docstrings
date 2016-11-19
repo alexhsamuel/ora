@@ -1,3 +1,5 @@
+#-*- python -*-
+
 type = """
 A calendar date.
 
