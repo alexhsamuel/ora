@@ -609,14 +609,14 @@ GetSets<PyDaytime<DAYTIME>>
 PyDaytime<DAYTIME>::tp_getsets_ 
   = GetSets<PyDaytime>()
     .template add_get<get_daytick>              ("daytick"  , docstring::pydaytime::daytick)
+    .template add_get<get_hms>                  ("hms"      , docstring::pydaytime::hms)
     .template add_get<get_hour>                 ("hour"     , docstring::pydaytime::hour)
-    .template add_get<get_invalid>              ("invalid")
-    .template add_get<get_minute>               ("minute")
-    .template add_get<get_missing>              ("missing")
-    .template add_get<get_hms>                  ("hms")
-    .template add_get<get_second>               ("second")
-    .template add_get<get_ssm>                  ("ssm")
-    .template add_get<get_valid>                ("valid")
+    .template add_get<get_invalid>              ("invalid"  , docstring::pydaytime::invalid)
+    .template add_get<get_minute>               ("minute"   , docstring::pydaytime::minute)
+    .template add_get<get_missing>              ("missing"  , docstring::pydaytime::missing)
+    .template add_get<get_second>               ("second"   , docstring::pydaytime::second)
+    .template add_get<get_ssm>                  ("ssm"      , docstring::pydaytime::ssm)
+    .template add_get<get_valid>                ("valid"    , docstring::pydaytime::valid)
   ;
 
 
