@@ -10,7 +10,6 @@
 
 #include "cron.hh"
 #include "py.hh"
-#include "PyDaytime_doc.hh"
 
 namespace aslib {
 
@@ -52,6 +51,20 @@ template<class DAYTIME> DAYTIME convert_to_daytime(Object*);
  * Helper for converting a 2- or 3-eleme4nt sequence of daytime parts.
  */
 template<class DAYTIME> inline DAYTIME parts_to_daytime(Sequence*);
+
+//------------------------------------------------------------------------------
+// Docstrings
+//------------------------------------------------------------------------------
+
+namespace docstring {
+namespace pydaytime {
+
+using doc_t = char const* const;
+
+#include "PyDaytime.docstrings.hh.inc"
+
+}  // namespace pydaytime
+}  // namespace docstring
 
 //------------------------------------------------------------------------------
 // Type class

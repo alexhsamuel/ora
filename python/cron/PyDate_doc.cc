@@ -29,7 +29,7 @@ type =
 "- Two arguments or a two-element sequence (year, ordinal day).\n"
 "- Two arguments or a three-element sequence (year, month, day).\n"
 "- A YYYYMMDD-encoded integer.\n"
-"- With no arguments; the value is `INVALID`.\N"
+"- With no arguments; the value is `INVALID`.\n"
 "\n"
 "The following all construct the same date:\n"
 "\n"

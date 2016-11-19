@@ -54,6 +54,17 @@ template class PyDaytime<cron::daytime::Daytime>;
 template class PyDaytime<cron::daytime::Daytime32>;
 
 //------------------------------------------------------------------------------
+// Docstrings
+
+namespace docstring {
+namespace pydaytime {
+
+#include "PyDaytime.docstrings.cc.inc"
+
+}  // namespace pydaytime
+}  // namespace docstring
+
+//------------------------------------------------------------------------------
 
 }  // namespace aslib
 

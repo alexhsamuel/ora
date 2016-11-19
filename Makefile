@@ -60,6 +60,9 @@ PY_PKGDIR   	= $(PY_DIR)/cron
 PY_PFXDIR      := $(shell $(PYTHON_CONFIG) --prefix)
 NPY_INCDIRS    := $(shell $(PYTHON) -c 'from numpy.distutils.misc_util import get_numpy_include_dirs as g; print(" ".join(g()));')
 
+# Script to wrap docstrings as C++ string literals.
+WRAP_DOCSTRINGS	= $(PY_DIR)/wrap_docstrings
+
 #-------------------------------------------------------------------------------
 # gtest
 
@@ -158,6 +161,9 @@ DEPS           += $(PY_SRCS:%.cc=%.cc.d)
 PY_OBJS	    	= $(PY_SRCS:%.cc=%.o)
 PY_EXTMOD_SFX   = $(shell $(PYTHON) -c 'from importlib.machinery import EXTENSION_SUFFIXES as E; print(E[0]); ')
 PY_EXTMOD	= $(PY_PKGDIR)/ext$(PY_EXTMOD_SFX)
+PY_DOC_TXT   	= $(wildcard $(PY_PKGDIR)/*.docstrings.txt)
+PY_DOC_CC   	= $(PY_DOC_TXT:%.txt=%.cc.inc)
+PY_DOC_HH   	= $(PY_DOC_TXT:%.txt=%.hh.inc)
 
 # Compiling Python extension code.
 $(PY_OBJS): CPPFLAGS += $(shell $(PYTHON_CONFIG) --includes)
@@ -174,6 +180,11 @@ $(PY_EXTMOD): LDFLAGS += -L$(PY_PFXDIR)/lib
 .PHONY: python-setuptools
 python-setuptools:	$(CXX_LIB)
 	cd python; $(PYTHON) setup.py build_ext --inplace
+
+# Wrapping Python extension docstrings as C++ string literals.
+%.docstrings.cc.inc %.docstrings.hh.inc: %.docstrings.txt $(WRAP_DOCSTRINGS)
+	$(WRAP_DOCSTRINGS) \
+	    $*.docstrings.cc.inc $*.docstrings.hh.inc < $<
 
 #-------------------------------------------------------------------------------
 # Phony targets

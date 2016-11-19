@@ -1,0 +1,83 @@
+--- type -----------------------------------------------------------------------
+A time of day.
+
+A daytime represents a time of day.  Daytime is a representation of a
+specific time within a specific day in a specific location, as one might
+read off an ordinary clock.  A daytime is an approximation to a specific
+time of day, in the sense that a floating point number is an approximation
+to a real number.
+
+An object of this daytime class can represent a time of day with
+approximately %2$.1e second precision.
+
+# Constructor
+
+Construct a `%1$s` instance with any of these:
+
+- An instance of `%1$s`.
+- An instance of another daytime type.
+- The hour, minute, and second parts, as three arguments or a sequence.
+- The hour and minute, as two arguments or a sequence.
+- A double value, as _seconds since midnight_ (SSM).
+- With no arguments, which constructs the value is `INVALID`.
+
+--- from_daytick ---------------------------------------------------------------
+Constructs a daytime from _dayticks_.
+
+  >>> Daytime.from_daytick(6333186975989760000)
+  Daytime(12, 30, 0.000000000000000)
+
+@signature
+  from_daytick(daytick)
+@see
+  `cron.daytime`.
+
+--- from_hms -------------------------------------------------------------------
+Constructs a daytime from hour, minute, and second.
+
+May be called with two or three arguments.
+  >>> Daytime.from_hms(12, 30)
+  Daytime(12, 30, 0.000000000000000)
+  >>> Daytime.from_hms(12, 30, 10)
+  Daytime(12, 30, 10.000000000000000)
+  >>> Daytime.from_hms(12, 30, 45.6)
+  Daytime(12, 30, 45.600000000000000)
+
+May also be called with a three-element sequence.
+
+  >>> Daytime.from_hms([12, 30, 45.6])
+  Daytime(12, 30, 45.600000000000000)
+
+@signature
+  from_hms(hour, minute, second=0)
+
+--- from_ssm -------------------------------------------------------------------
+Constructs a daytime from _seconds since midnight_ (SSM).
+
+  >>> Daytime.from_ssm(12 * 60 * 60)
+  Daytime(12, 0, 0.000000000000000)
+  >>> Daytime.from_ssm(12345.678)
+  Daytime(3, 25, 45.677999999999880)
+
+@signature
+  from_ssm(ssm: float)
+@see
+  `cron.daytime`.
+
+--- daytick --------------------------------------------------------------------
+The _daytick_, the number of 2**-47 seconds since midnight.
+
+  >>> Daytime(0, 0, 0).daytick
+  0
+  >>> Daytime(0, 0, 1).daytick
+  140737488355328
+
+--- hour -----------------------------------------------------------------------
+The hour of the hour, minute, second representation.
+
+  >>> Daytime.MIDNIGHT.hour
+  0
+  >>> Daytime.MAX.hour
+  23
+
+

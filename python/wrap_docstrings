@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+
+import re
+import sys
+
+regex = re.compile(r"--- (.*?) ---+?\n(.*?)(?=--- |\Z)", re.MULTILINE | re.DOTALL)
+
+_, cc_path, hh_path = sys.argv
+input = sys.stdin.read()
+
+with open(cc_path, "wt") as cc_file, open(hh_path, "wt") as hh_file:
+    for name, docstring in regex.findall(input):
+        docstring = docstring.splitlines()
+        docstring = "".join("\"" + l + "\\n\"\n" for l in docstring )
+        print("doc_t\n{} =\n".format(name) + docstring + ";\n", file=cc_file)
+        print("extern doc_t {};".format(name), file=hh_file)
+
