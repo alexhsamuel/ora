@@ -75,7 +75,7 @@ $(GTEST_LIB):	    $(GTEST_DIR)
 $(ZONEINFO_DIR):
 	rm -rf $@
 	mkdir -p $(dir $@)
-	tar jxf $(EXTDIR)/zoneinfo/zoneinfo-2016a.tar.bz2 -C $(dir $@)
+	tar jxf $(EXTDIR)/zoneinfo/zoneinfo-2016i.tar.bz2 -C $(dir $@)
 
 #-------------------------------------------------------------------------------
 # C++ building and linking

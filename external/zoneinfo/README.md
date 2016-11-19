@@ -26,7 +26,7 @@ wget --retr-symlinks 'ftp://ftp.iana.org/tz/tz*-latest.tar.gz'
 1. Also download these missing "solar" files:
 
   ```sh
-wget https://www.ietf.org/timezones/data/solar8{7,8,9}
+wget https://raw.githubusercontent.com/Distrotech/tzdata/master/solar8{7,8,9}
 ```
 
 1. Unpack the sources and data.
