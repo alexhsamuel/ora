@@ -1,4 +1,4 @@
---- type -----------------------------------------------------------------------
+type = """
 A calendar date.
 
 In a specific location, a calendar date corresponds to a period usually, but
@@ -50,15 +50,21 @@ Methods may raise these exceptions:
 - `OverflowError`: The method produced a date that it out of range for
   `%1$s`.
 
---- datenum --------------------------------------------------------------------
+"""
+
+datenum = """
 The _datenum_ of this date.
 
   >>> Date(2004, 11, 2).datenum
   731886
 
---- day ------------------------------------------------------------------------
+"""
+
+day = """
 The day of the month.
---- from_datenum ---------------------------------------------------------------
+"""
+
+from_datenum = """
 Constructs a date from a _datenum_.
 
   >>> Date.from_datenum(731886)
@@ -67,7 +73,9 @@ Constructs a date from a _datenum_.
 @signature
   from_datenum(datenum)
 
---- from_iso_date --------------------------------------------------------------
+"""
+
+from_iso_date = """
 Constructs a date from an ISO-formatted date string.
 
   >>> Date.from_iso_date(\"2014-11-02\")
@@ -76,7 +84,9 @@ Constructs a date from an ISO-formatted date string.
 @signature
   from_iso_date(iso_date)
 
---- from_offset ----------------------------------------------------------------
+"""
+
+from_offset = """
 Constructs a date from an offset.
 
 The offset is an implementation detail of the type.
@@ -86,7 +96,9 @@ The offset is an implementation detail of the type.
 @raise ValueError
   `offset` is not a valid offset.
 
---- from_ordinal_date ----------------------------------------------------------
+"""
+from_ordinal_date = """
+
 Constructs a date from an ordinal date.
 
   >>> Date.from_ordinal_date(2000, 1)
@@ -104,7 +116,9 @@ The year and ordinal may also be given as a two-element sequence.
 @param ordinal
   The one-indexed day ordinal within the year.
 
---- from_week_date -------------------------------------------------------------
+"""
+
+from_week_date = """
 Constructs a date from an ISO-8601 week date.
 
   >>> Date.from_week_date(2004, 45, Tue)
@@ -121,7 +135,9 @@ The components may also be given as a three-element sequence.
 @signature
   from_week_date(week_year, week, weekday)
 
---- from_ymd -------------------------------------------------------------------
+"""
+
+from_ymd = """
 Constructs a date from a year, month, and day.
 
   >>> Date.from_ymd(2004, Nov, 2)
@@ -135,7 +151,9 @@ The components may also be given as a three-element sequence.
 @signature
   from_ymd(year, month, day)
 
---- from_ymdi ------------------------------------------------------------------
+"""
+
+from_ymdi = """
 Constructs a date from a _YMDI_ (YYYYMMDD-encoded integer).
 
   >>> Date.from_ymdi(20041102)
@@ -146,36 +164,66 @@ Constructs a date from a _YMDI_ (YYYYMMDD-encoded integer).
 @type ymdi
   `int`
 
---- invalid --------------------------------------------------------------------
+"""
+
+invalid = """
 True if this is `INVALID`.
---- missing --------------------------------------------------------------------
+"""
+
+missing = """
 True if this is `MISSING`.
---- month ----------------------------------------------------------------------
+"""
+
+month = """
 The calendar month of which this date is part.
---- offset ---------------------------------------------------------------------
+"""
+
+offset = """
 The type-specific offset used as the internal representation of this date.
---- ordinal --------------------------------------------------------------------
+"""
+
+ordinal = """
 The ordinal date: the 1-indexed day of the year.
---- ordinal_date ---------------------------------------------------------------
+"""
+
+ordinal_date = """
 A (year, ordinal) object representing the ordinal date.
---- valid ----------------------------------------------------------------------
+"""
+
+valid = """
 True if this date is not `MISSING` or `INVALID`.
---- week -----------------------------------------------------------------------
+"""
+
+week = """
 The week number of the ISO-8601 week date.
---- week_date ------------------------------------------------------------------
+"""
+
+week_date = """
 A (week_year, week, weekday) object containing the ISO-8601 week date.
---- week_year ------------------------------------------------------------------
+"""
+
+week_year = """
 The year of the ISO-8601 week date.
 
 Note that this is not necessarily the same as the ordinary `year`.
---- weekday --------------------------------------------------------------------
+"""
+
+weekday = """
 The day of the week.
---- year -----------------------------------------------------------------------
+"""
+
+year = """
 The year.
 
 This is the year of the conventional (year, month, day) representation,
-not of the ISO-8601 week date representation.;
---- ymdi -----------------------------------------------------------------------
+not of the ISO-8601 week date representation.
+"""
+
+ymdi = """
 The date as a _YMDI_ (YYYYMMDD-encoded integer).
---- ymd ------------------------------------------------------------------------
+"""
+
+ymd = """
 An object containing the (year, month, day) date components.
+"""
+

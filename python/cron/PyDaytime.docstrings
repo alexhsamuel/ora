@@ -1,4 +1,4 @@
---- type -----------------------------------------------------------------------
+type = """
 A time of day.
 
 A daytime represents a time of day.  Daytime is a representation of a
@@ -21,7 +21,9 @@ Construct a `%1$s` instance with any of these:
 - A double value, as _seconds since midnight_ (SSM).
 - With no arguments, which constructs the value is `INVALID`.
 
---- from_daytick ---------------------------------------------------------------
+"""
+
+from_daytick = """
 Constructs a daytime from _dayticks_.
 
   >>> Daytime.from_daytick(6333186975989760000)
@@ -32,7 +34,9 @@ Constructs a daytime from _dayticks_.
 @see
   `cron.daytime`.
 
---- from_hms -------------------------------------------------------------------
+"""
+
+from_hms = """
 Constructs a daytime from hour, minute, and second.
 
 May be called with two or three arguments.
@@ -51,7 +55,9 @@ May also be called with a three-element sequence.
 @signature
   from_hms(hour, minute, second=0)
 
---- from_ssm -------------------------------------------------------------------
+"""
+
+from_ssm = """
 Constructs a daytime from _seconds since midnight_ (SSM).
 
   >>> Daytime.from_ssm(12 * 60 * 60)
@@ -64,7 +70,9 @@ Constructs a daytime from _seconds since midnight_ (SSM).
 @see
   `cron.daytime`.
 
---- daytick --------------------------------------------------------------------
+"""
+
+daytick = """
 The _daytick_, the number of 2**-47 seconds since midnight.
 
   >>> Daytime(0, 0, 0).daytick
@@ -72,7 +80,9 @@ The _daytick_, the number of 2**-47 seconds since midnight.
   >>> Daytime(0, 0, 1).daytick
   140737488355328
 
---- hour -----------------------------------------------------------------------
+"""
+
+hour = """
 The hour of the hour, minute, second representation.
 
   >>> Daytime.MIDNIGHT.hour
@@ -80,4 +90,5 @@ The hour of the hour, minute, second representation.
   >>> Daytime.MAX.hour
   23
 
+"""
 

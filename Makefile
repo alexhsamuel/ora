@@ -161,9 +161,9 @@ DEPS           += $(PY_SRCS:%.cc=%.cc.d)
 PY_OBJS	    	= $(PY_SRCS:%.cc=%.o)
 PY_EXTMOD_SFX   = $(shell $(PYTHON) -c 'from importlib.machinery import EXTENSION_SUFFIXES as E; print(E[0]); ')
 PY_EXTMOD	= $(PY_PKGDIR)/ext$(PY_EXTMOD_SFX)
-PY_DOC_TXT   	= $(wildcard $(PY_PKGDIR)/*.docstrings.txt)
-PY_DOC_CC   	= $(PY_DOC_TXT:%.txt=%.cc.inc)
-PY_DOC_HH   	= $(PY_DOC_TXT:%.txt=%.hh.inc)
+PY_DOCSTR   	= $(wildcard $(PY_PKGDIR)/*.docstrings)
+PY_DOCSTR_CC   	= $(PY_DOCSTR:%.docstrings=%.docstrings.cc.inc)
+PY_DOCSTR_HH   	= $(PY_DOCSTR:%.docstrings=%.docstrings.hh.inc)
 
 # Compiling Python extension code.
 $(PY_OBJS): CPPFLAGS += $(shell $(PYTHON_CONFIG) --includes)
@@ -182,9 +182,13 @@ python-setuptools:	$(CXX_LIB)
 	cd python; $(PYTHON) setup.py build_ext --inplace
 
 # Wrapping Python extension docstrings as C++ string literals.
-%.docstrings.cc.inc %.docstrings.hh.inc: %.docstrings.txt $(WRAP_DOCSTRINGS)
-	$(WRAP_DOCSTRINGS) \
-	    $*.docstrings.cc.inc $*.docstrings.hh.inc < $<
+$(PY_DOCSTR_CC): %.cc.inc: % $(WRAP_DOCSTRINGS)
+	$(WRAP_DOCSTRINGS) $<
+$(PY_DOCSTR_HH): %.hh.inc: % $(WRAP_DOCSTRINGS)
+	$(WRAP_DOCSTRINGS) $<
+
+# Require the processed docstring sources to build objects.
+$(PY_OBJS):    	    	$(PY_DOCSTR_CC) $(PY_DOCSTR_HH)
 
 #-------------------------------------------------------------------------------
 # Phony targets
@@ -221,7 +225,7 @@ python:			$(PY_EXTMOD)
 
 .PHONY: clean-python
 clean-python:
-	rm -rf $(PY_OBJS) $(PY_EXTMOD)
+	rm -rf $(PY_OBJS) $(PY_EXTMOD) $(PY_DOCSTR_CC) $(PY_DOCSTR_HH)
 
 .PHONY: test-python
 test-python: 		$(PY_EXTMOD)
