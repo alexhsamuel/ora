@@ -13,7 +13,6 @@
 
 #include "cron.hh"
 #include "py.hh"
-#include "PyDate_doc.hh"
 
 namespace aslib {
 
@@ -119,6 +118,29 @@ private:
   static std::unordered_map<PyTypeObject*, std::unique_ptr<PyDateAPI>> apis_;
 
 };
+
+
+//------------------------------------------------------------------------------
+// Docstrings
+//------------------------------------------------------------------------------
+
+namespace docstring {
+
+using doc_t = char const* const;
+
+namespace pydate {
+
+#include "PyDate.docstrings.hh.inc"
+
+}  // namespace docstring
+
+namespace ymddate {
+
+#include "YmdDate.docstrings.hh.inc"
+
+}  // namespace ymddate
+
+}  // namespace pydate
 
 
 //------------------------------------------------------------------------------

@@ -177,6 +177,25 @@ template class PyDate<cron::date::Date>;
 template class PyDate<cron::date::Date16>;
 
 //------------------------------------------------------------------------------
+// Docstrings
+
+namespace docstring {
+
+namespace pydate {
+
+#include "PyDate.docstrings.cc.inc"
+
+}  // namespace pydate
+
+namespace ymddate {
+
+#include "YmdDate.docstrings.cc.inc"
+
+}  // namespace ymddate
+
+}  // namespace docstring
+
+//------------------------------------------------------------------------------
 
 }  // namespace aslib
 

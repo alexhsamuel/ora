@@ -57,13 +57,15 @@ template<class DAYTIME> inline DAYTIME parts_to_daytime(Sequence*);
 //------------------------------------------------------------------------------
 
 namespace docstring {
-namespace pydaytime {
 
 using doc_t = char const* const;
+
+namespace pydaytime {
 
 #include "PyDaytime.docstrings.hh.inc"
 
 }  // namespace pydaytime
+
 }  // namespace docstring
 
 //------------------------------------------------------------------------------

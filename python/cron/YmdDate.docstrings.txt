@@ -1,0 +1,13 @@
+--- type -----------------------------------------------------------------------
+A (year, month, date) tuple containing components of the Gregorian date.
+
+  >>> ymd = YmdDate((1973, Dec, 3))
+  >>> y, m, d = ymd
+  >>> list(ymd)
+  [1973, Month.Dec, 3]
+
+The components are also accessible as attributes.
+
+  >>> ymd.year
+  1973
+
