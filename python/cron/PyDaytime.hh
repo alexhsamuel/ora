@@ -593,8 +593,8 @@ template<class DAYTIME>
 GetSets<PyDaytime<DAYTIME>>
 PyDaytime<DAYTIME>::tp_getsets_ 
   = GetSets<PyDaytime>()
-    .template add_get<get_daytick>              ("daytick")
-    .template add_get<get_hour>                 ("hour")
+    .template add_get<get_daytick>              ("daytick"  , docstring::pydaytime::daytick)
+    .template add_get<get_hour>                 ("hour"     , docstring::pydaytime::hour)
     .template add_get<get_invalid>              ("invalid")
     .template add_get<get_minute>               ("minute")
     .template add_get<get_missing>              ("missing")

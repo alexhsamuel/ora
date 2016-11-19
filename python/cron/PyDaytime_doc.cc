@@ -86,6 +86,28 @@ from_ssm =
 "\n"
 ;
 
+doc_t
+daytick =
+"The _daytick_, the number of 2**-47 seconds since midnight.\n"
+"\n"
+"  >>> Daytime(0, 0, 0).daytick\n"
+"  0\n"
+"  >>> Daytime(0, 0, 1).daytick\n"
+"  140737488355328\n"
+"\n"
+;
+
+doc_t
+hour =
+"The hour of the hour, minute, second representation.\n"
+"\n"
+"  >>> Daytime.MIDNIGHT.hour\n"
+"  0\n"
+"  >>> Daytime.MAX.hour\n"
+"  23\n"
+"\n"
+;
+
 }  // namespace pydaytime
 
 //------------------------------------------------------------------------------
