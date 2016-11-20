@@ -25,6 +25,37 @@ Construct a `%1$s` instance with any of these:
 - A double value, as _seconds since midnight_ (SSM).
 - With no arguments, which constructs the value is `INVALID`.
 
+@cvar DENOMINATOR
+  One divided by the resolution in seconds.
+@cvar RESOLUTION
+  The approximate time resolution in seconds.
+@cvar MIN
+  The earliest daytime representable by this class.
+
+    >>> Daytime.MIN - Daytime.RESOLUTION
+    Traceback (most recent call last):
+      ...
+    OverflowError: daytime not in range
+
+@cvar MAX
+  The latest daytime representable by this class.
+
+    >>> Daytime.MAX + Daytime.RESOLUTION
+    Traceback (most recent call last):
+      ...
+    OverflowError: daytime not in range
+
+@cvar MIDNIGHT
+  The daytime representing midnight, the start of the day.
+
+@cvar INVALID
+  A special value indicating an invalid daytime.  
+
+  Operations that fail to produce a daytime, or produce a daytime that is not
+  representable by this class, may return this value.
+
+@cvar MISSING
+  A special value indicating a missing daytime.
 """
 
 from_daytick = """
@@ -37,7 +68,6 @@ Constructs a daytime from _dayticks_.
   from_daytick(daytick)
 @see
   `cron.daytime`.
-
 """
 
 from_hms = """

@@ -52,6 +52,31 @@ Methods may raise these exceptions:
 - `OverflowError`: The method produced a date that it out of range for
   `%1$s`.
 
+@cvar MIN
+  The earliest date representable by this class.
+
+    >>> Date.MIN - 1
+    Traceback (most recent call last):
+      ...
+    OverflowError: date not in range
+
+@cvar MAX
+  The latest date representable by this class.
+
+    >>> Date.MAX + 1
+    Traceback (most recent call last):
+      ...
+    OverflowError: date not in range
+
+@cvar INVALID
+  A special value indicating an invalid date.  
+
+  Operations that fail to produce a date, or produce a date that is not
+  representable by this class, may return this value.
+
+@cvar MISSING
+  A special value indicating a missing date.
+
 """
 
 datenum = """
