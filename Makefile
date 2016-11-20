@@ -188,6 +188,7 @@ $(PY_DOCSTR_HH): %.hh.inc: % $(WRAP_DOCSTRINGS)
 	$(WRAP_DOCSTRINGS) $<
 
 # Require the processed docstring sources to build objects.
+# FIXME: Be more specific.
 $(PY_OBJS):    	    	$(PY_DOCSTR_CC) $(PY_DOCSTR_HH)
 
 #-------------------------------------------------------------------------------
