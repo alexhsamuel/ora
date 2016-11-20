@@ -330,6 +330,13 @@ def test_subtract2():
     assert near(a - 1     , Daytime(23, 59, 58.9990))
     
 
+def test_add_bounds():
+    with pytest.raises(OverflowError):
+        Daytime.MIN - Daytime.RESOLUTION
+    with pytest.raises(OverflowError):
+        Daytime.MAX + Daytime.RESOLUTION
+
+
 def test_hash():
     daytimes = (
           [ Daytime.MIDNIGHT + n for n in range(0, 86400, 300) ]
