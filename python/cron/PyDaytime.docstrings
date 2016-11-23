@@ -3,13 +3,8 @@
 type = """
 A time of day.
 
-A daytime is a time of day.  Daytime is a representation of a time in a
-contextual day and location, as one might read off an ordinary clock.  A daytime
-is an approximation to a specific time of day, in the sense that a floating
-point number is an approximation to a real number.
-
-An object of this daytime class can represent a time of day with
-approximately %2$.1e second precision.
+An object of this daytime class can represent a time of day with approximately
+%2$.1e second precision.
 
 The conventional daytime representation uses `int` hours in [0, 59], `int`
 minutes in [0, 59], and `float` seconds in [0, 60).

@@ -7,6 +7,12 @@ specific time or interval of time.  A date is is not a subtype of a time, nor
 _vice versa_.
 
 
+# Types
+
+- `Date` - 32-bit date with full range over years 1 to 9999
+- `Date16` - 16-bit date with range from 1970 to 2149 Jun 4.
+
+
 # YMDI
 
 A _YMDI_ is a commonly-used encoding of a date as an eight-decimal digit
