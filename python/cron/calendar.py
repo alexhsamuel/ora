@@ -4,7 +4,6 @@ from   .date import Date
 
 #-------------------------------------------------------------------------------
 
-# FIXME: Start, end dates.
 # FIXME: What about invalid and missing?
 
 class CalendarError(Exception):
@@ -89,8 +88,8 @@ class Calendar:
             
 class AllCalendar(Calendar):
 
-    min = date.MIN
-    max = date.MAX
+    min = Date.MIN
+    max = Date.MAX
 
     def __contains__(self, date):
         return True
@@ -127,8 +126,8 @@ class ExplicitCalendar(Calendar):
         date = self._check(date)
         i = bisect.bisect_right(self.__dates, date)
         if i == 0:
-            # FIXME
-            pass
+            raise CalendarRangeError(
+                "no calendar last date for {}".format(date))
         else:
             return self.__dates[i]
 
@@ -137,12 +136,41 @@ class ExplicitCalendar(Calendar):
         date = self._check(date)
         i = bisect.bisect_left(self.__dates, date)
         if i == len(self.__dates):
-            # FIXME
-            pass
+            raise CalendarRangeError(
+                "no calendar next date for [{}]".format(date))
         else:
             return self.__dates[i]
 
-
-
         
         
+def parse_calendar(lines):
+    # FIXME: Min and max!
+
+    # Remove whitespace and trailing comments.
+    lines = ( l.split("#", 1)[0].strip() for l in lines )
+    # Skip blank lines.
+    lines = ( l for l in lines if l != "" )
+    # FIXME: Handle errors better.
+    dates = sorted( Date(l) for l in lines )
+    assert len(dates) > 0  # FIXME
+
+    return ExplicitCalendar(dates[0], dates[-1] + 1, dates)
+
+
+def load_calendar_file(path):
+    from pathlib import Path  # FIXME
+    with Path(path).open() as file:
+        return parse_calendar(file)
+
+
+if __name__ == "__main__":
+    cal = load_calendar_file("share/calendar/US federal holidays.txt")
+    import cron
+    date = cron.today("UTC")
+    print(date)
+    date = cal.next(date)
+    while True:
+        print(date)
+        date = cal.shift(date, 1)
+
+
