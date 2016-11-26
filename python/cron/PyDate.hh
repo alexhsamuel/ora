@@ -524,9 +524,12 @@ PyDate<DATE>::method___format__(
 {
   if (args->GetLength() != 1 || kw_args != nullptr)
     throw TypeError("__format__() takes one argument");
-  auto const fmt = args->GetItem(0)->Str()->as_utf8();
-
-  return Unicode::from(cron::DateFormat(fmt)(self->date_));
+  auto const pattern = args->GetItem(0)->Str()->as_utf8();
+  auto const result = 
+    // Empty pattern?  Use the default formatter.
+    strlen(pattern) == 0 ? cron::date::DateFormat::DEFAULT(self->date_)
+    : cron::DateFormat(pattern)(self->date_);
+  return Unicode::from(result);
 }
 
 

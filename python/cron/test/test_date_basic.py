@@ -115,6 +115,7 @@ def test_hash():
 
 def test_format():
     date = 2016/Jul/10
+    assert format(date, "")                     == "2016-07-10"
     assert format(date, "%Y-%m-%d")             == "2016-07-10"
     assert format(date, "%Y/%m/%d")             == "2016/07/10"
     assert format(date, "%d#%d")                == "10#10"
