@@ -64,7 +64,7 @@ def parse_expr(expr, Date=Date):
         time_zone = TimeZone(time_zone)
 
     if date == "today":
-        date = today(time_zone)
+        date = today(time_zone, Date=Date)
     elif date == "next":
         # FIXME
         pass
