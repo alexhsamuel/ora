@@ -1,5 +1,7 @@
 # Work List
 
+1. Make it `pip install`able.
+1. Build conda package.
 1. Use `fold` attribute per [PEP-495](https://www.python.org/dev/peps/pep-0495/)
 1. Clean up C++ Time and localization functions; document.
 1. Update docs for nex, namespaces, includes.
@@ -90,6 +92,8 @@
   current function/static method wrappers.
 
 # Misc
+
+- Remove `std::experimental::optional` everywhere.
 
 - Put back `from_parts()` overloading in date, time, daytime ctors?
 
