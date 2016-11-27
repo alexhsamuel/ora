@@ -117,6 +117,23 @@ private:
 
 
 //------------------------------------------------------------------------------
+// Docstrings
+//------------------------------------------------------------------------------
+
+namespace docstring {
+
+using doct_t = char const* const;
+
+namespace pytime {
+
+#include "PyTime.docstrings.hh.inc"
+
+}  // namespace docstring
+
+}  // namespace pytime
+
+
+//------------------------------------------------------------------------------
 // Type class
 //------------------------------------------------------------------------------
 
@@ -652,6 +669,17 @@ Type
 PyTime<TIME>::build_type(
   string const& type_name)
 {
+  // Customize the type docstring with this class's name and parameters.
+  auto const doc_len    = strlen(docstring::pytime::type) + 64;
+  auto const doc        = new char[doc_len];
+  auto const dot        = type_name.find_last_of('.');
+  auto unqualified_name = 
+    dot == string::npos ? type_name : type_name.substr(dot + 1);
+  snprintf(
+    doc, doc_len, docstring::pytime::type,
+    unqualified_name.c_str(),
+    to_string(TIME::MIN).c_str(), to_string(TIME::MAX).c_str());
+
   return PyTypeObject{
     PyVarObject_HEAD_INIT(nullptr, 0)
     (char const*)         strdup(type_name.c_str()),      // tp_name
@@ -674,7 +702,7 @@ PyTime<TIME>::build_type(
     (PyBufferProcs*)      nullptr,                        // tp_as_buffer
     (unsigned long)       Py_TPFLAGS_DEFAULT
                           | Py_TPFLAGS_BASETYPE,          // tp_flags
-    (char const*)         nullptr,                        // tp_doc
+    (char const*)         doc,                            // tp_doc
     (traverseproc)        nullptr,                        // tp_traverse
     (inquiry)             nullptr,                        // tp_clear
     (richcmpfunc)         wrap<PyTime, tp_richcompare>,   // tp_richcompare

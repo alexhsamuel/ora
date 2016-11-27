@@ -51,6 +51,18 @@ template class PyTime<cron::time::Unix64Time>;
 template class PyTime<cron::time::Time128>;
 
 //------------------------------------------------------------------------------
+// Docstrings
+
+namespace docstring {
+namespace pytime {
+
+#include "PyTime.docstrings.cc.inc"
+
+}  // namespace daytime
+}  // namespace docstring
+
+
+//------------------------------------------------------------------------------
 
 }  // namespace aslib
 

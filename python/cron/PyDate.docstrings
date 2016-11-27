@@ -49,7 +49,7 @@ Methods may raise these exceptions:
 - `TypeError`: The number of arguments is wrong, or an arguments could not
   be converted to the right type.
 - `ValueError`: An argument's value is invalid, e.g. month number 15.
-- `OverflowError`: The method produced a date that it out of range for
+- `OverflowError`: The method produced a date that is out of range for
   `%1$s`.
 
 @cvar MIN

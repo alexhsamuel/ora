@@ -1,0 +1,43 @@
+#-*- python -*-
+
+type = """
+An instant of physical time.
+
+The instant is not connected to any specific calendar and clock representation
+or any particular geographical location or time zone.  It represents an
+actual physical time.
+
+An intance can represent any time between %2$s and %3$s.
+
+A time's representation is an approximation of an infinitessimal instant of
+continuuous time in the same way that a floating point value is an approimation
+of a real number.  A time value actually represents a very short interval of
+time; the `RESOLUTION` class attribute is an approximation of the length of that
+interval.
+
+Internally, a time is represented as an integral number of ticks of size
+`RESOLUTION` from a base time.  The number of ticks is the instance's _offset_.
+
+
+# Constructor
+
+Generally, times are specificed with a local date, daytime, and time zone.  See
+_Localizing_ below.  
+
+Use `from_offset()` to construct an instance from ticks.
+
+
+# Exceptions
+
+Methods may raise these exceptions:
+
+- `OverflowError`: The method produces a time that is not between `MIN` and
+  `MAX`.
+
+
+# Localizing
+
+**FIXME:** Write this.
+
+"""
+

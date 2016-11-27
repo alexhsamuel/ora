@@ -898,6 +898,7 @@ Type
 PyDate<DATE>::build_type(
   string const& type_name)
 {
+  // Customize the type docstring with this class's name and parameters.
   auto const doc_len    = strlen(docstring::pydate::type) + 64;
   auto const doc        = new char[doc_len];
   auto const dot        = type_name.find_last_of('.');
@@ -1127,5 +1128,4 @@ extern template class PyDate<cron::date::Date16>;
 //------------------------------------------------------------------------------
 
 }  // namespace aslib
-
 

@@ -16,6 +16,7 @@
 1. Rename `InvalidDateError` -> `BadDateError` _et fils_.
 1. Daytime and Time rounding functions.
 1. timezone etc. namespace cleanup
+1. In Python 3.6, use variable annotations.
 
 
 # C++ API
