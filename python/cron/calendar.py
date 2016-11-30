@@ -36,7 +36,7 @@ class Calendar:
     # FIXME: Exceptions?
 
     def __init__(self, range):
-        self.__range = Range(range)
+        self.__range = Range(*range)
 
 
     def _check(self, date):
@@ -113,8 +113,8 @@ class AllCalendar(Calendar):
 
 class ExplicitCalendar(Calendar):
 
-    def __init__(self, min, max, dates):
-        super().__init__(min, max)
+    def __init__(self, range, dates):
+        super().__init__(range)
         self.__dates = sorted( self._check(d) for d in dates )
 
 
@@ -156,7 +156,7 @@ def parse_calendar(lines):
     dates = sorted( Date(l) for l in lines )
     assert len(dates) > 0  # FIXME
 
-    return ExplicitCalendar(dates[0], dates[-1] + 1, dates)
+    return ExplicitCalendar(Range(dates[0], dates[-1] + 1), dates)
 
 
 def load_calendar_file(path):
