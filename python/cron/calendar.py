@@ -1,6 +1,7 @@
 import bisect
 from   collections import namedtuple
 
+from   . import Weekday
 from   .date import Date
 
 #-------------------------------------------------------------------------------
@@ -87,11 +88,10 @@ class Calendar:
         return date
         
 
-            
+
 class AllCalendar(Calendar):
 
-    min = Date.MIN
-    max = Date.MAX
+    range = Range(Date.MIN, Date.MAX)
 
     def __contains__(self, date):
         return True
@@ -145,6 +145,21 @@ class ExplicitCalendar(Calendar):
 
         
         
+class WeekdayCalendar(Calendar):
+
+    def __init__(self, weekdays):
+        super().__init__(Range(Date.MIN, Date.MAX))
+        self.__weekdays = { Weekday(w) for w in weekdays }
+
+
+    def __contains__(self, date):
+        return date.weekday in self.__weekdays
+
+
+    # FIXME: We can make previous() and next() more efficient.
+
+
+
 def parse_calendar(lines):
     # FIXME: Min and max!
 
@@ -166,13 +181,14 @@ def load_calendar_file(path):
 
 
 if __name__ == "__main__":
-    cal = load_calendar_file("share/calendar/US federal holidays.txt")
     import cron
+    # cal = WeekdayCalendar({cron.Mon, cron.Tue, cron.Wed, cron.Thu, cron.Fri})
+    cal = load_calendar_file("share/calendar/US federal holidays.txt")
     date = cron.today("UTC")
     print(date)
     date = cal.next(date)
     while True:
-        print(date)
+        print(date, date.weekday)
         date = cal.shift(date, 1)
 
 
