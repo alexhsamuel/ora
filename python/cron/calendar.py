@@ -1,8 +1,13 @@
 import bisect
+from   collections import namedtuple
 
 from   .date import Date
 
 #-------------------------------------------------------------------------------
+
+# FIXME: Elsewhere.
+Range = namedtuple("Range", ("min", "max"))
+
 
 # FIXME: What about invalid and missing?
 
@@ -30,35 +35,32 @@ class Calendar:
 
     # FIXME: Exceptions?
 
-    def __init__(self, min, max):
-        self.__min = min
-        self.__max = max
+    def __init__(self, range):
+        self.__range = Range(range)
 
 
     def _check(self, date):
         date = Date(date)
         if not date.valid:
             raise InvalidDateError(date)  # FIXME: ?
-        if date < self.__min:
+        if date < self.__range.min:
             raise CalendarRangeError(
-                "date {} before min {}".format(date, self.__min))
-        if date > self.__max:
+                "date {} before min {}".format(date, self.__range.min))
+        if date > self.__range.max:
             raise CalendarRangeError(
-                "date {} after max {}".foramt(date, self.__max))
+                "date {} after max {}".foramt(date, self.__range.max))
         return date
 
 
     @property
-    def min(self):
-        return self.__min
+    def range(self):
+        """
+        The range of dates covered by this calendar.
+        """
+        return self.__range
 
 
-    @property
-    def max(self):
-        return self.__max
-
-
-    def last(self, date):
+    def previous(self, date):
         date = self._check(date)
         while date.valid and date not in self:
             date -= 1
@@ -81,7 +83,7 @@ class Calendar:
                 date = self.next(date + 1)
         elif offset < 0:
             for _ in range(offset):
-                date = self.last(date - 1)
+                date = self.previous(date - 1)
         return date
         
 
@@ -95,7 +97,7 @@ class AllCalendar(Calendar):
         return True
 
 
-    def last(self, date):
+    def previous(self, date):
         return self._check(date)
 
 
@@ -122,12 +124,12 @@ class ExplicitCalendar(Calendar):
         return i != len(self.__dates) and self.__dates[i] == date
 
 
-    def last(self, date):
+    def previous(self, date):
         date = self._check(date)
         i = bisect.bisect_right(self.__dates, date)
         if i == 0:
             raise CalendarRangeError(
-                "no calendar last date for {}".format(date))
+                "no calendar previous date for {}".format(date))
         else:
             return self.__dates[i]
 
