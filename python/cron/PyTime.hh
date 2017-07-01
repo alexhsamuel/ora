@@ -775,8 +775,8 @@ parts_to_time(
 {
   assert(parts->Length() == 7);
   auto const year   = parts->GetItem(0)->long_value();
-  auto const month  = parts->GetItem(1)->long_value() - 1;
-  auto const day    = parts->GetItem(2)->long_value() - 1;
+  auto const month  = parts->GetItem(1)->long_value();
+  auto const day    = parts->GetItem(2)->long_value();
   auto const hour   = parts->GetItem(3)->long_value();
   auto const minute = parts->GetItem(4)->long_value();
   auto const second = parts->GetItem(5)->double_value();

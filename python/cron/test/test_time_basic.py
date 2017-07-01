@@ -37,6 +37,13 @@ def test_comparison():
     assert     Time.MAX > Time.MIN > Time.MISSING > Time.INVALID
 
 
+def test_init():
+    t = Time(2017, 7, 5, 19, 18, 0, "US/Eastern")
+    l = to_local(t, "US/Eastern")
+    assert l.date == 2017 / Jul / 5
+    assert l.daytime == Daytime(19, 18, 0)
+
+
 def test_zero():
     t = from_local((0, 0), UTC)
     p = t.get_parts(UTC)
