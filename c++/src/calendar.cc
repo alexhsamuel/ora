@@ -87,7 +87,7 @@ parse_holiday_calendar(
   auto cal = std::make_unique<HolidayCalendar>(min, max);
   for (auto const date : dates)
     cal->add(date);
-  return std::move(cal);
+  return cal;
 }
 
 
