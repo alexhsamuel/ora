@@ -200,7 +200,7 @@ create_or_get_ufunc(
   else
     // FIXME: Check name, num_args, num_rets.
     ;
-  return std::move(ufunc);
+  return ufunc;
 }
 
 
