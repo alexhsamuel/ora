@@ -525,8 +525,9 @@ PyTime<TIME>::method___format__(
   if (args->GetLength() != 1 || kw_args != nullptr)
     throw TypeError("__format__() takes one argument");
   auto const fmt = args->GetItem(0)->Str()->as_utf8();
-
-  return Unicode::from(cron::TimeFormat(fmt)(self->time_));
+  // If the format pattern is empty, use the default str format.
+  return Unicode::from(
+    (*fmt == '\0' ? *str_format_ : cron::TimeFormat(fmt))(self->time_));
 }
 
 
