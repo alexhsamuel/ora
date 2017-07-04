@@ -151,6 +151,15 @@ def test_from_ssm2():
     assert not a.missing
 
 
+def test_from_iso():
+    a = Daytime("12:30:45.125")
+    assert a.hour       == 12
+    assert a.minute     == 30
+    assert a.second     == 45.125
+    assert a.ssm        == 45045.125
+    assert a.valid
+
+
 def test_parts0():
     assert Daytime.MIN.hms == (0, 0, 0)
 

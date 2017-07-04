@@ -49,6 +49,11 @@ hms_to_daytick(
 }
 
 
+/*
+ * Parses an ISO-8601 extended daytime ("HH:MM:SS" format) into parts.
+ */
+extern HmsDaytime parse_iso_daytime(std::string const&) noexcept;
+
 //------------------------------------------------------------------------------
 
 }  // namespace cron

@@ -5,6 +5,7 @@
 
 using namespace aslib;
 using namespace cron;
+using namespace cron::daytime;
 
 using std::string;
 
@@ -152,5 +153,33 @@ TEST(Daytime32, from_hms_invalid) {
   EXPECT_THROW(from_hms<Daytime32>(24, 10, 10), InvalidDaytimeError);
   EXPECT_THROW(from_hms<Daytime32>(12, 60, 10), InvalidDaytimeError);
   EXPECT_THROW(from_hms<Daytime32>(12, 10, 60), InvalidDaytimeError);
+}
+
+TEST(Daytime, from_iso_daytime) {
+  EXPECT_EQ(from_iso_daytime("0:00:00")        , from_hms( 0,  0,  0));
+  EXPECT_EQ(from_iso_daytime("00:00:00")       , from_hms( 0,  0,  0));
+  EXPECT_EQ(from_iso_daytime("00:00:00.")      , from_hms( 0,  0,  0));
+  EXPECT_EQ(from_iso_daytime("00:00:00.0000")  , from_hms( 0,  0,  0));
+  EXPECT_EQ(from_iso_daytime("00:00:00.5")     , from_hms( 0,  0,  0.5));
+  EXPECT_EQ(from_iso_daytime("0:00:01")        , from_hms( 0,  0,  1));
+  EXPECT_EQ(from_iso_daytime("00:01:00")       , from_hms( 0,  1,  0));
+  EXPECT_EQ(from_iso_daytime("1:00:00")        , from_hms( 1,  0,  0));
+  EXPECT_EQ(from_iso_daytime("01:00:00")       , from_hms( 1,  0,  0));
+  EXPECT_EQ(from_iso_daytime("00:00:59.9375")  , from_hms( 0,  0, 59.9375));
+  EXPECT_EQ(from_iso_daytime("00:59:00")       , from_hms( 0, 59,  0));
+  EXPECT_EQ(from_iso_daytime("00:59:59.9375")  , from_hms( 0, 59, 59.9375));
+  EXPECT_EQ(from_iso_daytime("23:00:00")       , from_hms(23,  0,  0));
+  EXPECT_EQ(from_iso_daytime("23:59:59.9375")  , from_hms(23, 59, 59.9375));
+}
+
+TEST(Daytime, from_iso_daytime_format_error) {
+  EXPECT_THROW(from_iso_daytime(""), DaytimeFormatError);
+  EXPECT_THROW(from_iso_daytime("afternoon"), DaytimeFormatError);
+  EXPECT_THROW(from_iso_daytime("0:0:0"), DaytimeFormatError);
+  EXPECT_THROW(from_iso_daytime("12:3:00"), DaytimeFormatError);
+  EXPECT_THROW(from_iso_daytime("12:30"), DaytimeFormatError);
+  EXPECT_THROW(from_iso_daytime("00:00:60"), DaytimeFormatError);
+  EXPECT_THROW(from_iso_daytime("00:60:00"), DaytimeFormatError);
+  EXPECT_THROW(from_iso_daytime("24:00:00"), DaytimeFormatError);
 }
 

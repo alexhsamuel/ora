@@ -76,6 +76,17 @@ public:
 };
 
 
+class DaytimeFormatError
+  : public DaytimeError
+{
+public:
+
+  DaytimeFormatError(std::string const& message): DaytimeError(message) {}
+  virtual ~DaytimeFormatError() = default;
+
+};
+
+
 class TimeError
   : public Error
 {

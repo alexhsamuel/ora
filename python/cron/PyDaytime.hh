@@ -783,6 +783,16 @@ convert_to_daytime(
   if (opt)
     return *opt;
 
+  if (Unicode::Check(obj)) {
+    auto const str = static_cast<Unicode*>(obj)->as_utf8_string();
+    try {
+      return cron::daytime::from_iso_daytime<DAYTIME>(str);
+    }
+    catch (cron::DaytimeError) {
+      throw py::ValueError("can't parse as daytime: '"s + str + "'");
+    }
+  }
+
   if (Sequence::Check(obj)) 
     return parts_to_daytime<DAYTIME>(static_cast<Sequence*>(obj));
 
@@ -791,8 +801,6 @@ convert_to_daytime(
     // Interpret as SSM.
     return cron::daytime::from_ssm<DAYTIME>(*double_opt);
       
-  // FIXME: Parse strings.
-
   // Failed to convert.
   throw py::TypeError("can't convert to daytime: "s + *obj->Repr());
 }

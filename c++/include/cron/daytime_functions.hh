@@ -70,6 +70,21 @@ from_ssm(
 }
 
 
+template<class DAYTIME=Daytime>
+inline DAYTIME
+from_iso_daytime(
+  std::string const& daytime)
+{
+  auto hms = parse_iso_daytime(daytime);
+  if (   hour_is_valid(hms.hour) 
+      && minute_is_valid(hms.minute) 
+      && second_is_valid(hms.second))
+    return from_hms<DAYTIME>(hms);
+  else
+    throw DaytimeFormatError("not ISO daytime format");
+}  
+
+
 //------------------------------------------------------------------------------
 // Accessors
 //------------------------------------------------------------------------------
