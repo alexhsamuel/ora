@@ -544,7 +544,7 @@ PyTime<TIME>::method_from_offset(
   
   // int128_t still fits the valid range of Time128::Offset (i.e. uint128_t)
   // comfortably, due to the the overall date range limit.
-  auto const offset = (int128_t) *offset_arg->Long();
+  typename Time::Offset const offset = (int128_t) *offset_arg->Long();
   if (offset < TIME::MIN.get_offset() || offset > TIME::MAX.get_offset())
     throw OverflowError("time out of range");
   return create(TIME::from_offset((typename TIME::Offset) offset));

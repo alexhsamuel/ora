@@ -3,9 +3,9 @@
 type = """
 An instant of physical time.
 
-The instant is not connected to any specific calendar and clock representation
-or any particular geographical location or time zone.  It represents an
-actual physical time.
+The instant represented by %1$s is not connected to any specific calendar and
+clock representation or any particular geographical location or time zone.  It
+represents an actual physical time.
 
 An intance can represent any time between %2$s and %3$s.
 
