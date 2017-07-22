@@ -32,6 +32,7 @@ __all__ = (
     "now",
     "to_local",
     "to_local_datenum_daytick",
+    "to_weekday",
     "today",
 
     "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun",
@@ -66,6 +67,21 @@ class Weekday(enum.IntEnum):
     def __str__(self):
         return self.name
 
+
+
+# FIXME: Is this a good idea?
+def to_weekday(obj):
+    if isinstance(obj, Weekday):
+        return obj
+    try:
+        return Weekday[obj]
+    except KeyError:
+        pass
+    try:
+        return Weekday(obj)
+    except ValueError:
+        pass
+    raise ValueError("can't convert to a weekday: {!r}".format(obj))
 
 
 # Add the days of the week to the module namespace.
