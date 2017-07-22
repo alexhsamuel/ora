@@ -1,7 +1,8 @@
+from   aslib.py import format_ctor
 import bisect
 from   collections import namedtuple
 
-from   . import Weekday
+from   . import to_weekday
 from   .date import Date
 
 #-------------------------------------------------------------------------------
@@ -91,7 +92,17 @@ class Calendar:
 
 class AllCalendar(Calendar):
 
-    range = Range(Date.MIN, Date.MAX)
+    def __init__(self):
+        super().__init__((Date.MIN, Date.MAX))
+
+
+    def __repr__(self):
+        return format_ctor(self)
+
+
+    def __str__(self):
+        return "all days"
+
 
     def __contains__(self, date):
         return True
@@ -149,7 +160,15 @@ class WeekdayCalendar(Calendar):
 
     def __init__(self, weekdays):
         super().__init__(Range(Date.MIN, Date.MAX))
-        self.__weekdays = { Weekday(w) for w in weekdays }
+        self.__weekdays = { to_weekday(w) for w in weekdays }
+
+
+    def __repr__(self):
+        return format_ctor(self, self.__weekdays)
+
+
+    def __str__(self):
+        return ",".join( str(w) for w in self.__weekdays )
 
 
     def __contains__(self, date):
