@@ -11,6 +11,7 @@ Other libraries that provide date and time functionality.
 - [pytz](http://pytz.sourceforge.net/)
 - [dateutil](https://dateutil.readthedocs.org/en/latest/)
 - [mxDateTime](http://www.egenix.com/products/python/mxBase/mxDateTime/)
+- [udatetime](https://github.com/freach/udatetime)
 - [Delorean](http://delorean.readthedocs.org/en/latest/quickstart.html)
 - [Arrow](http://crsmithdev.com/arrow/)
 - [pendulum](https://pendulum.eustace.io/)
