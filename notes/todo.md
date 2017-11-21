@@ -5,7 +5,9 @@
 1. Use `fold` attribute per [PEP-495](https://www.python.org/dev/peps/pep-0495/)
 1. Clean up C++ Time and localization functions; document.
 1. Python function for formatting with time zone.
-1. Change %K format etc. to include all digits.
+1. Change subsecond formatting.  Instead of %k etc, support,
+   - %f for compatibility
+   - float-style %.9S on seconds
 1. Update docs for nex, namespaces, includes.
 1. C++ constants for months.
 1. Default precision for C++ time, daytime formats (fractional secs?).
