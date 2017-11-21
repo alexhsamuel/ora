@@ -92,7 +92,10 @@ now_timespec()
 {
   timespec ts;
 
-#ifdef __MACH__
+// macOS does not provide clock_gettime() until SDK 10.12.  We assume we have
+// this now and use it, but keep this code around in case we need to add back
+// support for previous SDK versions.
+#ifdef __MACH__DISABLED
   static clock_serv_t cclock;
   static bool const initialized = 
     host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock) == 0;
