@@ -93,13 +93,11 @@ now_timespec()
   timespec ts;
 
 #ifdef __MACH__
-  clock_serv_t cclock;
+  static clock_serv_t cclock;
+  static bool const initialized = 
+    host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock) == 0;
   mach_timespec_t mts;
-  // FIXME: Should we keep the clock service around?
-  bool const success = 
-       host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock) == 0
-    && clock_get_time(cclock, &mts) == 0;
-  mach_port_deallocate(mach_task_self(), cclock);
+  bool const success = initialized && clock_get_time(cclock, &mts) == 0;
   if (success) {
     ts.tv_sec = mts.tv_sec;
     ts.tv_nsec = mts.tv_nsec;
