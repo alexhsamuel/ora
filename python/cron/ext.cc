@@ -92,6 +92,7 @@ PyInit_ext(void)
     TranslateException<cron::NonexistentDateDaytime>::to(PyExc_RuntimeError);
     TranslateException<cron::TimeRangeError>::to(PyExc_OverflowError);
     TranslateException<cron::TimeFormatError>::to(PyExc_ValueError);
+    TranslateException<aslib::FormatError>::to(PyExc_RuntimeError);
 
     return mod.release();
   }
