@@ -1,7 +1,5 @@
 import enum
 
-import aslib.py
-
 from   .ext import *
 
 __all__ = (
