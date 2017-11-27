@@ -1,9 +1,9 @@
-from   aslib.py import format_ctor
 import bisect
 from   collections import namedtuple
 
 from   . import to_weekday
 from   .date import Date
+from   .util import format_ctor
 
 #-------------------------------------------------------------------------------
 

@@ -17,8 +17,10 @@
 1. Basic string parsing for `convert_to_*()` functions.
 1. Full parsing support.
 1. Check Time128 second precision in C++ and Python.
+1. Change LocalTime to a proper type, with 'year', 'month' etc. passthrough properties
 1. Rename `InvalidDateError` -> `BadDateError` _et fils_.
-1. Daytime and Time rounding functions.
+1. Daytime and Time rounding functions.  Maybe like Arrow's `floor()`, `ceil()`?
+1. Rename aslib namespace.
 1. timezone etc. namespace cleanup
 1. In Python 3.6, use variable annotations.
 
