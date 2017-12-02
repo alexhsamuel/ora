@@ -1,13 +1,17 @@
 # Work List
 
+1. Change subsecond formatting.  Instead of %k etc, support,
+   - %f for compatibility
+   - time zone specification (UTC, display, local, named)
+   - get rid of ms, µs, ns fields
+1. Python function for formatting with time zone.
 1. Make it `pip install`able.
 1. Build conda package.
 1. Use `fold` attribute per [PEP-495](https://www.python.org/dev/peps/pep-0495/)
 1. Clean up C++ Time and localization functions; document.
-1. Python function for formatting with time zone.
-1. Change subsecond formatting.  Instead of %k etc, support,
-   - %f for compatibility
-   - float-style %.9S on seconds
+1. macOS old tzinfo format.
+1. Add exact us, ns types.
+1. Benchmark.
 1. Update docs for nex, namespaces, includes.
 1. C++ constants for months.
 1. Default precision for C++ time, daytime formats (fractional secs?).
@@ -23,6 +27,7 @@
 1. Rename aslib namespace.
 1. timezone etc. namespace cleanup
 1. In Python 3.6, use variable annotations.
+1. Locale support in formatting.
 
 
 # C++ API
