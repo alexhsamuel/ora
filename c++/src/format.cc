@@ -239,34 +239,6 @@ format_daytime(
     sb.format(daytime.hour, mods.get_width(2), mods.get_pad('0'));
     break;
 
-  case 'k':
-    {
-      unsigned const msec = (daytime.second - (unsigned) daytime.second) * 1e+3;
-      sb.format(msec, mods.get_width(3), mods.get_pad('0'));
-    }
-    break;
-
-  case 'K':
-    {
-      unsigned const usec = (unsigned) ((daytime.second - (unsigned) daytime.second) * 1e+6) % 1000;
-      sb.format(usec, mods.get_width(3), mods.get_pad('0'));
-    }
-    break;
-
-  case 'l':
-    {
-      unsigned const nsec = (unsigned) ((daytime.second - (unsigned) daytime.second) * 1e+9) % 1000;
-      sb.format(nsec, mods.get_width(3), mods.get_pad('0'));
-    }
-    break;
-
-  case 'L':
-    {
-      unsigned const psec = (unsigned) ((daytime.second - (unsigned) daytime.second) * 1e+12) % 1000;
-      sb.format(psec, mods.get_width(3), mods.get_pad('0'));
-    }
-    break;
-
   case 'M':
     sb.format(daytime.minute, mods.get_width(2), mods.get_pad('0'));
     break;

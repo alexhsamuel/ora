@@ -26,10 +26,6 @@ The following format codes are supported for daytimes and times:
 |:----:|:----------|
 | `%h` | the 12-hour hour number |
 | `%H` | the 24-hour hour number |
-| `%k` | ms, i.e. the truncated first three fractional digits of seconds |
-| `%K` | µs, i.e. the truncated second three fractional digits of seconds |
-| `%l` | ns, i.e. the truncated third three fractional digits of seconds |
-| `%L` | ps, i.e. the truncated fourth three fractional digits of seconds |
 | `%M` | the minute number |
 | `%p` | either "AM", for hour < 12, or "PM", otherwise |
 | `%S` | seconds of the minute |

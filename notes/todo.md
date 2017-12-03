@@ -3,7 +3,6 @@
 1. Change subsecond formatting.  Instead of %k etc, support,
    - %f for compatibility
    - time zone specification (UTC, display, local, named)
-   - get rid of ms, µs, ns fields
 1. Python function for formatting with time zone.
 1. Make it `pip install`able.
 1. Build conda package.
