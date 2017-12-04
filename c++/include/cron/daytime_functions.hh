@@ -180,16 +180,21 @@ seconds_after(
   double const seconds)
 {
   using Offset = typename DAYTIME::Offset;
+  auto const END = DAYTIME::OFFSET_END;
 
   ensure_valid(daytime);
-  double offset = daytime.get_offset() + seconds * DAYTIME::DENOMINATOR;
 
-  double const day_offset = DAYTIME::OFFSET_END;
-  if (offset >= 0)
-    offset = fmod(offset, day_offset);
-  else
-    offset = fmod(offset, day_offset) + day_offset;
-  return from_offset<DAYTIME>((Offset) round(offset));
+  Offset const offset = daytime.get_offset();
+
+  // Since we use unsigned integers and nearly the entire range, we have to be
+  // very careful about overflowing; we can't produce intermediate results that
+  // are negative or larger than DENOMINATOR.  So, first reduce the argument to
+  // positive seconds less than one day, then convert to offset units.
+  Offset const delta = 
+    round(fmod(fabs(seconds), SECS_PER_DAY) * DAYTIME::DENOMINATOR);
+  // Carefully add or subtract, avoiding overflows.
+  return from_offset<DAYTIME>(
+    seconds >= 0 ? add_mod(offset, delta, END) : sub_mod(offset, delta, END));
 }
 
 

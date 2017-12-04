@@ -340,10 +340,8 @@ def test_subtract2():
     
 
 def test_add_bounds():
-    with pytest.raises(OverflowError):
-        Daytime.MIN - Daytime.RESOLUTION
-    with pytest.raises(OverflowError):
-        Daytime.MAX + Daytime.RESOLUTION
+    assert Daytime.MIN - Daytime.RESOLUTION == Daytime.MAX
+    assert Daytime.MAX + Daytime.RESOLUTION == Daytime.MIN
 
 
 def test_hash():

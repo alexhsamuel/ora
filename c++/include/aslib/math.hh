@@ -186,6 +186,34 @@ struct div_t
 
 
 /*
+ * Computes (x + y) % m without overflowing.
+ */
+template<class T>
+inline T
+add_mod(
+  T const x,
+  T const y,
+  T const m)
+{
+  return y < m - x ? x + y : m - (m - x) - (m - y);
+}
+
+
+/*
+ * Computes (x - y) % m without overflowing.
+ */
+template<class T>
+inline T
+sub_mod(
+  T const x,
+  T const y,
+  T const m)
+{
+  return y < x ? x - y : m - (m - x) + (m - y);
+}
+
+
+/*
  * Like <std::div>, except the remainder has the same sign as the denominator.
  *
  * Returns `{quot, rem}` such that,

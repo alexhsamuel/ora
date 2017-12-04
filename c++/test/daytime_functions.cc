@@ -43,7 +43,6 @@ TEST(daytime_add, Daytime32) {
 TEST(daytime_add, limits) {
   EXPECT_EQ(Daytime::MIDNIGHT, Daytime::MIDNIGHT + 0);
   EXPECT_TRUE(almost_equal(from_hms(23, 59, 59.99999), Daytime::MIDNIGHT + 86399.99999));
-  EXPECT_EQ(Daytime::MIDNIGHT, from_hms(23, 59, 59.99999) + -86399.99999);
   EXPECT_EQ(Daytime::MIDNIGHT, from_hms(12, 30, 15) + -45015);
   EXPECT_EQ(from_hms(23, 59, 59), from_hms(12, 30, 15) + 41384);
 }
