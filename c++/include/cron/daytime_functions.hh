@@ -168,6 +168,37 @@ before(
 // Arithemtic with seconds
 //------------------------------------------------------------------------------
 
+namespace {
+
+/*
+ * Computes (x + y) % m without overflowing.
+ */
+template<class T>
+inline T
+add_mod(
+  T const x,
+  T const y,
+  T const m)
+{
+  return y < m - x ? x + y : m - (m - x) - (m - y);
+}
+
+
+/*
+ * Computes (x - y) % m without overflowing.
+ */
+template<class T>
+inline T
+sub_mod(
+  T const x,
+  T const y,
+  T const m)
+{
+  return y == x ? 0 : y < x ? x - y : m - (m - x) + (m - y);
+}
+
+}
+
 /*
  * Shifts `daytime` forward by `seconds`.
  *
@@ -180,16 +211,23 @@ seconds_after(
   double const seconds)
 {
   using Offset = typename DAYTIME::Offset;
+  auto const END = DAYTIME::OFFSET_END;
 
   ensure_valid(daytime);
-  double offset = daytime.get_offset() + seconds * DAYTIME::DENOMINATOR;
 
-  double const day_offset = DAYTIME::OFFSET_END;
-  if (offset >= 0)
-    offset = fmod(offset, day_offset);
-  else
-    offset = fmod(offset, day_offset) + day_offset;
-  return from_offset<DAYTIME>((Offset) round(offset));
+  Offset const offset = daytime.get_offset();
+
+  // Since we use unsigned integers and nearly the entire range, we have to be
+  // very careful about overflowing; we can't produce intermediate results that
+  // are negative or larger than DENOMINATOR.  So, first reduce the argument to
+  // positive seconds less than one day, then convert to offset units.
+  Offset const delta = 
+    round(fmod(fabs(seconds), SECS_PER_DAY) * DAYTIME::DENOMINATOR);
+  // Carefully add or subtract, avoiding overflows.
+  auto const off = 
+    seconds >= 0 ? add_mod(offset, delta, END) 
+    : sub_mod(offset, delta, END);
+  return from_offset<DAYTIME>(off);
 }
 
 

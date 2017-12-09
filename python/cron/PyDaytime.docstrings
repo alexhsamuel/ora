@@ -162,6 +162,9 @@ The second of the hour, minute, second representation.
 
 """
 
+offset = """
+"""
+
 ssm = """
 The _seconds since midnight_ (SSM) representation.
 

@@ -138,11 +138,12 @@ private:
 
   // Getsets.
   static ref<Object> get_daytick                (PyDaytime* self, void*);
+  static ref<Object> get_hms                    (PyDaytime* self, void*);
   static ref<Object> get_hour                   (PyDaytime* self, void*);
   static ref<Object> get_invalid                (PyDaytime* self, void*);
   static ref<Object> get_minute                 (PyDaytime* self, void*);
   static ref<Object> get_missing                (PyDaytime* self, void*);
-  static ref<Object> get_hms                    (PyDaytime* self, void*);
+  static ref<Object> get_offset                 (PyDaytime* self, void*);
   static ref<Object> get_second                 (PyDaytime* self, void*);
   static ref<Object> get_ssm                    (PyDaytime* self, void*);
   static ref<Object> get_valid                  (PyDaytime* self, void*);
@@ -526,6 +527,16 @@ PyDaytime<DAYTIME>::get_daytick(
 
 template<class DAYTIME>
 ref<Object>
+PyDaytime<DAYTIME>::get_hms(
+  PyDaytime* self,
+  void* /* closure */)
+{
+  return make_hms_daytime(cron::daytime::get_hms(self->daytime_));
+}
+
+
+template<class DAYTIME>
+ref<Object>
 PyDaytime<DAYTIME>::get_hour(
   PyDaytime* self,
   void* /* closure */)
@@ -566,11 +577,11 @@ PyDaytime<DAYTIME>::get_missing(
 
 template<class DAYTIME>
 ref<Object>
-PyDaytime<DAYTIME>::get_hms(
+PyDaytime<DAYTIME>::get_offset(
   PyDaytime* self,
   void* /* closure */)
 {
-  return make_hms_daytime(cron::daytime::get_hms(self->daytime_));
+  return Long::FromLong(self->daytime_.get_offset());
 }
 
 
@@ -614,6 +625,7 @@ PyDaytime<DAYTIME>::tp_getsets_
     .template add_get<get_invalid>              ("invalid"  , docstring::pydaytime::invalid)
     .template add_get<get_minute>               ("minute"   , docstring::pydaytime::minute)
     .template add_get<get_missing>              ("missing"  , docstring::pydaytime::missing)
+    .template add_get<get_offset>               ("offset"   , docstring::pydaytime::offset)
     .template add_get<get_second>               ("second"   , docstring::pydaytime::second)
     .template add_get<get_ssm>                  ("ssm"      , docstring::pydaytime::ssm)
     .template add_get<get_valid>                ("valid"    , docstring::pydaytime::valid)
