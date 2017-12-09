@@ -226,6 +226,62 @@ operator<<(
 }
 
 
+class LocalTimeFormat 
+{
+public:
+
+  LocalTimeFormat(
+    std::string const& pattern,
+    TimeZone_ptr tz)
+  : fmt_(pattern),
+    tz_(tz)
+  {
+  }
+
+  static LocalTimeFormat
+  parse(
+    std::string const& pattern)
+  {
+    static auto const UTC = std::make_shared<TimeZone const>();
+
+    // Look for a time zone in the format pattern.
+    auto const at = pattern.rfind('@');
+    if (at == std::string::npos) {
+      // No time zone given; use UTC.
+      return {pattern, UTC};
+    }
+    else {
+      auto const tz_name = pattern.substr(at + 1);
+      TimeZone_ptr tz;
+      if (tz_name == "" || tz_name == "display")
+        tz = cron::get_display_time_zone();
+      else if (tz_name == "UTC")
+        tz = TimeZone_ptr(UTC);
+      else if (tz_name == "system")
+        tz = cron::get_system_time_zone();
+      else
+        tz = cron::get_time_zone(tz_name);
+      return {pattern.substr(0, at), tz};
+    }
+  }
+
+  template<class TIME> 
+  std::string
+  operator()(
+    TIME const time)
+    const 
+  { 
+    return fmt_(time, *tz_); 
+  }
+
+private:
+
+  TimeFormat fmt_;
+  TimeZone_ptr tz_;
+
+};
+
+
 }  // namespace time
 
 //------------------------------------------------------------------------------
