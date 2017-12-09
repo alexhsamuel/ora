@@ -91,6 +91,13 @@ def test_format():
     assert format(Time.MISSING, "%~W!")                 == "MISS"
 
 
+def test_format_tz():
+    time = (2017/Dec/9, Daytime(15, 42, 20)) @ UTC
+    assert format(time, "%Y-%m-%d %H:%M:%S@UTC") == "2017-12-09 15:42:20"
+    assert format(time, "%Y-%m-%d %H:%M:%S@America/New_York") == "2017-12-09 10:42:20"
+    assert "now is {:%Y-%m-%d %H:%M:%S@{}}".format(time, "America/New_York") == "now is 2017-12-09 10:42:20"
+
+
 def test_from_offset():
     assert SmallTime.from_offset(SmallTime.MIN.offset) == SmallTime.MIN
     assert SmallTime.from_offset(SmallTime.MAX.offset) == SmallTime.MAX
