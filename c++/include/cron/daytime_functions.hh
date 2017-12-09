@@ -168,6 +168,37 @@ before(
 // Arithemtic with seconds
 //------------------------------------------------------------------------------
 
+namespace {
+
+/*
+ * Computes (x + y) % m without overflowing.
+ */
+template<class T>
+inline T
+add_mod(
+  T const x,
+  T const y,
+  T const m)
+{
+  return y < m - x ? x + y : m - (m - x) - (m - y);
+}
+
+
+/*
+ * Computes (x - y) % m without overflowing.
+ */
+template<class T>
+inline T
+sub_mod(
+  T const x,
+  T const y,
+  T const m)
+{
+  return y == x ? 0 : y < x ? x - y : m - (m - x) + (m - y);
+}
+
+}
+
 /*
  * Shifts `daytime` forward by `seconds`.
  *
@@ -193,8 +224,10 @@ seconds_after(
   Offset const delta = 
     round(fmod(fabs(seconds), SECS_PER_DAY) * DAYTIME::DENOMINATOR);
   // Carefully add or subtract, avoiding overflows.
-  return from_offset<DAYTIME>(
-    seconds >= 0 ? add_mod(offset, delta, END) : sub_mod(offset, delta, END));
+  auto const off = 
+    seconds >= 0 ? add_mod(offset, delta, END) 
+    : sub_mod(offset, delta, END);
+  return from_offset<DAYTIME>(off);
 }
 
 
