@@ -228,6 +228,13 @@ format_daytime(
   HmsDaytime const& daytime)
 {
   switch (pattern[pos]) {
+  case 'f':
+    {
+      unsigned const usec = fmod(daytime.second, 1) * 1e6;
+      sb.format(usec, 6, mods.get_pad('0'));
+    }
+    break;
+
   case 'h':
     {
       unsigned const hour = daytime.hour % 12;
