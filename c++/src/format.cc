@@ -228,6 +228,13 @@ format_daytime(
   HmsDaytime const& daytime)
 {
   switch (pattern[pos]) {
+  case 'f':
+    {
+      unsigned const usec = fmod(daytime.second, 1) * 1e6;
+      sb.format(usec, 6, mods.get_pad('0'));
+    }
+    break;
+
   case 'h':
     {
       unsigned const hour = daytime.hour % 12;
@@ -304,6 +311,18 @@ format_time_zone(
     {
       unsigned const offset_hour = std::abs(time_zone.offset) / SECS_PER_HOUR;
       sb.format(offset_hour, mods.get_width(2),mods.get_pad('0'));
+    }
+    break;
+
+  case 'u':
+    {
+      sb << (time_zone.offset < 0 ? '-' : '+');
+      auto const off = std::abs(time_zone.offset);
+      auto const hr = off / SECS_PER_HOUR;
+      auto const mn = off % SECS_PER_HOUR / SECS_PER_MIN;
+      sb.format(hr, mods.get_width(2), '0');
+      sb << ':';
+      sb.format(mn, mods.get_width(2), '0');
     }
     break;
 

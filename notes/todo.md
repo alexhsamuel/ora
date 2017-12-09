@@ -1,30 +1,30 @@
 # Work List
 
-1. Change subsecond formatting.  Instead of %k etc, support,
-   - %f for compatibility
-   - time zone specification (UTC, display, local, named)
+1. Synchronize time format to Python datetime.
 1. Python function for formatting with time zone.
+1. Global display time zone in Python API.
+1. Revisit type definitions.
+   - Benchmark 2**n vs. 10**n types.
+   - Add exact us, ns types.
 1. Make it `pip install`able.
 1. Build conda package.
+1. Rename `InvalidDateError` -> `BadDateError` _et fils_.
+1. Rename cron -> ora.
+1. Rename aslib namespace.
+1. timezone etc. namespace cleanup
+1. Basic string parsing for `convert_to_*()` functions.
+1. Full parsing support.
+1. Change LocalTime to a proper type, with 'year', 'month' etc. passthrough properties
+1. Daytime and Time rounding functions.  Maybe like Arrow's `floor()`, `ceil()`?
 1. Use `fold` attribute per [PEP-495](https://www.python.org/dev/peps/pep-0495/)
 1. Clean up C++ Time and localization functions; document.
 1. macOS old tzinfo format.
-1. Add exact us, ns types.
 1. Benchmark.
 1. Update docs for nex, namespaces, includes.
 1. C++ constants for months.
 1. Default precision for C++ time, daytime formats (fractional secs?).
    Or make the default daytime format mutable?
-1. Global display time zone in Python API.
-1. Adjust the definition of TimeTraits.
-1. Basic string parsing for `convert_to_*()` functions.
-1. Full parsing support.
 1. Check Time128 second precision in C++ and Python.
-1. Change LocalTime to a proper type, with 'year', 'month' etc. passthrough properties
-1. Rename `InvalidDateError` -> `BadDateError` _et fils_.
-1. Daytime and Time rounding functions.  Maybe like Arrow's `floor()`, `ceil()`?
-1. Rename aslib namespace.
-1. timezone etc. namespace cleanup
 1. In Python 3.6, use variable annotations.
 1. Locale support in formatting.
 

@@ -24,6 +24,7 @@ The following format codes are supported for daytimes and times:
 
 | Code | Expansion |
 |:----:|:----------|
+| '%f' | 6 fractional digits (truncated) of seconds |
 | `%h` | the 12-hour hour number |
 | `%H` | the 24-hour hour number |
 | `%M` | the minute number |
@@ -39,31 +40,49 @@ The following format codes are supported for times only:
 | `%q` | the minutes part of the time zone offset |
 | `%Q` | the hours part of the time zone offset |
 | `%U` | the sign of the time zone offset |
+| `%u` | the six-character time zone offset, e.g. +00:00 |
 | `%Z` | the time zone name |
 | `%z` | the [military time zone](https://en.wikipedia.org/wiki/List_of_military_time_zones) letter |
 
 The following modifiers are supported:
 
- * A numerical code can be preceded by the number of (integral) digits to show.
-   For example, `%3h` uses three digits for the number of hours,
+- A numerical code can be preceded by the number of (integral) digits to show.
+  For example, `%3h` uses three digits for the number of hours,
 
- * For `S`, the number of digits may be followed by a decimal point and number
-   of fractional digits.  For example, `%02.3S` shows seconds to ms precision.
+- For `S`, the number of digits may be followed by a decimal point and number
+  of fractional digits.  For example, `%02.3S` shows seconds to ms precision.
 
- * `#` followed by another character sets the pad character.  For example,
-   `%#*3H` shows the number of hours with three digits, padded on the left with
-   asterisks.
+- `#` followed by another character sets the pad character.  For example,
+  `%#*3H` shows the number of hours with three digits, padded on the left with
+  asterisks.
 
- * `^` specifies all capital letters, for example `%^W`.
+- `^` specifies all capital letters, for example `%^W`.
 
- * `_` specifies all lower-case letters, for example `%_b`.
+- `_` specifies all lower-case letters, for example `%_b`.
 
- * `~` specifies abbreviated names, for months, weekdays, and time zones, for
+- `~` specifies abbreviated names, for months, weekdays, and time zones, for
    example `%~W`.
 
- * `E` (not implemented) specifies the locale's alternative representation.
+- `E` (not implemented) specifies the locale's alternative representation.
 
- * `O` (not implemented) specifies the locale's alternative numerical
-   representation.
+- `O` (not implemented) specifies the locale's alternative numerical
+  representation.
 
+
+## Time zones
+
+The `TimeFormat` C++ class, and the Python formatting strings shown above,
+always format times localized to UTC.
+
+The `LocalTimeFormat` C++ class and Python formatting for times support an
+additional syntax for specifying the time zone in which times are formatted.
+The time format may be followed by `@` and a time zone specification; these
+specifications are supported:
+
+- `display` or empty string: the current display time zone
+- `system`: the system time zone
+- a time zone name: the named time zone
+
+For example, the format string `"%Y-%m-%d %H:%M:%S+%u@America/New_York"` formats
+the time, with UTC offset, localized to New York.
 
