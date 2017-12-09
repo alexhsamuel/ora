@@ -83,6 +83,28 @@ split1(
 }
 
 
+/*
+ * Right-pads or truncates `str` to `width` characters.
+ */
+inline std::string
+pad_trunc(
+  std::string const& str,
+  size_t const width,
+  char const pad)
+{
+  auto const len = str.length();
+  if (len == width)
+    return str;
+  else if (len < width) {
+    auto padded = str;
+    padded.append(width - len, pad);
+    return padded;
+  }
+  else
+    return str.substr(0, width);
+}
+
+
 //------------------------------------------------------------------------------
 
 }  // namespace aslib
