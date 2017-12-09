@@ -1,8 +1,7 @@
 # Work List
 
 1. Synchronize time format to Python datetime.
-1. Python function for formatting with time zone.
-1. Global display time zone in Python API.
+1. Initialize display time zone from TZ.
 1. Revisit type definitions.
    - Benchmark 2**n vs. 10**n types.
    - Add exact us, ns types.
