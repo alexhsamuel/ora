@@ -525,9 +525,12 @@ PyTime<TIME>::method___format__(
   if (args->GetLength() != 1 || kw_args != nullptr)
     throw TypeError("__format__() takes one argument");
   auto const fmt = args->GetItem(0)->Str()->as_utf8();
+
   // If the format pattern is empty, use the default str format.
-  return Unicode::from(
-    (*fmt == '\0' ? *str_format_ : cron::TimeFormat(fmt))(self->time_));
+  if (*fmt == '\0')
+    return Unicode::from((*str_format_)(self->time_));
+  else
+    return Unicode::from(cron::time::LocalTimeFormat::parse(fmt)(self->time_));
 }
 
 
@@ -544,7 +547,7 @@ PyTime<TIME>::method_from_offset(
   
   // int128_t still fits the valid range of Time128::Offset (i.e. uint128_t)
   // comfortably, due to the the overall date range limit.
-  typename Time::Offset const offset = (int128_t) *offset_arg->Long();
+  auto const offset = (int128_t) *offset_arg->Long();
   if (offset < TIME::MIN.get_offset() || offset > TIME::MAX.get_offset())
     throw OverflowError("time out of range");
   return create(TIME::from_offset((typename TIME::Offset) offset));

@@ -30,11 +30,11 @@ TEST(TimeFormat, all) {
   EXPECT_THROW(TimeFormat("%c")(time, *tz), TimeFormatError);  // FIXME
   EXPECT_EQ("28",               TimeFormat("%d")(time, *tz));
   EXPECT_THROW(TimeFormat("%D")(time, *tz), TimeFormatError);  // FIXME
+  EXPECT_EQ("000000",           TimeFormat("%f")(time, *tz));
   EXPECT_EQ("13",               TimeFormat("%g")(time, *tz));
   EXPECT_EQ("2013",             TimeFormat("%G")(time, *tz));
   EXPECT_EQ("15",               TimeFormat("%H")(time, *tz));
   EXPECT_EQ("209",              TimeFormat("%j")(time, *tz));
-  EXPECT_EQ(".000 000 000 000", TimeFormat(".%k %K %l %L")(time, *tz));
   EXPECT_EQ("07",               TimeFormat("%m")(time, *tz));
   EXPECT_EQ("37",               TimeFormat("%M")(time, *tz));
   EXPECT_EQ("UTC-14400 secs",   TimeFormat("UTC%o secs")(time, *tz));
@@ -52,7 +52,8 @@ TEST(TimeFormat, all) {
 
   // One Time tick is a bit less than 15 nsec.
   auto const time1 = time::from_offset(time.get_offset() + 1);
-  EXPECT_EQ(".000 000 014", TimeFormat(".%k %K %l")(time1));
+  EXPECT_EQ("38.000000014",     TimeFormat("%.9S")(time1));
+  EXPECT_EQ("38.000000",        TimeFormat("%S.%f")(time1));
 }
 
 TEST(TimeFormat, width) {
@@ -82,6 +83,10 @@ TEST(TimeFormat, rounding) {
   EXPECT_EQ("06:07:08.99",      TimeFormat("%H:%M:%.2S")(time, *tz));
   EXPECT_EQ("06:07:08.999",     TimeFormat("%H:%M:%.3S")(time, *tz));
   EXPECT_EQ("06:07:08.999999",  TimeFormat("%H:%M:%.6S")(time, *tz));
+  EXPECT_EQ("06:07:08.999999",  TimeFormat("%H:%M:%S.%f")(time, *tz));
+
+  auto const time1 = from_local(2013/JAN/1, from_hms(6, 7, 8.9999999), *tz);
+  EXPECT_EQ("06:07:08.999999",  TimeFormat("%H:%M:%S.%f")(time1, *tz));
 }
 
 TEST(TimeFormat, precision) { 
