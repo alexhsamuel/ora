@@ -1,5 +1,8 @@
+- ora
+- hora
 - cron
 - banana
 - fruitfly
 - zeit
-- hora
+
+http://www.word2word.com/howto/timead.html
