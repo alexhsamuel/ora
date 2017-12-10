@@ -1,7 +1,6 @@
 # Work List
 
 1. Synchronize time format to Python datetime.
-1. Initialize display time zone from TZ.
 1. Make Time(datetime, tz) work for naive datetime.
 1. Methods to return `datetime` instances.
 1. Revisit type definitions.
