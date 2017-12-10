@@ -3,6 +3,7 @@
 1. Synchronize time format to Python datetime.
 1. Make Time(datetime, tz) work for naive datetime.
 1. Methods to return `datetime` instances.
+1. Provide a Python way to get today in the system and display time zones.
 1. Revisit type definitions.
    - Benchmark 2**n vs. 10**n types.
    - Add exact us, ns types.
