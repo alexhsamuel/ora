@@ -56,10 +56,17 @@ to_datenum(
 
   // FIXME: Use API, or convert to date and then.
 
-  // Otherwise, look for a datenum attribute or property.
+  // Look for a datenum attribute or property.
   auto datenum_attr = obj->maybe_get_attr("datenum");
   if (datenum_attr) 
     return (*datenum_attr)->long_value();
+
+  // Look for a toordinal() method.
+  auto toordinal_method = obj->maybe_get_attr("toordinal");
+  if (toordinal_method) {
+    auto const ordinal_obj = (*toordinal_method)->CallObject(nullptr);
+    return ordinal_obj->long_value() - 1;
+  }
 
   throw Exception(PyExc_TypeError, "not a date or datenum");
 }
@@ -82,6 +89,25 @@ to_daytick(
     return (*daytick)->unsigned_long_value();
 
   throw Exception(PyExc_TypeError, "not a time or SSM");
+}
+
+
+inline std::pair<cron::Datenum, cron::Daytick>
+to_datenum_daytick(
+  Object* const obj)
+{
+  // FIXME: Check for a LocalTime object.
+
+  // A (date, daytime) sequence.
+  if (Sequence::Check(obj)) {
+    auto const seq = cast<Sequence>(obj);
+    if (seq->Length() == 2)
+      return {to_datenum(seq->GetItem(0)), to_daytick(seq->GetItem(1))};
+  }
+
+  // FIXME: Check for naive datetime.datetime.
+
+  throw TypeError("not a localtime: "s + *obj->Repr());
 }
 
 
