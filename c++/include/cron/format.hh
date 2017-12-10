@@ -191,7 +191,7 @@ public:
   std::string
   operator()(
     TIME const time, 
-    TimeZone const& time_zone=UTC,
+    TimeZone const& time_zone=*UTC,
     bool const fixed=true) 
     const 
   { 
@@ -241,7 +241,7 @@ template<class TRAITS>
 inline std::string
 to_string(
   TimeType<TRAITS> const time,
-  TimeZone const& time_zone=UTC)
+  TimeZone const& time_zone=*UTC)
 {
   return TimeFormat::DEFAULT(time, time_zone, false);
 }
@@ -284,8 +284,6 @@ public:
   parse(
     std::string const& pattern)
   {
-    static auto const UTC = std::make_shared<TimeZone const>();
-
     // Look for a time zone in the format pattern.
     auto const at = pattern.rfind('@');
     if (at == std::string::npos) {
@@ -298,7 +296,7 @@ public:
       if (tz_name == "" || tz_name == "display")
         tz = cron::get_display_time_zone();
       else if (tz_name == "UTC")
-        tz = TimeZone_ptr(UTC);
+        tz = UTC;
       else if (tz_name == "system")
         tz = cron::get_system_time_zone();
       else

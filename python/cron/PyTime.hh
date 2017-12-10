@@ -364,7 +364,7 @@ ref<Unicode>
 PyTime<TIME>::tp_repr(
   PyTime* const self)
 {
-  return Unicode::from((*repr_format_)(self->time_, cron::UTC));
+  return Unicode::from((*repr_format_)(self->time_, *cron::UTC));
 }
 
 
@@ -386,7 +386,7 @@ PyTime<TIME>::tp_str(
   PyTime* const self)
 {
   // FIXME: Not UTC?
-  return Unicode::from((*str_format_)(self->time_, cron::UTC));  
+  return Unicode::from((*str_format_)(self->time_, *cron::UTC));  
 }
 
 

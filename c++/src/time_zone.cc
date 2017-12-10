@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cassert>
+#include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <map>
@@ -195,8 +196,9 @@ TimeZone::get_parts_local(
 }
 
 
-TimeZone const
-UTC;
+TimeZone_ptr
+UTC
+  = std::make_shared<TimeZone const>();
 
 
 //------------------------------------------------------------------------------
@@ -358,7 +360,21 @@ extern TimeZone_ptr
 get_display_time_zone()
 {
   if (! display_time_zone_initialized) {
-    set_display_time_zone(get_system_time_zone());
+    // Initialize to the value of the TZ environment variable, if set.
+    auto const tz_name = getenv("TZ");
+    TimeZone_ptr tz;
+    if (tz_name == nullptr)
+      // TZ is not set; use the system time zone.
+      tz = get_system_time_zone();
+    else
+      try {
+        tz = get_time_zone(tz_name);
+      }
+      catch (ValueError) {
+        // Unknown time zone.  Fall back to UTC.
+        tz = UTC;
+      }
+    set_display_time_zone(std::move(tz));
     assert(display_time_zone_initialized);
   }
   return display_time_zone;
