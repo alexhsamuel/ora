@@ -6,6 +6,10 @@
 1. Revisit type definitions.
    - Benchmark 2**n vs. 10**n types.
    - Add exact us, ns types.
+1. Zoneinfo dir:
+   - Provide a way to set it programatically.
+   - Provide an accessor.
+   - Default to our own, for macOS for now.
 1. Make it `pip install`able.
 1. Build conda package.
 1. Rename `InvalidDateError` -> `BadDateError` _et fils_.
