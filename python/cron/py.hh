@@ -1477,7 +1477,7 @@ Py_hash_t
 wrap(
   PyObject* self)
 {
-  Py_hash_t result;
+  Py_hash_t result = -1;
   try {
     try {
       result = HASHFUNC(static_cast<CLASS*>(self));

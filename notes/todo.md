@@ -1,20 +1,31 @@
 # Work List
 
 1. Methods to return `datetime` instances.
+1. Rename.  ("ora"?)
 1. Synchronize time format to Python datetime.
-1. Make Time(datetime, tz) work for naive datetime.
-1. Provide a Python way to get today in the system and display time zones.
-1. Revisit type definitions.
-   - Benchmark 2**n vs. 10**n types.
-   - Add exact us, ns types.
+1. Change formatting.  Instead of %k etc, support:
+   - synchronize time format to Python datetime
+   - missing C89 directives: %G, %u, %V
+   - adjust ISO/RFC predefined format strings
+   - add predefines format strings with subsecond accuracy
+   - support UTF-8 patterns
+1. Add an explicit format() method that takes time zone, localization.
 1. Zoneinfo dir:
    - Provide a way to set it programatically.
    - Provide an accessor.
    - Default to our own, for macOS for now.
+1. Revisit type definitions.
+   - Benchmark 2**n vs. 10**n types.
+   - Add exact us, ns types.
+1. Cache `Format` instances uses by Python.
+1. Fast-track RFC 3339 formatting function.
+1. Review built-in types.  
+   - Add exact us, ns types. 
+   - Benchmark them.
+1. Make Time(datetime, tz) work for naive datetime.
 1. Make it `pip install`able.
 1. Build conda package.
 1. Rename `InvalidDateError` -> `BadDateError` _et fils_.
-1. Rename cron -> ora.
 1. Rename aslib namespace.
 1. timezone etc. namespace cleanup
 1. Basic string parsing for `convert_to_*()` functions.
@@ -25,10 +36,14 @@
 1. Clean up C++ Time and localization functions; document.
 1. macOS old tzinfo format.
 1. Benchmark.
+1. Basic string parsing for `convert_to_*()` functions.
+1. Full parsing support.
 1. Update docs for nex, namespaces, includes.
 1. C++ constants for months.
 1. Default precision for C++ time, daytime formats (fractional secs?).
    Or make the default daytime format mutable?
+1. Global display time zone in Python API.
+1. Adjust the definition of TimeTraits.
 1. Check Time128 second precision in C++ and Python.
 1. In Python 3.6, use variable annotations.
 1. Locale support in formatting.
