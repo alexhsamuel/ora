@@ -241,6 +241,7 @@ private:
   static ref<Object> get_offset                 (PyDate*, void*);
   static ref<Object> get_ordinal                (PyDate*, void*);
   static ref<Object> get_ordinal_date           (PyDate*, void*);
+  static ref<Object> get_std                    (PyDate*, void*);
   static ref<Object> get_valid                  (PyDate*, void*);
   static ref<Object> get_week                   (PyDate*, void*);
   static ref<Object> get_week_date              (PyDate*, void*);
@@ -779,6 +780,19 @@ PyDate<DATE>::get_ordinal_date(
 
 template<class DATE>
 ref<Object>
+PyDate<DATE>::get_std(
+  PyDate* const self,
+  void* /* closure */)
+{
+  if (PyDateTimeAPI == nullptr)
+    PyDateTime_IMPORT;
+  auto const ymd = cron::date::get_ymd(self->date_);
+  return ref<Object>::take(PyDate_FromDate(ymd.year, ymd.month, ymd.day));
+}
+
+
+template<class DATE>
+ref<Object>
 PyDate<DATE>::get_valid(
   PyDate* const self,
   void* /* closure */)
@@ -869,6 +883,7 @@ PyDate<DATE>::tp_getsets_
     .template add_get<get_offset>       ("offset"       , docstring::pydate::offset)
     .template add_get<get_ordinal>      ("ordinal"      , docstring::pydate::ordinal)
     .template add_get<get_ordinal_date> ("ordinal_date" , docstring::pydate::ordinal_date)
+    .template add_get<get_std>          ("std"          , docstring::pydate::std)
     .template add_get<get_valid>        ("valid"        , docstring::pydate::valid)
     .template add_get<get_week>         ("week"         , docstring::pydate::week)
     .template add_get<get_week_date>    ("week_date"    , docstring::pydate::week_date)

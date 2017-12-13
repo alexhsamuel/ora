@@ -127,3 +127,11 @@ def test_format():
     assert format(Date.MISSING, "%G~%V~%^~W")   == "MISSING    "
 
 
+def test_std():
+    date = (2017/Dec/12).std
+    assert isinstance(date, datetime.date)
+    assert date.year == 2017
+    assert date.month == 12
+    assert date.day == 12
+
+
