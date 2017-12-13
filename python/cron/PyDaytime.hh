@@ -146,6 +146,7 @@ private:
   static ref<Object> get_offset                 (PyDaytime* self, void*);
   static ref<Object> get_second                 (PyDaytime* self, void*);
   static ref<Object> get_ssm                    (PyDaytime* self, void*);
+  static ref<Object> get_std                    (PyDaytime* self, void*);
   static ref<Object> get_valid                  (PyDaytime* self, void*);
   static GetSets<PyDaytime> tp_getsets_;
 
@@ -607,6 +608,32 @@ PyDaytime<DAYTIME>::get_ssm(
 
 template<class DAYTIME>
 ref<Object>
+PyDaytime<DAYTIME>::get_std(
+  PyDaytime* self,
+  void* /* closure */)
+{
+  using Offset = typename DAYTIME::Offset;
+
+  if (!self->daytime_.is_valid())
+    throw ValueError("daytime not valid");
+
+  if (PyDateTimeAPI == nullptr)
+    PyDateTime_IMPORT;
+  
+  // Use int128_t for the math, to avoid overflowing.
+  uint64_t const usec = rescale_int(
+    self->daytime_.get_offset(), 
+    DAYTIME::Traits::denominator, (__int128_t) 1000000);
+  return ref<Object>::take(PyTime_FromTime(
+    usec / (Offset) 3600000000, 
+    usec % (Offset) 3600000000 / 60000000,
+    usec % (Offset)   60000000 /  1000000,
+    usec % (Offset)    1000000));
+}
+
+
+template<class DAYTIME>
+ref<Object>
 PyDaytime<DAYTIME>::get_valid(
   PyDaytime* self,
   void* /* closure */)
@@ -628,6 +655,7 @@ PyDaytime<DAYTIME>::tp_getsets_
     .template add_get<get_offset>               ("offset"   , docstring::pydaytime::offset)
     .template add_get<get_second>               ("second"   , docstring::pydaytime::second)
     .template add_get<get_ssm>                  ("ssm"      , docstring::pydaytime::ssm)
+    .template add_get<get_std>                  ("std"      , docstring::pydaytime::std)
     .template add_get<get_valid>                ("valid"    , docstring::pydaytime::valid)
   ;
 

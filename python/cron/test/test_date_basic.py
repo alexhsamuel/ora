@@ -134,4 +134,9 @@ def test_std():
     assert date.month == 12
     assert date.day == 12
 
+    with pytest.raises(ValueError):
+        Date.INVALID.std
+    with pytest.raises(ValueError):
+        Date.MISSING.std
+
 

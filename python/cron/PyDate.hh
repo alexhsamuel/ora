@@ -784,6 +784,9 @@ PyDate<DATE>::get_std(
   PyDate* const self,
   void* /* closure */)
 {
+  if (!self->date_.is_valid())
+    throw ValueError("date not valid");
+
   if (PyDateTimeAPI == nullptr)
     PyDateTime_IMPORT;
   auto const ymd = cron::date::get_ymd(self->date_);
