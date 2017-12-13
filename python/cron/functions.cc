@@ -90,6 +90,32 @@ from_local(
 
 
 ref<Object>
+get_display_time_zone(
+  Module* /* module */,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* arg_names[] = {nullptr};
+  Arg::ParseTupleAndKeywords(args, kw_args, "", arg_names);
+
+  return PyTimeZone::create(cron::get_display_time_zone());
+}
+
+
+ref<Object>
+get_system_time_zone(
+  Module* /* module */,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* arg_names[] = {nullptr};
+  Arg::ParseTupleAndKeywords(args, kw_args, "", arg_names);
+
+  return PyTimeZone::create(cron::get_system_time_zone());
+}
+
+
+ref<Object>
 is_leap_year(
   Module* /* module */,
   Tuple* const args,
@@ -124,6 +150,22 @@ now(
     throw TypeError("not a time type");
 
   return api->now();
+}
+
+
+ref<Object>
+set_display_time_zone(
+  Module* /* module */,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* arg_names[] = {"time_zone", nullptr};
+  Object* tz_arg;
+  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz_arg);
+
+  auto tz = convert_to_time_zone(tz_arg);
+  cron::set_display_time_zone(std::move(tz));
+  return none_ref();
 }
 
 
@@ -211,8 +253,11 @@ add_functions(
     .add<days_in_month>             ("days_in_month",           docstring::days_in_month)
     .add<days_in_year>              ("days_in_year",            docstring::days_in_year)
     .add<from_local>                ("from_local",              docstring::from_local)
+    .add<get_display_time_zone>     ("get_display_time_zone",   docstring::get_display_time_zone)
+    .add<get_system_time_zone>      ("get_system_time_zone",    docstring::get_system_time_zone)
     .add<is_leap_year>              ("is_leap_year",            docstring::is_leap_year)
     .add<now>                       ("now",                     docstring::now)
+    .add<set_display_time_zone>     ("set_display_time_zone",   docstring::set_display_time_zone)
     .add<to_local>                  ("to_local",                docstring::to_local)
     .add<to_local_datenum_daytick>  ("to_local_datenum_daytick",docstring::to_local_datenum_daytick)
     .add<today>                     ("today",                   docstring::today)

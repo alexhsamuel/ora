@@ -165,6 +165,10 @@ The second of the hour, minute, second representation.
 offset = """
 """
 
+std = """
+The daytime as a Python standard library `datetime.time`.
+"""
+
 ssm = """
 The _seconds since midnight_ (SSM) representation.
 

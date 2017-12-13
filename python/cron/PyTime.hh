@@ -364,7 +364,7 @@ ref<Unicode>
 PyTime<TIME>::tp_repr(
   PyTime* const self)
 {
-  return Unicode::from((*repr_format_)(self->time_, cron::UTC));
+  return Unicode::from((*repr_format_)(self->time_, *cron::UTC));
 }
 
 
@@ -386,7 +386,7 @@ PyTime<TIME>::tp_str(
   PyTime* const self)
 {
   // FIXME: Not UTC?
-  return Unicode::from((*str_format_)(self->time_, cron::UTC));  
+  return Unicode::from((*str_format_)(self->time_, *cron::UTC));  
 }
 
 
@@ -751,12 +751,9 @@ localtime_to_time(
 {
   assert(parts->Length() == 2);
   auto const localtime  = cast<Sequence>(parts->GetItem(0));
-  if (localtime->Length() != 2)
-    throw TypeError("not a localtime: "s + *localtime->Repr());
-  auto const datenum    = to_datenum(localtime->GetItem(0));
-  auto const daytick    = to_daytick(localtime->GetItem(1));
-  auto const tz         = convert_to_time_zone(parts->GetItem(1));
-  return cron::from_local<TIME>(datenum, daytick, *tz);
+  auto const dd = to_datenum_daytick(localtime);
+  auto const tz = convert_to_time_zone(parts->GetItem(1));
+  return cron::from_local<TIME>(dd.first, dd.second, *tz);
 }
 
 

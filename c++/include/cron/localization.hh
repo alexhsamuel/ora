@@ -236,7 +236,7 @@ from_utc(
   DATE const            date,
   DAYTIME const         daytime)
 {
-  return from_local(date, daytime, UTC);
+  return from_local(date, daytime, *UTC);
 }
 
 
@@ -253,7 +253,7 @@ from_utc_parts(
   Minute const          minute,
   Second const          second)
 {
-  return from_local_parts(year, month, day, hour, minute, second, UTC);
+  return from_local_parts(year, month, day, hour, minute, second, *UTC);
 }
 
 
@@ -262,7 +262,7 @@ inline LocalTime<DATE, DAYTIME>
 to_utc(
   TIME const time)
 {
-  return to_local(time, UTC);
+  return to_local(time, *UTC);
 }
 
 

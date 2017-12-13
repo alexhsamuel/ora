@@ -73,11 +73,38 @@ from_local =
 ;
 
 doc_t
+get_display_time_zone =
+"Returns the display time zone.\n"
+"\n"
+"@signature\n"
+"  get_display_time_zone()\n"
+"\n"
+;
+
+doc_t
+get_system_time_zone =
+"Returns the system time zone.\n"
+"\n"
+"@signature\n"
+"  get_system_time_zone()\n"
+"\n"
+;
+
+doc_t
 is_leap_year =
 "Returns true if `year` is a leap year.\n"
 "\n"
 "@signature\n"
 "  is_leap_year(year)\n"
+"\n"
+;
+
+doc_t
+set_display_time_zone =
+"Sets the display time zone to `time_zone`.\n"
+"\n"
+"@signature\n"
+"  set_display_time_zone(time_zone)\n"
 "\n"
 ;
 

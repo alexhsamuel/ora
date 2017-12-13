@@ -76,21 +76,21 @@ TEST(Time, from_parts_dst) {
 
   // Test transition to DST.
   Date const dst0 = 2013/MAR/10;
-  EXPECT_EQ(from_local(dst0, from_hms(6, 59, 0), UTC), from_local(dst0, from_hms(1, 59, 0), *tz));
-  EXPECT_EQ(from_local(dst0, from_hms(7,  0, 0), UTC), from_local(dst0, from_hms(3,  0, 0), *tz));
-  EXPECT_EQ(from_local(dst0, from_hms(7,  0, 0), UTC), from_local(dst0, from_hms(3,  0, 0), *tz, false));
+  EXPECT_EQ(from_local(dst0, from_hms(6, 59, 0), *UTC), from_local(dst0, from_hms(1, 59, 0), *tz));
+  EXPECT_EQ(from_local(dst0, from_hms(7,  0, 0), *UTC), from_local(dst0, from_hms(3,  0, 0), *tz));
+  EXPECT_EQ(from_local(dst0, from_hms(7,  0, 0), *UTC), from_local(dst0, from_hms(3,  0, 0), *tz, false));
 
   // Test transition from DST.
   Date const dst1 = 2013/NOV/3;
-  EXPECT_EQ(from_local(dst1, from_hms(4, 59, 0), UTC), from_local(dst1, from_hms(0, 59, 0), *tz));
-  EXPECT_EQ(from_local(dst1, from_hms(5,  0, 0), UTC), from_local(dst1, from_hms(1,  0, 0), *tz));
-  EXPECT_EQ(from_local(dst1, from_hms(5,  0, 0), UTC), from_local(dst1, from_hms(1,  0, 0), *tz, true));
-  EXPECT_EQ(from_local(dst1, from_hms(5, 59, 0), UTC), from_local(dst1, from_hms(1, 59, 0), *tz));
-  EXPECT_EQ(from_local(dst1, from_hms(5, 59, 0), UTC), from_local(dst1, from_hms(1, 59, 0), *tz, true));
-  EXPECT_EQ(from_local(dst1, from_hms(6,  0, 0), UTC), from_local(dst1, from_hms(1,  0, 0), *tz, false));
-  EXPECT_EQ(from_local(dst1, from_hms(6, 59, 0), UTC), from_local(dst1, from_hms(1, 59, 0), *tz, false));
-  EXPECT_EQ(from_local(dst1, from_hms(7,  0, 0), UTC), from_local(dst1, from_hms(2,  0, 0), *tz));
-  EXPECT_EQ(from_local(dst1, from_hms(7,  0, 0), UTC), from_local(dst1, from_hms(2,  0, 0), *tz, false));
+  EXPECT_EQ(from_local(dst1, from_hms(4, 59, 0), *UTC), from_local(dst1, from_hms(0, 59, 0), *tz));
+  EXPECT_EQ(from_local(dst1, from_hms(5,  0, 0), *UTC), from_local(dst1, from_hms(1,  0, 0), *tz));
+  EXPECT_EQ(from_local(dst1, from_hms(5,  0, 0), *UTC), from_local(dst1, from_hms(1,  0, 0), *tz, true));
+  EXPECT_EQ(from_local(dst1, from_hms(5, 59, 0), *UTC), from_local(dst1, from_hms(1, 59, 0), *tz));
+  EXPECT_EQ(from_local(dst1, from_hms(5, 59, 0), *UTC), from_local(dst1, from_hms(1, 59, 0), *tz, true));
+  EXPECT_EQ(from_local(dst1, from_hms(6,  0, 0), *UTC), from_local(dst1, from_hms(1,  0, 0), *tz, false));
+  EXPECT_EQ(from_local(dst1, from_hms(6, 59, 0), *UTC), from_local(dst1, from_hms(1, 59, 0), *tz, false));
+  EXPECT_EQ(from_local(dst1, from_hms(7,  0, 0), *UTC), from_local(dst1, from_hms(2,  0, 0), *tz));
+  EXPECT_EQ(from_local(dst1, from_hms(7,  0, 0), *UTC), from_local(dst1, from_hms(2,  0, 0), *tz, false));
 }
 
 TEST(Time, from_parts_invalid) {

@@ -365,3 +365,18 @@ def test_format():
     assert format(Daytime.MISSING, "%1H%_p")        == "MIS"
 
 
+def test_std():
+    time = Daytime(9, 34, 15.6257196).std
+    
+    assert isinstance(time, datetime.time)
+    assert time.hour == 9
+    assert time.minute == 34
+    assert time.second == 15
+    assert time.microsecond == 625720
+
+    with pytest.raises(ValueError):
+        Daytime.INVALID.std
+    with pytest.raises(ValueError):
+        Daytime.MISSING.std
+
+

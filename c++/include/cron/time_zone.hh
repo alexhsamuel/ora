@@ -77,7 +77,7 @@ using TimeZone_ptr = std::shared_ptr<TimeZone const>;
 /*
  * UTC time zone singleton.
  */
-extern TimeZone const UTC;
+extern TimeZone_ptr     UTC;
 
 /*
  * Returns the path to the current default zoneinfo directory.

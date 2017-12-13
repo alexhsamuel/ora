@@ -217,6 +217,10 @@ ordinal_date = """
 A (year, ordinal) object representing the ordinal date.
 """
 
+std = """
+The date as a Python standard library `datetime.date`.
+"""
+
 valid = """
 True if this date is not `MISSING` or `INVALID`.
 """
