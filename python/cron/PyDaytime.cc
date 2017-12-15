@@ -52,6 +52,7 @@ make_hms_daytime(
 
 template class PyDaytime<cron::daytime::Daytime>;
 template class PyDaytime<cron::daytime::Daytime32>;
+template class PyDaytime<cron::daytime::UsecDaytime>;
 
 //------------------------------------------------------------------------------
 // Docstrings

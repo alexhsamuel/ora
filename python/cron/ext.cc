@@ -49,6 +49,7 @@ PyInit_ext(void)
 
     aslib::PyDaytime<cron::daytime::Daytime>    ::add_to(mod, "Daytime");
     aslib::PyDaytime<cron::daytime::Daytime32>  ::add_to(mod, "Daytime32");
+    aslib::PyDaytime<cron::daytime::UsecDaytime>::add_to(mod, "UsecDaytime");
 
     aslib::PyTime<cron::time::Time>             ::add_to(mod, "Time");
     aslib::PyTime<cron::time::SmallTime>        ::add_to(mod, "SmallTime");

@@ -225,6 +225,7 @@ private:
   static ref<Object> get_invalid                (PyTime*, void*);
   static ref<Object> get_missing                (PyTime*, void*);
   static ref<Object> get_offset                 (PyTime*, void*);
+  static ref<Object> get_std                    (PyTime*, void*);
   static ref<Object> get_valid                  (PyTime*, void*);
   static GetSets<PyTime> tp_getsets_;
 
@@ -632,6 +633,40 @@ PyTime<TIME>::get_offset(
 
 template<class TIME>
 ref<Object>
+PyTime<TIME>::get_std(
+  PyTime* const self,
+  void* /* closure */)
+{
+  if (!self->time_.is_valid())
+    throw py::ValueError("time not valid");
+
+  auto const local = 
+    cron::to_local<cron::Date, cron::UsecDaytime>(self->time_, *cron::UTC);
+  auto const ymd = cron::date::get_ymd(local.date);
+  auto const usec = local.daytime.get_offset();
+
+  // FIXME: Maybe this should go elsewhere?
+  static auto timezone_type = import("datetime", "timezone");
+  static auto utc_obj = timezone_type->GetAttrString("utc");
+
+  if (PyDateTimeAPI == nullptr)
+    PyDateTime_IMPORT;
+  return ref<Object>::take(
+    PyDateTimeAPI->DateTime_FromDateAndTime(
+      ymd.year,
+      ymd.month,
+      ymd.day,
+      usec               / 3600000000u,
+      usec % 3600000000u /   60000000u,
+      usec %   60000000u /    1000000u,
+      usec %    1000000u,
+      utc_obj,
+      PyDateTimeAPI->DateTimeType));
+}
+
+
+template<class TIME>
+ref<Object>
 PyTime<TIME>::get_valid(
   PyTime* const self,
   void* /* closure */)
@@ -647,6 +682,7 @@ PyTime<TIME>::tp_getsets_
     .template add_get<get_invalid>      ("invalid")
     .template add_get<get_missing>      ("missing")
     .template add_get<get_offset>       ("offset")
+    .template add_get<get_std>          ("std")
     .template add_get<get_valid>        ("valid")
   ;
 

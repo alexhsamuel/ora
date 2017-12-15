@@ -35,6 +35,7 @@ using daytime::Daytime;
 using daytime::DaytimeFormat;
 using daytime::from_hms;
 using daytime::from_ssm;
+using daytime::UsecDaytime;
 using time::NsecTime;
 using time::SmallTime;
 using time::Time128;

@@ -265,6 +265,22 @@ static_assert(Daytime32::is_basic_layout(), "wrong memory layout for Daytime32")
 
 //------------------------------------------------------------------------------
 
+struct UsecDaytimeTraits
+{
+  using Offset = uint64_t;
+
+  static Offset constexpr 
+  denominator
+    = (Offset) 1000000;
+};
+
+extern template class DaytimeTemplate<UsecDaytimeTraits>;
+using UsecDaytime = DaytimeTemplate<UsecDaytimeTraits>;
+// static_assert(UsecDaytime::is_complete(), "UsecDaytime is not complete");
+static_assert(UsecDaytime::is_basic_layout(), "wrong memory layout for UsecDaytime");
+
+//------------------------------------------------------------------------------
+
 }  // namespace daytime
 }  // namespace cron
 

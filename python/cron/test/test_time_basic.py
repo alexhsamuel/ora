@@ -129,3 +129,18 @@ def test_from_offset_range():
         Time128.from_offset(Time128.MAX.offset + 1)
 
 
+def test_std():
+    time = ((2016/Jul/11, Daytime(9, 34, 15.625)) @ UTC).std
+
+    assert isinstance(time, datetime.datetime)
+    assert time.year == 2016
+    assert time.month == 7
+    assert time.day == 11
+    assert time.hour == 9
+    assert time.minute == 34
+    assert time.second == 15
+    assert time.microsecond == 625000
+    assert isinstance(time.tzinfo, datetime.tzinfo)
+    assert time.tzinfo.utcoffset(time) == datetime.timedelta(0)
+
+

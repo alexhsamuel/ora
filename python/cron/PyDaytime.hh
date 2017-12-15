@@ -615,15 +615,12 @@ PyDaytime<DAYTIME>::get_std(
   using Offset = typename DAYTIME::Offset;
 
   if (!self->daytime_.is_valid())
-    throw ValueError("daytime not valid");
+    throw py::ValueError("daytime not valid");
 
   if (PyDateTimeAPI == nullptr)
     PyDateTime_IMPORT;
   
-  // Use int128_t for the math, to avoid overflowing.
-  uint64_t const usec = rescale_int(
-    self->daytime_.get_offset(), 
-    DAYTIME::Traits::denominator, (__int128_t) 1000000);
+  auto const usec = cron::UsecDaytime(self->daytime_).get_offset();
   return ref<Object>::take(PyTime_FromTime(
     usec / (Offset) 3600000000, 
     usec % (Offset) 3600000000 / 60000000,
@@ -853,6 +850,7 @@ convert_to_daytime(
 // FIXME: GCC 5.2.1 generates PyDaytime<>::type_ in BSS, which breaks linking.
 extern template class PyDaytime<cron::daytime::Daytime>;
 extern template class PyDaytime<cron::daytime::Daytime32>;
+extern template class PyDaytime<cron::daytime::UsecDaytime>;
 #endif
 
 //------------------------------------------------------------------------------

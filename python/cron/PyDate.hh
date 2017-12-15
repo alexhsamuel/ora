@@ -785,7 +785,7 @@ PyDate<DATE>::get_std(
   void* /* closure */)
 {
   if (!self->date_.is_valid())
-    throw ValueError("date not valid");
+    throw py::ValueError("date not valid");
 
   if (PyDateTimeAPI == nullptr)
     PyDateTime_IMPORT;
