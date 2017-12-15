@@ -1,7 +1,5 @@
 # Work List
 
-1. Methods to return `datetime` instances.
-   - time zone
 1. Rename.  ("ora"?)
 1. Change formatting.  Instead of %k etc, support:
    - synchronize time format to Python datetime
