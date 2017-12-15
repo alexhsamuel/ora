@@ -147,15 +147,13 @@ rescale_int(
   T0 const old_den,
   T1 const new_den)
 {
-  // FIXME: Careful!
   if (old_den % new_den == 0)
     return round_div(val, old_den / (T0) new_den);
   else if (new_den % old_den == 0)
     return val * (new_den / old_den);
-  else if (sizeof(T0) >= sizeof(T1))
-    return round_div((T0) val * (T0) new_den, (T0) old_den);
   else
-    return round_div((T1) val * (T1) new_den, (T1) old_den);
+    // FIXME: Try to do better!
+    return round_div<int128_t>((int128_t) val * new_den, old_den);
 }
 
 
@@ -173,7 +171,8 @@ rescale_int(
   else if (NEW_DEN % OLD_DEN == 0)
     return val * (NEW_DEN / OLD_DEN);
   else
-    return round_div((int128_t) (val * NEW_DEN), (int128_t) OLD_DEN);
+    // FIXME: Try to do better!
+    return round_div<int128_t>((int128_t) val * NEW_DEN, OLD_DEN);
 }
 
 
