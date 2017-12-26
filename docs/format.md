@@ -1,6 +1,6 @@
 # Format codes
 
-`cron::Format` uses a format pattern similar to that of `strftime()` to specify
+`ora::Format` uses a format pattern similar to that of `strftime()` to specify
 the format of dates and times.
 
 The following format codes are supported for dates and times:

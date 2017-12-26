@@ -1,12 +1,12 @@
 # C++ Date API
 
 ```c++
-#include "cron.hh"
+#include "ora.hh"
 
-using namespace cron::date;
+using namespace ora::date;
 ```
 
-A `cron::date::Date` represents a calendar date.  A calendar date represents a period, usually (but not always) 24 hours long, in a specific location; as such, a date does not by itself correspond to any time or interval of times.
+A `ora::date::Date` represents a calendar date.  A calendar date represents a period, usually (but not always) 24 hours long, in a specific location; as such, a date does not by itself correspond to any time or interval of times.
 
 ## Building dates
 
@@ -17,7 +17,7 @@ Date date;
 date = from_ymd(1973, 12, 3);
 ```
 
-It is a sloppy but common convention to encode YMD into eight decimal digits of a 32-bit integer, which cron calls _YMDI_.
+It is a sloppy but common convention to encode YMD into eight decimal digits of a 32-bit integer, which ora calls _YMDI_.
 
 ```c++
 auto date = from_ymdi(19731203);
@@ -36,15 +36,15 @@ A few things to keep in mind about various date components:
 - Weekdays are counted from `MONDAY` = 0 through `SUNDAY` = 6; constants are provided for these.
 - The YMD and ordinal date representations share the same year, but the "week year" in the week date representation may be different.
 
-If the arguments you provide are invalid, cron throws `InvalidDateError`.
+If the arguments you provide are invalid, ora throws `InvalidDateError`.
 
 
 ### Date literals
 
-The `cron::ez` namespace adds syntactic sugar for specifying date literals.
+The `ora::ez` namespace adds syntactic sugar for specifying date literals.
 
 ```c++
-using namespace cron::ez;
+using namespace ora::ez;
 auto date = 1973/DEC/3;
 ```
 
@@ -152,11 +152,11 @@ b
 The various dates are mutually conversion-constructible and -assignable, as long as the actual dates are representable.
 
 ```c++
-using namespace cron::ez;
+using namespace ora::ez;
 Date16 date = 1973/DEC/3;  // RHS is Date, so convert
 ```
 
-If you try to store a date in `Date16` that is outside the representable range, cron throws `DateRangeError`.
+If you try to store a date in `Date16` that is outside the representable range, ora throws `DateRangeError`.
 
 ```c++
 try {
@@ -173,7 +173,7 @@ catch (DateRangeError err) {
 Each date class provides two special values.
 
 - `INVALID` represents an uninitialized date or the result of a failed operation.
-- `MISSING` is a placeholder that you can use to represent a value that is not available; it is never produced by cron itself.
+- `MISSING` is a placeholder that you can use to represent a value that is not available; it is never produced by ora itself.
 
 
 ```c++
@@ -191,7 +191,7 @@ else
   std::cout << "something's wrong!";
 ```
 
-If you call any function on a missing or invalid date, cron throws `InvalidDateError`.
+If you call any function on a missing or invalid date, ora throws `InvalidDateError`.
 
 ```c++
 Date date;  // default ctor initializes to INVALID
@@ -214,7 +214,7 @@ Date::INVALID < Date::MISSING < Date::MIN < ... < Date::MAX
 
 ## Safe functions
 
-The `cron::date::safe` namespace provides "safe" alternatives to all date functions, which don't throw exceptions; instead, they return special values to indicate failure.
+The `ora::date::safe` namespace provides "safe" alternatives to all date functions, which don't throw exceptions; instead, they return special values to indicate failure.
 
 - Any function that returns a date will return `INVALID` instead.
 

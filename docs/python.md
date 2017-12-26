@@ -3,7 +3,7 @@ This document describes the Python API to Cron.  Please see [ontology.md](ontolo
 The code below assumes the following import, but of course feel free to use qualified names in your programs.
 
 ```py
->>> from cron import *
+>>> from ora import *
 ```
 
 # Types

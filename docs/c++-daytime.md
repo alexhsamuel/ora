@@ -1,11 +1,11 @@
 # C++ Daytime API
 
 ```c++
-#include "cron.hh"
-using namespace cron;
+#include "ora.hh"
+using namespace ora;
 ```
 
-A `cron::daytime::Daytime` represents an approximate time of day.  Daytime is a representation of a specific time within a specific day in a specific location, as one might read off an ordinary clock.
+A `ora::daytime::Daytime` represents an approximate time of day.  Daytime is a representation of a specific time within a specific day in a specific location, as one might read off an ordinary clock.
 
 See [c++-localization](c++-localization.md) for how to use a daytime to build time values.
 
@@ -129,7 +129,7 @@ Daytime32 date = from_hms(12, 30);  // RHS is Daytime, so convert
 Each daytime class provides two special values.
 
 - `INVALID` represents an uninitialized daytime or the result of a failed operation.
-- `MISSING` is a placeholder that you can use to represent a value that is not available; it is never produced by cron itself.
+- `MISSING` is a placeholder that you can use to represent a value that is not available; it is never produced by ora itself.
 
 
 ```c++
@@ -147,7 +147,7 @@ else
   std::cout << "something's wrong!";
 ```
 
-If you call a function on a missing or invalid daytime, cron throws `InvalidDaytimeError`.
+If you call a function on a missing or invalid daytime, ora throws `InvalidDaytimeError`.
 
 ```c++
 Daytime daytime;  // default ctor initializes to INVALID
@@ -170,7 +170,7 @@ Daytime::INVALID < Daytime::MISSING < Daytime::MIN < ... < Daytime::MAX
 
 ## Safe functions
 
-The `cron::daytime::safe` namespace provides "safe" alternatives to all daytime functions, which don't throw exceptions; instead, they return special values to indicate failure.
+The `ora::daytime::safe` namespace provides "safe" alternatives to all daytime functions, which don't throw exceptions; instead, they return special values to indicate failure.
 
 - Any function that returns a daytime will return `INVALID` instead.
 

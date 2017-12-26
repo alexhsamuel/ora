@@ -1,8 +1,8 @@
 # C++ date math
 
 ```c++
-#include "cron.hh"
-using namespace cron;
+#include "ora.hh"
+using namespace ora;
 ```
 
 ## Weekday conventions
