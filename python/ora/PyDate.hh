@@ -11,7 +11,7 @@
 #include <Python.h>
 #include <datetime.h>
 
-#include "cron.hh"
+#include "ora.hh"
 #include "py.hh"
 
 namespace aslib {
@@ -29,9 +29,9 @@ using std::unique_ptr;
 //------------------------------------------------------------------------------
 
 extern StructSequenceType* get_ymd_date_type();
-extern ref<Object> make_ordinal_date(cron::OrdinalDate);
-extern ref<Object> make_week_date(cron::WeekDate);
-extern ref<Object> make_ymd_date(cron::YmdDate);
+extern ref<Object> make_ordinal_date(ora::OrdinalDate);
+extern ref<Object> make_week_date(ora::WeekDate);
+extern ref<Object> make_ymd_date(ora::YmdDate);
 
 extern ref<Object> get_month_obj(int month);
 extern ref<Object> get_weekday_obj(int weekday);
@@ -108,8 +108,8 @@ public:
     { return get(obj->ob_type); }
 
   // API methods.
-  virtual cron::Datenum             get_datenum(Object* date) const = 0;
-  virtual ref<Object>               from_datenum(cron::Datenum) const = 0;
+  virtual ora::Datenum             get_datenum(Object* date) const = 0;
+  virtual ref<Object>               from_datenum(ora::Datenum) const = 0;
   virtual bool                      is_invalid(Object* time) const = 0;
   virtual bool                      is_missing(Object* time) const = 0;
 
@@ -198,10 +198,10 @@ private:
   {
   public:
     
-    virtual cron::Datenum get_datenum(Object* const date) const
+    virtual ora::Datenum get_datenum(Object* const date) const
       { return ((PyDate*) date)->date_.get_datenum(); }
-    virtual ref<Object> from_datenum(cron::Datenum const datenum) const
-      { return PyDate::create(cron::date::from_datenum<Date>(datenum)); }
+    virtual ref<Object> from_datenum(ora::Datenum const datenum) const
+      { return PyDate::create(ora::date::from_datenum<Date>(datenum)); }
     virtual bool is_invalid(Object* const date) const
       { return ((PyDate*) date)->date_.is_invalid(); }
     virtual bool is_missing(Object* const date) const
@@ -253,7 +253,7 @@ private:
   static GetSets<PyDate> tp_getsets_;
 
   // Date format used to generate the repr.
-  static unique_ptr<cron::date::DateFormat> repr_format_;
+  static unique_ptr<ora::date::DateFormat> repr_format_;
 
   static Type build_type(string const& type_name);
 
@@ -279,7 +279,7 @@ PyDate<DATE>::add_to(
   PyDateAPI::add(&type_, std::make_unique<API>());
 
   // Build the repr format.
-  repr_format_ = make_unique<cron::date::DateFormat>(
+  repr_format_ = make_unique<ora::date::DateFormat>(
     name + "(%0Y, %~b, %0d)",
     name + ".INVALID",
     name + ".MISSING");
@@ -388,7 +388,7 @@ PyDate<DATE>::tp_str(
   PyDate* const self)
 {
   // FIXME: Make the format configurable.
-  auto& format = cron::date::DateFormat::DEFAULT;
+  auto& format = ora::date::DateFormat::DEFAULT;
   return Unicode::from(format(self->date_));
 }
 
@@ -528,8 +528,8 @@ PyDate<DATE>::method___format__(
   auto const pattern = args->GetItem(0)->Str()->as_utf8();
   auto const result = 
     // Empty pattern?  Use the default formatter.
-    strlen(pattern) == 0 ? cron::date::DateFormat::DEFAULT(self->date_)
-    : cron::DateFormat(pattern)(self->date_);
+    strlen(pattern) == 0 ? ora::date::DateFormat::DEFAULT(self->date_)
+    : ora::DateFormat(pattern)(self->date_);
   return Unicode::from(result);
 }
 
@@ -542,13 +542,13 @@ PyDate<DATE>::method_from_datenum(
   Dict* const kw_args)
 {
   static char const* const arg_names[] = {"datenum", nullptr};
-  cron::Datenum datenum;
+  ora::Datenum datenum;
   static_assert(
-    sizeof(cron::Datenum) == sizeof(int),
+    sizeof(ora::Datenum) == sizeof(int),
     "datenum is not an int");
   Arg::ParseTupleAndKeywords(args, kw_args, "i", arg_names, &datenum);
 
-  return create(cron::date::from_datenum<Date>(datenum), type);
+  return create(ora::date::from_datenum<Date>(datenum), type);
 }
 
 
@@ -563,7 +563,7 @@ PyDate<DATE>::method_from_iso_date(
   char* iso_date;
   Arg::ParseTupleAndKeywords(args, kw_args, "s", arg_names, &iso_date);
 
-  return create(cron::date::from_iso_date<Date>(iso_date), type);
+  return create(ora::date::from_iso_date<Date>(iso_date), type);
 }
 
 
@@ -579,7 +579,7 @@ PyDate<DATE>::method_from_offset(
   long offset;
   Arg::ParseTupleAndKeywords(args, kw_args, "k", arg_names, &offset);
 
-  return create(cron::date::from_offset<Date>(offset), type);
+  return create(ora::date::from_offset<Date>(offset), type);
 }
 
 
@@ -675,7 +675,7 @@ PyDate<DATE>::method_from_ymdi(
   int ymdi;
   Arg::ParseTupleAndKeywords(args, kw_args, "i", arg_names, &ymdi);
 
-  return create(cron::date::from_ymdi<DATE>(ymdi), type);
+  return create(ora::date::from_ymdi<DATE>(ymdi), type);
 }
 
 
@@ -714,7 +714,7 @@ PyDate<DATE>::get_day(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(cron::date::get_ymd(self->date_).day);
+  return Long::FromLong(ora::date::get_ymd(self->date_).day);
 }
 
 
@@ -744,7 +744,7 @@ PyDate<DATE>::get_month(
   PyDate* const self,
   void* /* closure */)
 {
-  return get_month_obj(cron::date::get_ymd(self->date_).month);
+  return get_month_obj(ora::date::get_ymd(self->date_).month);
 }
 
 
@@ -764,7 +764,7 @@ PyDate<DATE>::get_ordinal(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(cron::date::get_ordinal_date(self->date_).ordinal);
+  return Long::FromLong(ora::date::get_ordinal_date(self->date_).ordinal);
 }
 
 
@@ -774,7 +774,7 @@ PyDate<DATE>::get_ordinal_date(
   PyDate* const self,
   void* /* closure */)
 {
-  return make_ordinal_date(cron::date::get_ordinal_date(self->date_));
+  return make_ordinal_date(ora::date::get_ordinal_date(self->date_));
 }
 
 
@@ -789,7 +789,7 @@ PyDate<DATE>::get_std(
 
   if (PyDateTimeAPI == nullptr)
     PyDateTime_IMPORT;
-  auto const ymd = cron::date::get_ymd(self->date_);
+  auto const ymd = ora::date::get_ymd(self->date_);
   return ref<Object>::take(PyDate_FromDate(ymd.year, ymd.month, ymd.day));
 }
 
@@ -810,7 +810,7 @@ PyDate<DATE>::get_week(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(cron::date::get_week_date(self->date_).week);
+  return Long::FromLong(ora::date::get_week_date(self->date_).week);
 }
 
 
@@ -820,7 +820,7 @@ PyDate<DATE>::get_week_date(
   PyDate* const self,
   void* /* closure */)
 {
-  return make_week_date(cron::date::get_week_date(self->date_));
+  return make_week_date(ora::date::get_week_date(self->date_));
 }
 
 
@@ -830,7 +830,7 @@ PyDate<DATE>::get_week_year(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(cron::date::get_week_date(self->date_).week_year);
+  return Long::FromLong(ora::date::get_week_date(self->date_).week_year);
 }
 
 
@@ -840,7 +840,7 @@ PyDate<DATE>::get_weekday(
   PyDate* const self,
   void* /* closure */)
 {
-  return get_weekday_obj(cron::date::get_weekday(self->date_));
+  return get_weekday_obj(ora::date::get_weekday(self->date_));
 }
 
 
@@ -850,7 +850,7 @@ PyDate<DATE>::get_year(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(cron::date::get_ordinal_date(self->date_).year);
+  return Long::FromLong(ora::date::get_ordinal_date(self->date_).year);
 }
 
 
@@ -860,7 +860,7 @@ PyDate<DATE>::get_ymd(
   PyDate* const self,
   void* /* closure */)
 {
-  return make_ymd_date(cron::date::get_ymd(self->date_));
+  return make_ymd_date(ora::date::get_ymd(self->date_));
 }
 
 
@@ -870,7 +870,7 @@ PyDate<DATE>::get_ymdi(
   PyDate* const self,
   void* /* closure */)
 {
-  return Long::FromLong(cron::date::get_ymdi(self->date_));
+  return Long::FromLong(ora::date::get_ymdi(self->date_));
 }
 
 
@@ -903,7 +903,7 @@ PyDate<DATE>::tp_getsets_
 //------------------------------------------------------------------------------
 
 template<class DATE>
-unique_ptr<cron::date::DateFormat>
+unique_ptr<ora::date::DateFormat>
 PyDate<DATE>::repr_format_;
 
 
@@ -990,11 +990,11 @@ PyDate<DATE>::type_;
 // Helper functions
 //------------------------------------------------------------------------------
 
-using PyDateDefault = PyDate<cron::date::Date>;
+using PyDateDefault = PyDate<ora::date::Date>;
 
 inline ref<Object>
 make_date(
-  cron::Datenum const datenum,
+  ora::Datenum const datenum,
   PyTypeObject* type=&PyDateDefault::type_)
 {
   auto const api = PyDateAPI::get(type);
@@ -1012,7 +1012,7 @@ ordinal_date_to_date(
 {
   long const year       = parts->GetItem(0)->long_value();
   long const ordinal    = parts->GetItem(1)->long_value();
-  return cron::date::from_ordinal_date<DATE>(year, ordinal);
+  return ora::date::from_ordinal_date<DATE>(year, ordinal);
 }
 
 
@@ -1024,7 +1024,7 @@ week_date_to_date(
   long const week_year  = parts->GetItem(0)->long_value();
   long const week       = parts->GetItem(1)->long_value();
   long const weekday    = parts->GetItem(2)->long_value();
-  return cron::date::from_week_date<DATE>(week_year, week, weekday);
+  return ora::date::from_week_date<DATE>(week_year, week, weekday);
 }
 
 
@@ -1036,7 +1036,7 @@ ymd_to_date(
   long const year   = parts->GetItem(0)->long_value();
   long const month  = parts->GetItem(1)->long_value();
   long const day    = parts->GetItem(2)->long_value();
-  return cron::date::from_ymd<DATE>(year, month, day);
+  return ora::date::from_ymd<DATE>(year, month, day);
 }
 
 
@@ -1055,14 +1055,14 @@ maybe_date(
     return 
         api->is_invalid(obj) ? DATE::INVALID
       : api->is_missing(obj) ? DATE::MISSING
-      : cron::date::from_datenum<DATE>(api->get_datenum(obj));
+      : ora::date::from_datenum<DATE>(api->get_datenum(obj));
 
   // Try for datetime.date.  Note that PyDateTimeAPI is declared to be static,
   // so we have to initialize it in each compilation unit.
   if (PyDateTimeAPI == nullptr)
     PyDateTime_IMPORT;
   if (PyDate_Check(obj)) 
-    return cron::date::from_ymd<DATE>(
+    return ora::date::from_ymd<DATE>(
       PyDateTime_GET_YEAR(obj),
       PyDateTime_GET_MONTH(obj),
       PyDateTime_GET_DAY(obj));
@@ -1071,13 +1071,13 @@ maybe_date(
   // for datetime.date.
   auto ordinal = obj->CallMethodObjArgs("toordinal", false);
   if (ordinal != nullptr)
-    return cron::date::from_datenum<DATE>(ordinal->long_value());
+    return ora::date::from_datenum<DATE>(ordinal->long_value());
 
   // Try for a date type that has a datenum attribute, to handle duck typing
   // for our PyDate.
   auto datenum = obj->GetAttrString("datenum", false);
   if (datenum != nullptr) 
-    return cron::date::from_datenum<DATE>(datenum->long_value());
+    return ora::date::from_datenum<DATE>(datenum->long_value());
 
   // No type match.
   return {};
@@ -1105,9 +1105,9 @@ convert_to_date(
       return DATE::MAX;
 
     try {
-      return cron::date::from_iso_date<DATE>(str);
+      return ora::date::from_iso_date<DATE>(str);
     }
-    catch (cron::DateError) {
+    catch (ora::DateError) {
       throw py::ValueError("can't parse as date: '"s + str + "'");
     }
   }
@@ -1127,7 +1127,7 @@ convert_to_date(
     // Interpret eight-digit values as YMDI.
     long const ymdi = (long) *long_obj;
     if (10000000 <= ymdi && ymdi <= 99999999) 
-      return cron::date::from_ymdi<DATE>(ymdi);
+      return ora::date::from_ymdi<DATE>(ymdi);
   }
 
   throw py::TypeError("can't convert to a date: "s + *obj->Repr());
@@ -1139,8 +1139,8 @@ convert_to_date(
 #ifdef __clang__
 // Use explicit instantiation for the main instances.
 // FIXME: GCC 5.2.1 generates PyDate<>::type_ in BSS, which breaks linking.
-extern template class PyDate<cron::date::Date>;
-extern template class PyDate<cron::date::Date16>;
+extern template class PyDate<ora::date::Date>;
+extern template class PyDate<ora::date::Date16>;
 #endif
 
 //------------------------------------------------------------------------------

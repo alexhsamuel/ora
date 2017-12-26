@@ -40,7 +40,7 @@ The following all construct the same date:
   >>> %1$s(\"2004-11-02\")
   %1$s(2004, 11, 2)
 
-Call `cron.today()` to get the current date in a time zone.
+Call `ora.today()` to get the current date in a time zone.
 
 # Exceptions
 
@@ -157,7 +157,7 @@ The components may also be given as a three-element sequence.
   Date(2004, Nov, 2)
 
 :warning: The week year is not the same as the ordinary year; see 
-`cron.date`.
+`ora.date`.
 
 @signature
   from_week_date(week_year, week, weekday)

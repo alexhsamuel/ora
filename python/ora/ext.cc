@@ -44,19 +44,19 @@ PyInit_ext(void)
   auto mod = Module::Create(&module_def);
 
   try {
-    aslib::PyDate<cron::date::Date>             ::add_to(mod, "Date");
-    aslib::PyDate<cron::date::Date16>           ::add_to(mod, "Date16");
+    aslib::PyDate<ora::date::Date>             ::add_to(mod, "Date");
+    aslib::PyDate<ora::date::Date16>           ::add_to(mod, "Date16");
 
-    aslib::PyDaytime<cron::daytime::Daytime>    ::add_to(mod, "Daytime");
-    aslib::PyDaytime<cron::daytime::Daytime32>  ::add_to(mod, "Daytime32");
-    aslib::PyDaytime<cron::daytime::UsecDaytime>::add_to(mod, "UsecDaytime");
+    aslib::PyDaytime<ora::daytime::Daytime>    ::add_to(mod, "Daytime");
+    aslib::PyDaytime<ora::daytime::Daytime32>  ::add_to(mod, "Daytime32");
+    aslib::PyDaytime<ora::daytime::UsecDaytime>::add_to(mod, "UsecDaytime");
 
-    aslib::PyTime<cron::time::Time>             ::add_to(mod, "Time");
-    aslib::PyTime<cron::time::SmallTime>        ::add_to(mod, "SmallTime");
-    aslib::PyTime<cron::time::NsecTime>         ::add_to(mod, "NsecTime");
-    aslib::PyTime<cron::time::Unix32Time>       ::add_to(mod, "Unix32Time");
-    aslib::PyTime<cron::time::Unix64Time>       ::add_to(mod, "Unix64Time");
-    aslib::PyTime<cron::time::Time128>          ::add_to(mod, "Time128");
+    aslib::PyTime<ora::time::Time>             ::add_to(mod, "Time");
+    aslib::PyTime<ora::time::SmallTime>        ::add_to(mod, "SmallTime");
+    aslib::PyTime<ora::time::NsecTime>         ::add_to(mod, "NsecTime");
+    aslib::PyTime<ora::time::Unix32Time>       ::add_to(mod, "Unix32Time");
+    aslib::PyTime<ora::time::Unix64Time>       ::add_to(mod, "Unix64Time");
+    aslib::PyTime<ora::time::Time128>          ::add_to(mod, "Time128");
 
     aslib::PyTimeZone                           ::add_to(mod, "TimeZone");
 
@@ -65,34 +65,34 @@ PyInit_ext(void)
     StructSequenceType* const hms_daytime_type = get_hms_daytime_type();
     mod->AddObject(hms_daytime_type->tp_name, (PyObject*) hms_daytime_type);
 
-    mod->AddObject("SECOND_INVALID"   , Float::from(cron::SECOND_INVALID));
-    mod->AddObject("MINUTE_INVALID"   , Long::from(cron::MINUTE_INVALID));
-    mod->AddObject("HOUR_INVALID"     , Long::from(cron::HOUR_INVALID));
-    mod->AddObject("DAY_INVALID"      , Long::from(cron::DAY_INVALID));
-    mod->AddObject("MONTH_INVALID"    , Long::from(cron::MONTH_INVALID));
-    mod->AddObject("YEAR_INVALID"     , Long::from(cron::YEAR_INVALID));
-    mod->AddObject("ORDINAL_INVALID"  , Long::from(cron::ORDINAL_INVALID));
-    mod->AddObject("WEEK_INVALID"     , Long::from(cron::WEEK_INVALID));
-    mod->AddObject("WEEKDAY_INVALID"  , Long::from(cron::WEEKDAY_INVALID));
-    mod->AddObject("DAYTICK_INVALID"  , Long::from(cron::DAYTICK_INVALID));
-    mod->AddObject("DATENUM_INVALID"  , Long::from(cron::DATENUM_INVALID));
-    mod->AddObject("SSM_INVALID"      , Float::from(cron::SSM_INVALID));
-    mod->AddObject("DATENUM_MIN"      , Long::from(cron::DATENUM_MIN));
-    mod->AddObject("DATENUM_MAX"      , Long::from(cron::DATENUM_MAX));
+    mod->AddObject("SECOND_INVALID"   , Float::from(ora::SECOND_INVALID));
+    mod->AddObject("MINUTE_INVALID"   , Long::from(ora::MINUTE_INVALID));
+    mod->AddObject("HOUR_INVALID"     , Long::from(ora::HOUR_INVALID));
+    mod->AddObject("DAY_INVALID"      , Long::from(ora::DAY_INVALID));
+    mod->AddObject("MONTH_INVALID"    , Long::from(ora::MONTH_INVALID));
+    mod->AddObject("YEAR_INVALID"     , Long::from(ora::YEAR_INVALID));
+    mod->AddObject("ORDINAL_INVALID"  , Long::from(ora::ORDINAL_INVALID));
+    mod->AddObject("WEEK_INVALID"     , Long::from(ora::WEEK_INVALID));
+    mod->AddObject("WEEKDAY_INVALID"  , Long::from(ora::WEEKDAY_INVALID));
+    mod->AddObject("DAYTICK_INVALID"  , Long::from(ora::DAYTICK_INVALID));
+    mod->AddObject("DATENUM_INVALID"  , Long::from(ora::DATENUM_INVALID));
+    mod->AddObject("SSM_INVALID"      , Float::from(ora::SSM_INVALID));
+    mod->AddObject("DATENUM_MIN"      , Long::from(ora::DATENUM_MIN));
+    mod->AddObject("DATENUM_MAX"      , Long::from(ora::DATENUM_MAX));
     mod->AddObject("MIDNIGHT"         , PyDaytimeDefault::create(PyDaytimeDefault::Daytime::MIDNIGHT));
     mod->AddObject("UTC"              , 
-                   PyTimeZone::create(std::make_shared<cron::TimeZone>()));
+                   PyTimeZone::create(std::make_shared<ora::TimeZone>()));
 
     // FIXME: Use specific Python exception classes.
-    TranslateException<cron::InvalidDateError>::to(PyExc_ValueError);
-    TranslateException<cron::InvalidDaytimeError>::to(PyExc_ValueError);
-    TranslateException<cron::InvalidTimeError>::to(PyExc_ValueError);
-    TranslateException<cron::DateFormatError>::to(PyExc_ValueError); 
-    TranslateException<cron::DateRangeError>::to(PyExc_OverflowError);
-    TranslateException<cron::DaytimeRangeError>::to(PyExc_OverflowError);
-    TranslateException<cron::NonexistentDateDaytime>::to(PyExc_RuntimeError);
-    TranslateException<cron::TimeRangeError>::to(PyExc_OverflowError);
-    TranslateException<cron::TimeFormatError>::to(PyExc_ValueError);
+    TranslateException<ora::InvalidDateError>::to(PyExc_ValueError);
+    TranslateException<ora::InvalidDaytimeError>::to(PyExc_ValueError);
+    TranslateException<ora::InvalidTimeError>::to(PyExc_ValueError);
+    TranslateException<ora::DateFormatError>::to(PyExc_ValueError); 
+    TranslateException<ora::DateRangeError>::to(PyExc_OverflowError);
+    TranslateException<ora::DaytimeRangeError>::to(PyExc_OverflowError);
+    TranslateException<ora::NonexistentDateDaytime>::to(PyExc_RuntimeError);
+    TranslateException<ora::TimeRangeError>::to(PyExc_OverflowError);
+    TranslateException<ora::TimeFormatError>::to(PyExc_ValueError);
     TranslateException<aslib::FormatError>::to(PyExc_RuntimeError);
 
     return mod.release();

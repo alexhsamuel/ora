@@ -8,7 +8,7 @@
 #include <Python.h>
 #include <datetime.h>
 
-#include "cron.hh"
+#include "ora.hh"
 #include "py.hh"
 
 namespace aslib {
@@ -26,7 +26,7 @@ using std::unique_ptr;
 //------------------------------------------------------------------------------
 
 extern StructSequenceType* get_hms_daytime_type();
-extern ref<Object> make_hms_daytime(cron::HmsDaytime);
+extern ref<Object> make_hms_daytime(ora::HmsDaytime);
 
 /**
  * Attempts to convert various kinds of Python daytime object to 'DAYTIME'.
@@ -151,8 +151,8 @@ private:
   static GetSets<PyDaytime> tp_getsets_;
 
   /** Date format used to generate the repr and str.  */
-  static unique_ptr<cron::daytime::DaytimeFormat> repr_format_;
-  static unique_ptr<cron::daytime::DaytimeFormat> str_format_;
+  static unique_ptr<ora::daytime::DaytimeFormat> repr_format_;
+  static unique_ptr<ora::daytime::DaytimeFormat> str_format_;
 
   static Type build_type(string const& type_name);
 
@@ -184,7 +184,7 @@ PyDaytime<DAYTIME>::add_to(
     + "S";
 
   // Build the repr format.
-  repr_format_ = make_unique<cron::daytime::DaytimeFormat>(
+  repr_format_ = make_unique<ora::daytime::DaytimeFormat>(
     name + "(%0H, %0M, " + sec_fmt + ")",
     name + ".INVALID",
     name + ".MISSING");
@@ -192,7 +192,7 @@ PyDaytime<DAYTIME>::add_to(
   // Build the str format.  Choose precision for seconds that captures actual
   // precision of the daytime class.
   std::string pattern = "%H:%M:" + sec_fmt;
-  str_format_ = make_unique<cron::daytime::DaytimeFormat>(pattern);
+  str_format_ = make_unique<ora::daytime::DaytimeFormat>(pattern);
 
   // Add in static data members.
   auto const dict = (Dict*) type_.tp_dict;
@@ -435,7 +435,7 @@ PyDaytime<DAYTIME>::method___format__(
     throw TypeError("__format__() takes one argument");
   auto const fmt = args->GetItem(0)->Str()->as_utf8();
 
-  return Unicode::from(cron::DaytimeFormat(fmt)(self->daytime_));
+  return Unicode::from(ora::DaytimeFormat(fmt)(self->daytime_));
 }
 
 
@@ -447,12 +447,12 @@ PyDaytime<DAYTIME>::method_from_daytick(
   Dict* const kw_args)
 {
   static char const* const arg_names[] = {"daytick", nullptr};
-  cron::Daytick daytick;
+  ora::Daytick daytick;
   static_assert(
-    sizeof(cron::Daytick) == sizeof(long), "daytick is not an long");
+    sizeof(ora::Daytick) == sizeof(long), "daytick is not an long");
   Arg::ParseTupleAndKeywords(args, kw_args, "k", arg_names, &daytick);
 
-  return create(cron::daytime::from_daytick<Daytime>(daytick), type);
+  return create(ora::daytime::from_daytick<Daytime>(daytick), type);
 }
 
 
@@ -482,7 +482,7 @@ PyDaytime<DAYTIME>::method_from_hms(
   long   const minute = parts->GetItem(1)->long_value();
   double const second
     = parts->Length() == 3 ? parts->GetItem(2)->double_value() : 0;
-  return create(cron::daytime::from_hms<Daytime>(hour, minute, second), type);
+  return create(ora::daytime::from_hms<Daytime>(hour, minute, second), type);
 }
 
 
@@ -494,10 +494,10 @@ PyDaytime<DAYTIME>::method_from_ssm(
   Dict* const kw_args)
 {
   static char const* const arg_names[] = {"ssm", nullptr};
-  cron::Ssm ssm;
+  ora::Ssm ssm;
   Arg::ParseTupleAndKeywords(args, kw_args, "d", arg_names, &ssm);
 
-  return create(cron::daytime::from_ssm<Daytime>(ssm), type);
+  return create(ora::daytime::from_ssm<Daytime>(ssm), type);
 }
 
 
@@ -532,7 +532,7 @@ PyDaytime<DAYTIME>::get_hms(
   PyDaytime* self,
   void* /* closure */)
 {
-  return make_hms_daytime(cron::daytime::get_hms(self->daytime_));
+  return make_hms_daytime(ora::daytime::get_hms(self->daytime_));
 }
 
 
@@ -542,7 +542,7 @@ PyDaytime<DAYTIME>::get_hour(
   PyDaytime* self,
   void* /* closure */)
 {
-  return Long::FromLong(cron::daytime::get_hour(self->daytime_));
+  return Long::FromLong(ora::daytime::get_hour(self->daytime_));
 }
 
 
@@ -562,7 +562,7 @@ PyDaytime<DAYTIME>::get_minute(
   PyDaytime* self,
   void* /* closure */)
 {
-  return Long::FromLong(cron::daytime::get_minute(self->daytime_));
+  return Long::FromLong(ora::daytime::get_minute(self->daytime_));
 }
 
 
@@ -592,7 +592,7 @@ PyDaytime<DAYTIME>::get_second(
   PyDaytime* self,
   void* /* closure */)
 {
-  return Float::FromDouble(cron::daytime::get_second(self->daytime_));
+  return Float::FromDouble(ora::daytime::get_second(self->daytime_));
 }
 
 
@@ -602,7 +602,7 @@ PyDaytime<DAYTIME>::get_ssm(
   PyDaytime* self,
   void* /* closure */)
 {
-  return Float::FromDouble(cron::daytime::get_ssm(self->daytime_));
+  return Float::FromDouble(ora::daytime::get_ssm(self->daytime_));
 }
 
 
@@ -620,7 +620,7 @@ PyDaytime<DAYTIME>::get_std(
   if (PyDateTimeAPI == nullptr)
     PyDateTime_IMPORT;
   
-  auto const usec = cron::UsecDaytime(self->daytime_).get_offset();
+  auto const usec = ora::UsecDaytime(self->daytime_).get_offset();
   return ref<Object>::take(PyTime_FromTime(
     usec / (Offset) 3600000000, 
     usec % (Offset) 3600000000 / 60000000,
@@ -662,11 +662,11 @@ PyDaytime<DAYTIME>::tp_getsets_
 //------------------------------------------------------------------------------
 
 template<class DAYTIME>
-unique_ptr<cron::daytime::DaytimeFormat>
+unique_ptr<ora::daytime::DaytimeFormat>
 PyDaytime<DAYTIME>::repr_format_;
 
 template<class DAYTIME>
-unique_ptr<cron::daytime::DaytimeFormat>
+unique_ptr<ora::daytime::DaytimeFormat>
 PyDaytime<DAYTIME>::str_format_;
 
 //------------------------------------------------------------------------------
@@ -747,17 +747,17 @@ PyDaytime<DAYTIME>::build_type(
 // Helper functions
 //------------------------------------------------------------------------------
 
-using PyDaytimeDefault = PyDaytime<cron::daytime::Daytime>;
+using PyDaytimeDefault = PyDaytime<ora::daytime::Daytime>;
 
 inline ref<Object>
 make_daytime(
-  cron::Daytick const daytick,
+  ora::Daytick const daytick,
   PyTypeObject* type=&PyDaytimeDefault::type_)
 {
   // Special case fast path for the default daytime type.
   if (type == &PyDaytimeDefault::type_)
     return PyDaytimeDefault::create(
-      cron::daytime::from_daytick<PyDaytimeDefault::Daytime>(daytick));
+      ora::daytime::from_daytick<PyDaytimeDefault::Daytime>(daytick));
   else
     return 
       ((Object*) type)->CallMethodObjArgs("from_daytick", Long::from(daytick));
@@ -774,7 +774,7 @@ parts_to_daytime(
   long   const minute   = parts->GetItem(1)->long_value();
   double const second
     = parts->Length() > 2 ? parts->GetItem(2)->double_value() : 0;
-  return cron::daytime::from_hms<DAYTIME>(hour, minute, second);
+  return ora::daytime::from_hms<DAYTIME>(hour, minute, second);
 }
 
 
@@ -791,7 +791,7 @@ maybe_daytime(
   if (PyDateTimeAPI == nullptr)
     PyDateTime_IMPORT;
   if (PyTime_Check(obj))
-    return cron::daytime::from_hms<DAYTIME>(
+    return ora::daytime::from_hms<DAYTIME>(
       PyDateTime_TIME_GET_HOUR(obj),
       PyDateTime_TIME_GET_MINUTE(obj),
         PyDateTime_TIME_GET_SECOND(obj)
@@ -800,7 +800,7 @@ maybe_daytime(
   // Try for a daytime type that has a 'daytick' attribute.
   auto daytick = obj->GetAttrString("daytick", false);
   if (daytick != nullptr)
-    return cron::daytime::from_daytick<DAYTIME>(daytick->long_value());
+    return ora::daytime::from_daytick<DAYTIME>(daytick->long_value());
 
   // No type match.
   return {};
@@ -823,9 +823,9 @@ convert_to_daytime(
   if (Unicode::Check(obj)) {
     auto const str = static_cast<Unicode*>(obj)->as_utf8_string();
     try {
-      return cron::daytime::from_iso_daytime<DAYTIME>(str);
+      return ora::daytime::from_iso_daytime<DAYTIME>(str);
     }
-    catch (cron::DaytimeError) {
+    catch (ora::DaytimeError) {
       throw py::ValueError("can't parse as daytime: '"s + str + "'");
     }
   }
@@ -836,7 +836,7 @@ convert_to_daytime(
   auto const double_opt = obj->maybe_double_value();
   if (double_opt) 
     // Interpret as SSM.
-    return cron::daytime::from_ssm<DAYTIME>(*double_opt);
+    return ora::daytime::from_ssm<DAYTIME>(*double_opt);
       
   // Failed to convert.
   throw py::TypeError("can't convert to daytime: "s + *obj->Repr());
@@ -848,9 +848,9 @@ convert_to_daytime(
 #ifdef __clang__
 // Use explicit instantiation for the main instances.
 // FIXME: GCC 5.2.1 generates PyDaytime<>::type_ in BSS, which breaks linking.
-extern template class PyDaytime<cron::daytime::Daytime>;
-extern template class PyDaytime<cron::daytime::Daytime32>;
-extern template class PyDaytime<cron::daytime::UsecDaytime>;
+extern template class PyDaytime<ora::daytime::Daytime>;
+extern template class PyDaytime<ora::daytime::Daytime32>;
+extern template class PyDaytime<ora::daytime::UsecDaytime>;
 #endif
 
 //------------------------------------------------------------------------------

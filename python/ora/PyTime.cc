@@ -43,12 +43,12 @@ PyTimeAPI::apis_;
 //------------------------------------------------------------------------------
 // Explicit template instances
 
-template class PyTime<cron::time::Time>;
-template class PyTime<cron::time::SmallTime>;
-template class PyTime<cron::time::NsecTime>;
-template class PyTime<cron::time::Unix32Time>;
-template class PyTime<cron::time::Unix64Time>;
-template class PyTime<cron::time::Time128>;
+template class PyTime<ora::time::Time>;
+template class PyTime<ora::time::SmallTime>;
+template class PyTime<ora::time::NsecTime>;
+template class PyTime<ora::time::Unix32Time>;
+template class PyTime<ora::time::Unix64Time>;
+template class PyTime<ora::time::Time128>;
 
 //------------------------------------------------------------------------------
 // Docstrings

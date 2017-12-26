@@ -2,7 +2,7 @@
 #include <cstring>
 #include <time.h>
 
-#include "cron.hh"
+#include "ora.hh"
 #include "functions_doc.hh"
 #include "py.hh"
 #include "PyTime.hh"
@@ -24,16 +24,16 @@ days_in_month(
   Dict* const kw_args)
 {
   static char const* arg_names[] = {"year", "month", nullptr};
-  cron::Year year;
-  cron::Month month;
+  ora::Year year;
+  ora::Month month;
   static_assert(
-    sizeof(cron::Year) == sizeof(unsigned short), "wrong type for year");
+    sizeof(ora::Year) == sizeof(unsigned short), "wrong type for year");
   static_assert(
-    sizeof(cron::Month) == sizeof(unsigned char), "wrong type for month");
+    sizeof(ora::Month) == sizeof(unsigned char), "wrong type for month");
   Arg::ParseTupleAndKeywords(args, kw_args, "Hb", arg_names, &year, &month);
 
-  if (cron::year_is_valid(year) && cron::month_is_valid(month))
-    return Long::FromLong(cron::days_in_month(year, month));
+  if (ora::year_is_valid(year) && ora::month_is_valid(month))
+    return Long::FromLong(ora::days_in_month(year, month));
   else
     throw Exception(PyExc_ValueError, "invalid year");
 }
@@ -46,13 +46,13 @@ days_in_year(
   Dict* const kw_args)
 {
   static char const* arg_names[] = {"year", nullptr};
-  cron::Year year;
+  ora::Year year;
   static_assert(
-    sizeof(cron::Year) == sizeof(unsigned short), "wrong type for year");
+    sizeof(ora::Year) == sizeof(unsigned short), "wrong type for year");
   Arg::ParseTupleAndKeywords(args, kw_args, "H", arg_names, &year);
 
-  if (cron::year_is_valid(year))
-    return Long::FromLong(cron::days_in_year(year));
+  if (ora::year_is_valid(year))
+    return Long::FromLong(ora::days_in_year(year));
   else
     throw py::ValueError("invalid year");
 }
@@ -98,7 +98,7 @@ get_display_time_zone(
   static char const* arg_names[] = {nullptr};
   Arg::ParseTupleAndKeywords(args, kw_args, "", arg_names);
 
-  return PyTimeZone::create(cron::get_display_time_zone());
+  return PyTimeZone::create(ora::get_display_time_zone());
 }
 
 
@@ -111,7 +111,7 @@ get_system_time_zone(
   static char const* arg_names[] = {nullptr};
   Arg::ParseTupleAndKeywords(args, kw_args, "", arg_names);
 
-  return PyTimeZone::create(cron::get_system_time_zone());
+  return PyTimeZone::create(ora::get_system_time_zone());
 }
 
 
@@ -122,13 +122,13 @@ is_leap_year(
   Dict* const kw_args)
 {
   static char const* arg_names[] = {"year", nullptr};
-  cron::Year year;
+  ora::Year year;
   static_assert(
-    sizeof(cron::Year) == sizeof(unsigned short), "wrong type for year");
+    sizeof(ora::Year) == sizeof(unsigned short), "wrong type for year");
   Arg::ParseTupleAndKeywords(args, kw_args, "H", arg_names, &year);
 
-  if (cron::year_is_valid(year))
-    return Bool::from(cron::is_leap_year(year));
+  if (ora::year_is_valid(year))
+    return Bool::from(ora::is_leap_year(year));
   else
     throw py::ValueError("invalid year");
 }
@@ -164,7 +164,7 @@ set_display_time_zone(
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &tz_arg);
 
   auto tz = convert_to_time_zone(tz_arg);
-  cron::set_display_time_zone(std::move(tz));
+  ora::set_display_time_zone(std::move(tz));
   return none_ref();
 }
 
@@ -193,8 +193,8 @@ to_local(
     // If this is a PyTime object and we have an API, use it.
     api != nullptr ? api->to_local_datenum_daytick(time, *tz)
     // Otherwise, convert to a time and then proceed.
-    : cron::time::to_local_datenum_daytick(
-        convert_to_time<cron::time::Time>(time), *tz);
+    : ora::time::to_local_datenum_daytick(
+        convert_to_time<ora::time::Time>(time), *tz);
   return make_local(local, date_type, daytime_type);
 }
 
@@ -216,8 +216,8 @@ to_local_datenum_daytick(
     // If this is a PyTime object and we have an API, use it.
     api != nullptr ? api->to_local_datenum_daytick(time, *tz)
     // Otherwise, convert to a time and then proceed.
-    : cron::time::to_local_datenum_daytick(
-        convert_to_time<cron::time::Time>(time), *tz);
+    : ora::time::to_local_datenum_daytick(
+        convert_to_time<ora::time::Time>(time), *tz);
   return make_local_datenum_daytick(local);
 }
 
@@ -233,8 +233,8 @@ today(
   static char const* const arg_names[] = {"time_zone", "Date", nullptr};
   Arg::ParseTupleAndKeywords(args, kw_args, "O|O", arg_names, &tz, &date_type);
 
-  auto local = cron::time::to_local_datenum_daytick(
-    cron::time::now<cron::time::Time>(), *convert_to_time_zone(tz));
+  auto local = ora::time::to_local_datenum_daytick(
+    ora::time::now<ora::time::Time>(), *convert_to_time_zone(tz));
   // FIXME: Use API.
   return date_type
     ->CallMethodObjArgs("from_datenum", Long::from(local.datenum));

@@ -62,7 +62,7 @@ Constructs a daytime from _dayticks_.
 @signature
   from_daytick(daytick)
 @see
-  `cron.daytime`.
+  `ora.daytime`.
 """
 
 from_hms = """
@@ -97,7 +97,7 @@ Constructs a daytime from _seconds since midnight_ (SSM).
 @signature
   from_ssm(ssm: float)
 @see
-  `cron.daytime`.
+  `ora.daytime`.
 
 """
 

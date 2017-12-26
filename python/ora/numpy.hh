@@ -1,6 +1,6 @@
 #pragma once
 
-#define PY_ARRAY_UNIQUE_SYMBOL cron_numpy
+#define PY_ARRAY_UNIQUE_SYMBOL ora_numpy
 #define NO_IMPORT_ARRAY
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 

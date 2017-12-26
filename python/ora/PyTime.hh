@@ -8,7 +8,7 @@
 #include <datetime.h>
 
 #include "aslib/math.hh"
-#include "cron.hh"
+#include "ora.hh"
 #include "py.hh"
 #include "PyDate.hh"
 #include "PyDaytime.hh"
@@ -101,13 +101,13 @@ public:
     { return get(obj->ob_type);  }
 
   // API methods.
-  virtual ref<Object>               from_local_datenum_daytick(cron::Datenum, cron::Daytick, cron::TimeZone const&, bool) const = 0; 
+  virtual ref<Object>               from_local_datenum_daytick(ora::Datenum, ora::Daytick, ora::TimeZone const&, bool) const = 0; 
   virtual int64_t                   get_epoch_time(Object* time) const = 0;
-  virtual cron::time::Time128       get_time128(Object* time) const = 0;
+  virtual ora::time::Time128       get_time128(Object* time) const = 0;
   virtual bool                      is_invalid(Object* time) const = 0;
   virtual bool                      is_missing(Object* time) const = 0;
   virtual ref<Object>               now() const = 0;
-  virtual cron::LocalDatenumDaytick to_local_datenum_daytick(Object* time, cron::TimeZone const& tz) const = 0;
+  virtual ora::LocalDatenumDaytick to_local_datenum_daytick(Object* time, ora::TimeZone const& tz) const = 0;
 
 private:
 
@@ -179,16 +179,16 @@ public:
   public:
 
     virtual int64_t get_epoch_time(Object* const time) const
-      { return cron::time::get_epoch_time(((PyTime*) time)->time_); }
+      { return ora::time::get_epoch_time(((PyTime*) time)->time_); }
 
-    virtual cron::time::Time128 get_time128(Object* const time) const
-      { return cron::time::Time128(((PyTime*) time)->time_); }
+    virtual ora::time::Time128 get_time128(Object* const time) const
+      { return ora::time::Time128(((PyTime*) time)->time_); }
 
-    virtual ref<Object> from_local_datenum_daytick(cron::Datenum const datenum, cron::Daytick const daytick, cron::TimeZone const& tz, bool first) const
-      { return PyTime::create(cron::from_local<Time>(datenum, daytick, tz, first)); }
+    virtual ref<Object> from_local_datenum_daytick(ora::Datenum const datenum, ora::Daytick const daytick, ora::TimeZone const& tz, bool first) const
+      { return PyTime::create(ora::from_local<Time>(datenum, daytick, tz, first)); }
 
     virtual ref<Object> now() const
-      { return PyTime::create(cron::time::now<Time>()); }
+      { return PyTime::create(ora::time::now<Time>()); }
 
     virtual bool is_invalid(Object* const time) const
       { return ((PyTime*) time)->time_.is_invalid(); }
@@ -196,8 +196,8 @@ public:
     virtual bool is_missing(Object* const time) const
       { return ((PyTime*) time)->time_.is_missing(); }
 
-    virtual cron::LocalDatenumDaytick to_local_datenum_daytick(Object* const time, cron::TimeZone const& tz) const
-      { return cron::time::to_local_datenum_daytick(((PyTime*) time)->time_, tz); }
+    virtual ora::LocalDatenumDaytick to_local_datenum_daytick(Object* const time, ora::TimeZone const& tz) const
+      { return ora::time::to_local_datenum_daytick(((PyTime*) time)->time_, tz); }
 
   };
 
@@ -230,9 +230,9 @@ private:
   static GetSets<PyTime> tp_getsets_;
 
   /** Date format used to generate the repr.  */
-  static unique_ptr<cron::time::TimeFormat> repr_format_;
+  static unique_ptr<ora::time::TimeFormat> repr_format_;
   /** Date format used to generate the str.  */
-  static unique_ptr<cron::time::TimeFormat> str_format_;
+  static unique_ptr<ora::time::TimeFormat> str_format_;
 
   static Type build_type(string const& type_name);
 
@@ -260,7 +260,7 @@ PyTime<TIME>::add_to(
     = std::min((size_t) ceil(log10(Time::DENOMINATOR)), 15ul);
 
   // Build the repr format.
-  repr_format_ = make_unique<cron::time::TimeFormat>(
+  repr_format_ = make_unique<ora::time::TimeFormat>(
     name + "(%0Y, %0m, %0d, %0H, %0M, %0." + std::to_string(precision) + "S, UTC)",
     name + ".INVALID",
     name + ".MISSING");
@@ -272,7 +272,7 @@ PyTime<TIME>::add_to(
     pattern += std::to_string(precision);
   }
   pattern += "SZ";
-  str_format_ = make_unique<cron::time::TimeFormat>(pattern);
+  str_format_ = make_unique<ora::time::TimeFormat>(pattern);
 
   // Add in static data members.
   Dict* const dict = (Dict*) type_.tp_dict;
@@ -365,7 +365,7 @@ ref<Unicode>
 PyTime<TIME>::tp_repr(
   PyTime* const self)
 {
-  return Unicode::from((*repr_format_)(self->time_, *cron::UTC));
+  return Unicode::from((*repr_format_)(self->time_, *ora::UTC));
 }
 
 
@@ -387,7 +387,7 @@ PyTime<TIME>::tp_str(
   PyTime* const self)
 {
   // FIXME: Not UTC?
-  return Unicode::from((*str_format_)(self->time_, *cron::UTC));  
+  return Unicode::from((*str_format_)(self->time_, *ora::UTC));  
 }
 
 
@@ -531,7 +531,7 @@ PyTime<TIME>::method___format__(
   if (*fmt == '\0')
     return Unicode::from((*str_format_)(self->time_));
   else
-    return Unicode::from(cron::time::LocalTimeFormat::parse(fmt)(self->time_));
+    return Unicode::from(ora::time::LocalTimeFormat::parse(fmt)(self->time_));
 }
 
 
@@ -570,7 +570,7 @@ PyTime<TIME>::method_get_parts(
   auto parts = get_parts(self->time_, *convert_to_time_zone(tz));
 
   auto ymd_date = make_ymd_date(
-    cron::YmdDate{parts.date.year, parts.date.month, parts.date.day});  // FIXME
+    ora::YmdDate{parts.date.year, parts.date.month, parts.date.day});  // FIXME
   auto hms_daytime = make_hms_daytime(parts.daytime);
 
   auto time_zone_parts = get_time_zone_parts_type()->New();
@@ -641,8 +641,8 @@ PyTime<TIME>::get_std(
     throw py::ValueError("time not valid");
 
   auto const local = 
-    cron::to_local<cron::Date, cron::UsecDaytime>(self->time_, *cron::UTC);
-  auto const ymd = cron::date::get_ymd(local.date);
+    ora::to_local<ora::Date, ora::UsecDaytime>(self->time_, *ora::UTC);
+  auto const ymd = ora::date::get_ymd(local.date);
   auto const usec = local.daytime.get_offset();
 
   // FIXME: Maybe this should go elsewhere?
@@ -692,12 +692,12 @@ PyTime<TIME>::tp_getsets_
 //------------------------------------------------------------------------------
 
 template<class TIME>
-unique_ptr<cron::time::TimeFormat>
+unique_ptr<ora::time::TimeFormat>
 PyTime<TIME>::repr_format_;
 
 
 template<class TIME>
-unique_ptr<cron::time::TimeFormat>
+unique_ptr<ora::time::TimeFormat>
 PyTime<TIME>::str_format_;
 
 
@@ -778,7 +778,7 @@ PyTime<TIME>::build_type(
 //------------------------------------------------------------------------------
 // Helpers
 
-using PyTimeDefault = PyTime<cron::time::Time>;
+using PyTimeDefault = PyTime<ora::time::Time>;
 
 template<class TIME>
 inline TIME
@@ -789,7 +789,7 @@ localtime_to_time(
   auto const localtime  = cast<Sequence>(parts->GetItem(0));
   auto const dd = to_datenum_daytick(localtime);
   auto const tz = convert_to_time_zone(parts->GetItem(1));
-  return cron::from_local<TIME>(dd.first, dd.second, *tz);
+  return ora::from_local<TIME>(dd.first, dd.second, *tz);
 }
 
 
@@ -802,7 +802,7 @@ date_daytime_to_time(
   auto const datenum    = to_datenum(parts->GetItem(0));
   auto const daytick    = to_daytick(parts->GetItem(1));
   auto const tz         = convert_to_time_zone(parts->GetItem(2));
-  return cron::from_local<TIME>(datenum, daytick, *tz);
+  return ora::from_local<TIME>(datenum, daytick, *tz);
 }
 
 
@@ -820,7 +820,7 @@ parts_to_time(
   auto const second = parts->GetItem(5)->double_value();
   auto const tz     = convert_to_time_zone(parts->GetItem(6));
   return 
-    cron::from_local_parts<TIME>(year, month, day, hour, minute, second, *tz);
+    ora::from_local_parts<TIME>(year, month, day, hour, minute, second, *tz);
 }
 
 
@@ -852,7 +852,7 @@ maybe_time(
         string("unknown tzinfo: ") + tzinfo->Repr()->as_utf8_string());
     
     // FIXME: Provide a all-integer ctor with (sec, usec).
-    auto const time = cron::from_local_parts<TIME>(
+    auto const time = ora::from_local_parts<TIME>(
       PyDateTime_GET_YEAR(obj),
       PyDateTime_GET_MONTH(obj) - 1,
       PyDateTime_GET_DAY(obj) - 1,
@@ -905,12 +905,12 @@ convert_to_time(
 #ifdef __clang__
 // Use explicit instantiation for the main instances.
 // FIXME: GCC 5.2.1 generates PyTime<>::type_ in BSS, which breaks linking.
-extern template class PyTime<cron::time::Time>;
-extern template class PyTime<cron::time::SmallTime>;
-extern template class PyTime<cron::time::NsecTime>;
-extern template class PyTime<cron::time::Unix32Time>;
-extern template class PyTime<cron::time::Unix64Time>;
-extern template class PyTime<cron::time::Time128>;
+extern template class PyTime<ora::time::Time>;
+extern template class PyTime<ora::time::SmallTime>;
+extern template class PyTime<ora::time::NsecTime>;
+extern template class PyTime<ora::time::Unix32Time>;
+extern template class PyTime<ora::time::Unix64Time>;
+extern template class PyTime<ora::time::Time128>;
 #endif
 
 //------------------------------------------------------------------------------

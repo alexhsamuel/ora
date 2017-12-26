@@ -45,7 +45,7 @@ get_time_zone_parts_type()
 
 inline ref<Object>
 make_time_zone_parts(
-  cron::TimeZoneParts const& parts)
+  ora::TimeZoneParts const& parts)
 {
   auto parts_obj = get_time_zone_parts_type()->New();
   parts_obj->initialize(0, Long::from(parts.offset));
@@ -58,7 +58,7 @@ make_time_zone_parts(
 /**
  * Interprets 'obj' as a time zone.
  */
-cron::TimeZone_ptr
+ora::TimeZone_ptr
 maybe_time_zone(
   Object* const obj)
 {
@@ -71,7 +71,7 @@ maybe_time_zone(
   if (zone_attr != nullptr) {
     auto const tz_name = zone_attr->Str()->as_utf8_string();
     try {
-      return cron::get_time_zone(tz_name);
+      return ora::get_time_zone(tz_name);
     }
     catch (aslib::ValueError) {
       throw py::ValueError(string("not a time zone: ") + tz_name);
@@ -86,7 +86,7 @@ maybe_time_zone(
 /**
  * Attempts to convert 'obj' to a time zone.
  */
-cron::TimeZone_ptr
+ora::TimeZone_ptr
 convert_to_time_zone(
   Object* const obj)
 {
@@ -98,7 +98,7 @@ convert_to_time_zone(
   if (Unicode::Check(obj)) {
     auto const tz_name = cast<Unicode>(obj)->as_utf8_string();
     try {
-      return cron::get_time_zone(tz_name);
+      return ora::get_time_zone(tz_name);
     }
     catch (aslib::ValueError) {
       throw py::ValueError(string("not a time zone: ") + tz_name);
@@ -113,17 +113,17 @@ convert_to_time_zone(
 // FIXME: This is a hack to translate C++ into Python exceptions.  Instead, wrap
 // excpetions comprehensively.
 
-inline cron::TimeZoneParts 
+inline ora::TimeZoneParts 
 get_parts_local(
-  cron::TimeZone_ptr const tz,
-  cron::Datenum const datenum,
-  cron::Daytick const daytick,
+  ora::TimeZone_ptr const tz,
+  ora::Datenum const datenum,
+  ora::Daytick const daytick,
   bool const first)
 {
   try {
     return tz->get_parts_local(datenum, daytick, first);
   }
-  catch (cron::NonexistentDateDaytime) {
+  catch (ora::NonexistentDateDaytime) {
     // FIXME: Use a custom exception class.
     throw py::ValueError("nonexistent local time");
   }
@@ -273,7 +273,7 @@ PyTimeZone::nb_matrix_multiply(
       auto const datenum = to_datenum(local->GetItem(0));
       auto const daytick = to_daytick(local->GetItem(1));
       return PyTimeDefault::create(
-        cron::from_local<PyTimeDefault::Time>(datenum, daytick, *self->tz_));
+        ora::from_local<PyTimeDefault::Time>(datenum, daytick, *self->tz_));
     }
   }
 
@@ -359,8 +359,8 @@ PyTimeZone::method_at_local(
   Arg::ParseTupleAndKeywords(
     args, kw_args, "O|O$p", arg_names, &arg, &daytime, &first);
 
-  cron::Datenum datenum;
-  cron::Daytick daytick;
+  ora::Datenum datenum;
+  ora::Daytick daytick;
 
   if (daytime == nullptr) 
     // One arg.  Is it a local time?

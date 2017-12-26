@@ -29,17 +29,17 @@ setup(
     name="test",
     ext_modules=[
         Extension(
-            "cron.ext",
+            "ora.ext",
             extra_compile_args=[
                 "-std=c++14", 
                 "-fdiagnostics-color=always", 
                 "-O0", 
             ],
             include_dirs      =include_dirs,
-            sources           =glob("cron/*.cc"),
+            sources           =glob("ora/*.cc"),
             library_dirs      =["../c++/lib",],
-            libraries         =["cron",],
-            depends           =glob("cron/*.hh") + glob("../c++/include/*.hh"),
+            libraries         =["ora",],
+            depends           =glob("ora/*.hh") + glob("../c++/include/*.hh"),
         ),
 
   ]

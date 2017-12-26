@@ -11,7 +11,7 @@
 // See http://docs.scipy.org/doc/numpy/reference/c-api.array.html#importing-the-api.
 //
 // FIXME: Encapsulate this so that no human ever ever has to deal with it again.
-#define PY_ARRAY_UNIQUE_SYMBOL cron_numpy
+#define PY_ARRAY_UNIQUE_SYMBOL ora_numpy
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include <numpy/arrayobject.h>
 #include <numpy/npy_math.h>
@@ -128,7 +128,7 @@ date_from_ymdi(
     = Array::FromAny(ymdi_arg, aslib::np::YMDI_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO);
 
   // OK, we have an aligned 1D int32 array.
-  // FIXME: Encapsulate this, and check that it is a cron date dtype.
+  // FIXME: Encapsulate this, and check that it is an ora date dtype.
   auto const api = (DateDtypeAPI*) dtype->c_metadata;
   assert(api != nullptr);
 
@@ -169,10 +169,10 @@ set_up_numpy(
   // Put everything in a submodule `numpy` (even though this is not a package).
   auto const sub = Module::New("ora.ext.numpy");
 
-  DateDtype<PyDate<cron::date::Date>>::add(sub);
-  DateDtype<PyDate<cron::date::Date16>>::add(sub);
-  DaytimeDtype<PyDaytime<cron::daytime::Daytime>>::add(sub);
-  DaytimeDtype<PyDaytime<cron::daytime::Daytime32>>::add(sub);
+  DateDtype<PyDate<ora::date::Date>>::add(sub);
+  DateDtype<PyDate<ora::date::Date16>>::add(sub);
+  DaytimeDtype<PyDaytime<ora::daytime::Daytime>>::add(sub);
+  DaytimeDtype<PyDaytime<ora::daytime::Daytime32>>::add(sub);
 
   sub->AddFunctions(functions);
 

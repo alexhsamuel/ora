@@ -99,7 +99,7 @@ get_month_obj(
   if (!initialized) {
     // Do a lazy one-time load of the 12 month constants.
     static auto month_type = import("ora", "Month");
-    for (cron::Month m = cron::MONTH_MIN; m < cron::MONTH_END; ++m) {
+    for (ora::Month m = ora::MONTH_MIN; m < ora::MONTH_END; ++m) {
       ref<Tuple> args = Tuple::builder << Long::from(m);
       months[m - 1] = month_type->CallObject(args);
     }
@@ -132,7 +132,7 @@ get_weekday_obj(
 
 ref<Object>
 make_ordinal_date(
-  cron::OrdinalDate const ordinal_date)
+  ora::OrdinalDate const ordinal_date)
 {
   auto ordinal_date_obj = get_ordinal_date_type()->New();
   ordinal_date_obj->initialize(0, Long::from(ordinal_date.year));
@@ -143,7 +143,7 @@ make_ordinal_date(
 
 ref<Object>
 make_week_date(
-  cron::WeekDate const week_date)
+  ora::WeekDate const week_date)
 {
   auto week_date_obj = get_week_date_type()->New();
   week_date_obj->initialize(0, Long::from(week_date.week_year));
@@ -155,7 +155,7 @@ make_week_date(
 
 ref<Object>
 make_ymd_date(
-  cron::YmdDate const ymd)
+  ora::YmdDate const ymd)
 {
   auto ymd_obj = get_ymd_date_type()->New();
   ymd_obj->initialize(0, Long::FromLong(ymd.year));
@@ -173,8 +173,8 @@ PyDateAPI::apis_;
 //------------------------------------------------------------------------------
 // Excplicit template instances
 
-template class PyDate<cron::date::Date>;
-template class PyDate<cron::date::Date16>;
+template class PyDate<ora::date::Date>;
+template class PyDate<ora::date::Date16>;
 
 //------------------------------------------------------------------------------
 // Docstrings

@@ -37,7 +37,7 @@ get_hms_daytime_type()
 
 ref<Object>
 make_hms_daytime(
-  cron::HmsDaytime const hms)
+  ora::HmsDaytime const hms)
 {
   auto hms_obj = get_hms_daytime_type()->New();
   hms_obj->initialize(0, Long::FromLong(hms.hour));
@@ -50,9 +50,9 @@ make_hms_daytime(
 //------------------------------------------------------------------------------
 // Explicit template instances
 
-template class PyDaytime<cron::daytime::Daytime>;
-template class PyDaytime<cron::daytime::Daytime32>;
-template class PyDaytime<cron::daytime::UsecDaytime>;
+template class PyDaytime<ora::daytime::Daytime>;
+template class PyDaytime<ora::daytime::Daytime32>;
+template class PyDaytime<ora::daytime::UsecDaytime>;
 
 //------------------------------------------------------------------------------
 // Docstrings

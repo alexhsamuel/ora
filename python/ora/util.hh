@@ -2,7 +2,7 @@
 
 #include <Python.h>
 
-#include "cron.hh"
+#include "ora.hh"
 #include "py.hh"
 #include "PyDate.hh"
 #include "PyDaytime.hh"
@@ -21,7 +21,7 @@ StructSequenceType* get_local_time_type();
 
 inline ref<Object>
 make_local(
-  cron::LocalDatenumDaytick const local,
+  ora::LocalDatenumDaytick const local,
   PyTypeObject* date_type=&PyDateDefault::type_,
   PyTypeObject* daytime_type=&PyDaytimeDefault::type_)
 {
@@ -35,7 +35,7 @@ make_local(
 
 inline ref<Object>
 make_local_datenum_daytick(
-  cron::LocalDatenumDaytick const local)
+  ora::LocalDatenumDaytick const local)
 {
   auto result = get_local_time_type()->New();
   result->initialize(0, Long::FromLong(local.datenum));
@@ -45,13 +45,13 @@ make_local_datenum_daytick(
 }
 
 
-inline cron::Datenum
+inline ora::Datenum
 to_datenum(
   Object* const obj)
 {
   // If the date looks like a long, interpret it as a datenum.
   auto datenum_val = obj->maybe_long_value();
-  if (datenum_val && cron::datenum_is_valid(*datenum_val))
+  if (datenum_val && ora::datenum_is_valid(*datenum_val))
     return *datenum_val;
 
   // FIXME: Use API, or convert to date and then.
@@ -72,14 +72,14 @@ to_datenum(
 }
 
 
-inline cron::Daytick
+inline ora::Daytick
 to_daytick(
   Object* const obj)
 {
   // If the time looks like a number, interpret it as SSM.
   auto ssm_val = obj->maybe_double_value();
-  if (ssm_val && cron::ssm_is_valid(*ssm_val))
-    return cron::ssm_to_daytick(*ssm_val);
+  if (ssm_val && ora::ssm_is_valid(*ssm_val))
+    return ora::ssm_to_daytick(*ssm_val);
 
   // FIXME: Use API, or convert to daytime and then.
 
@@ -92,7 +92,7 @@ to_daytick(
 }
 
 
-inline std::pair<cron::Datenum, cron::Daytick>
+inline std::pair<ora::Datenum, ora::Daytick>
 to_datenum_daytick(
   Object* const obj)
 {
