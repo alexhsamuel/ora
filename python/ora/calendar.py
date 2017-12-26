@@ -200,10 +200,10 @@ def load_calendar_file(path):
 
 
 if __name__ == "__main__":
-    import cron
-    # cal = WeekdayCalendar({cron.Mon, cron.Tue, cron.Wed, cron.Thu, cron.Fri})
+    import ora
+    # cal = WeekdayCalendar({ora.Mon, ora.Tue, ora.Wed, ora.Thu, ora.Fri})
     cal = load_calendar_file("share/calendar/US federal holidays.txt")
-    date = cron.today("UTC")
+    date = ora.today("UTC")
     print(date)
     date = cal.next(date)
     while True:

@@ -29,7 +29,7 @@ operations on it will produce incorrect results.  Use a date type instead.
 
 # Datenum
 
-In cron, a _datenum_ is a type-independent represetation of a date.  It is
+In Ora, a _datenum_ is a type-independent represetation of a date.  It is
 the number of days since 0001-01-01 (January 1 of the year 1 C.E.).
 
 """

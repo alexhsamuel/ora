@@ -26,7 +26,7 @@ methods;
 PyModuleDef
 module_def{
   PyModuleDef_HEAD_INIT,
-  "cron.ext",
+  "ora.ext",
   nullptr,
   -1,
   add_functions(methods)

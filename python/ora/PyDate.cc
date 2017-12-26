@@ -98,7 +98,7 @@ get_month_obj(
   static bool initialized = false;
   if (!initialized) {
     // Do a lazy one-time load of the 12 month constants.
-    static auto month_type = import("cron", "Month");
+    static auto month_type = import("ora", "Month");
     for (cron::Month m = cron::MONTH_MIN; m < cron::MONTH_END; ++m) {
       ref<Tuple> args = Tuple::builder << Long::from(m);
       months[m - 1] = month_type->CallObject(args);
@@ -118,7 +118,7 @@ get_weekday_obj(
   static bool initialized = false;
   if (!initialized) {
     // Do a lazy one-time load of the seven weekday constants.
-    static auto weekday_type = import("cron", "Weekday");
+    static auto weekday_type = import("ora", "Weekday");
     for (int w = 0; w < 7; ++w) {
       ref<Tuple> args = Tuple::builder << Long::FromLong(w);
       weekdays[w] = weekday_type->CallObject(args);

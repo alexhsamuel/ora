@@ -1,15 +1,15 @@
 """
-Numpy support for Cron.
+Numpy support for Ora.
 
 Numpy support is provided in a submodule so that users who do not need it aren't
 forced to import numpy.
 
-After this module is imported, Cron types that can be used as numpy array types
+After this module is imported, Ora types that can be used as numpy array types
 will have a `dtype` attribute.  For example:
 
   >>> import numpy as np
-  >>> from cron import Date
-  >>> import cron.numpy
+  >>> from ora import Date
+  >>> import ora.numpy
   >>> array = np.zeros(3, dtype=Date.dtype)
   >>> array
   array([Date(1, Jan, 1), Date(1, Jan, 1), Date(1, Jan, 1)], dtype=Date)

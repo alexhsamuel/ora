@@ -2,8 +2,8 @@ import datetime
 
 import pytest
 
-import cron
-from   cron import *
+import ora
+from   ora import *
 
 import data
 from   util import *

@@ -1,7 +1,7 @@
 import pytest
 
-import cron
-from   cron import *
+import ora
+from   ora import *
 
 #-------------------------------------------------------------------------------
 

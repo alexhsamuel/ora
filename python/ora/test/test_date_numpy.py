@@ -4,9 +4,9 @@ import sys
 import numpy as np
 import pytest
 
-import cron
-from   cron import *
-import cron.numpy
+import ora
+from   ora import *
+import ora.numpy
 
 #-------------------------------------------------------------------------------
 
@@ -52,9 +52,9 @@ def test_arr():
 
 def test_get_ordinal_date():
     arr     = np.array(dates, dtype=Date.dtype)
-    od_arr  = cron.numpy.get_ordinal_date(arr)
+    od_arr  = ora.numpy.get_ordinal_date(arr)
 
-    assert od_arr.dtype == cron.numpy.ORDINAL_DATE_DTYPE
+    assert od_arr.dtype == ora.numpy.ORDINAL_DATE_DTYPE
     assert od_arr.dtype.names == ("year", "ordinal", )
     
     for d, (y, o) in zip(dates, od_arr):
@@ -62,14 +62,14 @@ def test_get_ordinal_date():
             assert y == d.year
             assert o == d.ordinal
         else:
-            assert y == cron.YEAR_INVALID
-            assert o == cron.ORDINAL_INVALID
+            assert y == ora.YEAR_INVALID
+            assert o == ora.ORDINAL_INVALID
 
 
 def test_date_from_ordinal_date0():
     year    = np.array([ d.year for d in valid_dates ], dtype="int16")
     ordinal = np.array([ d.ordinal for d in valid_dates ], dtype="uint16")
-    arr     = cron.numpy.date_from_ordinal_date(year, ordinal)
+    arr     = ora.numpy.date_from_ordinal_date(year, ordinal)
 
     assert len(arr) == len(valid_dates)
     for d0, d1 in zip(valid_dates, arr):
@@ -78,7 +78,7 @@ def test_date_from_ordinal_date0():
 
 def test_date_from_ordinal_date1():
     year, ordinal = zip(*( (d.year, d.ordinal) for d in valid_dates ))
-    arr = cron.numpy.date_from_ordinal_date(year, ordinal)
+    arr = ora.numpy.date_from_ordinal_date(year, ordinal)
 
     # Should be:
     # assert (arr == valid_dates).all()

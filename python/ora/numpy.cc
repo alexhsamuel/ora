@@ -167,7 +167,7 @@ set_up_numpy(
     throw ImportError("failed to import numpy.core.umath");
 
   // Put everything in a submodule `numpy` (even though this is not a package).
-  auto const sub = Module::New("cron.ext.numpy");
+  auto const sub = Module::New("ora.ext.numpy");
 
   DateDtype<PyDate<cron::date::Date>>::add(sub);
   DateDtype<PyDate<cron::date::Date16>>::add(sub);
