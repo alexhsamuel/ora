@@ -1,7 +1,7 @@
 # Motivation
 
-Cron is an implementation of dates and times in the Gregorian calendar.  Many
-of these already exist.  Cron differs from them by providing, in a single
+Ora is an implementation of dates and times in the Gregorian calendar.  Many
+of these already exist.  Ora differs from them by providing, in a single
 package,
 
 - An API and defaults that encourage clear thinking about what dates and times
@@ -15,7 +15,7 @@ package,
 
 # Limitations
 
-Cron currently has the following limitations.
+Ora currently has the following limitations.
 
 - Support for the
   ([proleptic](https://en.wikipedia.org/wiki/Proleptic_Gregorian_calendar))
@@ -26,7 +26,7 @@ Cron currently has the following limitations.
 - Tested on Linux and OSX.  Not currently tested on Windows.
 - Support for LP64 architectures (so, x86-64 but not x86) only.
 
-Also, cron is not yet finished.
+Also, ora is not yet finished.
 
 
 # Setup
@@ -57,9 +57,12 @@ make zoneinfo
 # Comparison with Python `datetime`
 
 - `datetime.datetime` represents times as year, month, date, hour, minute,
-  second, microsecond components.  Cron's `Time` stores integral ticks from a
+  second, microsecond components.  Ora's `Time` stores integral ticks from a
   fixed offset, which means decomposition into components is more expensive, but
   other operations are cheaper.
 
-- `datetime.datetime` can be "localized", with a time zone, in which case it _almost_ specifies a physical instant; or it can be "unlocalized", in which case it doesn't specify a physical instant at all.  Cron's `Time` always represents a unique physical instant, but can be rendered in any time zone.
+- `datetime.datetime` can be "localized", with a time zone, in which case it
+  _almost_ specifies a physical instant; or it can be "unlocalized", in which
+  case it doesn't specify a physical instant at all.  Ora's `Time` always
+  represents a unique physical instant, but can be rendered in any time zone.
 
