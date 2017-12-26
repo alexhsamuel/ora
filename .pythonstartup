@@ -1,8 +1,8 @@
 # -*- python -*-
 
-import cron
-import cron.numpy
-from   cron import *
+import ora
+import ora.numpy
+from   ora import *
 from   datetime import *
 import math
 import numpy as np
