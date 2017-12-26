@@ -7,9 +7,8 @@
 #include "py.hh"
 #include "numpy.hh"
 
-namespace aslib {
-
-using namespace py;
+namespace ora {
+namespace py {
 
 //------------------------------------------------------------------------------
 
@@ -41,5 +40,6 @@ extern PyArray_Descr* get_ymd_dtype();
 
 //------------------------------------------------------------------------------
 
-}  // namespace aslib
+}  // namespace py
+}  // namespace ora
 

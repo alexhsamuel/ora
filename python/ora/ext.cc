@@ -6,10 +6,13 @@
 #include "PyTime.hh"
 #include "PyTimeZone.hh"
 
-using namespace aslib;
-using namespace py;
+using namespace ora::lib;
+using namespace ora::py;
 
 //------------------------------------------------------------------------------
+
+namespace ora {
+namespace py {
 
 /* Adds functions from functions.cc.  */
 extern Methods<Module>& add_functions(Methods<Module>&);
@@ -36,6 +39,9 @@ module_def{
 
 }  // anonymous namespace
 
+}  // namespace py
+}  // namespace ora
+
 //------------------------------------------------------------------------------
 
 PyMODINIT_FUNC
@@ -44,21 +50,21 @@ PyInit_ext(void)
   auto mod = Module::Create(&module_def);
 
   try {
-    aslib::PyDate<ora::date::Date>             ::add_to(mod, "Date");
-    aslib::PyDate<ora::date::Date16>           ::add_to(mod, "Date16");
+    PyDate<ora::date::Date>             ::add_to(mod, "Date");
+    PyDate<ora::date::Date16>           ::add_to(mod, "Date16");
 
-    aslib::PyDaytime<ora::daytime::Daytime>    ::add_to(mod, "Daytime");
-    aslib::PyDaytime<ora::daytime::Daytime32>  ::add_to(mod, "Daytime32");
-    aslib::PyDaytime<ora::daytime::UsecDaytime>::add_to(mod, "UsecDaytime");
+    PyDaytime<ora::daytime::Daytime>    ::add_to(mod, "Daytime");
+    PyDaytime<ora::daytime::Daytime32>  ::add_to(mod, "Daytime32");
+    PyDaytime<ora::daytime::UsecDaytime>::add_to(mod, "UsecDaytime");
 
-    aslib::PyTime<ora::time::Time>             ::add_to(mod, "Time");
-    aslib::PyTime<ora::time::SmallTime>        ::add_to(mod, "SmallTime");
-    aslib::PyTime<ora::time::NsecTime>         ::add_to(mod, "NsecTime");
-    aslib::PyTime<ora::time::Unix32Time>       ::add_to(mod, "Unix32Time");
-    aslib::PyTime<ora::time::Unix64Time>       ::add_to(mod, "Unix64Time");
-    aslib::PyTime<ora::time::Time128>          ::add_to(mod, "Time128");
+    PyTime<ora::time::Time>             ::add_to(mod, "Time");
+    PyTime<ora::time::SmallTime>        ::add_to(mod, "SmallTime");
+    PyTime<ora::time::NsecTime>         ::add_to(mod, "NsecTime");
+    PyTime<ora::time::Unix32Time>       ::add_to(mod, "Unix32Time");
+    PyTime<ora::time::Unix64Time>       ::add_to(mod, "Unix64Time");
+    PyTime<ora::time::Time128>          ::add_to(mod, "Time128");
 
-    aslib::PyTimeZone                           ::add_to(mod, "TimeZone");
+    PyTimeZone                           ::add_to(mod, "TimeZone");
 
     StructSequenceType* const ymd_date_type = get_ymd_date_type();
     mod->AddObject(ymd_date_type->tp_name, (PyObject*) ymd_date_type);
@@ -93,7 +99,7 @@ PyInit_ext(void)
     TranslateException<ora::NonexistentDateDaytime>::to(PyExc_RuntimeError);
     TranslateException<ora::TimeRangeError>::to(PyExc_OverflowError);
     TranslateException<ora::TimeFormatError>::to(PyExc_ValueError);
-    TranslateException<aslib::FormatError>::to(PyExc_RuntimeError);
+    TranslateException<FormatError>::to(PyExc_RuntimeError);
 
     return mod.release();
   }

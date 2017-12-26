@@ -1,7 +1,7 @@
 #include "ora.hh"
 #include "gtest/gtest.h"
 
-using namespace aslib;
+using namespace ora::lib;
 using namespace ora;
 
 //------------------------------------------------------------------------------

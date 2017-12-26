@@ -3,9 +3,8 @@
 #include "py.hh"
 #include "util.hh"
 
-using namespace py;
-
-namespace aslib {
+namespace ora {
+namespace py {
 
 //------------------------------------------------------------------------------
 
@@ -38,6 +37,6 @@ get_local_time_type()
 
 //------------------------------------------------------------------------------
 
-}  // namespace aslib
-
+}  // namespace py
+}  // namespace ora
 

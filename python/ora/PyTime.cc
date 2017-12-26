@@ -4,7 +4,8 @@
 
 #include "PyTime.hh"
 
-namespace aslib {
+namespace ora {
+namespace py {
 
 //------------------------------------------------------------------------------
 
@@ -64,5 +65,6 @@ namespace pytime {
 
 //------------------------------------------------------------------------------
 
-}  // namespace aslib
+}  // namespace py
+}  // namespace ora
 

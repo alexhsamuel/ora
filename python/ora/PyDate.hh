@@ -14,9 +14,9 @@
 #include "ora.hh"
 #include "py.hh"
 
-namespace aslib {
+namespace ora {
+namespace py {
 
-using namespace py;
 using namespace std::literals;
 
 using std::experimental::optional;
@@ -1145,5 +1145,6 @@ extern template class PyDate<ora::date::Date16>;
 
 //------------------------------------------------------------------------------
 
-}  // namespace aslib
+}  // namespace py
+}  // namespace ora
 

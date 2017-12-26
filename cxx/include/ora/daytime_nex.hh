@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "aslib/math.hh"
+#include "ora/lib/math.hh"
 
 #include "ora/types.hh"
 #include "ora/daytime_type.hh"

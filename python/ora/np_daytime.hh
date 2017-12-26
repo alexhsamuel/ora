@@ -1,12 +1,13 @@
 #include <Python.h>
 
-#include "aslib/mem.hh"
+#include "ora/lib/mem.hh"
 #include "py.hh"
 #include "np_types.hh"
 #include "numpy.hh"
 #include "PyDaytime.hh"
 
-namespace aslib {
+namespace ora {
+namespace py {
 
 using namespace py;
 using namespace py::np;
@@ -223,5 +224,6 @@ DaytimeDtype<PYDAYTIME>::descr_
 
 //------------------------------------------------------------------------------
 
-}  // namespace aslib
+}  // namespace py
+}  // namespace ora
 

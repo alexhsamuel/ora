@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <Python.h>
 
-#include "aslib/mem.hh"
+#include "ora/lib/mem.hh"
 #include "ora.hh"
 #include "py.hh"
 #include "np_types.hh"
@@ -10,10 +10,10 @@
 
 // FIXME: Check GIL flags.
 
-namespace aslib {
+namespace ora {
+namespace py {
 
-using namespace py;
-using namespace py::np;
+using namespace np;
 
 //------------------------------------------------------------------------------
 
@@ -431,5 +431,6 @@ DateDtype<PYDATE>::descr_
 
 //------------------------------------------------------------------------------
 
-}  // namespace aslib
+}  // namespace py
+}  // namespace ora
 

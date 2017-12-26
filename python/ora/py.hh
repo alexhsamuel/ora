@@ -11,6 +11,7 @@
 
 //------------------------------------------------------------------------------
 
+namespace ora {
 namespace py {
 
 using std::experimental::optional;
@@ -1736,4 +1737,5 @@ import(const char* module_name, const char* name)
 //------------------------------------------------------------------------------
 
 }  // namespace py
+}  // namespace ora
 

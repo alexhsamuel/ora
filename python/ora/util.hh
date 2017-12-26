@@ -7,9 +7,8 @@
 #include "PyDate.hh"
 #include "PyDaytime.hh"
 
-using namespace py;
-
-namespace aslib {
+namespace ora {
+namespace py {
 
 //------------------------------------------------------------------------------
 // Declarations
@@ -113,6 +112,6 @@ to_datenum_daytick(
 
 //------------------------------------------------------------------------------
 
-}  // namespace aslib
-
+}  // namespace py
+}  // namespace ora
 

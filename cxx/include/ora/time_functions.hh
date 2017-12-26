@@ -1,7 +1,7 @@
 #pragma once
 
-#include "aslib/exc.hh"
-#include "aslib/math.hh"
+#include "ora/lib/exc.hh"
+#include "ora/lib/math.hh"
 #include "ora/time_math.hh"
 #include "ora/time_nex.hh"
 #include "ora/time_type.hh"
@@ -97,7 +97,7 @@ compare(
 {
   ensure_valid(time0);
   ensure_valid(time1);
-  return aslib::compare(time0.get_offset(), time1.get_offset());
+  return lib::compare(time0.get_offset(), time1.get_offset());
 }
 
 

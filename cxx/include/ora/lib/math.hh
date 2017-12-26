@@ -4,7 +4,8 @@
 #include <limits>
 #include <iostream>
 
-namespace aslib {
+namespace ora {
+namespace lib {
 
 //------------------------------------------------------------------------------
 
@@ -312,7 +313,8 @@ mul_overflow(
 
 //------------------------------------------------------------------------------
 
-}  // namespace aslib
+}  // namespace lib
+}  // namespace ora
 
 //------------------------------------------------------------------------------
 
@@ -322,7 +324,7 @@ namespace std {
 inline std::ostream&
 operator<<(
   std::ostream& os,
-  aslib::uint128_t x)
+  ora::lib::uint128_t x)
 {
   char buf[40];
   char* p = &buf[39];
@@ -339,4 +341,5 @@ operator<<(
 }
 
 
-}
+}  // anonymous namespace
+

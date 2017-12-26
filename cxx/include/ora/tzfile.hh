@@ -5,11 +5,11 @@
 #include <string>
 #include <vector>
 
-#include "aslib/filename.hh"
+#include "ora/lib/filename.hh"
 
 namespace ora {
 
-using namespace aslib;
+using namespace ora::lib;
 
 //------------------------------------------------------------------------------
 

@@ -14,7 +14,8 @@
 #include "exc.hh"
 #include "xsys.hh"
 
-namespace aslib {
+namespace ora {
+namespace lib {
 namespace fs {
 
 //------------------------------------------------------------------------------
@@ -238,5 +239,6 @@ extern bool check(Filename const& filename, AccessMode mode=EXISTS, FileType typ
 //------------------------------------------------------------------------------
 
 }  // namespace fs
-}  // namespace aslib
+}  // namespace lib
+}  // namespace ora
 

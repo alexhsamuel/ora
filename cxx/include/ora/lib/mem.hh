@@ -1,6 +1,7 @@
 #pragma once
 
-namespace aslib {
+namespace ora {
+namespace lib {
 
 //------------------------------------------------------------------------------
 // Functions
@@ -117,5 +118,6 @@ copy_swapped<8>(
 
 //------------------------------------------------------------------------------
 
-}  // namespace aslib
+}  // namespace lib
+}  // namespace ora
 

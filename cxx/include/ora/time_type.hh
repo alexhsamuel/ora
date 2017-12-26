@@ -33,15 +33,15 @@
 #include <cstddef>
 #include <limits>
 
-#include "aslib/exc.hh"
-#include "aslib/math.hh"
+#include "ora/lib/exc.hh"
+#include "ora/lib/math.hh"
 #include "ora/exceptions.hh"
 #include "ora/time_math.hh"
 
 namespace ora {
 namespace time {
 
-using namespace aslib;
+using namespace ora::lib;
 
 //------------------------------------------------------------------------------
 // Forward declarations

@@ -10,8 +10,8 @@
 
 //------------------------------------------------------------------------------
 
-using namespace aslib;
-using namespace py;
+namespace ora {
+namespace py {
 
 namespace {
 
@@ -54,7 +54,7 @@ days_in_year(
   if (ora::year_is_valid(year))
     return Long::FromLong(ora::days_in_year(year));
   else
-    throw py::ValueError("invalid year");
+    throw ValueError("invalid year");
 }
 
 
@@ -77,10 +77,10 @@ from_local(
 
   // Make sure the time type is a PyTime instance, and get its virtual API.
   if (!Type::Check(time_type))
-    throw py::TypeError("not a type: "s + *time_type->Repr());
+    throw TypeError("not a type: "s + *time_type->Repr());
   auto const api = PyTimeAPI::get((PyTypeObject*) time_type);
   if (api == nullptr)
-    throw py::TypeError("not a time type: "s + *time_type->Repr());
+    throw TypeError("not a time type: "s + *time_type->Repr());
 
   auto const datenum    = to_datenum(date_arg);
   auto const daytick    = to_daytick(daytime_arg);
@@ -130,7 +130,7 @@ is_leap_year(
   if (ora::year_is_valid(year))
     return Bool::from(ora::is_leap_year(year));
   else
-    throw py::ValueError("invalid year");
+    throw ValueError("invalid year");
 }
 
 
@@ -264,4 +264,7 @@ add_functions(
     ;
 }
 
+
+}  // namespace py
+}  // namespace ora
 

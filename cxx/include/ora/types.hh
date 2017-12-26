@@ -4,13 +4,13 @@
 #include <limits>
 #include <unistd.h>
 
-#include "aslib/exc.hh"
-#include "aslib/math.hh"
-#include "aslib/ranged.hh"
+#include "ora/lib/exc.hh"
+#include "ora/lib/math.hh"
+#include "ora/lib/ranged.hh"
 
 namespace ora {
 
-using namespace aslib;
+using namespace ora::lib;
 
 //------------------------------------------------------------------------------
 // Constants

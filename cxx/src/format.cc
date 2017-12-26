@@ -4,13 +4,13 @@
 #include <iomanip>
 #include <iostream>
 
-#include "aslib/exc.hh"
-#include "aslib/string_builder.hh"
+#include "ora/lib/exc.hh"
+#include "ora/lib/string_builder.hh"
 #include "ora/format.hh"
 
 namespace ora {
 
-using namespace aslib;
+using namespace ora::lib;
 
 using std::string;
 

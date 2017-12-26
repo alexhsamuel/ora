@@ -10,7 +10,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include "aslib/exc.hh"
+#include "ora/lib/exc.hh"
 
 //------------------------------------------------------------------------------
 
@@ -46,7 +46,7 @@ inline void xclose(int fd)
 {
   int const rval = close(fd);
   if (rval == -1)
-    throw aslib::SystemError("close");
+    throw ora::lib::SystemError("close");
   assert(rval == 0);
 }
 
@@ -55,7 +55,7 @@ inline int xdup(int fd)
 {
   int const dup_fd = dup(fd);
   if (dup_fd == -1)
-    throw aslib::SystemError("dup");
+    throw ora::lib::SystemError("dup");
   return dup_fd;
 }
 
@@ -64,7 +64,7 @@ inline int xdup2(int old_fd, int new_fd)
 {
   int const fd = dup2(old_fd, new_fd);
   if (fd != new_fd)
-    throw aslib::SystemError("dup2");
+    throw ora::lib::SystemError("dup2");
   return fd;
 }
 
@@ -73,7 +73,7 @@ inline void xexecv(char const* filename, char* const argv[])
 {
   int const rval = execv(filename, argv);
   assert(rval == -1);
-  throw aslib::SystemError("execv");
+  throw ora::lib::SystemError("execv");
 }
 
 
@@ -81,7 +81,7 @@ inline void xexecve(char const* filename, char* const argv[], char* const envp[]
 {
   int const rval = execve(filename, argv, envp);
   assert(rval == -1);
-  throw aslib::SystemError("execve");
+  throw ora::lib::SystemError("execve");
 }
 
 
@@ -89,7 +89,7 @@ inline pid_t xfork()
 {
   pid_t const pid = fork();
   if (pid == -1)
-    throw aslib::SystemError("fork");
+    throw ora::lib::SystemError("fork");
   return pid;
 }
 
@@ -98,7 +98,7 @@ inline void xfstat(int fd, struct stat* buf)
 {
   int const rval = fstat(fd, buf);
   if (rval == -1)
-    throw aslib::SystemError("fstat");
+    throw ora::lib::SystemError("fstat");
   assert(rval == 0);
 }
 
@@ -107,7 +107,7 @@ inline char* xgetcwd(char* buf, size_t size)
 {
   char* const cwd = getcwd(buf, size);
   if (cwd == NULL)
-    throw aslib::SystemError("getcwd");
+    throw ora::lib::SystemError("getcwd");
   assert(cwd == buf);
   return cwd;
 }
@@ -118,7 +118,7 @@ inline void xgettimeofday(struct timeval* tv, struct timezone* tz=nullptr)
   int const rval = gettimeofday(tv, tz);
   if (rval != 0) {
     assert(rval == -1);
-    throw aslib::SystemError("gettimeofday");
+    throw ora::lib::SystemError("gettimeofday");
   }
 }
 
@@ -127,7 +127,7 @@ inline off_t xlseek(int fd, off_t offset, int whence)
 {
   off_t const off = lseek(fd, offset, whence);
   if (off == -1)
-    throw aslib::SystemError("lseek");
+    throw ora::lib::SystemError("lseek");
   return off;
 }
 
@@ -138,7 +138,7 @@ inline void xlstat(
 {
   int const rval = lstat(path, buf);
   if (rval == -1)
-    throw aslib::SystemError("lstat");
+    throw ora::lib::SystemError("lstat");
   assert(rval == 0);
 }
 
@@ -147,7 +147,7 @@ inline int xmkstemp(char* name_template)
 {
   int const fd = mkstemp(name_template);
   if (fd == -1)
-    throw aslib::SystemError("mkstemp");
+    throw ora::lib::SystemError("mkstemp");
   assert(fd >= 0);
   return fd;
 }
@@ -157,7 +157,7 @@ inline int xopen(const char* pathname, int flags, mode_t mode=0666)
 {
   int const fd = open(pathname, flags, mode);
   if (fd == -1)
-    throw aslib::SystemError("open");
+    throw ora::lib::SystemError("open");
   return fd;
 }
 
@@ -167,7 +167,7 @@ inline size_t xread(int fd, void* buf, size_t count)
   ssize_t const rval = read(fd, buf, count);
   if (rval == -1)
     // FIXME: Handle EINTR here?
-    throw aslib::SystemError("read");
+    throw ora::lib::SystemError("read");
   return (size_t) rval;
 }
 
@@ -176,7 +176,7 @@ inline char* xrealpath(char const* path, char* resolved_path)
 {
   char* const new_path = realpath(path, resolved_path);
   if (new_path == NULL)
-    throw aslib::SystemError("realpath");
+    throw ora::lib::SystemError("realpath");
   assert(resolved_path == NULL || new_path == resolved_path);
   return new_path;
 }
@@ -188,7 +188,7 @@ inline void xstat(
 {
   int const rval = stat(path, buf);
   if (rval == -1)
-    throw aslib::SystemError("stat");
+    throw ora::lib::SystemError("stat");
   assert(rval == 0);
 }
 
@@ -197,7 +197,7 @@ inline void xunlink(char const* pathname)
 {
   int const rval = unlink(pathname);
   if (rval == -1)
-    throw aslib::SystemError("unlink");
+    throw ora::lib::SystemError("unlink");
   assert(rval == 0);
 }
 
@@ -211,7 +211,7 @@ xwait4(
 {
   pid_t const rval = wait4(pid, status, options, usage);
   if (rval == -1)
-    throw aslib::SystemError("wait4");
+    throw ora::lib::SystemError("wait4");
   if (pid > 0)
     assert(rval == pid);
   return rval;
@@ -227,7 +227,7 @@ xwaitid(
 {
   int const rval = waitid(idtype, id, infop, options);
   if (rval != 0)
-    throw aslib::SystemError("waitid");
+    throw ora::lib::SystemError("waitid");
 }
 
 

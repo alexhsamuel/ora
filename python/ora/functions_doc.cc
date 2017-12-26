@@ -1,6 +1,7 @@
 #include "functions_doc.hh"
 
-namespace aslib {
+namespace ora {
+namespace py {
 namespace docstring {
 
 //------------------------------------------------------------------------------
@@ -190,5 +191,6 @@ today =
 //------------------------------------------------------------------------------
 
 }  // namespace docstring
-}  // namesapce aslib
+}  // namespace py
+}  // namesapce ora
 

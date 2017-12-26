@@ -23,8 +23,8 @@
 #include "np_daytime.hh"
 #include "numpy.hh"
 
-using namespace py;
-using namespace aslib;
+using namespace ora::lib;
+using namespace ora::py;
 
 //------------------------------------------------------------------------------
 
@@ -50,9 +50,9 @@ date_from_ordinal_date(
 
   return api->function_date_from_ordinal_date(
     Array::FromAny(
-      year_arg, aslib::np::YEAR_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO),
+      year_arg, np::YEAR_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO),
     Array::FromAny(
-      ordinal_arg, aslib::np::ORDINAL_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO));
+      ordinal_arg, np::ORDINAL_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO));
 }
 
 
@@ -78,11 +78,11 @@ date_from_week_date(
 
   return api->function_date_from_week_date(
     Array::FromAny(
-      week_year_arg, aslib::np::YEAR_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO),
+      week_year_arg, np::YEAR_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO),
     Array::FromAny(
-      week_arg, aslib::np::WEEK_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO),
+      week_arg, np::WEEK_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO),
     Array::FromAny(
-      weekday_arg, aslib::np::WEEKDAY_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO));
+      weekday_arg, np::WEEKDAY_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO));
 }
 
 
@@ -106,9 +106,9 @@ date_from_ymd(
   assert(api != nullptr);
 
   return api->function_date_from_ymd(
-    Array::FromAny(year_arg, aslib::np::YEAR_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO),
-    Array::FromAny(month_arg, aslib::np::MONTH_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO),
-    Array::FromAny(day_arg, aslib::np::DAY_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO));
+    Array::FromAny(year_arg, np::YEAR_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO),
+    Array::FromAny(month_arg, np::MONTH_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO),
+    Array::FromAny(day_arg, np::DAY_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO));
 }
 
 
@@ -125,7 +125,7 @@ date_from_ymdi(
     args, kw_args, "O|$O!", arg_names,
     &ymdi_arg, &PyArrayDescr_Type, &dtype);
   auto ymdi_arr
-    = Array::FromAny(ymdi_arg, aslib::np::YMDI_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO);
+    = Array::FromAny(ymdi_arg, np::YMDI_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO);
 
   // OK, we have an aligned 1D int32 array.
   // FIXME: Encapsulate this, and check that it is an ora date dtype.
@@ -150,6 +150,9 @@ functions
 }  // anonymous namespace
 
 //------------------------------------------------------------------------------
+
+namespace ora {
+namespace py {
 
 ref<Object>
 set_up_numpy(
@@ -185,4 +188,7 @@ set_up_numpy(
   return none_ref();
 }
 
+
+}  // namespace py
+}  // namespace ora
 

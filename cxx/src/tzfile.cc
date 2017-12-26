@@ -9,16 +9,16 @@
 #include <iomanip>
 #include <iostream>
 
-#include "aslib/exc.hh"
-#include "aslib/file.hh"
-#include "aslib/filename.hh"
+#include "ora/lib/exc.hh"
+#include "ora/lib/file.hh"
+#include "ora/lib/filename.hh"
 #include "ora/tzfile.hh"
 
 //------------------------------------------------------------------------------
 
 namespace {
 
-using aslib::FormatError;
+using ora::lib::FormatError;
 using std::string;
 
 class Scanner
@@ -108,7 +108,7 @@ check_header(
 
 namespace ora {
 
-using namespace aslib;
+using namespace ora::lib;
 
 
 TzFile

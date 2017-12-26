@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#include "aslib/math.hh"
+#include "ora/lib/math.hh"
 
 #include "ora/types.hh"
 #include "ora/daytime_type.hh"
@@ -136,7 +136,7 @@ compare(
 {
   ensure_valid(daytime0);
   ensure_valid(daytime1);
-  return aslib::compare(daytime0.get_offset(), daytime1.get_offset());
+  return lib::compare(daytime0.get_offset(), daytime1.get_offset());
 }
 
 

@@ -1,9 +1,10 @@
 #include <algorithm>
 #include <cassert>
 
-#include "aslib/filename.hh"
+#include "ora/lib/filename.hh"
 
-namespace aslib {
+namespace ora {
+namespace lib {
 namespace fs {
 
 using std::string;
@@ -224,6 +225,6 @@ check(
 //------------------------------------------------------------------------------
 
 }  // namespace fs
-}  // namespace aslib
-
+}  // namespace lib
+}  // namespace ora
 

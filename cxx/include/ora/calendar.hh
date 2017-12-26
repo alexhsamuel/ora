@@ -6,13 +6,13 @@
 #include <string>
 #include <vector>
 
-#include "aslib/filename.hh"
+#include "ora/lib/filename.hh"
 #include "ora/date_functions.hh"
 #include "ora/date_type.hh"
 
 namespace ora {
 
-using namespace aslib;
+using namespace ora::lib;
 
 //------------------------------------------------------------------------------
 // Declarations

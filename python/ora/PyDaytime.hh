@@ -11,9 +11,9 @@
 #include "ora.hh"
 #include "py.hh"
 
-namespace aslib {
+namespace ora {
+namespace py {
 
-using namespace py;
 using namespace std::literals;
 
 using std::experimental::optional;
@@ -855,5 +855,6 @@ extern template class PyDaytime<ora::daytime::UsecDaytime>;
 
 //------------------------------------------------------------------------------
 
-}  // namespace aslib
+}  // namespace py
+}  // namespace ora
 

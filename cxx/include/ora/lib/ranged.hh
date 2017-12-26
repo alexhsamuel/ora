@@ -2,7 +2,8 @@
 
 #include <cassert>
 
-namespace aslib {
+namespace ora {
+namespace lib {
 
 //------------------------------------------------------------------------------
 
@@ -142,6 +143,6 @@ private:
 
 //------------------------------------------------------------------------------
 
-}  // namespace aslib
-
+}  // namespace lib
+}  // namespace ora
 

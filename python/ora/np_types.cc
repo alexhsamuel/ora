@@ -1,7 +1,8 @@
 #include "numpy.hh"
 #include "np_types.hh"
 
-namespace aslib {
+namespace ora {
+namespace py {
 
 //------------------------------------------------------------------------------
 
@@ -58,5 +59,6 @@ get_ymd_dtype()
 
 //------------------------------------------------------------------------------
 
-}  // namespace aslib
+}  // namespace py
+}  // namespace ora
 

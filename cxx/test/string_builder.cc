@@ -1,9 +1,9 @@
 #include <string>
 
-#include "aslib/string_builder.hh"
+#include "ora/lib/string_builder.hh"
 #include "gtest/gtest.h"
 
-using namespace aslib;
+using namespace ora::lib;
 
 using std::string;
 

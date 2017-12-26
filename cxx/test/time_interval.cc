@@ -2,7 +2,7 @@
 #include "ora/time_interval.hh"
 #include "gtest/gtest.h"
 
-using namespace aslib;
+using namespace ora::lib;
 using namespace ora;
 
 //------------------------------------------------------------------------------

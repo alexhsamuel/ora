@@ -4,14 +4,14 @@
 #include <memory>
 #include <vector>
 
-#include "aslib/string.hh"
+#include "ora/lib/string.hh"
 #include "ora/exceptions.hh"
 #include "ora/types.hh"
 #include "ora/tzfile.hh"
 
 namespace ora {
 
-using namespace aslib;
+using namespace ora::lib;
 
 //------------------------------------------------------------------------------
 

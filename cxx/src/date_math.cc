@@ -5,14 +5,14 @@
 #include <memory>
 #include <sstream>
 
-#include "aslib/exc.hh"
+#include "ora/lib/exc.hh"
 #include "ora.hh"
 
 namespace ora {
 
 using std::string;
 
-using namespace aslib;
+using namespace ora::lib;
 
 //------------------------------------------------------------------------------
 

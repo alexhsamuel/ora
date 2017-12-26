@@ -6,15 +6,15 @@
 #include <map>
 #include <memory>
 
-#include "aslib/file.hh"
-#include "aslib/filename.hh"
+#include "ora/lib/file.hh"
+#include "ora/lib/filename.hh"
 #include "ora/time_type.hh"
 #include "ora/time_zone.hh"
 #include "ora/tzfile.hh"
 
 namespace ora {
 
-using namespace aslib;
+using namespace ora::lib;
 
 using std::make_shared;
 using std::shared_ptr;

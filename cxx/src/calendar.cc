@@ -3,13 +3,13 @@
 #include <string>
 #include <vector>
 
-#include "aslib/string.hh"
+#include "ora/lib/string.hh"
 #include "ora/calendar.hh"
 #include "ora/date_nex.hh"
 
 namespace ora {
 
-using namespace aslib;
+using namespace ora::lib;
 using date::Date;
 
 //------------------------------------------------------------------------------

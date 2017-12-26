@@ -4,7 +4,8 @@
 #include <sstream>
 #include <string>
 
-namespace aslib {
+namespace ora {
+namespace lib {
 
 //------------------------------------------------------------------------------
 // Types
@@ -107,6 +108,6 @@ pad_trunc(
 
 //------------------------------------------------------------------------------
 
-}  // namespace aslib
-
+}  // namespace lib
+}  // namespace ora
 

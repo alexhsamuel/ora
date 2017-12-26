@@ -6,7 +6,8 @@
 
 #include "PyDate.hh"
 
-namespace aslib {
+namespace ora {
+namespace py {
 
 //------------------------------------------------------------------------------
 
@@ -194,5 +195,6 @@ namespace ymddate {
 
 //------------------------------------------------------------------------------
 
-}  // namespace aslib
+}  // namespace py
+}  // namespace ora
 

@@ -4,7 +4,8 @@
 
 #include "PyDaytime.hh"
 
-namespace aslib {
+namespace ora {
+namespace py {
 
 //------------------------------------------------------------------------------
 
@@ -67,5 +68,6 @@ namespace pydaytime {
 
 //------------------------------------------------------------------------------
 
-}  // namespace aslib
+}  // namespace py
+}  // namespace ora
 

@@ -1,6 +1,7 @@
 #pragma once
 
-namespace aslib {
+namespace ora {
+namespace py {
 namespace docstring {
 
 using doc_t = char const* const;
@@ -24,5 +25,6 @@ extern doc_t today;
 //------------------------------------------------------------------------------
 
 }  // namespace docstring
-}  // namespace aslib
+}  // namespace py
+}  // namespace ora
 

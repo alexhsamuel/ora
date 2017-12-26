@@ -5,7 +5,8 @@
 #include <sstream>
 #include <string>
 
-namespace aslib {
+namespace ora {
+namespace lib {
 
 //------------------------------------------------------------------------------
 
@@ -169,6 +170,6 @@ public:
 
 //------------------------------------------------------------------------------
 
-}  // namespace aslib
-
+}  // namespace lib
+}  // namespace ora
 

@@ -5,12 +5,11 @@
 #include "PyTime.hh"
 #include "PyTimeZone.hh"
 
-namespace aslib {
+namespace ora {
+namespace py {
 
 using std::string;
 using namespace std::literals;
-
-using namespace py;
 
 //------------------------------------------------------------------------------
 // Helper functions
@@ -73,7 +72,7 @@ maybe_time_zone(
     try {
       return ora::get_time_zone(tz_name);
     }
-    catch (aslib::ValueError) {
+    catch (ora::lib::ValueError) {
       throw py::ValueError(string("not a time zone: ") + tz_name);
     }
   }
@@ -100,7 +99,7 @@ convert_to_time_zone(
     try {
       return ora::get_time_zone(tz_name);
     }
-    catch (aslib::ValueError) {
+    catch (ora::lib::ValueError) {
       throw py::ValueError(string("not a time zone: ") + tz_name);
     }
   }
@@ -478,6 +477,6 @@ PyTimeZone::build_type(
 
 //------------------------------------------------------------------------------
 
-}  // namespace aslib
-
+}  // namespace py
+}  // namespace ora
 

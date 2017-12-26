@@ -6,9 +6,8 @@
 #include "ora.hh"
 #include "py.hh"
 
-namespace aslib {
-
-using namespace py;
+namespace ora {
+namespace py {
 
 using std::make_unique;
 using std::string;
@@ -134,5 +133,6 @@ PyTimeZone::Check(
 
 //------------------------------------------------------------------------------
 
-}  // namespace aslib
+}  // namespace py
+}  // namespace ora
 

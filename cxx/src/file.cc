@@ -2,11 +2,12 @@
 #include <cstring>
 #include <string>
 
-#include "aslib/file.hh"
-#include "aslib/filename.hh"
-#include "aslib/xsys.hh"
+#include "ora/lib/file.hh"
+#include "ora/lib/filename.hh"
+#include "ora/lib/xsys.hh"
 
-namespace aslib {
+namespace ora {
+namespace lib {
 namespace fs {
 
 using std::string;
@@ -89,6 +90,6 @@ load_text_for_arg(
 //------------------------------------------------------------------------------
 
 }  // namespace fs
-}  // namespace aslib
-
+}  // namespace lib
+}  // namespace ora
 

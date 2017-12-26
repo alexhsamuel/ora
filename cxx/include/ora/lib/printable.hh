@@ -6,7 +6,8 @@
 
 // FIXME: Get rid of this whole module.
 
-namespace aslib {
+namespace ora {
+namespace lib {
 
 //------------------------------------------------------------------------------
 
@@ -115,5 +116,6 @@ operator<<(
 
 //------------------------------------------------------------------------------
 
-}  // namespace aslib
+}  // namespace lib
+}  // namespace ora
 

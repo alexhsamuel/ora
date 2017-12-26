@@ -6,10 +6,10 @@
 #include <stack>
 #include <string>
 
-#include "aslib/exc.hh"
-#include "aslib/ptr.hh"
-#include "aslib/string.hh"
-#include "aslib/string_builder.hh"
+#include "ora/lib/exc.hh"
+#include "ora/lib/ptr.hh"
+#include "ora/lib/string.hh"
+#include "ora/lib/string_builder.hh"
 #include "ora/date_type.hh"
 #include "ora/daytime_type.hh"
 #include "ora/time_type.hh"
@@ -46,7 +46,7 @@ extern Weekday parse_weekday_abbr(std::string const& str);
 
 namespace _impl {
 
-using namespace aslib;
+using namespace ora::lib;
 
 class Format
 {

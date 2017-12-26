@@ -1,6 +1,6 @@
 #pragma once
 
-#include "aslib/math.hh"
+#include "ora/lib/math.hh"
 #include "ora/time_math.hh"
 #include "ora/time_type.hh"
 

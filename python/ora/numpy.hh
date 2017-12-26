@@ -10,13 +10,14 @@
 #include <numpy/ufuncobject.h>
 #include <numpy/npy_3kcompat.h>
 
-#include "aslib/mem.hh"
+#include "ora/lib/mem.hh"
 #include "py.hh"
 
+namespace ora {
 namespace py {
 namespace np {
 
-using namespace aslib;
+using namespace ora::lib;
 
 //------------------------------------------------------------------------------
 
@@ -263,4 +264,5 @@ ufunc_loop_2(
 
 }  // namespace np
 }  // namespace py
+}  // namespace ora
 

@@ -7,7 +7,7 @@
 #include <Python.h>
 #include <datetime.h>
 
-#include "aslib/math.hh"
+#include "ora/lib/math.hh"
 #include "ora.hh"
 #include "py.hh"
 #include "PyDate.hh"
@@ -16,9 +16,9 @@
 #include "PyTimeZone.hh"
 #include "util.hh"
 
-namespace aslib {
+namespace ora {
+namespace py {
 
-using namespace py;
 using namespace std::literals;
 
 using std::make_unique;
@@ -915,6 +915,7 @@ extern template class PyTime<ora::time::Time128>;
 
 //------------------------------------------------------------------------------
 
-}  // namespace aslib
+}  // namespace py
+}  // namespace ora
 
 

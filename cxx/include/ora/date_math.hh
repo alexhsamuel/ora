@@ -8,15 +8,15 @@
 
 #pragma once
 
-#include "aslib/exc.hh"
-#include "aslib/math.hh"
+#include "ora/lib/exc.hh"
+#include "ora/lib/math.hh"
 #include "ora/types.hh"
 
 // FIXME: Place in ora::date::math.
 
 namespace ora {
 
-using namespace aslib;
+using namespace ora::lib;
 
 //------------------------------------------------------------------------------
 // Declarations

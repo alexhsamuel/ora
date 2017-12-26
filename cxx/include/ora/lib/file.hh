@@ -2,7 +2,8 @@
 
 #include "filename.hh"
 
-namespace aslib {
+namespace ora {
+namespace lib {
 namespace fs {
 
 //------------------------------------------------------------------------------
@@ -17,5 +18,6 @@ extern std::string load_text_for_arg(std::string const& arg);
 //------------------------------------------------------------------------------
 
 }  // namespace fs
-}  // namespace aslib
+}  // namespace lib
+}  // namespace ora
 

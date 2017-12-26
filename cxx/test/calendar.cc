@@ -1,11 +1,11 @@
 #pragma GCC diagnostic ignored "-Wparentheses"
 
-#include "aslib/filename.hh"
+#include "ora/lib/filename.hh"
 #include "ora.hh"
 #include "ora/calendar.hh"
 #include "gtest/gtest.h"
 
-using namespace aslib;
+using namespace ora::lib;
 using namespace ora;
 using namespace ora::ez;
 
