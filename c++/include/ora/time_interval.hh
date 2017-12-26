@@ -1,8 +1,8 @@
 #pragma once
 
-#include "cron.hh"
+#include "ora.hh"
 
-namespace cron {
+namespace ora {
 
 //------------------------------------------------------------------------------
 
@@ -90,6 +90,6 @@ TimeInterval constexpr HOUR         = TimeInterval((double) SECS_PER_HOUR);
 
 //------------------------------------------------------------------------------
 
-}  // namespace cron
+}  // namespace ora
 
 

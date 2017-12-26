@@ -2,9 +2,9 @@
 
 #include <string>
 
-#include "cron/types.hh"
+#include "ora/types.hh"
 
-namespace cron {
+namespace ora {
 
 //------------------------------------------------------------------------------
 // Exceptions
@@ -155,5 +155,5 @@ public:
 
 //------------------------------------------------------------------------------
 
-}  // namespace cron
+}  // namespace ora
 

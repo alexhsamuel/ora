@@ -6,11 +6,11 @@
 
 #include <cstddef>
 
-#include "cron/daytime_math.hh"
-#include "cron/exceptions.hh"
-#include "cron/types.hh"
+#include "ora/daytime_math.hh"
+#include "ora/exceptions.hh"
+#include "ora/types.hh"
 
-namespace cron {
+namespace ora {
 namespace daytime {
 
 //------------------------------------------------------------------------------
@@ -158,7 +158,7 @@ private:
 
   Offset offset_ = INVALID_OFFSET;
 
-  template<class DAYTIME> friend bool cron::daytime::nex::equal(DAYTIME, DAYTIME) noexcept;
+  template<class DAYTIME> friend bool ora::daytime::nex::equal(DAYTIME, DAYTIME) noexcept;
 
 public:
 
@@ -282,5 +282,5 @@ static_assert(UsecDaytime::is_basic_layout(), "wrong memory layout for UsecDayti
 //------------------------------------------------------------------------------
 
 }  // namespace daytime
-}  // namespace cron
+}  // namespace ora
 

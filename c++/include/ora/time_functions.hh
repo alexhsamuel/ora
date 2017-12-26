@@ -2,11 +2,11 @@
 
 #include "aslib/exc.hh"
 #include "aslib/math.hh"
-#include "cron/time_math.hh"
-#include "cron/time_nex.hh"
-#include "cron/time_type.hh"
+#include "ora/time_math.hh"
+#include "ora/time_nex.hh"
+#include "ora/time_type.hh"
 
-namespace cron {
+namespace ora {
 namespace time {
 
 //------------------------------------------------------------------------------
@@ -185,5 +185,5 @@ template<class TRAITS> inline TimeType<TRAITS> operator--(TimeType<TRAITS>& t, i
 //------------------------------------------------------------------------------
 
 }  // namespace time
-}  // namespace cron
+}  // namespace ora
 

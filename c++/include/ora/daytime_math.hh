@@ -1,8 +1,8 @@
 #pragma once
 
-#include "cron/types.hh"
+#include "ora/types.hh"
 
-namespace cron {
+namespace ora {
 
 //------------------------------------------------------------------------------
 
@@ -56,5 +56,5 @@ extern HmsDaytime parse_iso_daytime(std::string const&) noexcept;
 
 //------------------------------------------------------------------------------
 
-}  // namespace cron
+}  // namespace ora
 

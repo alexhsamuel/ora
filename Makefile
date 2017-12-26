@@ -84,7 +84,7 @@ $(ZONEINFO_DIR):
 CXX_SRCS        = $(wildcard $(CXX_SRCDIR)/*.cc) 
 DEPS	       += $(CXX_SRCS:%.cc=%.cc.d)
 CXX_OBJS        = $(CXX_SRCS:%.cc=%.o)
-CXX_LIB	    	= $(CXX_SRCDIR)/libcron.a
+CXX_LIB	    	= $(CXX_SRCDIR)/libora.a
 CXX_BIN_SRCS	= $(wildcard $(CXX_SRCDIR)/bin/*.cc)
 CXX_BINS        = $(CXX_BIN_SRCS:%.cc=%)
 
@@ -136,7 +136,7 @@ CXX_TST_OBJS    = $(CXX_TST_SRCS:%.cc=%.o)
 CXX_TST_BINS    = $(CXX_TST_SRCS:%.cc=%)
 CXX_TST_OKS     = $(CXX_TST_SRCS:%.cc=%.ok)
 
-# Use gtest and cron to build tests.
+# Use gtest and ora to build tests.
 $(CXX_TST_OBJS): CPPFLAGS += -I$(GTEST_INCDIR) -DGTEST_HAS_TR1_TUPLE=0
 $(CXX_TST_BINS): $(GTEST_LIB) $(CXX_LIB)
 $(CXX_TST_BINS): LDLIBS += $(GTEST_LIB) $(CXX_LIB)

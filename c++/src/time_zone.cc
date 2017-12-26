@@ -8,11 +8,11 @@
 
 #include "aslib/file.hh"
 #include "aslib/filename.hh"
-#include "cron/time_type.hh"
-#include "cron/time_zone.hh"
-#include "cron/tzfile.hh"
+#include "ora/time_type.hh"
+#include "ora/time_zone.hh"
+#include "ora/tzfile.hh"
 
-namespace cron {
+namespace ora {
 
 using namespace aslib;
 
@@ -392,6 +392,6 @@ set_display_time_zone(
 
 //------------------------------------------------------------------------------
 
-}  // namespace cron
+}  // namespace ora
 
 

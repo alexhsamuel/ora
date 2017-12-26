@@ -10,11 +10,11 @@
 
 #include "aslib/exc.hh"
 #include "aslib/math.hh"
-#include "cron/types.hh"
+#include "ora/types.hh"
 
-// FIXME: Place in cron::date::math.
+// FIXME: Place in ora::date::math.
 
-namespace cron {
+namespace ora {
 
 using namespace aslib;
 
@@ -393,5 +393,5 @@ using ENCODING_CLIB     = Convention<SUNDAY, 0>;
 
 //------------------------------------------------------------------------------
 
-}  // namespace cron
+}  // namespace ora
 

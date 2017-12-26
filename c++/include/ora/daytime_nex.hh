@@ -1,7 +1,7 @@
 /*
  * Safe (non-throwing) versions of daytime functions.
  *
- * All functions in `cron::daytime::safe` are `noexcept`; they return accept
+ * All functions in `ora::daytime::safe` are `noexcept`; they return accept
  * invalid arguments, and return invalid value on failure.
  */
 
@@ -9,10 +9,10 @@
 
 #include "aslib/math.hh"
 
-#include "cron/types.hh"
-#include "cron/daytime_type.hh"
+#include "ora/types.hh"
+#include "ora/daytime_type.hh"
 
-namespace cron {
+namespace ora {
 namespace daytime {
 namespace nex {
 
@@ -195,7 +195,7 @@ seconds_after(
 {
   return 
       daytime.is_valid()
-    ? cron::daytime::seconds_after(daytime, seconds)
+    ? ora::daytime::seconds_after(daytime, seconds)
     : DAYTIME::INVALID;
 }
 
@@ -213,7 +213,7 @@ seconds_before(
 {
   return 
       daytime.is_valid()
-    ? cron::daytime::seconds_before(daytime, seconds)
+    ? ora::daytime::seconds_before(daytime, seconds)
     : DAYTIME::INVALID;
 }
 
@@ -232,7 +232,7 @@ seconds_between(
 {
   return 
       daytime0.is_valid() && daytime1.is_valid()
-    ? cron::daytime::seconds_between(daytime0, daytime1)
+    ? ora::daytime::seconds_between(daytime0, daytime1)
     : std::numeric_limits<double>::quiet_NaN();
 }
 
@@ -259,5 +259,5 @@ template<class T0, class T1> inline bool operator>=(DaytimeTemplate<T0> const d0
 //------------------------------------------------------------------------------
 
 }  // namespace daytime
-}  // namespace cron
+}  // namespace ora
 

@@ -5,11 +5,11 @@
 #include <vector>
 
 #include "aslib/string.hh"
-#include "cron/exceptions.hh"
-#include "cron/types.hh"
-#include "cron/tzfile.hh"
+#include "ora/exceptions.hh"
+#include "ora/types.hh"
+#include "ora/tzfile.hh"
 
-namespace cron {
+namespace ora {
 
 using namespace aslib;
 
@@ -143,5 +143,5 @@ DTZ;
 
 //------------------------------------------------------------------------------
 
-}  // namespace cron
+}  // namespace ora
 

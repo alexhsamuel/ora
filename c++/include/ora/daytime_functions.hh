@@ -4,10 +4,10 @@
 
 #include "aslib/math.hh"
 
-#include "cron/types.hh"
-#include "cron/daytime_type.hh"
+#include "ora/types.hh"
+#include "ora/daytime_type.hh"
 
-namespace cron {
+namespace ora {
 namespace daytime {
 
 //------------------------------------------------------------------------------
@@ -296,5 +296,5 @@ template<class DAYTIME> inline DAYTIME operator--(DAYTIME& d, int /* tag */)
 //------------------------------------------------------------------------------
 
 }  // namespace daytime
-}  // namespace cron
+}  // namespace ora
 

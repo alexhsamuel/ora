@@ -1,10 +1,10 @@
 #pragma once
 
-#include "cron/date_math.hh"
-#include "cron/date_type.hh"
-#include "cron/types.hh"
+#include "ora/date_math.hh"
+#include "ora/date_type.hh"
+#include "ora/types.hh"
 
-namespace cron {
+namespace ora {
 namespace date {
 
 //------------------------------------------------------------------------------
@@ -132,7 +132,7 @@ get_weekday(
   DATE const date)
 { 
   ensure_valid(date);
-  return cron::get_weekday(date.get_datenum());
+  return ora::get_weekday(date.get_datenum());
 }
 
 
@@ -142,7 +142,7 @@ get_week_date(
   DATE const date)
 { 
   ensure_valid(date);
-  return cron::datenum_to_week_date(date.get_datenum());
+  return ora::datenum_to_week_date(date.get_datenum());
 }
 
 
@@ -162,7 +162,7 @@ get_ymdi(
   DATE const date)
 { 
   ensure_valid(date);
-  return cron::datenum_to_ymdi(date.get_datenum()); 
+  return ora::datenum_to_ymdi(date.get_datenum()); 
 }
 
 
@@ -286,5 +286,5 @@ template<class DATE> inline DATE operator--(DATE& date, int /* tag */)
 //------------------------------------------------------------------------------
 
 }  // namespace date
-}  // namespace cron
+}  // namespace ora
 

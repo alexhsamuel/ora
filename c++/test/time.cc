@@ -1,9 +1,9 @@
-#include "cron.hh"
+#include "ora.hh"
 #include "gtest/gtest.h"
 
 using namespace aslib;
-using namespace cron;
-using namespace cron::ez;
+using namespace ora;
+using namespace ora::ez;
 
 //------------------------------------------------------------------------------
 // Class Time

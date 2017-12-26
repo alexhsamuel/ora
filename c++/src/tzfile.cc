@@ -12,7 +12,7 @@
 #include "aslib/exc.hh"
 #include "aslib/file.hh"
 #include "aslib/filename.hh"
-#include "cron/tzfile.hh"
+#include "ora/tzfile.hh"
 
 //------------------------------------------------------------------------------
 
@@ -106,7 +106,7 @@ check_header(
 
 //------------------------------------------------------------------------------
 
-namespace cron {
+namespace ora {
 
 using namespace aslib;
 
@@ -260,6 +260,6 @@ operator<<(
 
 //------------------------------------------------------------------------------
 
-}  // namespace cron
+}  // namespace ora
 
 

@@ -1,6 +1,6 @@
-#include "cron/time_type.hh"
+#include "ora/time_type.hh"
 
-namespace cron {
+namespace ora {
 namespace time {
 
 //------------------------------------------------------------------------------
@@ -15,5 +15,5 @@ template class TimeType<Time128Traits>;
 //------------------------------------------------------------------------------
 
 }  // namespace time
-}  // namespace cron
+}  // namespace ora
 

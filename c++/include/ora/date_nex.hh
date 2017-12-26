@@ -3,11 +3,11 @@
 #include <string>
 
 #include "aslib/math.hh"
-#include "cron/date_math.hh"
-#include "cron/date_type.hh"
-#include "cron/types.hh"
+#include "ora/date_math.hh"
+#include "ora/date_type.hh"
+#include "ora/types.hh"
 
-namespace cron {
+namespace ora {
 namespace date {
 namespace nex {
 
@@ -183,7 +183,7 @@ get_weekday(
 {
   return 
       date.is_valid() 
-    ? cron::get_weekday(date.get_datenum()) 
+    ? ora::get_weekday(date.get_datenum()) 
     : WEEKDAY_INVALID;
 }
 
@@ -358,5 +358,5 @@ template<class T0, class T1> inline bool operator>=(DateTemplate<T0> const d0, D
 //------------------------------------------------------------------------------
 
 }  // namespace date
-}  // namespace cron
+}  // namespace ora
 

@@ -7,10 +7,10 @@
 #include <vector>
 
 #include "aslib/filename.hh"
-#include "cron/date_functions.hh"
-#include "cron/date_type.hh"
+#include "ora/date_functions.hh"
+#include "ora/date_type.hh"
 
-namespace cron {
+namespace ora {
 
 using namespace aslib;
 
@@ -467,5 +467,5 @@ operator-(
 
 //------------------------------------------------------------------------------
 
-}  // namespace cron
+}  // namespace ora
 

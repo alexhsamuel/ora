@@ -10,13 +10,13 @@
 #include "aslib/ptr.hh"
 #include "aslib/string.hh"
 #include "aslib/string_builder.hh"
-#include "cron/date_type.hh"
-#include "cron/daytime_type.hh"
-#include "cron/time_type.hh"
-#include "cron/time_zone.hh"
-#include "cron/types.hh"
+#include "ora/date_type.hh"
+#include "ora/daytime_type.hh"
+#include "ora/time_type.hh"
+#include "ora/time_zone.hh"
+#include "ora/types.hh"
 
-namespace cron {
+namespace ora {
 
 //------------------------------------------------------------------------------
 // Functions
@@ -294,13 +294,13 @@ public:
       auto const tz_name = pattern.substr(at + 1);
       TimeZone_ptr tz;
       if (tz_name == "" || tz_name == "display")
-        tz = cron::get_display_time_zone();
+        tz = ora::get_display_time_zone();
       else if (tz_name == "UTC")
         tz = UTC;
       else if (tz_name == "system")
-        tz = cron::get_system_time_zone();
+        tz = ora::get_system_time_zone();
       else
-        tz = cron::get_time_zone(tz_name);
+        tz = ora::get_time_zone(tz_name);
       return {pattern.substr(0, at), tz};
     }
   }
@@ -456,18 +456,18 @@ operator<<(
 
 //------------------------------------------------------------------------------
 
-}  // namespace cron
+}  // namespace ora
 
 //------------------------------------------------------------------------------
 // Namespace imports
 //------------------------------------------------------------------------------
 
-namespace cron {
+namespace ora {
 
 using date::DateFormat;
 using daytime::DaytimeFormat;
 using time::TimeFormat;
 
-}  // namespace cron
+}  // namespace ora
 
 

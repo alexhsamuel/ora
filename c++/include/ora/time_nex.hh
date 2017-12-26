@@ -1,10 +1,10 @@
 #pragma once
 
 #include "aslib/math.hh"
-#include "cron/time_math.hh"
-#include "cron/time_type.hh"
+#include "ora/time_math.hh"
+#include "ora/time_type.hh"
 
-namespace cron {
+namespace ora {
 namespace time {
 namespace nex {
 
@@ -115,5 +115,5 @@ template<class T0, class T1> inline bool operator>=(TimeType<T0> const t0, TimeT
 //------------------------------------------------------------------------------
 
 }  // namespace time
-}  // namespace cron
+}  // namespace ora
 

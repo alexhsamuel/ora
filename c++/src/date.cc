@@ -1,6 +1,6 @@
-#include "cron/date_type.hh"
+#include "ora/date_type.hh"
 
-namespace cron {
+namespace ora {
 namespace date {
 
 //------------------------------------------------------------------------------
@@ -11,5 +11,5 @@ template class DateTemplate<Date16Traits>;
 //------------------------------------------------------------------------------
 
 }  // namespace date
-}  // namespace cron
+}  // namespace ora
 

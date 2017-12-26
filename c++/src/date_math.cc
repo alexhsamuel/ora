@@ -6,9 +6,9 @@
 #include <sstream>
 
 #include "aslib/exc.hh"
-#include "cron.hh"
+#include "ora.hh"
 
-namespace cron {
+namespace ora {
 
 using std::string;
 
@@ -231,6 +231,6 @@ datenum_to_full_date(
 
 //------------------------------------------------------------------------------
 
-}  // namespace cron
+}  // namespace ora
 
 

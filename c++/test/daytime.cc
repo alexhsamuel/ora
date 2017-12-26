@@ -1,11 +1,11 @@
 #include <string>
 
-#include "cron.hh"
+#include "ora.hh"
 #include "gtest/gtest.h"
 
 using namespace aslib;
-using namespace cron;
-using namespace cron::daytime;
+using namespace ora;
+using namespace ora::daytime;
 
 using std::string;
 

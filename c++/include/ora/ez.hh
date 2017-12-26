@@ -1,10 +1,10 @@
 #pragma once
 
-#include "cron/date_type.hh"
-#include "cron/date_functions.hh"
-#include "cron/types.hh"
+#include "ora/date_type.hh"
+#include "ora/date_functions.hh"
+#include "ora/types.hh"
 
-namespace cron {
+namespace ora {
 namespace ez {
 
 //------------------------------------------------------------------------------
@@ -116,6 +116,6 @@ MonthLiteral constexpr DEC = MonthLiteral(12);
 //------------------------------------------------------------------------------
 
 }  // namespace ez
-}  // namespace cron
+}  // namespace ora
 
 

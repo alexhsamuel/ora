@@ -35,10 +35,10 @@
 
 #include "aslib/exc.hh"
 #include "aslib/math.hh"
-#include "cron/exceptions.hh"
-#include "cron/time_math.hh"
+#include "ora/exceptions.hh"
+#include "ora/time_math.hh"
 
-namespace cron {
+namespace ora {
 namespace time {
 
 using namespace aslib;
@@ -362,5 +362,5 @@ using Time128 = TimeType<Time128Traits>;
 static_assert(Time::is_basic_layout(), "wrong memory layout for Time128");
 
 }  // namespace time
-}  // namespace cron
+}  // namespace ora
 

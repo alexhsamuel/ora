@@ -1,8 +1,8 @@
-#include "cron.hh"
+#include "ora.hh"
 #include "gtest/gtest.h"
 
 using namespace aslib;
-using namespace cron;
+using namespace ora;
 
 //------------------------------------------------------------------------------
 // Class TimeZone.

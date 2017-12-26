@@ -8,7 +8,7 @@
 #include "aslib/math.hh"
 #include "aslib/ranged.hh"
 
-namespace cron {
+namespace ora {
 
 using namespace aslib;
 
@@ -298,5 +298,5 @@ struct TimeParts
 
 //------------------------------------------------------------------------------
 
-}  // namespace cron
+}  // namespace ora
 

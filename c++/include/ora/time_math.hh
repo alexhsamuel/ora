@@ -10,10 +10,10 @@
 #undef FALSE
 #endif
 
-#include "cron/time_zone.hh"
-#include "cron/types.hh"
+#include "ora/time_zone.hh"
+#include "ora/types.hh"
 
-namespace cron {
+namespace ora {
 namespace time { 
 
 //------------------------------------------------------------------------------
@@ -180,5 +180,5 @@ timespec_to_offset(
 //------------------------------------------------------------------------------
 
 }  // namespace time
-}  // namespace cron
+}  // namespace ora
 

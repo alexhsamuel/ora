@@ -7,11 +7,11 @@
 #include <cstddef>
 #include <type_traits>
 
-#include "cron/date_math.hh"
-#include "cron/exceptions.hh"
-#include "cron/types.hh"
+#include "ora/date_math.hh"
+#include "ora/exceptions.hh"
+#include "ora/types.hh"
 
-namespace cron {
+namespace ora {
 namespace date {
 
 //------------------------------------------------------------------------------
@@ -209,7 +209,7 @@ private:
 
   Offset offset_ = Traits::invalid;
 
-  template<class DATE> friend bool cron::date::nex::equal(DATE, DATE) noexcept;
+  template<class DATE> friend bool ora::date::nex::equal(DATE, DATE) noexcept;
 
 public:
 
@@ -304,5 +304,5 @@ static_assert(Date16::is_basic_layout(), "wrong memory layout for Date16");
 //------------------------------------------------------------------------------
 
 }  // namespace date
-}  // namespace cron
+}  // namespace ora
 

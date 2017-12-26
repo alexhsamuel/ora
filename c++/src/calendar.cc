@@ -4,10 +4,10 @@
 #include <vector>
 
 #include "aslib/string.hh"
-#include "cron/calendar.hh"
-#include "cron/date_nex.hh"
+#include "ora/calendar.hh"
+#include "ora/date_nex.hh"
 
-namespace cron {
+namespace ora {
 
 using namespace aslib;
 using date::Date;
@@ -102,6 +102,6 @@ load_holiday_calendar(
 
 //------------------------------------------------------------------------------
 
-}  // namespace cron
+}  // namespace ora
 
 

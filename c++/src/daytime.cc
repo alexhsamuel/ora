@@ -1,6 +1,6 @@
-#include "cron/daytime_type.hh"
+#include "ora/daytime_type.hh"
 
-namespace cron {
+namespace ora {
 namespace daytime {
 
 //------------------------------------------------------------------------------
@@ -12,5 +12,5 @@ template class DaytimeTemplate<UsecDaytimeTraits>;
 //------------------------------------------------------------------------------
 
 }  // namespace daytime
-}  // namespace cron
+}  // namespace ora
 

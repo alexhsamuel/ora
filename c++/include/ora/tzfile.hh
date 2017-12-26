@@ -7,7 +7,7 @@
 
 #include "aslib/filename.hh"
 
-namespace cron {
+namespace ora {
 
 using namespace aslib;
 
@@ -63,6 +63,6 @@ public:
 
 //------------------------------------------------------------------------------
 
-}  // namespace cron
+}  // namespace ora
 
 
