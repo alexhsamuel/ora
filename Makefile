@@ -22,7 +22,7 @@ ZONEINFO_DIR 	= $(SHRDIR)/zoneinfo
 # C++ configuration
 
 # Directories
-CXX_DIR	    	= $(TOP)/c++
+CXX_DIR	    	= $(TOP)/cxx
 CXX_INCDIR 	= $(CXX_DIR)/include
 CXX_SRCDIR 	= $(CXX_DIR)/src
 CXX_TSTDIR    	= $(CXX_DIR)/test
