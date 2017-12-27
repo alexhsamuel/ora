@@ -228,6 +228,9 @@ python:			$(PY_EXTMOD)
 clean-python:
 	rm -rf $(PY_OBJS) $(PY_EXTMOD) $(PY_DOCSTR_CC) $(PY_DOCSTR_HH)
 
+.PHONY: docstrings
+docstrings: 	    	$(PY_DOCSTR_CC) $(PY_DOCSTR_HH)
+
 .PHONY: test-python
 test-python: 		$(PY_EXTMOD)
 	$(PYTEST) python

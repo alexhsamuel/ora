@@ -1,5 +1,7 @@
 # Work List
 
+1. PyPI.
+1. Continuous build/test.
 1. Change formatting.  Instead of %k etc, support:
    - synchronize time format to Python datetime
    - missing C89 directives: %G, %u, %V
@@ -16,6 +18,7 @@
    - Add exact us, ns types.
 1. Cache `Format` instances uses by Python.
 1. Fast-track RFC 3339 formatting function.
+1. Relax numpy setup dependency.
 1. Review built-in types.  
    - Add exact us, ns types. 
    - Benchmark them.
