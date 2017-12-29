@@ -257,7 +257,7 @@ PyTime<TIME>::add_to(
   // Choose precision for seconds that captures actual precision of the time
   // class (up to 1 fs).
   auto const precision 
-    = std::min((size_t) ceil(log10(Time::DENOMINATOR)), 15ul);
+    = std::min((size_t) ceil(log10((long double) Time::DENOMINATOR)), 15ul);
 
   // Build the repr format.
   repr_format_ = make_unique<ora::time::TimeFormat>(

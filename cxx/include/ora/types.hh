@@ -34,7 +34,7 @@ size_t constexpr    SECS_PER_DAY_BITS   = 17;
 using Second = double;
 Second constexpr    SECOND_MIN          = 0.0;
 Second constexpr    SECOND_END          = 60.0;
-Second constexpr    SECOND_MAX          = 0x1.dffffffffffffp+5;  // = std::nextafter(SECOND_END, SECOND_MIN)
+Second constexpr    SECOND_MAX          = 59.999999999999993;  // = std::nextafter(SECOND_END, SECOND_MIN)
 Second constexpr    SECOND_INVALID      = std::numeric_limits<Second>::quiet_NaN();
 inline constexpr bool second_is_valid(Second second) { return in_interval(SECOND_MIN, second, SECOND_END); }
 
@@ -162,7 +162,7 @@ int constexpr       YMDI_INVALID        = std::numeric_limits<int>::min();
 using Ssm = double;
 Ssm constexpr       SSM_MIN             = 0;
 Ssm constexpr       SSM_END             = SECS_PER_DAY;
-Ssm constexpr       SSM_MAX             = 0x1.517ffffffffffp+16;  // = std::nextafter(SSM_END, SSM_MIN)
+Ssm constexpr       SSM_MAX             = 86399.999999999985;  // = std::nextafter(SSM_END, SSM_MIN)
 Ssm constexpr       SSM_INVALID         = std::numeric_limits<Ssm>::quiet_NaN();
 inline bool constexpr ssm_is_valid(Ssm ssm) { return in_interval(SSM_MIN, ssm, SSM_END); }
 

@@ -3,6 +3,7 @@
 *.h.pump
 *.o
 *.s
+.cache/
 build/
 cfg.sh
 dist/
