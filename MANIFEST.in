@@ -1,0 +1,6 @@
+include README.md
+include LICENSE
+include Makefile
+recursive-include cxx *.hh *.cc
+recursive-include python *.hh *.md *.docstrings wrap_docstrings
+prune *~

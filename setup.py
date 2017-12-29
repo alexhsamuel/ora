@@ -64,7 +64,7 @@ class BuildExt(setuptools.command.build_ext.build_ext):
 class Install(setuptools.command.install.install):
 
     def run(self):
-        subprocess.check_call(["make", "install"])
+        # subprocess.check_call(["make", "install"])
         setuptools.command.install.install.run(self)
 
 
