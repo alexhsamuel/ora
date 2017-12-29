@@ -73,7 +73,7 @@ class Install(setuptools.command.install.install):
 
 setup(
     name            ="ora",
-    version         ="0.1.0",
+    version         ="0.1.1",
     description     ="Alternative time and date library",
     long_description=__doc__,
     url             ="https://github.com/alexhsamuel/ora",
