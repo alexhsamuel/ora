@@ -26,19 +26,11 @@ using std::string;
 
 namespace {
 
-bool
-system_time_zone_name_initialized
-  = false;
-
 std::string
 system_time_zone_name;
 
-bool
-display_time_zone_initialized
-  = false;
-
 TimeZone_ptr
-display_time_zone;
+display_time_zone = nullptr;
 
 
 }  // anonymous namespace
@@ -339,9 +331,9 @@ get_system_time_zone_name_()
 extern string
 get_system_time_zone_name()
 {
-  if (! system_time_zone_name_initialized) {
+  if (system_time_zone_name == "") {
     system_time_zone_name = get_system_time_zone_name_();
-    system_time_zone_name_initialized = true;
+    assert(system_time_zone_name != "");
   }
   return system_time_zone_name;
 }
@@ -359,7 +351,7 @@ get_system_time_zone()
 extern TimeZone_ptr
 get_display_time_zone()
 {
-  if (! display_time_zone_initialized) {
+  if (display_time_zone == nullptr) {
     // Initialize to the value of the TZ environment variable, if set.
     auto const tz_name = getenv("TZ");
     TimeZone_ptr tz;
@@ -375,7 +367,7 @@ get_display_time_zone()
         tz = UTC;
       }
     set_display_time_zone(std::move(tz));
-    assert(display_time_zone_initialized);
+    assert(display_time_zone != nullptr);
   }
   return display_time_zone;
 }
@@ -386,7 +378,6 @@ set_display_time_zone(
   TimeZone_ptr tz)
 {
   display_time_zone = tz;
-  display_time_zone_initialized = true;
 }
 
 
