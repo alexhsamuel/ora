@@ -1,7 +1,7 @@
 # Work List
 
-1. Time.format(tz="display").
 1. TimeZone.__eq__
+1. Make the display time zone thread-local.
 1. Continuous build/test.
 1. Change formatting.  Instead of %k etc, support:
    - synchronize time format to Python datetime
@@ -43,7 +43,6 @@
 1. C++ constants for months.
 1. Default precision for C++ time, daytime formats (fractional secs?).
    Or make the default daytime format mutable?
-1. Make the display time zone thread-local.
 1. Adjust the definition of TimeTraits.
 1. Check Time128 second precision in C++ and Python.
 1. In Python 3.6, use variable annotations.
