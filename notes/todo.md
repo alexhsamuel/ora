@@ -1,7 +1,7 @@
 # Work List
 
 1. TimeZone.__eq__
-1. Make the display time zone thread-local.
+1. Display time zone thread-local test.
 1. Continuous build/test.
 1. Change formatting.  Instead of %k etc, support:
    - synchronize time format to Python datetime

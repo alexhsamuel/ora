@@ -29,7 +29,7 @@ namespace {
 std::string
 system_time_zone_name;
 
-TimeZone_ptr
+TimeZone_ptr thread_local
 display_time_zone = nullptr;
 
 
@@ -342,7 +342,7 @@ get_system_time_zone_name()
 extern TimeZone_ptr
 get_system_time_zone()
 {
-  // FIXME: Portability.
+  // FIMXE: Store the time zone.
   string const name = get_system_time_zone_name();
   return get_time_zone(name);
 }
