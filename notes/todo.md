@@ -1,7 +1,6 @@
 # Work List
 
 1. TimeZone.__eq__
-1. Display time zone thread-local test.
 1. Continuous build/test.
 1. Change formatting.  Instead of %k etc, support:
    - synchronize time format to Python datetime
@@ -48,6 +47,7 @@
 1. In Python 3.6, use variable annotations.
 1. Locale support in formatting.
 1. Docstrings for Time methods.
+1. Test that the display time zone is thread local.
 
 
 # C++ API
