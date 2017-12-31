@@ -109,6 +109,12 @@ def test_format_method():
     assert time.format(fmt, tz)                 == "2018-01-01 08:00:00"
 
 
+@pytest.mark.xfail
+def test_format_method_display():
+    with display_time_zone("America/Los_Angeles"):
+        assert time.format(fmt, "display")      == "2017-12-31 16:00:00"
+
+
 def test_from_offset():
     assert SmallTime.from_offset(SmallTime.MIN.offset) == SmallTime.MIN
     assert SmallTime.from_offset(SmallTime.MAX.offset) == SmallTime.MAX

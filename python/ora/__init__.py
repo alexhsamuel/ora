@@ -1,3 +1,4 @@
+import contextlib
 import enum
 
 from   .ext import *
@@ -24,9 +25,12 @@ __all__ = (
 
     "days_in_month",
     "days_in_year",
-    "is_leap_year",
     "from_local",
+    "get_display_time_zone",
+    "get_system_time_zone",
+    "is_leap_year",
     "now",
+    "set_display_time_zone",
     "to_local",
     "to_local_datenum_daytick",
     "to_weekday",
@@ -37,6 +41,7 @@ __all__ = (
     "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 
+    "display_time_zone",
     "UNIX_EPOCH",
     )
 
@@ -189,5 +194,19 @@ def random_date(Date=Date, min=None, max=None):
     else:
         max = Date.convert(max)
     return Date.from_datenum(randint(min.datenum, max.datenum))
+
+
+@contextlib.contextmanager
+def display_time_zone(time_zone):
+    """
+    Context manager to set and restore the display time zone.
+    """
+    time_zone = TimeZone(time_zone)
+    old = get_display_time_zone()
+    try:
+        set_display_time_zone(time_zone)
+        yield
+    finally:
+        set_display_time_zone(old)
 
 

@@ -42,7 +42,7 @@
 1. C++ constants for months.
 1. Default precision for C++ time, daytime formats (fractional secs?).
    Or make the default daytime format mutable?
-1. Global display time zone in Python API.
+1. Make the display time zone thread-local.
 1. Adjust the definition of TimeTraits.
 1. Check Time128 second precision in C++ and Python.
 1. In Python 3.6, use variable annotations.
