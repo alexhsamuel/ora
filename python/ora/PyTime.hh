@@ -217,6 +217,7 @@ private:
 
   // Methods.
   static ref<Object>    method___format__       (PyTime*, Tuple*, Dict*);
+  static ref<Object>    method_format           (PyTime*, Tuple*, Dict*);
   static ref<Object>    method_from_offset      (PyTypeObject*, Tuple*, Dict*);
   static ref<Object>    method_get_parts        (PyTime*, Tuple*, Dict*);
   static Methods<PyTime> tp_methods_;
@@ -537,6 +538,25 @@ PyTime<TIME>::method___format__(
 
 template<class TIME>
 ref<Object>
+PyTime<TIME>::method_format(
+  PyTime* const self,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] = {"pattern", "time_zone", nullptr};
+  char* pattern;
+  Object* time_zone = nullptr;
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "s|O", arg_names, &pattern, &time_zone);
+
+  auto const tz = 
+    time_zone == nullptr ? ora::UTC : convert_to_time_zone(time_zone);
+  return Unicode::from(ora::time::TimeFormat(pattern)(self->time_, *tz));
+}
+
+
+template<class TIME>
+ref<Object>
 PyTime<TIME>::method_from_offset(
   PyTypeObject* const type,
   Tuple* const args,
@@ -592,6 +612,7 @@ Methods<PyTime<TIME>>
 PyTime<TIME>::tp_methods_
   = Methods<PyTime>()
     .template add<method___format__>                    ("__format__")
+    .template add<method_format>                        ("format",      docstring::pytime::format)
     .template add_class<method_from_offset>             ("from_offset")
     .template add<method_get_parts>                     ("get_parts")
   ;

@@ -98,6 +98,17 @@ def test_format_tz():
     assert "now is {:%Y-%m-%d %H:%M:%S@{}}".format(time, "America/New_York") == "now is 2017-12-09 10:42:20"
 
 
+def test_format_method():
+    time = (2018/Jan/1, Daytime(0, 0, 0)) @ UTC
+    fmt = "%Y-%m-%d %H:%M:%S"
+    assert time.format(fmt)                     == "2018-01-01 00:00:00"
+    assert time.format(fmt, UTC)                == "2018-01-01 00:00:00"
+    assert time.format(fmt, "America/New_York") == "2017-12-31 19:00:00"
+    assert time.format(fmt, "Asia/Kolkata")     == "2018-01-01 05:30:00"
+    tz = ora.TimeZone("Asia/Manila")
+    assert time.format(fmt, tz)                 == "2018-01-01 08:00:00"
+
+
 def test_from_offset():
     assert SmallTime.from_offset(SmallTime.MIN.offset) == SmallTime.MIN
     assert SmallTime.from_offset(SmallTime.MAX.offset) == SmallTime.MAX
