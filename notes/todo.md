@@ -1,6 +1,7 @@
 # Work List
 
-1. PyPI.
+1. Time.format(tz="display").
+1. TimeZone.__eq__
 1. Continuous build/test.
 1. Change formatting.  Instead of %k etc, support:
    - synchronize time format to Python datetime
