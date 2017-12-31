@@ -47,6 +47,7 @@
 1. Check Time128 second precision in C++ and Python.
 1. In Python 3.6, use variable annotations.
 1. Locale support in formatting.
+1. Docstrings for Time methods.
 
 
 # C++ API
