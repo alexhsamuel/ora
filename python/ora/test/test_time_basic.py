@@ -109,10 +109,19 @@ def test_format_method():
     assert time.format(fmt, tz)                 == "2018-01-01 08:00:00"
 
 
-@pytest.mark.xfail
 def test_format_method_display():
+    time = (2018/Jan/1, Daytime(0, 0, 0)) @ UTC
+    fmt = "%Y-%m-%d %H:%M:%S"
     with display_time_zone("America/Los_Angeles"):
         assert time.format(fmt, "display")      == "2017-12-31 16:00:00"
+
+
+def test_format_method_system():
+    time = (2018/Jan/1, Daytime(0, 0, 0)) @ UTC
+    fmt = "%Y-%m-%d %H:%M:%S"
+    sys = time.format(fmt, "system")
+    assert sys == time.format(fmt, get_system_time_zone())
+    assert sys == format(time, fmt + "@system")
 
 
 def test_from_offset():

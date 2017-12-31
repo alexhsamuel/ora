@@ -96,12 +96,17 @@ convert_to_time_zone(
   // If it's a string, interpret it as a time zone name.
   if (Unicode::Check(obj)) {
     auto const tz_name = cast<Unicode>(obj)->as_utf8_string();
-    try {
-      return ora::get_time_zone(tz_name);
-    }
-    catch (ora::lib::ValueError) {
-      throw py::ValueError(string("not a time zone: ") + tz_name);
-    }
+    if (tz_name == "display")
+      return ora::get_display_time_zone();
+    else if (tz_name == "system")
+      return ora::get_system_time_zone();
+    else
+      try {
+        return ora::get_time_zone(tz_name);
+      }
+      catch (ora::lib::ValueError) {
+        throw py::ValueError(string("not a time zone: ") + tz_name);
+      }
   }
 
   // Can't convert to a time zone.
