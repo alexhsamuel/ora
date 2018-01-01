@@ -214,6 +214,10 @@ fs::Filename const
 ZONEINFO_DIR_DEFAULT
   = "/usr/share/zoneinfo";
 
+bool
+zoneinfo_dir_initialized
+  = false;
+
 fs::Filename
 zoneinfo_dir 
   {""};
@@ -228,15 +232,29 @@ time_zones;
 
 
 extern fs::Filename
+get_default_zoneinfo_dir()
+{
+  char const* const env_val = getenv(ZONEINFO_ENVVAR);
+  return env_val != nullptr ? fs::Filename(env_val) : ZONEINFO_DIR_DEFAULT;
+}
+
+
+extern void
+set_zoneinfo_dir(
+  fs::Filename const& dir)
+{
+  // Invalidate cache; contents of the new directory may be different.
+  time_zones.clear();
+  zoneinfo_dir = dir;
+  zoneinfo_dir_initialized = true;
+}
+
+
+extern fs::Filename
 get_zoneinfo_dir()
 {
-  if (zoneinfo_dir == fs::Filename{""}) {
-    // Not initialized.  Try from the environment.
-    char const* const env_val = getenv(ZONEINFO_ENVVAR);
-    zoneinfo_dir = 
-      env_val != nullptr ? fs::Filename(env_val) : ZONEINFO_DIR_DEFAULT;
-    time_zones.clear();
-  }
+  if (! zoneinfo_dir_initialized)
+    set_zoneinfo_dir(get_default_zoneinfo_dir());
 
   return zoneinfo_dir;
 }
@@ -264,8 +282,6 @@ get_time_zone(
     return find->second;
   else {
     auto const filename = find_time_zone_file(name);
-    // We can safely return a reference because we never remove or replace
-    // time zone objects from the cache map.
     return time_zones[name] 
       = make_shared<TimeZone const>(TzFile::load(filename), name);
   }

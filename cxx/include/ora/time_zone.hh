@@ -79,6 +79,17 @@ using TimeZone_ptr = std::shared_ptr<TimeZone const>;
  */
 extern TimeZone_ptr     UTC;
 
+/**
+ * Returns the default zoneinfo dir path, from ZONEINFO environment variable, or
+ * if not set, the system location.
+ */
+extern fs::Filename     get_default_zoneinfo_dir();
+
+/**
+ * Sets the zoneinfo directory from which time zones are loaded.
+ */
+extern void             set_zoneinfo_dir(fs::Filename const& dir);
+
 /*
  * Returns the path to the current default zoneinfo directory.
  */
