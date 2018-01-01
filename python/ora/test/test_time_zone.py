@@ -129,22 +129,20 @@ def test_nonexistent():
 
 
 def test_display():
-    # FIXME: Make == work for TimeZone.
-
     stz = get_system_time_zone()
     assert isinstance(stz, TimeZone)
     dtz = get_display_time_zone()
     assert isinstance(stz, TimeZone)
-    assert dtz.name == stz.name
+    assert dtz == stz
 
     with display_time_zone("Pacific/Galapagos"):
         assert get_system_time_zone().name == stz.name
         dtz = get_display_time_zone()
         assert isinstance(dtz, TimeZone)
         assert dtz.name == "Pacific/Galapagos"
-        # assert dtz == TimeZone("Pacific/Galapagos")
+        assert dtz == TimeZone("Pacific/Galapagos")
 
     dtz = get_display_time_zone()
-    assert dtz.name == stz.name
+    assert dtz == stz
     
 

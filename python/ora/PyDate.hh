@@ -403,21 +403,7 @@ PyDate<DATE>::tp_richcompare(
   auto const other_date = maybe_date<Date>(other);
   if (!other_date)
     return not_implemented_ref();
-
-  Date const d0 = self->date_;
-  Date const d1 = *other_date;
-
-  bool result;
-  switch (comparison) {
-  case Py_EQ: result = d0 == d1; break;
-  case Py_GE: result = d0 >= d1; break;
-  case Py_GT: result = d0 >  d1; break;
-  case Py_LE: result = d0 <= d1; break;
-  case Py_LT: result = d0 <  d1; break;
-  case Py_NE: result = d0 != d1; break;
-  default:    result = false; assert(false);
-  }
-  return Bool::from(result);
+  return richcmp(self->date_, *other_date, comparison);
 }
 
 

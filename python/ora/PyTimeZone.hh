@@ -80,6 +80,8 @@ public:
    */
   ora::TimeZone_ptr const tz_;
 
+  static ref<Object> tp_richcompare(PyTimeZone*, Object*, int);
+
   // Number methods.
   static ref<Object> nb_matrix_multiply (PyTimeZone*, Object*, bool);
   static PyNumberMethods tp_as_number_;

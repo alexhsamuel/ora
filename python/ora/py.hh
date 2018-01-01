@@ -1438,6 +1438,31 @@ wrap(
 
 
 /**
+ * Helper for implementing tp_richcmp.  Compares two objects and returns
+ * a new bool reference.
+ */
+template<class CLASS>
+ref<Object>
+richcmp(
+  CLASS const& c0,
+  CLASS const& c1,
+  int const comparison)
+{
+  bool result;
+  switch (comparison) {
+  case Py_EQ: result = c0 == c1; break;
+  case Py_GE: result = c0 >= c1; break;
+  case Py_GT: result = c0 >  c1; break;
+  case Py_LE: result = c0 <= c1; break;
+  case Py_LT: result = c0 <  c1; break;
+  case Py_NE: result = c0 != c1; break;
+  default:    result = false; assert(false);
+  }
+  return Bool::from(result);
+}
+
+
+/**
  * Wraps a richcmpfunc.
  */
 template<class CLASS, RichcmpfuncPtr<CLASS> FUNCTION>

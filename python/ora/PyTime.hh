@@ -402,21 +402,7 @@ PyTime<TIME>::tp_richcompare(
   auto const other_time = maybe_time<Time>(other);
   if (!other_time.first)
     return not_implemented_ref();
-
-  Time const t0 = self->time_;
-  Time const t1 = other_time.second;
-
-  bool result;
-  switch (comparison) {
-  case Py_EQ: result = t0 == t1; break;
-  case Py_GE: result = t0 >= t1; break;
-  case Py_GT: result = t0 >  t1; break;
-  case Py_LE: result = t0 <= t1; break;
-  case Py_LT: result = t0 <  t1; break;
-  case Py_NE: result = t0 != t1; break;
-  default:    result = false; assert(false);
-  }
-  return Bool::from(result);
+  return richcmp(self->time_, other_time.second, comparison);
 }
 
 

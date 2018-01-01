@@ -317,21 +317,7 @@ PyDaytime<DAYTIME>::tp_richcompare(
   auto const opt = maybe_daytime<DAYTIME>(other);
   if (!opt)
     return not_implemented_ref();
-  
-  Daytime const a0 = self->daytime_;
-  Daytime const a1 = *opt;
-
-  bool result;
-  switch (comparison) {
-  case Py_EQ: result = a0 == a1; break;
-  case Py_GE: result = a0 >= a1; break;
-  case Py_GT: result = a0 >  a1; break;
-  case Py_LE: result = a0 <= a1; break;
-  case Py_LT: result = a0 <  a1; break;
-  case Py_NE: result = a0 != a1; break;
-  default:    result = false; assert(false);
-  }
-  return Bool::from(result);
+  return richcmp(self->daytime_, *opt, comparison);
 }
 
 

@@ -252,6 +252,21 @@ PyTimeZone::tp_init(
 }
 
 
+ref<Object>
+PyTimeZone::tp_richcompare(
+  PyTimeZone* const self,
+  Object* const other,
+  int const comparison)
+{
+  if (!PyTimeZone::Check(other))
+    return not_implemented_ref();
+
+  // FIXME: Just compare object identity?
+  return richcmp(
+    self->tz_->get_name(), ((PyTimeZone*) other)->tz_->get_name(), comparison);
+}
+
+
 //------------------------------------------------------------------------------
 // Number methods
 //------------------------------------------------------------------------------
@@ -451,7 +466,7 @@ PyTimeZone::build_type(
     (char const*)         nullptr,                        // tp_doc
     (traverseproc)        nullptr,                        // tp_traverse
     (inquiry)             nullptr,                        // tp_clear
-    (richcmpfunc)         nullptr,                        // tp_richcompare
+    (richcmpfunc)         wrap<PyTimeZone, tp_richcompare>, // tp_richcompare
     (Py_ssize_t)          0,                              // tp_weaklistoffset
     (getiterfunc)         nullptr,                        // tp_iter
     (iternextfunc)        nullptr,                        // tp_iternext
