@@ -1,7 +1,5 @@
 # Work List
 
-1. TimeZone.__eq__
-1. Update zoneinfo db.
 1. API to switch zoneinfo db.
 1. Package zoneinfo db; make it default.
 1. Continuous build/test.
