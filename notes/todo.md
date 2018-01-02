@@ -1,7 +1,9 @@
 # Work List
 
-1. API to switch zoneinfo db.
-1. Package zoneinfo db; make it default.
+1. Zoneinfo dir:
+   - Provide a way to set it programatically.
+   - Provide an accessor.
+   - Default to our own, for macOS for now, at least.
 1. Continuous build/test.
 1. Change formatting.  Instead of %k etc, support:
    - synchronize time format to Python datetime
@@ -10,10 +12,6 @@
    - add predefines format strings with subsecond accuracy
    - support UTF-8 patterns
 1. Add an explicit format() method that takes time zone, localization.
-1. Zoneinfo dir:
-   - Provide a way to set it programatically.
-   - Provide an accessor.
-   - Default to our own, for macOS for now.
 1. Revisit type definitions.
    - Benchmark 2**n vs. 10**n types.
    - Add exact us, ns types.
@@ -37,6 +35,7 @@
 1. Clean up C++ Time and localization functions; document.
 1. macOS old tzinfo format.
 1. Benchmark.
+1. Clean up functions_doc and other old-style docstrings.
 1. Basic string parsing for `convert_to_*()` functions.
 1. Full parsing support.
 1. Update docs for nex, namespaces, includes.
