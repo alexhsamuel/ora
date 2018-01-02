@@ -1,5 +1,8 @@
 import contextlib
 import enum
+import os
+from   pathlib import Path
+import sys
 
 from   .ext import *
 
@@ -28,9 +31,11 @@ __all__ = (
     "from_local",
     "get_display_time_zone",
     "get_system_time_zone",
+    "get_zoneinfo_dir",
     "is_leap_year",
     "now",
     "set_display_time_zone",
+    "set_zoneinfo_dir",
     "to_local",
     "to_local_datenum_daytick",
     "to_weekday",
@@ -44,6 +49,24 @@ __all__ = (
     "display_time_zone",
     "UNIX_EPOCH",
     )
+
+#-------------------------------------------------------------------------------
+
+# Set the location of the time zone database.  If ZONEINFO is set in the 
+# environment, use it; otherwise, use our own copy of the database.
+try:
+    set_zoneinfo_dir(os.environ["ZONEINFO"])
+except KeyError:
+    _root = Path(__file__).parent.parent
+    # Are we running from a source tree, or installed?
+    if _root.name == "python":
+        # Running from a source tree.
+        _root = _root.parent
+    else:
+        # Installed.
+        _root = Path(sys.prefix)
+    set_zoneinfo_dir(str(_root / "share" / "zoneinfo"))
+
 
 #-------------------------------------------------------------------------------
 

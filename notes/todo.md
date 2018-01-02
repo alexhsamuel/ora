@@ -1,9 +1,5 @@
 # Work List
 
-1. Zoneinfo dir:
-   - Provide a way to set it programatically.
-   - Provide an accessor.
-   - Default to our own, for macOS for now, at least.
 1. Continuous build/test.
 1. Change formatting.  Instead of %k etc, support:
    - synchronize time format to Python datetime
@@ -11,7 +7,6 @@
    - adjust ISO/RFC predefined format strings
    - add predefines format strings with subsecond accuracy
    - support UTF-8 patterns
-1. Add an explicit format() method that takes time zone, localization.
 1. Revisit type definitions.
    - Benchmark 2**n vs. 10**n types.
    - Add exact us, ns types.

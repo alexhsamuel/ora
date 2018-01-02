@@ -92,11 +92,31 @@ get_system_time_zone =
 ;
 
 doc_t
+get_zoneinfo_dir =
+"Returns the path to the zoneinfo (Olsen) time zone database.\n"
+"\n"
+"@signature\n"
+"  get_zoneinfo_dir()\n"
+"\n"
+;
+
+doc_t
 is_leap_year =
 "Returns true if `year` is a leap year.\n"
 "\n"
 "@signature\n"
 "  is_leap_year(year)\n"
+"\n"
+;
+
+doc_t
+now =
+"Returns the current time.\n"
+"\n"
+"@signature\n"
+"  now(Time=Time)\n"
+"@param Time\n"
+"  The time type to return.\n"
 "\n"
 ;
 
@@ -110,13 +130,11 @@ set_display_time_zone =
 ;
 
 doc_t
-now =
-"Returns the current time.\n"
+set_zoneinfo_dir =
+"Sets the path to the zoneinfo (Olsen) time zone database.\n"
 "\n"
 "@signature\n"
-"  now(Time=Time)\n"
-"@param Time\n"
-"  The time type to return.\n"
+"  set_zoneinfo-dir(path)\n"
 "\n"
 ;
 

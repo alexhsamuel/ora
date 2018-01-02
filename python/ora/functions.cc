@@ -116,6 +116,19 @@ get_system_time_zone(
 
 
 ref<Object>
+get_zoneinfo_dir(
+  Module* /* module */,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* arg_names[] = {nullptr};
+  Arg::ParseTupleAndKeywords(args, kw_args, "", arg_names);
+
+  return Unicode::from(ora::get_zoneinfo_dir());
+}
+
+
+ref<Object>
 is_leap_year(
   Module* /* module */,
   Tuple* const args,
@@ -165,6 +178,21 @@ set_display_time_zone(
 
   auto tz = convert_to_time_zone(tz_arg);
   ora::set_display_time_zone(std::move(tz));
+  return none_ref();
+}
+
+
+ref<Object>
+set_zoneinfo_dir(
+  Module* /* module */,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* arg_names[] = {"path", nullptr};
+  char* path;
+  Arg::ParseTupleAndKeywords(args, kw_args, "s", arg_names, &path);
+
+  ora::set_zoneinfo_dir(path);
   return none_ref();
 }
 
@@ -255,9 +283,11 @@ add_functions(
     .add<from_local>                ("from_local",              docstring::from_local)
     .add<get_display_time_zone>     ("get_display_time_zone",   docstring::get_display_time_zone)
     .add<get_system_time_zone>      ("get_system_time_zone",    docstring::get_system_time_zone)
+    .add<get_zoneinfo_dir>          ("get_zoneinfo_dir",        docstring::get_zoneinfo_dir)
     .add<is_leap_year>              ("is_leap_year",            docstring::is_leap_year)
     .add<now>                       ("now",                     docstring::now)
     .add<set_display_time_zone>     ("set_display_time_zone",   docstring::set_display_time_zone)
+    .add<set_zoneinfo_dir>          ("set_zoneinfo_dir",        docstring::set_zoneinfo_dir)
     .add<to_local>                  ("to_local",                docstring::to_local)
     .add<to_local_datenum_daytick>  ("to_local_datenum_daytick",docstring::to_local_datenum_daytick)
     .add<today>                     ("today",                   docstring::today)

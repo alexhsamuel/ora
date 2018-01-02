@@ -235,6 +235,7 @@ extern fs::Filename
 get_default_zoneinfo_dir()
 {
   char const* const env_val = getenv(ZONEINFO_ENVVAR);
+  // FIXME: Use the included zoneinfo database.  But where is it installed?
   return env_val != nullptr ? fs::Filename(env_val) : ZONEINFO_DIR_DEFAULT;
 }
 
