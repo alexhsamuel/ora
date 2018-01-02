@@ -1,0 +1,22 @@
+language: python
+python:
+  - "3.6"
+
+install: 
+  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 90
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
+  - python setup.py install
+
+script: pytest python
+
+addons:
+    apt:
+        sources:
+            - ubuntu-toolchain-r-test
+        packages:
+            - g++-6
+            - gcc-6
+
+env:
+    CXX=g++-6
+
