@@ -2,6 +2,7 @@ import contextlib
 import enum
 import os
 from   pathlib import Path
+import re
 import sys
 
 from   .ext import *
@@ -231,5 +232,28 @@ def display_time_zone(time_zone):
         yield
     finally:
         set_display_time_zone(old)
+
+
+def get_zoneinfo_version():
+    """
+    Returns the version of the zoneinfo database, if available.
+
+    The version may be stored in a file `+VERSION` in the zoneinfo directory.
+
+    :return:
+      The zoneinfo database version, if available, otherwise `None`.
+    """
+    path = Path(get_zoneinfo_dir()) / "+VERSION"
+    try:
+        with path.open("rt") as file:
+            version = file.readline().strip()
+    except FileNotFoundError:
+        return None
+
+    if re.match("20\d\d[a-z]$", version) is None:
+        raise RuntimeError("unexpected zoneinfo version: {}".format(version))
+    else:
+        return version
+
 
 

@@ -17,6 +17,7 @@ EXTDIR	    	= $(TOP)/external
 SHRDIR	    	= $(TOP)/share
 
 ZONEINFO_DIR 	= $(SHRDIR)/zoneinfo
+ZONEINFO_VERSION= 2017c
 
 #-------------------------------------------------------------------------------
 # C++ configuration
@@ -75,7 +76,9 @@ $(GTEST_LIB):	    $(GTEST_DIR)
 $(ZONEINFO_DIR):
 	rm -rf $@
 	mkdir -p $(dir $@)
-	tar jxf $(EXTDIR)/zoneinfo/zoneinfo-2017c.tar.bz2 -C $(dir $@)
+	tar jxf $(EXTDIR)/zoneinfo/zoneinfo-$(ZONEINFO_VERSION).tar.bz2 \
+	    -C $(dir $@)
+	echo $(ZONEINFO_VERSION) > $@/+VERSION
 
 #-------------------------------------------------------------------------------
 # C++ building and linking
