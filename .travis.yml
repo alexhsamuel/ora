@@ -8,7 +8,7 @@ install:
   - pip install pytest
   - pip install pytz 
   - make share/zoneinfo
-  - python setup.py install
+  - python setup.py install --old-and-unmanageable
 
 script: pytest python
 
