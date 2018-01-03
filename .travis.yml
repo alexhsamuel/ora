@@ -1,6 +1,9 @@
 language: python
 python:
   - "3.6"
+os:
+  - linux
+  - osx
 
 install: 
   - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 90
