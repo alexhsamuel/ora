@@ -16,7 +16,6 @@
 1. Make it `pip install`able.
 1. Build conda package.
 1. Rename `InvalidDateError` -> `BadDateError` _et fils_.
-1. Rename aslib namespace.
 1. timezone etc. namespace cleanup
 1. Basic string parsing for `convert_to_*()` functions.
 1. Full parsing support.
@@ -27,8 +26,6 @@
 1. macOS old tzinfo format.
 1. Benchmark.
 1. Clean up functions_doc and other old-style docstrings.
-1. Basic string parsing for `convert_to_*()` functions.
-1. Full parsing support.
 1. Update docs for nex, namespaces, includes.
 1. C++ constants for months.
 1. Default precision for C++ time, daytime formats (fractional secs?).
