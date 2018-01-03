@@ -7,6 +7,7 @@ install:
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
   - pip install pytest
   - pip install pytz 
+  - make share/zoneinfo
   - python setup.py install
 
 script: pytest python
