@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/alexhsamuel/ora.svg?branch=master)](https://travis-ci.org/alexhsamuel/ora)
+
 # Motivation
 
 Ora is an implementation of dates and times in the Gregorian calendar.  Many
