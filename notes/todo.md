@@ -1,6 +1,5 @@
 # Work List
 
-1. Continuous build/test.
 1. Store zoneinfo version somewhere.
 1. Change formatting.  Instead of %k etc, support:
    - synchronize time format to Python datetime
