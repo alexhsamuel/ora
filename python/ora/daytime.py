@@ -37,6 +37,7 @@ from   .ext import Daytime, Daytime32
 __all__ = (
     "Daytime",
     "Daytime32",
+    "NsDaytime",
 )
 
 #-------------------------------------------------------------------------------

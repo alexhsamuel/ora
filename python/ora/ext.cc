@@ -56,10 +56,12 @@ PyInit_ext(void)
 
     PyDaytime<ora::daytime::Daytime>    ::add_to(mod, "Daytime");
     PyDaytime<ora::daytime::Daytime32>  ::add_to(mod, "Daytime32");
+    PyDaytime<ora::daytime::NsDaytime>  ::add_to(mod, "NsDaytime");
     PyDaytime<ora::daytime::UsecDaytime>::add_to(mod, "UsecDaytime");
 
     PyTime<ora::time::Time>             ::add_to(mod, "Time");
     PyTime<ora::time::SmallTime>        ::add_to(mod, "SmallTime");
+    PyTime<ora::time::NsTime>           ::add_to(mod, "NsTime");
     PyTime<ora::time::NsecTime>         ::add_to(mod, "NsecTime");
     PyTime<ora::time::Unix32Time>       ::add_to(mod, "Unix32Time");
     PyTime<ora::time::Unix64Time>       ::add_to(mod, "Unix64Time");

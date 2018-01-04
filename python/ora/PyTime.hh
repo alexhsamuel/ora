@@ -928,6 +928,7 @@ convert_to_time(
 // FIXME: GCC 5.2.1 generates PyTime<>::type_ in BSS, which breaks linking.
 extern template class PyTime<ora::time::Time>;
 extern template class PyTime<ora::time::SmallTime>;
+extern template class PyTime<ora::time::NsTime>;
 extern template class PyTime<ora::time::NsecTime>;
 extern template class PyTime<ora::time::Unix32Time>;
 extern template class PyTime<ora::time::Unix64Time>;

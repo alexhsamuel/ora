@@ -169,7 +169,7 @@ public:
   is_complete()
   {
     return 
-        (intmax_t) (SECS_PER_DAY * DENOMINATOR)
+        (intmax_t) SECS_PER_DAY * DENOMINATOR
       < (intmax_t) std::numeric_limits<Offset>::max();
   }
 
@@ -246,6 +246,22 @@ extern template class DaytimeTemplate<DaytimeTraits>;
 using Daytime = DaytimeTemplate<DaytimeTraits>;
 static_assert(Daytime::is_complete(), "Daytime is not complete");
 static_assert(Daytime::is_basic_layout(), "wrong memory layout for Daytime");
+
+//------------------------------------------------------------------------------
+
+struct NsDaytimeTraits
+{
+  using Offset = uint64_t;
+
+  static Offset constexpr 
+  denominator 
+    = (Offset) 1000000000;
+};
+
+extern template class DaytimeTemplate<NsDaytimeTraits>;
+using NsDaytime = DaytimeTemplate<NsDaytimeTraits>;
+static_assert(NsDaytime::is_complete(), "NsDaytime is not complete");
+static_assert(NsDaytime::is_basic_layout(), "wrong memory layout for NsDaytime");
 
 //------------------------------------------------------------------------------
 

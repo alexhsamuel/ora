@@ -901,6 +901,7 @@ convert_to_daytime(
 // FIXME: GCC 5.2.1 generates PyDaytime<>::type_ in BSS, which breaks linking.
 extern template class PyDaytime<ora::daytime::Daytime>;
 extern template class PyDaytime<ora::daytime::Daytime32>;
+extern template class PyDaytime<ora::daytime::NsDaytime>;
 extern template class PyDaytime<ora::daytime::UsecDaytime>;
 #endif
 

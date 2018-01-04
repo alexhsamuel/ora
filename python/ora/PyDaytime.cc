@@ -58,6 +58,7 @@ PyDaytimeAPI::apis_;
 
 template class PyDaytime<ora::daytime::Daytime>;
 template class PyDaytime<ora::daytime::Daytime32>;
+template class PyDaytime<ora::daytime::NsDaytime>;
 template class PyDaytime<ora::daytime::UsecDaytime>;
 
 //------------------------------------------------------------------------------
