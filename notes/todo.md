@@ -9,7 +9,9 @@
 1. Revisit type definitions.
    - Benchmark 2**n vs. 10**n types.
    - Add exact us, ns types.
+1. Fix rounding of ora.now(UsecTime).
 1. Cache `Format` instances used by Python.
+1. Remove Time.get_parts().
 1. Fast-track RFC 3339 formatting function.
 1. Relax numpy setup dependency.
 1. Make Time(datetime, tz) work for naive datetime.
