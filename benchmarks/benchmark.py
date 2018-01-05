@@ -76,9 +76,21 @@ def null_fn():
 
 #-------------------------------------------------------------------------------
 
+from ora import Time, SmallTime, NsecTime
+NsTime = getattr(ora, "NsTime", None)
+
+# FIXME: Things to benchmark:
+# - now
+# - to_local
+#   - @
+#   - UTC vs other zones
+# - from_local
+# - conversion among subtypes
+# - convert from one tz to another
+# - format
+# - parse
+
 def benchmark_now():
-    from ora import Time, SmallTime, NsecTime
-    # from ora import NsTime
     yield "null"                , benchmark(lambda: None)
     yield "datetime.utcnow()"   , benchmark(lambda: datetime.utcnow())
     yield "datetime.now()"      , benchmark(lambda: datetime.now())
@@ -86,13 +98,15 @@ def benchmark_now():
     yield "ora.now(Time)"       , benchmark(lambda: ora.now(Time))
     yield "ora.now(SmallTime)"  , benchmark(lambda: ora.now(SmallTime))
     yield "ora.now(NsecTime)"   , benchmark(lambda: ora.now(NsecTime))
-    # yield "ora.now(NsTime)"     , benchmark(lambda: ora.now(NsTime))
+    if NsTime:
+        yield "ora.now(NsTime)" , benchmark(lambda: ora.now(NsTime))
 
 
 
 def summarize(benchmarks):
     for name, elapsed in benchmarks:
         print("{:32s} {:7.3f} µs".format(name, elapsed / 1e-6))
+    print()
 
 
 summarize(benchmark_now())
