@@ -169,13 +169,14 @@ def benchmark_convert_tz():
     tz0 = pytz.timezone("America/New_York")
     tz1 = pytz.timezone("Asia/Tokyo")
     t = datetime.datetime(2018, 1, 5, 21, 17, 56, 123456)
-    yield "pytz convert"            , benchmark(lambda: tz0.localize(t).astimezone(tz1))
+    yield "localize().astimezone()" , benchmark(lambda: tz0.localize(t).astimezone(tz1))
+
 
     from ora import Date, Daytime, Time, TimeZone
     tz0 = TimeZone("America/New_York")
     tz1 = TimeZone("Asia/Tokyo")
     t = Date(2018, 1, 5), Daytime(21, 17, 56.123456)
-    yield "ora convert"             , benchmark(lambda: t @ tz0 @ tz1)
+    yield "t @ tz0 @ tz1"           , benchmark(lambda: t @ tz0 @ tz1)
 
 
 def benchmark_today_local():
