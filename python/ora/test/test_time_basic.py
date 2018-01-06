@@ -44,6 +44,16 @@ def test_init():
     assert l.daytime == Daytime(19, 18, 0)
 
 
+def test_init_first():
+    l = Time(2018, 11, 4, 1, 30, 0, "US/Eastern", True) @ UTC
+    assert l.date == 2018 / Nov / 4
+    assert l.daytime == Daytime(5, 30, 0)
+
+    l = Time(2018, 11, 4, 1, 30, 0, "US/Eastern", False) @ UTC
+    assert l.date == 2018 / Nov / 4
+    assert l.daytime == Daytime(6, 30, 0)
+
+
 def test_zero():
     t = from_local((0, 0), UTC)
     p = t.get_parts(UTC)

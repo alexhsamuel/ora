@@ -342,10 +342,10 @@ PyTime<TIME>::tp_init(
     time = localtime_to_time<Time>(args);
   else if (num_args == 3)
     time = date_daytime_to_time<Time>(args);
-  else if (num_args == 7)
+  else if (num_args == 7 || num_args == 8)
     time = parts_to_time<Time>(args);
   else
-    throw TypeError("function takes 0, 1, 2, 3, or 7 arguments");
+    throw TypeError("function takes 0, 1, 2, 3, 7, or 8 arguments");
 
   new(self) PyTime(time);
 }
@@ -818,7 +818,8 @@ inline TIME
 parts_to_time(
   Sequence* const parts)
 {
-  assert(parts->Length() == 7);
+  auto const length = parts->Length();
+  assert(length == 7 || length == 8);
   auto const year   = parts->GetItem(0)->long_value();
   auto const month  = parts->GetItem(1)->long_value();
   auto const day    = parts->GetItem(2)->long_value();
@@ -826,8 +827,9 @@ parts_to_time(
   auto const minute = parts->GetItem(4)->long_value();
   auto const second = parts->GetItem(5)->double_value();
   auto const tz     = convert_to_time_zone(parts->GetItem(6));
-  return 
-    ora::from_local_parts<TIME>(year, month, day, hour, minute, second, *tz);
+  auto const first  = length == 8 ? parts->GetItem(7)->IsTrue() : true;
+  return ora::from_local_parts<TIME>(
+    year, month, day, hour, minute, second, *tz, first);
 }
 
 

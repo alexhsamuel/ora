@@ -380,6 +380,8 @@ public:
     { return (bool) PyObject_IsInstance(this, type); }
   bool IsInstance(PyTypeObject* type)
     { return IsInstance((PyObject*) type); }
+  bool IsTrue()
+    { return PyObject_IsTrue(this); }
   auto Length()
     { return PyObject_Length(this); }
   auto Repr()
