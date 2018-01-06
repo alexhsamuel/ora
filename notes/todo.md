@@ -1,6 +1,5 @@
 # Work List
 
-1. Better name for from_local_parts(); docstring; unit tests.
 1. Use API in to_datenum(Object*), to_daytick(Object*).
 1. Change formatting.  Instead of %k etc, support:
    - synchronize time format to Python datetime
@@ -18,7 +17,6 @@
 1. Fast-track RFC 3339 formatting function.
 1. Relax numpy setup dependency.
 1. Make Time(datetime, tz) work for naive datetime.
-1. Make it `pip install`able.
 1. Build conda package.
 1. Rename `InvalidDateError` -> `BadDateError` _et fils_.
 1. timezone etc. namespace cleanup
