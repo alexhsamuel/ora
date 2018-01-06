@@ -1,5 +1,6 @@
 # Work List
 
+1. Better name for from_local_parts(); docstring; unit tests.
 1. Change formatting.  Instead of %k etc, support:
    - synchronize time format to Python datetime
    - missing C89 directives: %G, %u, %V

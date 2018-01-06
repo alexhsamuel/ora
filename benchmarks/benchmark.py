@@ -190,12 +190,14 @@ def benchmark_time_literal():
     tz = pytz.timezone("America/New_York")
     yield "tz.localize(datetime())" , benchmark(lambda: tz.localize(datetime(2018, 1, 6, 16, 51, 45, 123456)))
 
-    from ora import Date, Daytime, TimeZone, from_local, Jan
+    from ora import Date, Daytime, TimeZone, from_local, from_local_parts, Jan
     tz = TimeZone("America/New_York")
     yield "(Date(), Daytime()) @ tz", benchmark(lambda: (Date(2018, 1, 6), Daytime(16, 51, 45.123456)) @ tz)
     yield "(Y/M/D, Daytime()) @ tz" , benchmark(lambda: (2018/Jan/6, Daytime(16, 51, 45.123456)) @ tz)
     yield "from_local((Date(), Time()), tz)", benchmark(lambda: from_local((Date(2018, 1, 6), Daytime(16, 51, 45.123456)), tz))
     yield "from_local((Date(), Time()), 'tz')", benchmark(lambda: from_local((Date(2018, 1, 6), Daytime(16, 51, 45.123456)), "America/New_York"))
+    yield "from_local_parts(..., tz)", benchmark(lambda: from_local_parts(2018, 1, 6, 16, 51, 45.123456, tz))
+    yield "from_local_parts(..., 'tz')", benchmark(lambda: from_local_parts(2018, 1, 6, 16, 51, 45.123456, "America/New_York"))
 
 
 def benchmark_convert_tz():
@@ -270,15 +272,15 @@ def summarize(benchmarks):
     print()
 
 
-summarize(benchmark_raw_now())
-summarize(benchmark_utc_now())
-summarize(benchmark_local_now())
-summarize(benchmark_tz_now())
+# summarize(benchmark_raw_now())
+# summarize(benchmark_utc_now())
+# summarize(benchmark_local_now())
+# summarize(benchmark_tz_now())
 summarize(benchmark_time_literal())
-summarize(benchmark_convert_tz())
-summarize(benchmark_today_local())
-summarize(benchmark_time_format())
-summarize(benchmark_time_comparison())
+# summarize(benchmark_convert_tz())
+# summarize(benchmark_today_local())
+# summarize(benchmark_time_format())
+# summarize(benchmark_time_comparison())
 
 
 if False:

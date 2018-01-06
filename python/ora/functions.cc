@@ -90,6 +90,44 @@ from_local(
 
 
 ref<Object>
+from_local_parts(
+  Module* /* module */,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* arg_names[] = {
+    "year", "month", "day", "hour", "minute", "second", "time_zone", 
+    "first", "Time",
+    nullptr
+  };
+  Year      year;
+  Month     month;
+  Day       day;
+  Hour      hour;
+  Minute    minute;
+  Second    second;
+  Object*   tz_arg;
+  int       first = true;
+  Object*   time_type = (Object*) &PyTimeDefault::type_;
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "hBBBBdO|pO", arg_names,
+    &year, &month, &day, &hour, &minute, &second, &tz_arg, &first, &time_type);
+
+  // Make sure the time type is a PyTime instance, and get its virtual API.
+  if (!Type::Check(time_type))
+    throw TypeError("not a type: "s + *time_type->Repr());
+  auto const api = PyTimeAPI::get((PyTypeObject*) time_type);
+  if (api == nullptr)
+    throw TypeError("not a time type: "s + *time_type->Repr());
+
+  auto const datenum    = ora::ymd_to_datenum(year, month, day);
+  auto const daytick    = ora::hms_to_daytick(hour, minute, second);
+  auto const tz         = convert_to_time_zone(tz_arg);
+  return api->from_local_datenum_daytick(datenum, daytick, *tz, first);
+}
+
+
+ref<Object>
 get_display_time_zone(
   Module* /* module */,
   Tuple* const args,
@@ -281,6 +319,7 @@ add_functions(
     .add<days_in_month>             ("days_in_month",           docstring::days_in_month)
     .add<days_in_year>              ("days_in_year",            docstring::days_in_year)
     .add<from_local>                ("from_local",              docstring::from_local)
+    .add<from_local_parts>          ("from_local_parts",        nullptr)
     .add<get_display_time_zone>     ("get_display_time_zone",   docstring::get_display_time_zone)
     .add<get_system_time_zone>      ("get_system_time_zone",    docstring::get_system_time_zone)
     .add<get_zoneinfo_dir>          ("get_zoneinfo_dir",        docstring::get_zoneinfo_dir)
