@@ -51,31 +51,32 @@ class timing:
 
 
 
-def benchmark(fn, *, samples=20, n=5000, quantile=0.05):
+def _benchmark(fn, s, n, *, quantile=0.05):
     # Loop pedestal calculation.
-    elapsed = []
-    for _ in range(samples):
+    samples = []
+    for _ in range(s):
         start = perf_counter()
         for _ in range(n):
             pass
-        elapsed.append(perf_counter() - start)
-    null = np.percentile(elapsed, 100 * quantile, interpolation="nearest")
+        samples.append(perf_counter() - start)
+    pedestal = np.percentile(samples, 100 * quantile, interpolation="nearest")
+
+    logging.debug("pedestal={:.0f} ns".format(pedestal / n / 1e-9))
     
-    elapsed = []
-    for _ in range(samples):
+    samples = []
+    for _ in range(s):
         start = perf_counter()
         for _ in range(n):
             fn()
-        elapsed.append(perf_counter() - start)
+        samples.append(perf_counter() - start)
     
-    elapsed = np.percentile(elapsed, 100 * quantile, interpolation="nearest")
-    elapsed -= null
-    return elapsed / n
+    result = np.percentile(samples, 100 * quantile, interpolation="nearest")
+    return (result - pedestal) / n
 
 
 def benchmark(fn, *, quantile=0.05):
     MIN_SAMPLE_TIME = 1E-3
-    TARGET_TIME = 0.1
+    TARGET_TIME = 0.2
 
     # Estimate parameters.
     for scale in itertools.count():
@@ -87,30 +88,11 @@ def benchmark(fn, *, quantile=0.05):
         if elapsed >= MIN_SAMPLE_TIME:
             break
 
-    s = max(5, int(TARGET_TIME / elapsed))
+    s = max(5, min(100, int(TARGET_TIME / elapsed)))
 
-    # Loop pedestal calculation.
-    samples = []
-    for _ in range(s):
-        start = perf_counter()
-        for _ in range(n):
-            pass
-        samples.append(perf_counter() - start)
-    pedestal = np.percentile(samples, 100 * quantile, interpolation="nearest")
+    logging.debug("calibration: n={} s={}".format(n, s))
 
-    logging.info(
-        "calibration: n={} s={} pedestal={:.0f} ns"
-        .format(n, s, pedestal /n / 1e-9))
-    
-    samples = []
-    for _ in range(s):
-        start = perf_counter()
-        for _ in range(n):
-            fn()
-        samples.append(perf_counter() - start)
-    
-    result = np.percentile(samples, 100 * quantile, interpolation="nearest")
-    return (result - pedestal) / n
+    return _benchmark(fn, s, n, quantile=quantile)
 
 
 def null_fn():
