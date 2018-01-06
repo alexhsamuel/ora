@@ -129,8 +129,11 @@ def benchmark_raw_now():
 
 def benchmark_utc_now():
     import datetime
+    now = datetime.datetime.now
     utcnow = datetime.datetime.utcnow
+    from pytz import UTC
     yield "datetime.utcnow()"       , benchmark(lambda: utcnow())
+    yield "datetime.now(UTC)"       , benchmark(lambda: now(UTC))
 
     from ora import now, Time, SmallTime, NsecTime, UTC, to_local
     yield "ora.now() @ UTC"         , benchmark(lambda: now() @ UTC)
@@ -215,6 +218,21 @@ def benchmark_today_local():
     yield "ora.today('display', Date16)", benchmark(lambda: today("display", Date16))
 
 
+def benchmark_format():
+    py_fmt = "%Y-%m-%d %H:%M:%S"
+
+    import datetime
+    t = datetime.datetime.utcnow()
+    yield "str(datetime)"           , benchmark(lambda: str(t))
+    yield "format(datetime, py_fmt)", benchmark(lambda: format(t, "%Y-%m-%d %H:%M:%S.%f"))
+    yield "format(datetime, rfc)"   , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%S.%fZ"))
+
+    import ora
+    t = ora.now()
+    yield "str(Time)"               , benchmark(lambda: str(t))
+    yield "format(Time, py_fmt)"    , benchmark(lambda: format(t, "%Y-%m-%d %H:%M:%.6S"))
+    yield "format(Time, rfc)"       , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%.6SZ"))
+
 
 def summarize(benchmarks):
     for name, elapsed in benchmarks:
@@ -228,6 +246,7 @@ summarize(benchmark_local_now())
 summarize(benchmark_tz_now())
 summarize(benchmark_convert_tz())
 summarize(benchmark_today_local())
+summarize(benchmark_format())
 
 
 if False:
