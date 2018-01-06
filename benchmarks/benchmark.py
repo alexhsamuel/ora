@@ -186,12 +186,17 @@ def benchmark_tz_now():
 
 def benchmark_time_literal():
     from datetime import datetime
+    yield "datetime(...)"           , benchmark(lambda: datetime(2018, 1, 6, 16, 51, 45, 123456))
+
     import pytz
     tz = pytz.timezone("America/New_York")
-    yield "datetime(...)"           , benchmark(lambda: datetime(2018, 1, 6, 16, 51, 45, 123456))
     yield "tz.localize(datetime(...))", benchmark(lambda: tz.localize(datetime(2018, 1, 6, 16, 51, 45, 123456)))
 
-    from ora import Date, Daytime, Time, TimeZone, from_local, from_local_parts, Jan
+    import dateutil.tz
+    tz = dateutil.tz.gettz("America/New_York")
+    yield "datetime(..., tz)", benchmark(lambda: datetime(2018, 1, 6, 16, 51, 45, 123456, tz))
+
+    from ora import Date, Daytime, Time, TimeZone, from_local, Jan
     tz = TimeZone("America/New_York")
     yield "(Date(...), Daytime(...)) @ tz", benchmark(lambda: (Date(2018, 1, 6), Daytime(16, 51, 45.123456)) @ tz)
     yield "(Y/M/D, Daytime(...)) @ tz", benchmark(lambda: (2018/Jan/6, Daytime(16, 51, 45.123456)) @ tz)
@@ -209,15 +214,26 @@ def benchmark_convert_tz():
     t = datetime.datetime(2018, 1, 5, 21, 17, 56, 123456)
     yield "localize().astimezone()" , benchmark(lambda: tz0.localize(t).astimezone(tz1))
 
-    from ora import Date, Daytime, NsDaytime, Time, TimeZone, to_local, from_local
+    import dateutil.tz
+    tz0 = dateutil.tz.gettz("America/New_York")
+    tz1 = dateutil.tz.gettz("Asia/Tokyo")
+    t = datetime.datetime(2018, 1, 5, 21, 17, 56, 123456)
+    yield "replace(tzinfo).astimezone()", benchmark(lambda: t.replace(tzinfo=tz0).astimezone(tz1))
+
+    t = datetime.datetime(2018, 1, 5, 21, 17, 56, 123456, tz0)
+    yield "t.astimezone()"          , benchmark(lambda: t.astimezone(tz1))
+
+    from ora import Date, Daytime, Time, TimeZone, to_local, from_local
     tz0 = TimeZone("America/New_York")
     tz1 = TimeZone("Asia/Tokyo")
     t = Date(2018, 1, 5), Daytime(21, 17, 56.123456)
     yield "t @ tz0 @ tz1"            , benchmark(lambda: t @ tz0 @ tz1)
     yield "to_local(from_local(t, tz0), tz1)", benchmark(lambda: to_local(from_local(t, tz0), tz1))
-    t = Date(2018, 1, 5), NsDaytime(21, 17, 56.123456)
-    yield "t @ tz0 @ tz1 [NsDaytime]", benchmark(lambda: t @ tz0 @ tz1)
-    yield "to_local(from_local(t, tz0), tz1)", benchmark(lambda: to_local(from_local(t, tz0), tz1))
+    with suppress(ImportError):
+        from ora import NsDaytime
+        t = Date(2018, 1, 5), NsDaytime(21, 17, 56.123456)
+        yield "t @ tz0 @ tz1 [NsDaytime]", benchmark(lambda: t @ tz0 @ tz1)
+        yield "to_local(from_local(t, tz0), tz1)", benchmark(lambda: to_local(from_local(t, tz0), tz1))
 
 
 def benchmark_today_local():
@@ -278,7 +294,7 @@ def summarize(benchmarks):
 # summarize(benchmark_local_now())
 # summarize(benchmark_tz_now())
 summarize(benchmark_time_literal())
-# summarize(benchmark_convert_tz())
+summarize(benchmark_convert_tz())
 # summarize(benchmark_today_local())
 # summarize(benchmark_time_format())
 # summarize(benchmark_time_comparison())
