@@ -95,10 +95,6 @@ def benchmark(fn, *, quantile=0.05):
     return _benchmark(fn, s, n, quantile=quantile)
 
 
-def null_fn():
-    pass
-
-
 #-------------------------------------------------------------------------------
 
 from ora import Time, SmallTime, NsecTime
