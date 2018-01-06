@@ -177,7 +177,7 @@ def benchmark_tz_now():
     yield "to_local(ora.now(), z)"  , benchmark(lambda: to_local(now(), z))
     yield "ora.now(Time) @ z"       , benchmark(lambda: now(Time) @ z)
     yield "ora.now(SmallTime) @ z"  , benchmark(lambda: now(SmallTime) @ z)
-    yield "ora.now(NsecTIme) @ z"   , benchmark(lambda: now(NsecTime) @ z)
+    yield "ora.now(NsecTime) @ z"   , benchmark(lambda: now(NsecTime) @ z)
 
     with suppress(ImportError):
         from ora import NsTime
