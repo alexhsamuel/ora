@@ -1,9 +1,7 @@
-from   datetime import datetime
 from   time import perf_counter
 import itertools
 import logging
 import numpy as np
-import ora
 import pytz
 
 logging.basicConfig(level=logging.INFO)
@@ -53,11 +51,12 @@ class timing:
 
 def _benchmark(fn, s, n, *, quantile=0.05):
     # Loop pedestal calculation.
+    null = lambda: None
     samples = []
     for _ in range(s):
         start = perf_counter()
         for _ in range(n):
-            pass
+            null()
         samples.append(perf_counter() - start)
     pedestal = np.percentile(samples, 100 * quantile, interpolation="nearest")
 
@@ -97,9 +96,6 @@ def benchmark(fn, *, quantile=0.05):
 
 #-------------------------------------------------------------------------------
 
-from ora import Time, SmallTime, NsecTime
-NsTime = getattr(ora, "NsTime", None)
-
 # FIXME: Things to benchmark:
 # - now
 # - to_local
@@ -111,17 +107,86 @@ NsTime = getattr(ora, "NsTime", None)
 # - format
 # - parse
 
-def benchmark_now():
-    yield "null"                , benchmark(lambda: None)
-    yield "datetime.utcnow()"   , benchmark(lambda: datetime.utcnow())
-    yield "datetime.now()"      , benchmark(lambda: datetime.now())
-    yield "ora.now()"           , benchmark(lambda: ora.now())
-    yield "ora.now(Time)"       , benchmark(lambda: ora.now(Time))
-    yield "ora.now(SmallTime)"  , benchmark(lambda: ora.now(SmallTime))
-    yield "ora.now(NsecTime)"   , benchmark(lambda: ora.now(NsecTime))
-    if NsTime:
-        yield "ora.now(NsTime)" , benchmark(lambda: ora.now(NsTime))
+def benchmark_raw_now():
+    import datetime
+    utcnow = datetime.datetime.utcnow
+    yield "datetime.utcnow()"       , benchmark(lambda: utcnow())
 
+    from ora import now, Time, SmallTime, NsecTime
+    yield "ora.now()"               , benchmark(lambda: now())
+    yield "ora.now(Time)"           , benchmark(lambda: now(Time))
+    yield "ora.now(SmallTime)"      , benchmark(lambda: now(SmallTime))
+    yield "ora.now(NsecTime)"       , benchmark(lambda: now(NsecTime))
+
+    import ora
+    NsTime = getattr(ora, "NsTime", None)
+    if NsTime:
+        yield "ora.now(NsTime)"     , benchmark(lambda: now(NsTime))
+
+
+def benchmark_utc_now():
+    import datetime
+    utcnow = datetime.datetime.utcnow
+    yield "datetime.utcnow()"       , benchmark(lambda: utcnow())
+
+    from ora import now, Time, SmallTime, NsecTime, UTC
+    yield "ora.now() @ UTC"         , benchmark(lambda: now() @ UTC)
+    yield "ora.now(Time) @ UTC"     , benchmark(lambda: now(Time) @ UTC)
+    yield "ora.now(SmallTime) @ UTC", benchmark(lambda: now(SmallTime) @ UTC)
+    yield "ora.now(NsecTIme) @ UTC" , benchmark(lambda: now(NsecTime) @ UTC)
+
+
+def benchmark_local_now():
+    import datetime
+    now = datetime.datetime.now
+    yield "datetime.now()"          , benchmark(lambda: now())
+
+    from ora import now, Time, SmallTime, NsecTime, get_display_time_zone
+    z = get_display_time_zone()
+    yield "ora.now() @ z"           , benchmark(lambda: now() @ z)
+    yield "ora.now(Time) @ z"       , benchmark(lambda: now(Time) @ z)
+    yield "ora.now(SmallTime) @ z"  , benchmark(lambda: now(SmallTime) @ z)
+    yield "ora.now(NsecTIme) @ z"   , benchmark(lambda: now(NsecTime) @ z)
+
+
+def benchmark_tz_now():
+    import datetime
+    now = datetime.datetime.now
+    z = pytz.timezone("America/New_York")
+    yield "datetime.now(z)"         , benchmark(lambda: now(z))
+
+    from ora import now, Time, SmallTime, NsecTime, TimeZone
+    z = TimeZone("America/New_York")
+    yield "ora.now() @ z"           , benchmark(lambda: now() @ z)
+    yield "ora.now(Time) @ z"       , benchmark(lambda: now(Time) @ z)
+    yield "ora.now(SmallTime) @ z"  , benchmark(lambda: now(SmallTime) @ z)
+    yield "ora.now(NsecTIme) @ z"   , benchmark(lambda: now(NsecTime) @ z)
+
+
+def benchmark_convert_tz():
+    import datetime
+    import pytz
+    tz0 = pytz.timezone("America/New_York")
+    tz1 = pytz.timezone("Asia/Tokyo")
+    t = datetime.datetime(2018, 1, 5, 21, 17, 56, 123456)
+    yield "pytz convert"            , benchmark(lambda: tz0.localize(t).astimezone(tz1))
+
+    from ora import Date, Daytime, Time, TimeZone
+    tz0 = TimeZone("America/New_York")
+    tz1 = TimeZone("Asia/Tokyo")
+    t = Date(2018, 1, 5), Daytime(21, 17, 56.123456)
+    yield "ora convert"             , benchmark(lambda: t @ tz0 @ tz1)
+
+
+def benchmark_today_local():
+    import datetime
+    today = datetime.date.today
+    yield "date.today()"            , benchmark(lambda: today())
+
+    from ora import today, get_display_time_zone
+    z = get_display_time_zone()
+    yield "ora.today(z)"            , benchmark(lambda: today(z))
+    yield "ora.today('display')"    , benchmark(lambda: today("display"))
 
 
 def summarize(benchmarks):
@@ -130,7 +195,12 @@ def summarize(benchmarks):
     print()
 
 
-summarize(benchmark_now())
+summarize(benchmark_raw_now())
+summarize(benchmark_utc_now())
+summarize(benchmark_local_now())
+summarize(benchmark_tz_now())
+summarize(benchmark_convert_tz())
+summarize(benchmark_today_local())
 
 
 if False:
