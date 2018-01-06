@@ -218,9 +218,7 @@ def benchmark_today_local():
     yield "ora.today('display', Date16)", benchmark(lambda: today("display", Date16))
 
 
-def benchmark_format():
-    py_fmt = "%Y-%m-%d %H:%M:%S"
-
+def benchmark_time_format():
     import datetime
     t = datetime.datetime.utcnow()
     yield "str(datetime)"           , benchmark(lambda: str(t))
@@ -232,6 +230,24 @@ def benchmark_format():
     yield "str(Time)"               , benchmark(lambda: str(t))
     yield "format(Time, py_fmt)"    , benchmark(lambda: format(t, "%Y-%m-%d %H:%M:%.6S"))
     yield "format(Time, rfc)"       , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%.6SZ"))
+
+
+def benchmark_time_comparison():
+    import datetime
+    t0 = datetime.datetime.utcnow()
+    t1 = datetime.datetime.utcnow()
+    yield "datetime =="             , benchmark(lambda: t0 == t1)
+    yield "datetime !="             , benchmark(lambda: t0 != t1)
+    yield "datetime <"              , benchmark(lambda: t0 <  t1)
+    yield "datetime <="             , benchmark(lambda: t0 <= t1)
+
+    import ora
+    t0 = ora.now()
+    t1 = ora.now()
+    yield "Time =="                 , benchmark(lambda: t0 == t1)
+    yield "Time !="                 , benchmark(lambda: t0 != t1)
+    yield "Time < "                 , benchmark(lambda: t0 <  t1)
+    yield "Time <="                 , benchmark(lambda: t0 <= t1)
 
 
 def summarize(benchmarks):
@@ -246,7 +262,8 @@ summarize(benchmark_local_now())
 summarize(benchmark_tz_now())
 summarize(benchmark_convert_tz())
 summarize(benchmark_today_local())
-summarize(benchmark_format())
+summarize(benchmark_time_format())
+summarize(benchmark_time_comparison())
 
 
 if False:
