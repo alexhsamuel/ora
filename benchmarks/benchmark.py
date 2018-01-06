@@ -102,6 +102,7 @@ def benchmark(fn, *, quantile=0.05):
 #   - @
 #   - UTC vs other zones
 # - from_local
+# - to/from epoch s, ns
 # - conversion among subtypes
 # - convert from one tz to another
 # - format
