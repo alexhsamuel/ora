@@ -110,6 +110,9 @@ def benchmark(fn, *, quantile=0.05):
 # - parse
 
 def benchmark_raw_now():
+    from time import time
+    yield "time.time()"             , benchmark(lambda: time())
+
     import datetime
     utcnow = datetime.datetime.utcnow
     yield "datetime.utcnow()"       , benchmark(lambda: utcnow())
