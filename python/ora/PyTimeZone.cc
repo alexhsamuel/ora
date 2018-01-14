@@ -94,11 +94,13 @@ convert_to_time_zone(
     return tz;
 
   // If it's a string, interpret it as a time zone name.
+  // FIXME: It might be worth speeding this up further by maintaining a mapping
+  // from interned str objects to time zones?
   if (Unicode::Check(obj)) {
-    auto const tz_name = cast<Unicode>(obj)->as_utf8_string();
-    if (tz_name == "display")
+    auto const tz_name = cast<Unicode>(obj)->as_utf8();
+    if (strcmp(tz_name, "display") == 0)
       return ora::get_display_time_zone();
-    else if (tz_name == "system")
+    else if (strcmp(tz_name, "system") == 0)
       return ora::get_system_time_zone();
     else
       try {
