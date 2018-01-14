@@ -173,6 +173,30 @@ to_local(
 }
 
 
+template<class DATE=date::Date, class TIME>
+inline DATE
+to_local_date(
+  TIME const time,
+  TimeZone const& tz)
+{
+  if (time.is_valid()) {
+    auto const ldd = to_local_datenum_daytick(time, tz);
+    return date::from_datenum<DATE>(ldd.datenum);
+  }
+  else
+    return {};  // invalid
+}
+
+
+template<class DATE=date::Date>
+inline DATE
+today(
+  TimeZone const& tz)
+{
+  return to_local_date(time::now(), tz);
+}
+
+
 // Variants that take a time zone name  ----------------------------------------
 
 template<class TIME=time::Time, class DATE, class DAYTIME>
@@ -222,6 +246,25 @@ to_local(
   std::string const& time_zone_name)
 {
   return to_local(time, *get_time_zone(time_zone_name));
+}
+
+
+template<class DATE=date::Date, class TIME>
+inline DATE
+to_local_date(
+  TIME const time,
+  std::string const& time_zone_name)
+{
+  return to_local_date(time, *get_time_zone(time_zone_name));
+}
+
+
+template<class DATE=date::Date>
+inline DATE
+today(
+  std::string const& time_zone_name)
+{
+  return today(*get_time_zone(time_zone_name));
 }
 
 

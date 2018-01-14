@@ -23,3 +23,9 @@ TEST(Time, basic) {
   EXPECT_EQ(from_hms(5, 15), tokyo.daytime);
 }
 
+TEST(Date, today) {
+  auto const tz = get_time_zone("America/New_York");
+  auto const time = ora::time::now();
+  auto const date = ora::today(*tz);
+  EXPECT_EQ(to_local(time, *tz).date, date);
+}
