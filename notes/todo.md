@@ -7,10 +7,9 @@
    - add predefines format strings with subsecond accuracy
    - support UTF-8 patterns
 1. Revisit type definitions.
-   - Benchmark 2**n vs. 10**n types.
+   - Benchmark 2^n vs. 10^n types.
    - Add exact us, ns types.
 1. Benchmark tick computations.
-1. Benchmark parsing and formatting.
 1. Fix rounding of ora.now(UsecTime).
 1. Remove Time.get_parts().
 1. Fast-track RFC 3339 formatting function.
