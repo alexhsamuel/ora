@@ -105,7 +105,6 @@ def benchmark(fn, *, quantile=0.05):
 # - to/from epoch s, ns
 # - conversion among subtypes
 # - convert from one tz to another
-# - format
 # - parse
 
 def benchmark_raw_now():
@@ -263,6 +262,26 @@ def benchmark_time_format():
     yield "str(Time)"               , benchmark(lambda: str(t))
     yield "format(Time, py_fmt)"    , benchmark(lambda: format(t, "%Y-%m-%d %H:%M:%.6S"))
     yield "format(Time, rfc)"       , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%.6SZ"))
+    yield "format(Time, dstrfc)"    , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%.6SZ@"))
+    yield "format(Time, tzrfc)"     , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%.6SZ@America/New_York"))
+    yield "format(Time, utcrfc)"    , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%.6SZ@UTC"))
+    yield "Time.format(rfc)"        , benchmark(lambda: t.format("%Y-%m-%d"))
+    yield "Time.format(rfc, tzname)", benchmark(lambda: t.format("%Y-%m-%d", "America/New_York"))
+    z = ora.TimeZone("America/New_York")
+    yield "Time.format(rfc, z)"     , benchmark(lambda: t.format("%Y-%m-%d", z))
+
+
+def benchmark_date_format():
+    import datetime
+    d = datetime.date(2018, 1, 14)
+    yield "str(date)"               , benchmark(lambda: str(d))
+    yield "format(date, fmt)"       , benchmark(lambda: format(d, "%Y-%m-%d"))
+
+    import ora
+    d = ora.Date(2018, 1, 14)
+    yield "str(Date)"               , benchmark(lambda: str(d))
+    yield "format(Date, fmt)"       , benchmark(lambda: format(d, "%Y-%m-%d"))
+    yield "format(Date, tzfmt)"     , benchmark(lambda: format(d, "%Y-%m-%d@America/New_York"))
 
 
 def benchmark_time_comparison():
@@ -289,14 +308,15 @@ def summarize(benchmarks):
     print()
 
 
-summarize(benchmark_raw_now())
-summarize(benchmark_utc_now())
-summarize(benchmark_local_now())
-summarize(benchmark_tz_now())
-summarize(benchmark_time_literal())
+# summarize(benchmark_raw_now())
+# summarize(benchmark_utc_now())
+# summarize(benchmark_local_now())
+# summarize(benchmark_tz_now())
+# summarize(benchmark_time_literal())
 # summarize(benchmark_convert_tz())
 # summarize(benchmark_today_local())
-# summarize(benchmark_time_format())
+summarize(benchmark_time_format())
+summarize(benchmark_date_format())
 # summarize(benchmark_time_comparison())
 
 
