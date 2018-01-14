@@ -107,7 +107,7 @@ public:
   virtual bool                      is_invalid(Object* time) const = 0;
   virtual bool                      is_missing(Object* time) const = 0;
   virtual ref<Object>               now() const = 0;
-  virtual ora::LocalDatenumDaytick to_local_datenum_daytick(Object* time, ora::TimeZone const& tz) const = 0;
+  virtual ora::LocalDatenumDaytick  to_local_datenum_daytick(Object* time, ora::TimeZone const& tz) const = 0;
 
 private:
 
