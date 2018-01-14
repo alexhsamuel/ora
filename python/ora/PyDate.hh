@@ -108,7 +108,7 @@ public:
     { return get(obj->ob_type); }
 
   // API methods.
-  virtual ora::Datenum             get_datenum(Object* date) const = 0;
+  virtual ora::Datenum              get_datenum(Object* date) const = 0;
   virtual ref<Object>               from_datenum(ora::Datenum) const = 0;
   virtual bool                      is_invalid(Object* time) const = 0;
   virtual bool                      is_missing(Object* time) const = 0;
