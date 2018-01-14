@@ -1,6 +1,6 @@
 # Work List
 
-1. Use API in to_datenum(Object*), to_daytick(Object*).
+1. Add a C++ today(), use it in Python today().
 1. Change formatting.  Instead of %k etc, support:
    - synchronize time format to Python datetime
    - missing C89 directives: %G, %u, %V

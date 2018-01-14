@@ -49,6 +49,11 @@ make_hms_daytime(
 
 
 //------------------------------------------------------------------------------
+
+std::unordered_map<PyTypeObject*, std::unique_ptr<PyDaytimeAPI>>
+PyDaytimeAPI::apis_;
+
+//------------------------------------------------------------------------------
 // Explicit template instances
 
 template class PyDaytime<ora::daytime::Daytime>;

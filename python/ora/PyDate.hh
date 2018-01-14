@@ -983,6 +983,11 @@ make_date(
   ora::Datenum const datenum,
   PyTypeObject* type=&PyDateDefault::type_)
 {
+  // Special case fast path for the default date type.
+  if (type == &PyDateDefault::type_)
+    return PyDateDefault::create(
+      ora::date::from_datenum<PyDateDefault::Date>(datenum));
+
   auto const api = PyDateAPI::get(type);
   if (api == nullptr)
     throw TypeError("not a date type: "s + *(((Object*) type)->Repr()));

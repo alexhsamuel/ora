@@ -140,3 +140,27 @@ def test_std():
         Date.MISSING.std
 
 
+def test_today():
+    d0 = today(UTC)
+    t0 = now()
+    assert isinstance(d0, Date)
+    assert d0 == (t0 @ UTC).date
+
+    d1 = today(UTC, Date16)
+    t1 = now()
+    assert isinstance(d1, Date16)
+    assert d1 == (t1 @ UTC).date
+
+    z = TimeZone("America/New_York")
+    d2 = today(z)
+    t2 = now()
+    assert d2 == (t2 @ z).date
+
+
+def test_today_invalid():
+    with pytest.raises(TypeError):
+        today(UTC, datetime.date)
+    with pytest.raises(TypeError):
+        today(UTC, 42)
+
+

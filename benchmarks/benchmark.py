@@ -308,15 +308,15 @@ def summarize(benchmarks):
     print()
 
 
-# summarize(benchmark_raw_now())
-# summarize(benchmark_utc_now())
-# summarize(benchmark_local_now())
-# summarize(benchmark_tz_now())
-# summarize(benchmark_time_literal())
+summarize(benchmark_raw_now())
+summarize(benchmark_utc_now())
+summarize(benchmark_local_now())
+summarize(benchmark_tz_now())
+summarize(benchmark_time_literal())
 # summarize(benchmark_convert_tz())
 # summarize(benchmark_today_local())
-summarize(benchmark_time_format())
-summarize(benchmark_date_format())
+# summarize(benchmark_time_format())
+# summarize(benchmark_date_format())
 # summarize(benchmark_time_comparison())
 
 

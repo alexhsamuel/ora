@@ -4,6 +4,7 @@
 #include <cmath>
 #include <experimental/optional>
 #include <iostream>
+#include <unordered_map>
 
 #include <Python.h>
 #include <datetime.h>
@@ -51,6 +52,49 @@ template<class DAYTIME> DAYTIME convert_to_daytime(Object*);
  * Helper for converting a 2- or 3-eleme4nt sequence of daytime parts.
  */
 template<class DAYTIME> inline DAYTIME parts_to_daytime(Sequence*);
+
+//------------------------------------------------------------------------------
+// Virtual API
+//------------------------------------------------------------------------------
+
+/*
+ * Provides an PI with dynamic dispatch to PyDaytime objects.
+ */
+class PyDaytimeAPI
+{
+public:
+
+  /*
+   * Registers a virtual API for a Python type.
+   */
+  static void add(PyTypeObject* const type, std::unique_ptr<PyDaytimeAPI>&& api)
+    { apis_.emplace(type, std::move(api)); }
+
+  /*
+   * Returns the API for a Python object, or nullptr if it isn't a PyDate.
+   */
+  static PyDaytimeAPI const*
+  get(
+    PyTypeObject* const type)
+  {
+    auto api = apis_.find(type);
+    return api == apis_.end() ? nullptr : api->second.get();
+  }
+
+  static PyDaytimeAPI const* get(PyObject* const obj)
+    { return get(obj->ob_type); }
+
+  // API methods.
+  virtual ora::Daytick              get_daytick(Object* daytime) const = 0;
+  virtual ref<Object>               from_daytick(ora::Daytick) const = 0;
+  virtual bool                      is_invalid(Object* daytime) const = 0;
+  virtual bool                      is_missing(Object* daytime) const = 0;
+
+private:
+
+  static std::unordered_map<PyTypeObject*, std::unique_ptr<PyDaytimeAPI>> apis_;
+
+};
 
 //------------------------------------------------------------------------------
 // Docstrings
@@ -117,6 +161,22 @@ public:
 
 private:
 
+  class API
+  : public PyDaytimeAPI
+  {
+  public:
+
+    virtual ora::Daytick get_daytick(Object* const daytime) const
+      { return ((PyDaytime*) daytime)->daytime_.get_daytick(); }
+    virtual ref<Object> from_daytick(ora::Daytick const daytick) const
+      { return PyDaytime::create(ora::daytime::from_daytick<Daytime>(daytick)); }
+    virtual bool is_invalid(Object* const daytime) const
+      { return ((PyDaytime*) daytime)->daytime_.is_invalid(); }
+    virtual bool is_missing(Object* const daytime) const
+      { return ((PyDaytime*) daytime)->daytime_.is_missing(); }
+
+  };
+
   static void tp_init(PyDaytime* self, Tuple* args, Dict* kw_args);
   static void tp_dealloc(PyDaytime* self);
   static ref<Unicode> tp_repr(PyDaytime* self);
@@ -171,8 +231,7 @@ PyDaytime<DAYTIME>::add_to(
   type_.Ready();
 
   // Set up the API.
-  // FIXME
-  // PyDaytimeAPI::add(&type_, std::make_unique<API>());
+  PyDaytimeAPI::add(&type_, std::make_unique<API>());
 
   // Choose precision for seconds that captures actual precision of the daytime
   // class (up to 1 fs).
@@ -744,9 +803,12 @@ make_daytime(
   if (type == &PyDaytimeDefault::type_)
     return PyDaytimeDefault::create(
       ora::daytime::from_daytick<PyDaytimeDefault::Daytime>(daytick));
+
+  auto const api = PyDaytimeAPI::get(type);
+  if (api == nullptr)
+    throw TypeError("not a daytime type: "s + *(((Object*) type)->Repr()));
   else
-    return 
-      ((Object*) type)->CallMethodObjArgs("from_daytick", Long::from(daytick));
+    return api->from_daytick(daytick);
 }
 
 

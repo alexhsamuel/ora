@@ -53,7 +53,10 @@ to_datenum(
   if (datenum_val && ora::datenum_is_valid(*datenum_val))
     return *datenum_val;
 
-  // FIXME: Use API, or convert to date and then.
+  // If it's a Date object, use its API.
+  auto const api = PyDateAPI::get(obj);
+  if (api != nullptr)
+    return api->get_datenum(obj);
 
   // Look for a datenum attribute or property.
   auto datenum_attr = obj->maybe_get_attr("datenum");
@@ -80,7 +83,10 @@ to_daytick(
   if (ssm_val && ora::ssm_is_valid(*ssm_val))
     return ora::ssm_to_daytick(*ssm_val);
 
-  // FIXME: Use API, or convert to daytime and then.
+  // If it's a Daytime object, use its API.
+  auto const api = PyDaytimeAPI::get(obj);
+  if (api != nullptr)
+    return api->get_daytick(obj);
 
   // Otherwise, look for a daytick attribute or property.
   auto daytick = obj->maybe_get_attr("daytick");

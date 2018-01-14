@@ -180,3 +180,23 @@ def test_std():
     assert time.tzinfo.utcoffset(time) == datetime.timedelta(0)
 
 
+def test_now():
+    t0 = now()
+    assert isinstance(t0, ora.Time)
+
+    t1 = now(ora.NsecTime)
+    assert isinstance(t1, ora.NsecTime)
+    assert t1 - t0 < 1
+
+    t2 = now(ora.SmallTime)
+    assert isinstance(t2, ora.SmallTime)
+    assert t2 - t0 < 1
+
+
+def test_now_invalid():
+    with pytest.raises(TypeError):
+        now(datetime.time)
+    with pytest.raises(TypeError):
+        now(int)
+
+

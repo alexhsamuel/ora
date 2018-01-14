@@ -5,6 +5,7 @@
 #include "ora.hh"
 #include "functions_doc.hh"
 #include "py.hh"
+#include "PyDate.hh"
 #include "PyTime.hh"
 #include "util.hh"
 
@@ -156,6 +157,8 @@ now(
 {
   static char const* arg_names[] = {"Time", nullptr};
   PyTypeObject* time_type = &PyTimeDefault::type_;
+  // A bit hacky, but we don't check that time_type is a type object because
+  // PyTimeAPI won't accept anything else.
   Arg::ParseTupleAndKeywords(args, kw_args, "|O", arg_names, &time_type);
 
   auto const api = PyTimeAPI::get(time_type);
@@ -259,13 +262,13 @@ today(
   Object* tz;
   Object* date_type = (Object*) &PyDateDefault::type_;
   static char const* const arg_names[] = {"time_zone", "Date", nullptr};
-  Arg::ParseTupleAndKeywords(args, kw_args, "O|O", arg_names, &tz, &date_type);
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "O|O!", arg_names, 
+    &tz, &PyType_Type, &date_type);
 
   auto local = ora::time::to_local_datenum_daytick(
     ora::time::now<ora::time::Time>(), *convert_to_time_zone(tz));
-  // FIXME: Use API.
-  return date_type
-    ->CallMethodObjArgs("from_datenum", Long::from(local.datenum));
+  return make_date(local.datenum, (PyTypeObject*) date_type);
 }
 
 
