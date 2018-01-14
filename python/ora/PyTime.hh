@@ -103,7 +103,7 @@ public:
   // API methods.
   virtual ref<Object>               from_local_datenum_daytick(ora::Datenum, ora::Daytick, ora::TimeZone const&, bool) const = 0; 
   virtual int64_t                   get_epoch_time(Object* time) const = 0;
-  virtual ora::time::Time128       get_time128(Object* time) const = 0;
+  virtual ora::time::Time128        get_time128(Object* time) const = 0;
   virtual bool                      is_invalid(Object* time) const = 0;
   virtual bool                      is_missing(Object* time) const = 0;
   virtual ref<Object>               now() const = 0;
