@@ -148,7 +148,6 @@ is_leap_year(
 }
 
 
-
 ref<Object>
 now(
   Module* /* module */,
@@ -164,8 +163,8 @@ now(
   auto const api = PyTimeAPI::get(time_type);
   if (api == nullptr)
     throw TypeError("not a time type");
-
-  return api->now();
+  else
+    return api->now();
 }
 
 
@@ -259,16 +258,20 @@ today(
   Tuple* const args,
   Dict* const kw_args)
 {
-  Object* tz;
-  Object* date_type = (Object*) &PyDateDefault::type_;
   static char const* const arg_names[] = {"time_zone", "Date", nullptr};
+  Object* tz;
+  PyTypeObject* date_type = &PyDateDefault::type_;
+  // A bit hacky, but we don't check that date_type is a type object because
+  // PyDateAPI won't accept anything else.
   Arg::ParseTupleAndKeywords(
     args, kw_args, "O|O!", arg_names, 
     &tz, &PyType_Type, &date_type);
 
-  auto local = ora::time::to_local_datenum_daytick(
-    ora::time::now<ora::time::Time>(), *convert_to_time_zone(tz));
-  return make_date(local.datenum, (PyTypeObject*) date_type);
+  auto api = PyDateAPI::get(date_type);
+  if (api == nullptr)
+    throw TypeError("not a date type");
+  else
+    return api->today(*convert_to_time_zone(tz));
 }
 
 

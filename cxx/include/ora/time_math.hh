@@ -117,6 +117,24 @@ now_timespec()
 
 
 /*
+ * Returns the local current datenum.
+ */
+inline Datenum
+today_datenum(
+  TimeZone const& time_zone)
+{
+  // Get the current time.
+  int64_t const epoch_sec = now_timespec().tv_sec;
+  // Look up the time zone offset for this time.
+  auto const tz_offset = time_zone.get_parts(epoch_sec).offset;
+  // Convert to daytick.
+  return 
+    DATENUM_UNIX_EPOCH 
+    + sgndiv<long>(epoch_sec + tz_offset, SECS_PER_DAY).quot;
+}
+
+
+/*
  * Splits a time into localized date and daytime parts.
  *
  * For <time> in <time_zone>, returns the local datenum, the residual daytime

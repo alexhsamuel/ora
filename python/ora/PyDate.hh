@@ -112,6 +112,7 @@ public:
   virtual ref<Object>               from_datenum(ora::Datenum) const = 0;
   virtual bool                      is_invalid(Object* time) const = 0;
   virtual bool                      is_missing(Object* time) const = 0;
+  virtual ref<Object>               today(ora::TimeZone const& tz) const = 0;
 
 private:
 
@@ -206,6 +207,8 @@ private:
       { return ((PyDate*) date)->date_.is_invalid(); }
     virtual bool is_missing(Object* const date) const
       { return ((PyDate*) date)->date_.is_missing(); }
+    virtual ref<Object> today(ora::TimeZone const& tz) const
+      { return PyDate::create(ora::today(tz)); }
 
   };
 

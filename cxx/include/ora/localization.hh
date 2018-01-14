@@ -193,7 +193,7 @@ inline DATE
 today(
   TimeZone const& tz)
 {
-  return to_local_date(time::now(), tz);
+  return DATE::from_datenum(time::today_datenum(tz));
 }
 
 
