@@ -10,6 +10,8 @@
    - Benchmark 2^n vs. 10^n types.
    - Add exact us, ns types.
 1. Benchmark tick computations.
+1. Intro Python documentation as ReST.
+1. ReadTheDocs support.
 1. Fix rounding of ora.now(UsecTime).
 1. Remove Time.get_parts().
 1. Fast-track RFC 3339 formatting function.
