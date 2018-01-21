@@ -77,6 +77,25 @@ def test_at():
     assert tz.at(t2) == (-18000, "EST", False)
 
 
+def test_at_string():
+    time = now()
+    lt0 = time @ TimeZone("America/New_York")
+    lt1 = time @ "America/New_York"
+    assert lt1 == lt0
+
+    lt2 = time @ "US/Eastern"
+    assert lt2 == lt0
+    
+
+def test_at_string_display():
+    time = now()
+    lt0 = time @ TimeZone("Pacific/Galapagos")
+
+    with display_time_zone("Pacific/Galapagos"):
+        lt1 = time @ "display"
+    assert lt1 == lt0
+
+
 def test_at_local():
     tz = TimeZone("US/Eastern")
 

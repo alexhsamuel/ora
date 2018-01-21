@@ -54,9 +54,6 @@ make_time_zone_parts(
 }
 
 
-/**
- * Interprets 'obj' as a time zone.
- */
 ora::TimeZone_ptr
 maybe_time_zone(
   Object* const obj)
@@ -77,22 +74,6 @@ maybe_time_zone(
     }
   }
     
-  // Not a time zone object.
-  return nullptr;
-}
-
-
-/**
- * Attempts to convert 'obj' to a time zone.
- */
-ora::TimeZone_ptr
-convert_to_time_zone(
-  Object* const obj)
-{
-  auto const tz = maybe_time_zone(obj);
-  if (tz != nullptr)
-    return tz;
-
   // If it's a string, interpret it as a time zone name.
   // FIXME: It might be worth speeding this up further by maintaining a mapping
   // from interned str objects to time zones?
@@ -111,8 +92,20 @@ convert_to_time_zone(
       }
   }
 
-  // Can't convert to a time zone.
-  throw py::TypeError("can't convert to a time zone: "s + *obj->Repr());
+  // Not a time zone object.
+  return nullptr;
+}
+
+
+ora::TimeZone_ptr
+convert_to_time_zone(
+  Object* const obj)
+{
+  auto const tz = maybe_time_zone(obj);
+  if (tz != nullptr)
+    return tz;
+  else
+    throw py::TypeError("can't convert to a time zone: "s + *obj->Repr());
 }
 
 

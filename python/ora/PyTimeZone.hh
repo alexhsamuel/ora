@@ -26,6 +26,9 @@ extern StructSequenceType* get_time_zone_parts_type();
  *  - PyTimeZone instances
  *  - pytz time zone instances, or any object with a 'zone' attribute naming
  *    a time zone
+ *  - If the object is a string, it is interpreted as a time zone name.
+ *  - The strings "display" and "system" are interpreted as the display and
+ *    system time zones, respectively.
  *
  * Returns nullptr if the object isn't a time zone.
  */
@@ -35,7 +38,6 @@ ora::TimeZone_ptr maybe_time_zone(Object*);
  * Converts various kinds of Python objects to a TimeZone.  Beyond
  * 'to_time_zone()', this function also accepts the following.
  *
- *  - If the object is a string, it is interpreted as a time zone name.
  *
  * If the object cannot be converted, raises a Python exception.
  */

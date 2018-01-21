@@ -212,6 +212,7 @@ private:
 
   // Number methods.
   static ref<Object>    nb_add                  (PyTime*, Object*, bool);
+  static ref<Object>    nb_matrix_multiply      (PyTime*, Object*, bool);
   static ref<Object>    nb_subtract             (PyTime*, Object*, bool);
   static PyNumberMethods tp_as_number_;
 
@@ -429,6 +430,25 @@ PyTime<TIME>::nb_add(
 
 template<class TIME>
 inline ref<Object>
+PyTime<TIME>::nb_matrix_multiply(
+  PyTime* const self,
+  Object* const other,
+  bool const right)
+{
+  // We should be on the LHS of the time zone.
+  if (right)
+    return not_implemented_ref();
+
+  ora::TimeZone_ptr tz = maybe_time_zone(other);
+  if (tz == nullptr) 
+    return not_implemented_ref();
+  else
+    return make_local(ora::time::to_local_datenum_daytick(self->time_, *tz));
+}
+
+
+template<class TIME>
+inline ref<Object>
 PyTime<TIME>::nb_subtract(
   PyTime* const self,
   Object* const other,
@@ -493,7 +513,7 @@ PyTime<TIME>::tp_as_number_ = {
   (binaryfunc)  nullptr,                        // nb_inplace_true_divide
   (unaryfunc)   nullptr,                        // nb_index
 #if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 5
-  (binaryfunc)  nullptr,                        // nb_matrix_multiply
+  (binaryfunc)  wrap<PyTime, nb_matrix_multiply>, // nb_matrix_multiply
   (binaryfunc)  nullptr,                        // nb_inplace_matrix_multiply
 #endif
 };
