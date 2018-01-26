@@ -7,12 +7,16 @@
    - Add comparison.
    - How about old LocalTime type?
    - Hide LocalTime type from module?
+1. Make format(time, "@tz") produce localized RFC 3339.
+1. Add DTZ, STZ objects for display, system time zones.
+1. Add an easy way to print RFC 3339 time in display, system time zones.
 1. Change formatting.  Instead of %k etc, support:
    - synchronize time format to Python datetime
    - missing C89 directives: %G, %u, %V
    - adjust ISO/RFC predefined format strings
    - add predefines format strings with subsecond accuracy
    - support UTF-8 patterns
+   - NATO suffix
 1. Revisit type definitions.
    - Benchmark 2^n vs. 10^n types.
    - Add exact us, ns types.
