@@ -2,6 +2,7 @@
 #include <string>
 
 #include "py.hh"
+#include "PyLocalTime.hh"
 #include "PyTime.hh"
 #include "PyTimeZone.hh"
 
@@ -277,9 +278,12 @@ PyTimeZone::nb_matrix_multiply(
     return not_implemented_ref();
 
   auto const api = PyTimeAPI::get(other);
-  if (api != nullptr) 
+  if (api != nullptr) {
     // The LHS is a time.  Localize it.
-    return make_local(api->to_local_datenum_daytick(other, *self->tz_));
+    auto const local = api->to_local_datenum_daytick(other, *self->tz_);
+    return PyLocalTime::create(
+      make_date(local.datenum), make_daytime(local.daytick));
+  }
 
   if (Sequence::Check(other)) {
     auto const local = cast<Sequence>(other);

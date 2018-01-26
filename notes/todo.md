@@ -1,5 +1,9 @@
 # Work List
 
+1. Change LocalTime to a proper type, with 'year', 'month' etc. passthrough properties
+   - Augment ctor.
+   - Add API members and field accessors.
+   - Add comparison.
 1. Change formatting.  Instead of %k etc, support:
    - synchronize time format to Python datetime
    - missing C89 directives: %G, %u, %V
@@ -22,7 +26,6 @@
 1. timezone etc. namespace cleanup
 1. Basic string parsing for `convert_to_*()` functions.
 1. Full parsing support.
-1. Change LocalTime to a proper type, with 'year', 'month' etc. passthrough properties
 1. Daytime and Time rounding functions.  Maybe like Arrow's `floor()`, `ceil()`?
 1. Use `fold` attribute per [PEP-495](https://www.python.org/dev/peps/pep-0495/)
 1. Clean up C++ Time and localization functions; document.
