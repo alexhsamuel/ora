@@ -39,5 +39,5 @@ da = np.array([
     Date.INVALID,
 ], dtype=Date.dtype)
     
-tz = TimeZone("US/Eastern")
+z = TimeZone("US/Eastern")
 

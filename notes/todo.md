@@ -1,9 +1,12 @@
 # Work List
 
 1. Change LocalTime to a proper type, with 'year', 'month' etc. passthrough properties
+   - Get rid of make_local().
    - Augment ctor.
    - Add API members and field accessors.
    - Add comparison.
+   - How about old LocalTime type?
+   - Hide LocalTime type from module?
 1. Change formatting.  Instead of %k etc, support:
    - synchronize time format to Python datetime
    - missing C89 directives: %G, %u, %V
