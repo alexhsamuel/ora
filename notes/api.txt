@@ -89,7 +89,6 @@ Python conversion
   (date, daytime) @ tz -> Time          # synonym for from_local()
 
   to_local(Time, TimeZone) -> LocalTime
-  to_local_datenum_daytick(Time, TimeZone) -> (datenum, daytick)
   time @ tz -> LocalTime                # synonym for to_local()
 
 --------------------------------------------------------------------------------

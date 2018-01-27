@@ -38,7 +38,6 @@ __all__ = (
     "set_display_time_zone",
     "set_zoneinfo_dir",
     "to_local",
-    "to_local_datenum_daytick",
     "to_weekday",
     "today",
 

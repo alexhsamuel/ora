@@ -21,7 +21,6 @@ extern doc_t now;
 extern doc_t set_display_time_zone;
 extern doc_t set_zoneinfo_dir;
 extern doc_t to_local;
-extern doc_t to_local_datenum_daytick;
 extern doc_t today;
 
 //------------------------------------------------------------------------------

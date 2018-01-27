@@ -232,29 +232,6 @@ to_local(
 
 
 ref<Object>
-to_local_datenum_daytick(
-  Module* /* module */,
-  Tuple* const args,
-  Dict* const kw_args)
-{
-  Object* time;
-  Object* tz_arg;
-  static char const* const arg_names[] = {"time", "time_zone", nullptr};
-  Arg::ParseTupleAndKeywords(args, kw_args, "OO", arg_names, &time, &tz_arg);
-  
-  auto const tz = convert_to_time_zone(tz_arg);
-  auto api = PyTimeAPI::get(time);
-  auto local = 
-    // If this is a PyTime object and we have an API, use it.
-    api != nullptr ? api->to_local_datenum_daytick(time, *tz)
-    // Otherwise, convert to a time and then proceed.
-    : ora::time::to_local_datenum_daytick(
-        convert_to_time<ora::time::Time>(time), *tz);
-  return make_local_datenum_daytick(local);
-}
-
-
-ref<Object>
 today(
   Module* /* module */,
   Tuple* const args,
@@ -297,7 +274,6 @@ add_functions(
     .add<set_display_time_zone>     ("set_display_time_zone",   docstring::set_display_time_zone)
     .add<set_zoneinfo_dir>          ("set_zoneinfo_dir",        docstring::set_zoneinfo_dir)
     .add<to_local>                  ("to_local",                docstring::to_local)
-    .add<to_local_datenum_daytick>  ("to_local_datenum_daytick",docstring::to_local_datenum_daytick)
     .add<today>                     ("today",                   docstring::today)
     ;
 }

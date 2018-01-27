@@ -169,30 +169,6 @@ to_local =
 ;
 
 doc_t
-to_local_datenum_daytick =
-"Converts a time to a local representation of _datenum_ and _daytick_.\n"
-"\n"
-"  >>> time = Time(2016, 11, 11, 12, 0, 0, UTC)\n"
-"  >>> datenum, daytick = ora.to_local_datenum_daytick(time, 'UTC')\n"
-"\n"
-"These could be converted into a date and daytime:\n"
-"\n"
-"  >>> Date.from_datenum(datenum)\n"
-"  Date(2016, Oct, 10)\n"
-"  >>> Daytime.from_daytick(daytick)\n"
-"  Daytime(12, 0, 0.000000000000000)\n"
-"\n"
-"Use `to_local` to produce the date and daynum directly.\n"
-"\n"
-"@signature\n"
-"  to_local_datenum_daytick(time, time_zone)\n"
-"@return\n"
-"  A (datenum, daytick) tuple.  The fields may also be accessed as `date` and\n"
-"  `daytime` attributes.\n"
-"\n"
-;
-
-doc_t
 today =
 "Returns the current date in a given time zone.\n"
 "\n"
