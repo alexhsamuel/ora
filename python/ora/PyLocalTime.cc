@@ -67,6 +67,37 @@ PyLocalTime::tp_str(
 }
 
 
+ref<Object>
+PyLocalTime::tp_richcompare(
+  PyLocalTime* const self,
+  Object* const other,
+  int const comparison)
+{
+  if (Sequence::Check(other)) {
+    auto const seq = cast<Sequence>(other);
+    if (seq->Length() == 2) {
+      auto& d0 = self->date_;
+      auto& y0 = self->daytime_;
+      auto const d1 = seq->GetItem(0);
+      auto const y1 = seq->GetItem(1);
+
+      bool result;
+      switch (comparison) {
+      case Py_EQ: result = d0->eq(d1) && y0->eq(y1); break;
+      case Py_NE: result = d0->ne(d1) || y0->ne(y1); break;
+      case Py_LT: result = d0->lt(d1) || (d0->eq(d1) && y0->lt(y1)); break;
+      case Py_LE: result = d0->lt(d1) || (d0->eq(d1) && y0->le(y1)); break;
+      case Py_GT: result = d0->gt(d1) || (d0->eq(d1) && y0->gt(y1)); break;
+      case Py_GE: result = d0->gt(d1) || (d0->eq(d1) && y0->ge(y1)); break;
+      }
+      return Bool::from(result);
+    }
+  }
+
+  return not_implemented_ref();
+}
+
+
 void
 PyLocalTime::tp_init(
   PyLocalTime* const self,
@@ -80,6 +111,47 @@ PyLocalTime::tp_init(
 
   new(self) PyLocalTime(date, daytime);
 }
+
+
+//------------------------------------------------------------------------------
+// Sequence
+//------------------------------------------------------------------------------
+
+Py_ssize_t
+PyLocalTime::sq_length(
+  PyLocalTime* const self)
+{
+  return 2;
+}
+
+
+ref<Object>
+PyLocalTime::sq_item(
+  PyLocalTime* const self,
+  Py_ssize_t const index)
+{
+  if (index == 0)
+    return self->date_.inc();
+  else if (index == 1)
+    return self->daytime_.inc();
+  else
+    throw IndexError("index out of range");
+}
+
+
+PySequenceMethods const 
+PyLocalTime::tp_as_sequence = {
+  (lenfunc)         sq_length,                          // sq_length
+  (binaryfunc)      nullptr,                            // sq_concat
+  (ssizeargfunc)    nullptr,                            // sq_repeat
+  (ssizeargfunc)    wrap<PyLocalTime, sq_item>,         // sq_item
+  (void*)           nullptr,                            // was_sq_slice
+  (ssizeobjargproc) nullptr,                            // sq_ass_item
+  (void*)           nullptr,                            // was_sq_ass_slice
+  (objobjproc)      nullptr,                            // sq_contains
+  (binaryfunc)      nullptr,                            // sq_inplace_concat
+  (ssizeargfunc)    nullptr,                            // sq_inplace_repeat
+};
 
 
 //------------------------------------------------------------------------------
@@ -132,7 +204,7 @@ PyLocalTime::build_type(
                           nullptr,                        // tp_reserved
     (reprfunc)            wrap<PyLocalTime, tp_repr>,     // tp_repr
     (PyNumberMethods*)    nullptr,                        // tp_as_number
-    (PySequenceMethods*)  nullptr,                        // tp_as_sequence
+    (PySequenceMethods*)  &tp_as_sequence,                // tp_as_sequence
     (PyMappingMethods*)   nullptr,                        // tp_as_mapping
     (hashfunc)            nullptr,                        // tp_hash
     (ternaryfunc)         nullptr,                        // tp_call
@@ -145,7 +217,7 @@ PyLocalTime::build_type(
     (char const*)         nullptr,                        // tp_doc
     (traverseproc)        nullptr,                        // tp_traverse
     (inquiry)             nullptr,                        // tp_clear
-    (richcmpfunc)         nullptr,                        // tp_richcompare
+    (richcmpfunc)         wrap<PyLocalTime, tp_richcompare>, // tp_richcompare
     (Py_ssize_t)          0,                              // tp_weaklistoffset
     (getiterfunc)         nullptr,                        // tp_iter
     (iternextfunc)        nullptr,                        // tp_iternext

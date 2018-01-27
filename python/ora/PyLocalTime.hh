@@ -38,7 +38,12 @@ private:
   static void           tp_dealloc(PyLocalTime*);
   static ref<Unicode>   tp_repr(PyLocalTime*);
   static ref<Unicode>   tp_str(PyLocalTime*);
+  static ref<Object>    tp_richcompare(PyLocalTime*, Object*, int);
   static void           tp_init(PyLocalTime*, Tuple*, Dict*);
+
+  static Py_ssize_t     sq_length(PyLocalTime*);
+  static ref<Object>    sq_item(PyLocalTime*, Py_ssize_t);
+  static PySequenceMethods const tp_as_sequence;
 
   static Type build_type(std::string const& type_name);
 

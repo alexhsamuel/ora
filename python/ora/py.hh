@@ -386,12 +386,23 @@ public:
     { return PyObject_Length(this); }
   auto Repr()
     { return ref<Unicode>::take(PyObject_Repr(this)); }
+  auto RichCompare(PyObject* other, int comparison)
+    { return ref<Object>::take(PyObject_RichCompare(this, other, comparison)); }
+  bool RichCompareBool(PyObject* other, int comparison)
+    { return PyObject_RichCompareBool(this, other, comparison); }
   auto SetAttrString(char const* name, PyObject* obj)
     { check_not_minus_one(PyObject_SetAttrString(this, name, obj)); }
   auto Str()
     { return ref<Unicode>::take(PyObject_Str(this)); }
 
   optional<ref<Object>> maybe_get_attr(std::string const& name);
+
+  bool eq(PyObject* other) { return RichCompareBool(other, Py_EQ); }
+  bool ne(PyObject* other) { return RichCompareBool(other, Py_NE); }
+  bool lt(PyObject* other) { return RichCompareBool(other, Py_LT); }
+  bool le(PyObject* other) { return RichCompareBool(other, Py_LE); }
+  bool gt(PyObject* other) { return RichCompareBool(other, Py_GT); }
+  bool ge(PyObject* other) { return RichCompareBool(other, Py_GE); }
 
   ref<py::Long> Long(bool check=true);
   long long_value();
@@ -1310,6 +1321,11 @@ HashfuncPtr
   = Py_hash_t (*)(CLASS* self);
 
 template<class CLASS>
+using
+SsizeargfuncPtr
+  = ref<Object> (*)(CLASS* self, Py_ssize_t arg);
+
+template<class CLASS>
 using MethodPtr = ref<Object> (*)(CLASS* self, Tuple* args, Dict* kw_args);
 
 using StaticMethodPtr = ref<Object> (*)(Tuple* args, Dict* kw_args);
@@ -1423,6 +1439,35 @@ wrap(
   try {
     try {
       result = FUNCTION(static_cast<CLASS*>(self));
+    }
+    catch (Exception) {
+      return nullptr;
+    }
+    catch (...) {
+      ExceptionTranslator::translate();
+    }
+  }
+  catch (Exception) {
+    return nullptr;
+  }
+  assert(result != nullptr);
+  return result.release();
+}
+
+
+/**
+ * Wraps a ssizeargfunc.
+ */
+template<class CLASS, SsizeargfuncPtr<CLASS> FUNCTION>
+PyObject*
+wrap(
+  PyObject* const self,
+  Py_ssize_t const arg)
+{
+  ref<Object> result;
+  try {
+    try {
+      result = FUNCTION(static_cast<CLASS*>(self), arg);
     }
     catch (Exception) {
       return nullptr;
