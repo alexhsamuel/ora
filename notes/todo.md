@@ -1,6 +1,11 @@
 # Work List
 
-1. Add DTZ, STZ objects for display, system time zones.
+1. Change formatting.  Instead of %k etc, support:
+   - synchronize time format to Python datetime
+   - missing C89 directives: %G, %u, %V
+   - adjust ISO/RFC predefined format strings
+   - add predefines format strings with subsecond accuracy
+   - support UTF-8 patterns
 1. Clean up default formats; provide aliases in patterns?
    - RFC 3339
    - Zulu vs numerial offset
@@ -8,21 +13,16 @@
    - make second precision type-specific?
    - default with various second precision
 1. Add an easy way to print RFC 3339 time in display, system time zones.
-1. Change formatting.  Instead of %k etc, support:
-   - synchronize time format to Python datetime
-   - missing C89 directives: %G, %u, %V
-   - adjust ISO/RFC predefined format strings
-   - add predefines format strings with subsecond accuracy
-   - support UTF-8 patterns
+1. Fast-track RFC 3339 formatting function.
+1. Add DTZ, STZ objects for display, system time zones.
 1. Revisit type definitions.
    - Benchmark 2^n vs. 10^n types.
    - Add exact us, ns types.
 1. Benchmark tick computations.
-1. Intro Python documentation as ReST.
+1. Intro Python documentation in rst.
 1. ReadTheDocs support.
 1. Fix rounding of ora.now(UsecTime).
 1. Remove Time.get_parts().
-1. Fast-track RFC 3339 formatting function.
 1. Relax numpy setup dependency.
 1. Make Time(datetime, tz) work for naive datetime.
 1. Build conda package.
