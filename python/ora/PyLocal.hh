@@ -20,32 +20,14 @@ public:
   static void add_to(Module& module, std::string const& name);
   static Type type_;
 
+  static Type build_type(std::string const& type_name);
   static ref<PyLocal> create(Object* const date, Object* const daytime, PyTypeObject* typ=&type_);
   static bool Check(PyObject* object);
-
-private:
 
   PyLocal(Object* const date, Object* const daytime);
 
   ref<Object> const     date_;
   ref<Object> const     daytime_;
-
-  // Getsets.
-  static ref<Object>    get_date(PyLocal*, void*);
-  static ref<Object>    get_daytime(PyLocal*, void*);
-  static GetSets<PyLocal> tp_getsets_;
-
-  static void           tp_dealloc(PyLocal*);
-  static ref<Unicode>   tp_repr(PyLocal*);
-  static ref<Unicode>   tp_str(PyLocal*);
-  static ref<Object>    tp_richcompare(PyLocal*, Object*, int);
-  static void           tp_init(PyLocal*, Tuple*, Dict*);
-
-  static Py_ssize_t     sq_length(PyLocal*);
-  static ref<Object>    sq_item(PyLocal*, Py_ssize_t);
-  static PySequenceMethods const tp_as_sequence;
-
-  static Type build_type(std::string const& type_name);
 
 };
 

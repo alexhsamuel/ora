@@ -35,8 +35,10 @@ PyLocal::type_;
 // Standard type methods
 //------------------------------------------------------------------------------
 
+namespace {
+
 void
-PyLocal::tp_dealloc(
+tp_dealloc(
   PyLocal* const self)
 {
   self->ob_type->tp_free(self);
@@ -44,7 +46,7 @@ PyLocal::tp_dealloc(
 
 
 ref<Unicode>
-PyLocal::tp_repr(
+tp_repr(
   PyLocal* const self)
 {
   return Unicode::from(
@@ -57,7 +59,7 @@ PyLocal::tp_repr(
 
 
 ref<Unicode>
-PyLocal::tp_str(
+tp_str(
   PyLocal* const self)
 {
   return Unicode::from(
@@ -68,7 +70,7 @@ PyLocal::tp_str(
 
 
 ref<Object>
-PyLocal::tp_richcompare(
+tp_richcompare(
   PyLocal* const self,
   Object* const other,
   int const comparison)
@@ -99,7 +101,7 @@ PyLocal::tp_richcompare(
 
 
 void
-PyLocal::tp_init(
+tp_init(
   PyLocal* const self,
   Tuple* const args,
   Dict* const kw_args)
@@ -118,7 +120,7 @@ PyLocal::tp_init(
 //------------------------------------------------------------------------------
 
 Py_ssize_t
-PyLocal::sq_length(
+sq_length(
   PyLocal* const self)
 {
   return 2;
@@ -126,7 +128,7 @@ PyLocal::sq_length(
 
 
 ref<Object>
-PyLocal::sq_item(
+sq_item(
   PyLocal* const self,
   Py_ssize_t const index)
 {
@@ -140,7 +142,7 @@ PyLocal::sq_item(
 
 
 PySequenceMethods const 
-PyLocal::tp_as_sequence = {
+tp_as_sequence = {
   (lenfunc)         sq_length,                          // sq_length
   (binaryfunc)      nullptr,                            // sq_concat
   (ssizeargfunc)    nullptr,                            // sq_repeat
@@ -159,7 +161,7 @@ PyLocal::tp_as_sequence = {
 //------------------------------------------------------------------------------
 
 ref<Object>
-PyLocal::get_date(
+get_date(
   PyLocal* const self,
   void* /* closure */)
 {
@@ -168,7 +170,7 @@ PyLocal::get_date(
 
 
 ref<Object>
-PyLocal::get_daytime(
+get_daytime(
   PyLocal* const self,
   void* /* closure */)
 {
@@ -177,12 +179,14 @@ PyLocal::get_daytime(
 
 
 GetSets<PyLocal>
-PyLocal::tp_getsets_
+tp_getsets_
   = GetSets<PyLocal>()
     .template add_get<get_date>             ("date")
     .template add_get<get_daytime>          ("daytime")
   ;
 
+
+}  // anonymous namespace
 
 //------------------------------------------------------------------------------
 // Type object
