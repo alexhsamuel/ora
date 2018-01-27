@@ -4,6 +4,8 @@ import pytest
 
 import ora
 from   ora import *
+from   ora import Time, SmallTime, Unix32Time, Daytime, UTC
+from   ora import to_local, from_local, now, display_time_zone
 import data
 from   tools import *
 
@@ -108,6 +110,30 @@ def test_format_tz():
     assert "now is {:%Y-%m-%d %H:%M:%S@{}}".format(time, "America/New_York") == "now is 2017-12-09 10:42:20"
 
 
+def test_format_tz_empty_utc():
+    time = (2017/Dec/9, Daytime(15, 42, 20)) @ UTC
+    assert format(time, "@UTC") == "2017-12-09T15:42:20Z"
+
+
+def test_format_tz_empty_implicit():
+    time = (2017/Dec/9, Daytime(15, 42, 20)) @ UTC
+    with display_time_zone("America/New_York"):
+        assert format(time, "@") == "2017-12-09T10:42:20R"
+
+    
+def test_format_tz_empty_display():
+    time = (2017/Dec/9, Daytime(15, 42, 20)) @ UTC
+    with display_time_zone("America/New_York"):
+        assert format(time, "@display") == "2017-12-09T10:42:20R"
+
+    
+def test_format_tz_empty_in_pattern():
+    time = (2017/Dec/9, Daytime(15, 42, 20)) @ UTC
+    with display_time_zone("America/New_York"):
+        t = format("time is now {:@}".format(time))
+        assert t == "time is now 2017-12-09T10:42:20R"
+
+    
 def test_format_method():
     time = (2018/Jan/1, Daytime(0, 0, 0)) @ UTC
     fmt = "%Y-%m-%d %H:%M:%S"

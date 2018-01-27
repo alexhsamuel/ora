@@ -301,8 +301,12 @@ public:
         tz = ora::get_system_time_zone();
       else
         tz = ora::get_time_zone(tz_name);
-      return {pattern.substr(0, at), tz};
-    }
+      if (at == 0)
+        // Empty pattern part; use ISO format.
+        return {TimeFormat::DEFAULT.get_pattern(), tz};
+      else
+        return {pattern.substr(0, at), tz};
+   } 
   }
 
   template<class TIME> 

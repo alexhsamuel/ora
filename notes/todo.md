@@ -1,7 +1,11 @@
 # Work List
 
-1. Make format(time, "@tz") produce localized RFC 3339.
 1. Add DTZ, STZ objects for display, system time zones.
+1. Clean up default formats; provide aliases in patterns?
+   - RFC 3339
+   - Zulu vs numerial offset
+   - default
+   - default with various second precision
 1. Add an easy way to print RFC 3339 time in display, system time zones.
 1. Change formatting.  Instead of %k etc, support:
    - synchronize time format to Python datetime
