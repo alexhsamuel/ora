@@ -11,24 +11,7 @@ namespace ora {
 namespace py {
 
 //------------------------------------------------------------------------------
-// Declarations
-
-StructSequenceType* get_local_time_type();
-
-//------------------------------------------------------------------------------
 // Helpers
-
-inline ref<Object>
-make_local_datenum_daytick(
-  ora::LocalDatenumDaytick const local)
-{
-  auto result = get_local_time_type()->New();
-  result->initialize(0, Long::FromLong(local.datenum));
-  result->initialize(1, Long::FromUnsignedLong(local.daytick));
-  // FIXME: Add time zone info?
-  return std::move(result);
-}
-
 
 inline ora::Datenum
 to_datenum(
