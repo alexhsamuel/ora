@@ -225,7 +225,9 @@ to_local(
     // Otherwise, convert to a time and then proceed.
     : ora::time::to_local_datenum_daytick(
         convert_to_time<ora::time::Time>(time), *tz);
-  return make_local(local, date_type, daytime_type);
+  return PyLocalTime::create(
+    make_date(local.datenum, date_type),
+    make_daytime(local.daytick, daytime_type));
 }
 
 

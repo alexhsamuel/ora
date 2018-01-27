@@ -1,12 +1,11 @@
 # Work List
 
 1. Change LocalTime to a proper type, with 'year', 'month' etc. passthrough properties
-   - Get rid of make_local().
    - Augment ctor.
    - Add API members and field accessors.
+   - Rename to Local?
    - How about old LocalTime type?
    - Hide LocalTime type from module?
-   - Rename to Local?
 1. Make format(time, "@tz") produce localized RFC 3339.
 1. Add DTZ, STZ objects for display, system time zones.
 1. Add an easy way to print RFC 3339 time in display, system time zones.

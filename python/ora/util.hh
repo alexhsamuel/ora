@@ -19,20 +19,6 @@ StructSequenceType* get_local_time_type();
 // Helpers
 
 inline ref<Object>
-make_local(
-  ora::LocalDatenumDaytick const local,
-  PyTypeObject* date_type=&PyDateDefault::type_,
-  PyTypeObject* daytime_type=&PyDaytimeDefault::type_)
-{
-  auto result = get_local_time_type()->New();
-  result->initialize(0, make_date(local.datenum, date_type));
-  result->initialize(1, make_daytime(local.daytick, daytime_type));
-  // FIXME: Add time zone info?
-  return std::move(result);
-}
-
-
-inline ref<Object>
 make_local_datenum_daytick(
   ora::LocalDatenumDaytick const local)
 {
