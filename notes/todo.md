@@ -5,6 +5,7 @@
    - RFC 3339
    - Zulu vs numerial offset
    - default
+   - make second precision type-specific?
    - default with various second precision
 1. Add an easy way to print RFC 3339 time in display, system time zones.
 1. Change formatting.  Instead of %k etc, support:
@@ -13,7 +14,6 @@
    - adjust ISO/RFC predefined format strings
    - add predefines format strings with subsecond accuracy
    - support UTF-8 patterns
-   - NATO suffix
 1. Revisit type definitions.
    - Benchmark 2^n vs. 10^n types.
    - Add exact us, ns types.
@@ -90,7 +90,6 @@
 
 - Specify an alternate place to load default time zone.
 - Rename `TimeZoneParts` to something better, maybe `TimeZoneOffset`?
-- System and display time zone abstractions.
 
 
 
@@ -104,15 +103,11 @@
 
 # Infrastructure / tech debt
 
-- remove `tp_print` hack from `PyDate` and replace with a type registration
-  scheme 
 - clean up namespaces
 - make Object be an interface-only type; inherit concrete types from PyObject
 - figure out how to point at our zoneinfo dir by default in C++ code
 
 ## py.hh
-
-- move `py.hh` to plynth and merge with other versions
 
 - It doesn't really make sense to have C++ types corresponding to the Python
   types, as instances are checked at runtime anyway.  Get rid of the C++ types
