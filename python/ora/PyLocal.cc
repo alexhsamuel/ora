@@ -1,5 +1,5 @@
 #include "py.hh"
-#include "PyLocalTime.hh"
+#include "PyLocal.hh"
 
 using std::string;
 using namespace std::string_literals;
@@ -10,7 +10,7 @@ namespace py {
 //------------------------------------------------------------------------------
 
 void
-PyLocalTime::add_to(
+PyLocal::add_to(
   Module& module,
   string const& name)
 {
@@ -29,23 +29,23 @@ PyLocalTime::add_to(
 //------------------------------------------------------------------------------
 
 Type
-PyLocalTime::type_;
+PyLocal::type_;
 
 //------------------------------------------------------------------------------
 // Standard type methods
 //------------------------------------------------------------------------------
 
 void
-PyLocalTime::tp_dealloc(
-  PyLocalTime* const self)
+PyLocal::tp_dealloc(
+  PyLocal* const self)
 {
   self->ob_type->tp_free(self);
 }
 
 
 ref<Unicode>
-PyLocalTime::tp_repr(
-  PyLocalTime* const self)
+PyLocal::tp_repr(
+  PyLocal* const self)
 {
   return Unicode::from(
     "LocalTime("s
@@ -57,8 +57,8 @@ PyLocalTime::tp_repr(
 
 
 ref<Unicode>
-PyLocalTime::tp_str(
-  PyLocalTime* const self)
+PyLocal::tp_str(
+  PyLocal* const self)
 {
   return Unicode::from(
     self->date_->Str()->as_utf8_string() 
@@ -68,8 +68,8 @@ PyLocalTime::tp_str(
 
 
 ref<Object>
-PyLocalTime::tp_richcompare(
-  PyLocalTime* const self,
+PyLocal::tp_richcompare(
+  PyLocal* const self,
   Object* const other,
   int const comparison)
 {
@@ -99,8 +99,8 @@ PyLocalTime::tp_richcompare(
 
 
 void
-PyLocalTime::tp_init(
-  PyLocalTime* const self,
+PyLocal::tp_init(
+  PyLocal* const self,
   Tuple* const args,
   Dict* const kw_args)
 {
@@ -109,7 +109,7 @@ PyLocalTime::tp_init(
   Object* daytime;
   Arg::ParseTuple(args, "OO", &date, &daytime);
 
-  new(self) PyLocalTime(date, daytime);
+  new(self) PyLocal(date, daytime);
 }
 
 
@@ -118,16 +118,16 @@ PyLocalTime::tp_init(
 //------------------------------------------------------------------------------
 
 Py_ssize_t
-PyLocalTime::sq_length(
-  PyLocalTime* const self)
+PyLocal::sq_length(
+  PyLocal* const self)
 {
   return 2;
 }
 
 
 ref<Object>
-PyLocalTime::sq_item(
-  PyLocalTime* const self,
+PyLocal::sq_item(
+  PyLocal* const self,
   Py_ssize_t const index)
 {
   if (index == 0)
@@ -140,11 +140,11 @@ PyLocalTime::sq_item(
 
 
 PySequenceMethods const 
-PyLocalTime::tp_as_sequence = {
+PyLocal::tp_as_sequence = {
   (lenfunc)         sq_length,                          // sq_length
   (binaryfunc)      nullptr,                            // sq_concat
   (ssizeargfunc)    nullptr,                            // sq_repeat
-  (ssizeargfunc)    wrap<PyLocalTime, sq_item>,         // sq_item
+  (ssizeargfunc)    wrap<PyLocal, sq_item>,             // sq_item
   (void*)           nullptr,                            // was_sq_slice
   (ssizeobjargproc) nullptr,                            // sq_ass_item
   (void*)           nullptr,                            // was_sq_ass_slice
@@ -159,8 +159,8 @@ PyLocalTime::tp_as_sequence = {
 //------------------------------------------------------------------------------
 
 ref<Object>
-PyLocalTime::get_date(
-  PyLocalTime* const self,
+PyLocal::get_date(
+  PyLocal* const self,
   void* /* closure */)
 {
   return self->date_.inc();
@@ -168,17 +168,17 @@ PyLocalTime::get_date(
 
 
 ref<Object>
-PyLocalTime::get_daytime(
-  PyLocalTime* const self,
+PyLocal::get_daytime(
+  PyLocal* const self,
   void* /* closure */)
 {
   return self->daytime_.inc();
 }
 
 
-GetSets<PyLocalTime>
-PyLocalTime::tp_getsets_
-  = GetSets<PyLocalTime>()
+GetSets<PyLocal>
+PyLocal::tp_getsets_
+  = GetSets<PyLocal>()
     .template add_get<get_date>             ("date")
     .template add_get<get_daytime>          ("daytime")
   ;
@@ -189,26 +189,26 @@ PyLocalTime::tp_getsets_
 //------------------------------------------------------------------------------
 
 Type
-PyLocalTime::build_type(
+PyLocal::build_type(
   string const& type_name)
 {
   return PyTypeObject{
     PyVarObject_HEAD_INIT(nullptr, 0)
     (char const*)         strdup(type_name.c_str()),      // tp_name
-    (Py_ssize_t)          sizeof(PyLocalTime),            // tp_basicsize
+    (Py_ssize_t)          sizeof(PyLocal),                // tp_basicsize
     (Py_ssize_t)          0,                              // tp_itemsize
-    (destructor)          wrap<PyLocalTime, tp_dealloc>,  // tp_dealloc
+    (destructor)          wrap<PyLocal, tp_dealloc>,      // tp_dealloc
     (printfunc)           nullptr,                        // tp_print
     (getattrfunc)         nullptr,                        // tp_getattr
     (setattrfunc)         nullptr,                        // tp_setattr
                           nullptr,                        // tp_reserved
-    (reprfunc)            wrap<PyLocalTime, tp_repr>,     // tp_repr
+    (reprfunc)            wrap<PyLocal, tp_repr>,         // tp_repr
     (PyNumberMethods*)    nullptr,                        // tp_as_number
     (PySequenceMethods*)  &tp_as_sequence,                // tp_as_sequence
     (PyMappingMethods*)   nullptr,                        // tp_as_mapping
     (hashfunc)            nullptr,                        // tp_hash
     (ternaryfunc)         nullptr,                        // tp_call
-    (reprfunc)            wrap<PyLocalTime, tp_str>,      // tp_str
+    (reprfunc)            wrap<PyLocal, tp_str>,          // tp_str
     (getattrofunc)        nullptr,                        // tp_getattro
     (setattrofunc)        nullptr,                        // tp_setattro
     (PyBufferProcs*)      nullptr,                        // tp_as_buffer
@@ -217,7 +217,7 @@ PyLocalTime::build_type(
     (char const*)         nullptr,                        // tp_doc
     (traverseproc)        nullptr,                        // tp_traverse
     (inquiry)             nullptr,                        // tp_clear
-    (richcmpfunc)         wrap<PyLocalTime, tp_richcompare>, // tp_richcompare
+    (richcmpfunc)         wrap<PyLocal, tp_richcompare>,  // tp_richcompare
     (Py_ssize_t)          0,                              // tp_weaklistoffset
     (getiterfunc)         nullptr,                        // tp_iter
     (iternextfunc)        nullptr,                        // tp_iternext
@@ -229,7 +229,7 @@ PyLocalTime::build_type(
     (descrgetfunc)        nullptr,                        // tp_descr_get
     (descrsetfunc)        nullptr,                        // tp_descr_set
     (Py_ssize_t)          0,                              // tp_dictoffset
-    (initproc)            wrap<PyLocalTime, tp_init>,     // tp_init
+    (initproc)            wrap<PyLocal, tp_init>,         // tp_init
     (allocfunc)           nullptr,                        // tp_alloc
     (newfunc)             PyType_GenericNew,              // tp_new
     (freefunc)            nullptr,                        // tp_free

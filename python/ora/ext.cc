@@ -3,7 +3,7 @@
 
 #include "PyDate.hh"
 #include "PyDaytime.hh"
-#include "PyLocalTime.hh"
+#include "PyLocal.hh"
 #include "PyTime.hh"
 #include "PyTimeZone.hh"
 
@@ -66,7 +66,7 @@ PyInit_ext(void)
     PyTime<ora::time::Time128>          ::add_to(mod, "Time128");
 
     PyTimeZone                          ::add_to(mod, "TimeZone");
-    PyLocalTime                         ::add_to(mod, "LocalTime");
+    PyLocal                             ::add_to(mod, "Local");
 
     StructSequenceType* const ymd_date_type = get_ymd_date_type();
     mod->AddObject(ymd_date_type->tp_name, (PyObject*) ymd_date_type);

@@ -12,7 +12,7 @@
 #include "py.hh"
 #include "PyDate.hh"
 #include "PyDaytime.hh"
-#include "PyLocalTime.hh"
+#include "PyLocal.hh"
 #include "PyTime.hh"
 #include "PyTimeZone.hh"
 #include "util.hh"
@@ -445,7 +445,7 @@ PyTime<TIME>::nb_matrix_multiply(
     return not_implemented_ref();
   else {
     auto const local = ora::time::to_local_datenum_daytick(self->time_, *tz);
-    return PyLocalTime::create(
+    return PyLocal::create(
       make_date(local.datenum), make_daytime(local.daytick));
   }
 }

@@ -12,7 +12,7 @@ namespace py {
 // Type class
 //------------------------------------------------------------------------------
 
-class PyLocalTime
+class PyLocal
   : public ExtensionType
 {
 public:
@@ -20,29 +20,29 @@ public:
   static void add_to(Module& module, std::string const& name);
   static Type type_;
 
-  static ref<PyLocalTime> create(Object* const date, Object* const daytime, PyTypeObject* typ=&type_);
+  static ref<PyLocal> create(Object* const date, Object* const daytime, PyTypeObject* typ=&type_);
   static bool Check(PyObject* object);
 
 private:
 
-  PyLocalTime(Object* const date, Object* const daytime);
+  PyLocal(Object* const date, Object* const daytime);
 
   ref<Object> const     date_;
   ref<Object> const     daytime_;
 
   // Getsets.
-  static ref<Object>    get_date(PyLocalTime*, void*);
-  static ref<Object>    get_daytime(PyLocalTime*, void*);
-  static GetSets<PyLocalTime> tp_getsets_;
+  static ref<Object>    get_date(PyLocal*, void*);
+  static ref<Object>    get_daytime(PyLocal*, void*);
+  static GetSets<PyLocal> tp_getsets_;
 
-  static void           tp_dealloc(PyLocalTime*);
-  static ref<Unicode>   tp_repr(PyLocalTime*);
-  static ref<Unicode>   tp_str(PyLocalTime*);
-  static ref<Object>    tp_richcompare(PyLocalTime*, Object*, int);
-  static void           tp_init(PyLocalTime*, Tuple*, Dict*);
+  static void           tp_dealloc(PyLocal*);
+  static ref<Unicode>   tp_repr(PyLocal*);
+  static ref<Unicode>   tp_str(PyLocal*);
+  static ref<Object>    tp_richcompare(PyLocal*, Object*, int);
+  static void           tp_init(PyLocal*, Tuple*, Dict*);
 
-  static Py_ssize_t     sq_length(PyLocalTime*);
-  static ref<Object>    sq_item(PyLocalTime*, Py_ssize_t);
+  static Py_ssize_t     sq_length(PyLocal*);
+  static ref<Object>    sq_item(PyLocal*, Py_ssize_t);
   static PySequenceMethods const tp_as_sequence;
 
   static Type build_type(std::string const& type_name);
@@ -50,22 +50,22 @@ private:
 };
 
 
-inline ref<PyLocalTime>
-PyLocalTime::create(
+inline ref<PyLocal>
+PyLocal::create(
   Object* const date,
   Object* const daytime,
   PyTypeObject* const type)
 {
-  auto self = ref<PyLocalTime>::take(
-    check_not_null(PyLocalTime::type_.tp_alloc(type, 0)));
+  auto self = ref<PyLocal>::take(
+    check_not_null(PyLocal::type_.tp_alloc(type, 0)));
 
-  new(self) PyLocalTime(date, daytime);
+  new(self) PyLocal(date, daytime);
   return self;
 }
 
 
 inline bool
-PyLocalTime::Check(
+PyLocal::Check(
   PyObject* const other)
 {
   return static_cast<Object*>(other)->IsInstance((PyObject*) &type_);
@@ -73,7 +73,7 @@ PyLocalTime::Check(
 
 
 inline 
-PyLocalTime::PyLocalTime(
+PyLocal::PyLocal(
   Object* const date,
   Object* const daytime)
 : date_(ref<Object>::of(date)),
