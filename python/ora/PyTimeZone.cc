@@ -158,8 +158,10 @@ PyTimeZone::type_;
 // Standard type methods
 //------------------------------------------------------------------------------
 
+namespace {
+
 void
-PyTimeZone::tp_dealloc(
+tp_dealloc(
   PyTimeZone* const self)
 {
   self->ob_type->tp_free(self);
@@ -167,7 +169,7 @@ PyTimeZone::tp_dealloc(
 
 
 ref<Unicode>
-PyTimeZone::tp_repr(
+tp_repr(
   PyTimeZone* const self)
 {
   string full_name{self->ob_type->tp_name};
@@ -178,7 +180,7 @@ PyTimeZone::tp_repr(
 
 
 ref<Object>
-PyTimeZone::tp_call(
+tp_call(
   PyTimeZone* const self,
   Tuple* const args,
   Dict* const kw_args)
@@ -228,7 +230,7 @@ PyTimeZone::tp_call(
 
 
 ref<Unicode>
-PyTimeZone::tp_str(
+tp_str(
   PyTimeZone* const self)
 {
   return Unicode::from(self->tz_->get_name());  
@@ -236,7 +238,7 @@ PyTimeZone::tp_str(
 
 
 void
-PyTimeZone::tp_init(
+tp_init(
   PyTimeZone* const self,
   Tuple* const args,
   Dict* const kw_args)
@@ -249,7 +251,7 @@ PyTimeZone::tp_init(
 
 
 ref<Object>
-PyTimeZone::tp_richcompare(
+tp_richcompare(
   PyTimeZone* const self,
   Object* const other,
   int const comparison)
@@ -268,7 +270,7 @@ PyTimeZone::tp_richcompare(
 //------------------------------------------------------------------------------
 
 inline ref<Object>
-PyTimeZone::nb_matrix_multiply(
+nb_matrix_multiply(
   PyTimeZone* const self,
   Object* const other,
   bool const right)
@@ -300,7 +302,7 @@ PyTimeZone::nb_matrix_multiply(
 
 
 PyNumberMethods
-PyTimeZone::tp_as_number_ = {
+tp_as_number_ = {
   (binaryfunc)  nullptr,                        // nb_add
   (binaryfunc)  nullptr,                        // nb_subtract
   (binaryfunc)  nullptr,                        // nb_multiply
@@ -335,10 +337,8 @@ PyTimeZone::tp_as_number_ = {
   (binaryfunc)  nullptr,                        // nb_inplace_floor_divide
   (binaryfunc)  nullptr,                        // nb_inplace_true_divide
   (unaryfunc)   nullptr,                        // nb_index
-#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 5
   (binaryfunc)  wrap<PyTimeZone, nb_matrix_multiply>, // nb_matrix_multiply
   (binaryfunc)  nullptr,                        // nb_inplace_matrix_multiply
-#endif
 };
 
 
@@ -347,7 +347,7 @@ PyTimeZone::tp_as_number_ = {
 //------------------------------------------------------------------------------
 
 ref<Object>
-PyTimeZone::method_at(
+method_at(
   PyTimeZone* const self,
   Tuple* const args,
   Dict* const kw_args)
@@ -365,7 +365,7 @@ PyTimeZone::method_at(
 
 
 ref<Object>
-PyTimeZone::method_at_local(
+method_at_local(
   PyTimeZone* const self,
   Tuple* const args,
   Dict* const kw_args)
@@ -405,7 +405,7 @@ PyTimeZone::method_at_local(
 
 
 Methods<PyTimeZone>
-PyTimeZone::tp_methods_
+tp_methods_
   = Methods<PyTimeZone>()
     .template add<method_at>                    ("at")
     .template add<method_at_local>              ("at_local")
@@ -417,7 +417,7 @@ PyTimeZone::tp_methods_
 //------------------------------------------------------------------------------
 
 ref<Object>
-PyTimeZone::get_name(
+get_name(
   PyTimeZone* const self,
   void* /* closure */)
 {
@@ -426,11 +426,13 @@ PyTimeZone::get_name(
 
 
 GetSets<PyTimeZone>
-PyTimeZone::tp_getsets_ 
+tp_getsets_ 
   = GetSets<PyTimeZone>()
     .template add_get<get_name>         ("name")
   ;
 
+
+}  // anonymous namespace
 
 //------------------------------------------------------------------------------
 // Type object

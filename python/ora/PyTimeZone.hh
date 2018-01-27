@@ -82,29 +82,6 @@ public:
    */
   ora::TimeZone_ptr const tz_;
 
-  static ref<Object> tp_richcompare(PyTimeZone*, Object*, int);
-
-  // Number methods.
-  static ref<Object> nb_matrix_multiply (PyTimeZone*, Object*, bool);
-  static PyNumberMethods tp_as_number_;
-
-  // Methods.
-  static ref<Object> method_at          (PyTimeZone*, Tuple*, Dict*);
-  static ref<Object> method_at_local    (PyTimeZone*, Tuple*, Dict*);
-  static Methods<PyTimeZone> tp_methods_;
-
-  // Getsets.
-  static ref<Object> get_name(PyTimeZone*, void*);
-  static GetSets<PyTimeZone> tp_getsets_;
-
-private:
-
-  static void           tp_dealloc  (PyTimeZone*);
-  static ref<Unicode>   tp_repr     (PyTimeZone*);
-  static ref<Object>    tp_call     (PyTimeZone*, Tuple*, Dict*);
-  static ref<Unicode>   tp_str      (PyTimeZone*);
-  static void           tp_init     (PyTimeZone*, Tuple*, Dict*);
-
   static Type build_type(string const& type_name);
 
 };
