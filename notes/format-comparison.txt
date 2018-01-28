@@ -3,7 +3,7 @@ a    %a NA the weekday abbreviated name
 B  - %B %B the month name
 b    %b NA the month abbreviated name
 C
-     %c    locale's date/time representation
+c    %c    locale's date/time representation
 D       %D (not implemented)
 d  - %d %d the one-indexed day of the month
 E
@@ -49,6 +49,6 @@ x    %x    locale's date representation
 Y  - %Y %Y the full year
 y  - %y %y the last two digits of the year
 Z  - %Z %Z the time zone name
-z    %z    5-char UTC offset, e.g. +0000
+z    %z %z 5-char UTC offset, e.g. +0000
 
 

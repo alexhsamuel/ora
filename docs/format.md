@@ -42,6 +42,7 @@ The following format codes are supported for times only:
 | `%Q` | the signed hours part of the time zone offset, e.g. +00 |
 | `%u` | the six-character time zone offset, e.g. +00:00 |
 | `%Z` | the time zone name |
+| `%z` | the five-character time zone offset, e.g. +0000 |
 
 The following modifiers are supported:
 

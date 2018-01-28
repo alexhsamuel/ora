@@ -48,6 +48,8 @@ TEST(TimeFormat, all) {
   EXPECT_EQ("2013",             TimeFormat("%Y")(time, *tz));
   EXPECT_THROW(TimeFormat("%Z")(time, *tz), TimeFormatError);  // FIXME
   EXPECT_EQ("EDT",              TimeFormat("%~Z")(time, *tz));
+  EXPECT_EQ("-04:00",           TimeFormat("%~u")(time, *tz));
+  EXPECT_EQ("-0400",            TimeFormat("%~z")(time, *tz));
 
   // One Time tick is a bit less than 15 nsec.
   auto const time1 = time::from_offset(time.get_offset() + 1);

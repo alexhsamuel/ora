@@ -320,13 +320,15 @@ format_time_zone(
     break;
 
   case 'u':
+  case 'z':
     {
       sb << (time_zone.offset < 0 ? '-' : '+');
       auto const off = std::abs(time_zone.offset);
       auto const hr = off / SECS_PER_HOUR;
       auto const mn = off % SECS_PER_HOUR / SECS_PER_MIN;
       sb.format(hr, mods.get_width(2), '0');
-      sb << ':';
+      if (pattern[pos] == 'u')
+        sb << ':';
       sb.format(mn, mods.get_width(2), '0');
     }
     break;
