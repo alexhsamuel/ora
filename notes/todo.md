@@ -1,7 +1,6 @@
 # Work List
 
 1. Change formatting.  Instead of %k etc, support:
-   - synchronize time format to Python datetime
    - adjust ISO/RFC predefined format strings
    - add predefines format strings with subsecond/customizable accuracy
    - add missing strftime format codes
