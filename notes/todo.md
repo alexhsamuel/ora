@@ -2,9 +2,9 @@
 
 1. Change formatting.  Instead of %k etc, support:
    - synchronize time format to Python datetime
-   - missing C89 directives: %G, %u, %V
    - adjust ISO/RFC predefined format strings
-   - add predefines format strings with subsecond accuracy
+   - add predefines format strings with subsecond/customizable accuracy
+   - add missing strftime format codes
    - support UTF-8 patterns
 1. Clean up default formats; provide aliases in patterns?
    - RFC 3339
