@@ -10,7 +10,7 @@ E
 e       %e the [military time zone](https://en.wikipedia.org/wiki/List_of_military_time_zones) letter
 F
 f  - %f %f 6 fractional digits (truncated) of seconds
-G       %G the full week year of the week date
+G    %G %G ISO 8601 week year
 g       %g the last two digits of the week number of the week date
 H  - %H %H the 24-hour hour number
 h
@@ -39,8 +39,9 @@ s
 T       %T (not implemented)
 t
 U    %U    the zero-indexed Sunday week number of the year
-u       %u the six-character time zone offset, e.g. +00:00
-V       %V the one-indexed week number of the year
+u  * %u    ISO 8601 weekday as a decimal number
+u  *    %u the six-character time zone offset, e.g. +00:00
+V    %V %V ISO 8601 week as a decimal number
 v
 W    %W    the zero-indexed Monday week number of the year
 w  - %w %w the weekday number, 0 = Sunday through 6 = Saturday
@@ -50,5 +51,4 @@ Y  - %Y %Y the full year
 y  - %y %y the last two digits of the year
 Z  - %Z %Z the time zone name
 z    %z %z 5-char UTC offset, e.g. +0000
-
 
