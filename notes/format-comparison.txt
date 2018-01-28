@@ -1,34 +1,52 @@
-- %A %A the weekday name
-  %a NA the weekday abbreviated name
-- %B %B the month name
-  %b NA the month abbreviated name
+A  - %A %A the weekday name
+a    %a NA the weekday abbreviated name
+B  - %B %B the month name
+b    %b NA the month abbreviated name
+C
+     %c    locale's date/time representation
+D       %D (not implemented)
+d  - %d %d the one-indexed day of the month
+E
+e       %e the [military time zone](https://en.wikipedia.org/wiki/List_of_military_time_zones) letter
+F
+f  - %f %f 6 fractional digits (truncated) of seconds
+G       %G the full week year of the week date
+g       %g the last two digits of the week number of the week date
+H  - %H %H the 24-hour hour number
+   * %I %h the 12-hour hour number
+J
+j  - %j %j the one-indexed ordinal day of the year
+K
+k
+L
+l
+M  - %M %M the minute number
+m  - %m %m the one-indexed month number
+N
+n
+O
+o       %o the total signed time zone offset in seconds
+P
+p  - %p %p either "AM", for hour < 12, or "PM", otherwise
+Q       %Q the hours part of the time zone offset, as signed two-digit int
+q       %q the minutes part of the time zone offset
+R
+r
+S  - %S %S seconds of the minute
+s
+T       %T (not implemented)
+t
+U    %U    the zero-indexed Sunday week number of the year
+u       %u the six-character time zone offset, e.g. +00:00
+V       %V the one-indexed week number of the year
+v
+W    %W    the zero-indexed Monday week number of the year
+w  - %w %w the weekday number, 0 = Sunday through 6 = Saturday
+X    %X    locale's time representation
+x    %x    locale's date representation
+Y  - %Y %Y the full year
+y  - %y %y the last two digits of the year
+Z  - %Z %Z the time zone name
+z    %z    5-char UTC offset, e.g. +0000
 
-- %d %d the one-indexed day of the month
-     %D (not implemented)
-     %g the last two digits of the week number of the week date
-     %G the full week year of the week date
-- %j %j the one-indexed ordinal day of the year
-- %m %m the one-indexed month number
-     %V the one-indexed week number of the year
-  %U    the zero-indexed Sunday week number of the year
-  %W    the zero-indexed Monday week number of the year
-- %w %w the weekday number, 0 = Sunday through 6 = Saturday
-- %y %y the last two digits of the year
-- %Y %Y the full year
-- %f %f 6 fractional digits (truncated) of seconds
-  %I %h the 12-hour hour number
-- %H %H the 24-hour hour number
-- %M %M the minute number
-- %p %p either "AM", for hour < 12, or "PM", otherwise
-- %S %S seconds of the minute
-     %T (not implemented)
-     %o the total signed time zone offset in seconds
-     %q the minutes part of the time zone offset
-     %Q the hours part of the time zone offset, as signed two-digit int
-     %u the six-character time zone offset, e.g. +00:00
-     %e the [military time zone](https://en.wikipedia.org/wiki/List_of_military_time_zones) letter
-- %Z %Z the time zone name
-  %z    5-char UTC offset, e.g. +0000
-  %c    locale's date/time representation
-  %x    locale's date representation
-  %X    locale's time representation
+
