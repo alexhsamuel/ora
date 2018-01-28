@@ -96,7 +96,7 @@ TEST(Daytime, get_ssm_invalid) {
 TEST(Daytime, format) {
   Daytime const daytime = from_hms(15, 32, 10.0213);
   EXPECT_EQ("<15:32:10>",   format("<%H:%M:%S>", daytime));
-  EXPECT_EQ("15 is 03 PM",  format("%H is %h %p", daytime));
+  EXPECT_EQ("15 is 03 PM",  format("%H is %I %p", daytime));
 }
 
 TEST(Daytime, ostream) {
@@ -117,8 +117,8 @@ TEST(Daytime, ostream) {
 TEST(Daytime, to_string) {
   auto const daytime = from_hms(15, 32, 0.75);
   EXPECT_EQ("15:32:00", to_string(daytime));
-  EXPECT_EQ("3:32:00.75000 pm", to_string(DaytimeFormat("%0h:%M:%.5S %_p")(daytime)));
-  EXPECT_EQ("3:32:00.75000 pm", (std::string) DaytimeFormat("%0h:%M:%.5S %_p")(daytime));
+  EXPECT_EQ("3:32:00.75000 pm", to_string(DaytimeFormat("%0I:%M:%.5S %_p")(daytime)));
+  EXPECT_EQ("3:32:00.75000 pm", (std::string) DaytimeFormat("%0I:%M:%.5S %_p")(daytime));
 }
 
 //------------------------------------------------------------------------------
