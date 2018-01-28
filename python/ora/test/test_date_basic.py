@@ -76,6 +76,11 @@ def test_order():
     assert not Date.MISSING >  Date.MISSING
 
 
+def test_repr():
+    date = 1973/Dec/3
+    assert repr(date) == "Date(1973, Dec, 3)"
+
+
 def test_init_iso_date():
     assert Date("MIN") == Date.MIN
     assert Date("1973-12-03") == 1973/Dec/3

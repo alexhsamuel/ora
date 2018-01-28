@@ -283,7 +283,7 @@ PyDate<DATE>::add_to(
 
   // Build the repr format.
   repr_format_ = make_unique<ora::date::DateFormat>(
-    name + "(%0Y, %~b, %0d)",
+    name + "(%0Y, %~B, %0d)",
     name + ".INVALID",
     name + ".MISSING");
 
