@@ -92,16 +92,6 @@ parse_modifiers(
     pos++;
     break;
 
-  case 'E':
-    // FIXME: IMPLEMENT: Locale's alternative representation.
-    throw TimeFormatError("not implemented: E");
-    break;
-
-  case 'O':
-    // FIXME: IMPLEMENT: Locale's alternative numerical representation
-    throw TimeFormatError("not implemented: O");
-    break;
-
   default:
     // Did not match anything.
     return false;
@@ -303,6 +293,20 @@ format_time_zone(
   TimeZoneParts const& time_zone)
 {
   switch (pattern[pos]) {
+  case 'E':
+  case 'z':
+    {
+      sb << (time_zone.offset < 0 ? '-' : '+');
+      auto const off = std::abs(time_zone.offset);
+      auto const hr = off / SECS_PER_HOUR;
+      auto const mn = off % SECS_PER_HOUR / SECS_PER_MIN;
+      sb.format(hr, mods.get_width(2), '0');
+      if (pattern[pos] == 'E')
+        sb << ':';
+      sb.format(mn, mods.get_width(2), '0');
+    }
+    break;
+
   case 'e':
     sb << get_time_zone_offset_letter(time_zone.offset);
     break;
@@ -324,20 +328,6 @@ format_time_zone(
       sb << (time_zone.offset < 0 ? '-' : '+');
       unsigned const offset_hour = std::abs(time_zone.offset) / SECS_PER_HOUR;
       sb.format(offset_hour, mods.get_width(2), mods.get_pad('0'));
-    }
-    break;
-
-  case 'u':
-  case 'z':
-    {
-      sb << (time_zone.offset < 0 ? '-' : '+');
-      auto const off = std::abs(time_zone.offset);
-      auto const hr = off / SECS_PER_HOUR;
-      auto const mn = off % SECS_PER_HOUR / SECS_PER_MIN;
-      sb.format(hr, mods.get_width(2), '0');
-      if (pattern[pos] == 'u')
-        sb << ':';
-      sb.format(mn, mods.get_width(2), '0');
     }
     break;
 

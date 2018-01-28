@@ -38,11 +38,11 @@ The following format codes are supported for times only:
 
 | Code | Expansion |
 |:----:|:----------|
+| `%E` | the six-character time zone offset, e.g. +00:00 |
 | `%e` | the [military time zone](https://en.wikipedia.org/wiki/List_of_military_time_zones) letter |
 | `%o` | the total signed time zone offset in seconds |
 | `%q` | the minutes part of the time zone offset |
 | `%Q` | the signed hours part of the time zone offset, e.g. +00 |
-| `%u` | the six-character time zone offset, e.g. +00:00 |
 | `%Z` | the time zone name |
 | `%z` | the five-character time zone offset, e.g. +0000 |
 
@@ -65,9 +65,9 @@ The following modifiers are supported:
 - `~` specifies abbreviated names, for months, weekdays, and time zones, for
    example `%~W`.
 
-- `E` (not implemented) specifies the locale's alternative representation.
+- `&` (not implemented) specifies the locale's alternative representation.
 
-- `O` (not implemented) specifies the locale's alternative numerical
+- `$` (not implemented) specifies the locale's alternative numerical
   representation.
 
 
@@ -85,6 +85,6 @@ specifications are supported:
 - `system`: the system time zone
 - a time zone name: the named time zone
 
-For example, the format string `"%Y-%m-%d %H:%M:%S+%u@America/New_York"` formats
+For example, the format string `"%Y-%m-%d %H:%M:%S%E@America/New_York"` formats
 the time, with UTC offset, localized to New York.
 

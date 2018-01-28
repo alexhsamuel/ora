@@ -6,7 +6,7 @@ C
 c  L %c    locale's date/time representation
 D       %D (not implemented)
 d    %d %d the one-indexed day of the month
-E
+E       %E the six-character time zone offset, e.g. +00:00
 e       %e the [military time zone](https://en.wikipedia.org/wiki/List_of_military_time_zones) letter
 F
 f    %f %f 6 fractional digits (truncated) of seconds
@@ -39,8 +39,7 @@ s
 T       %T (not implemented)
 t
 U  - %U    the zero-indexed Sunday week number of the year
-u  * %u    ISO 8601 weekday as a decimal number
-u  *    %u the six-character time zone offset, e.g. +00:00
+u  - %u    ISO 8601 weekday as a decimal number, 1 = Monday through 7 = Sunday
 V    %V %V ISO 8601 week as a decimal number
 v
 W  - %W    the zero-indexed Monday week number of the year
