@@ -123,6 +123,48 @@ format_string(
 }
 
 
+inline void
+format_second(
+  StringBuilder& sb,
+  Second const second,
+  int const precision=-1,
+  int const width=2,
+  char const pad='0')
+{
+  // FIXME: Improve this logic.  See fixfmt.
+  unsigned const prec = std::max(0, precision);
+  long long const prec10 = pow10(prec);
+  auto const digits = std::div((long long) (second * prec10), prec10);
+  // Integer part.
+  sb.format(digits.quot, width, pad);
+  if (precision >= 0) {
+    sb << '.';
+    // Fractional part.
+    if (precision > 0) 
+      sb.format(digits.rem, prec, '0');
+  }
+}
+
+
+inline void
+format_iso_offset(
+  StringBuilder& sb,
+  TimeZoneParts const& time_zone,
+  bool const colon=true,
+  int const width=2)
+{
+  sb << (time_zone.offset < 0 ? '-' : '+');
+  auto const off = std::abs(time_zone.offset);
+  auto const hr = off / SECS_PER_HOUR;
+  auto const mn = off % SECS_PER_HOUR / SECS_PER_MIN;
+  sb.format(hr, width, '0');
+  if (colon)
+    sb << ':';
+  sb.format(mn, width, '0');
+}
+
+
+
 bool
 format_date(
   string const& pattern,
@@ -263,18 +305,8 @@ format_daytime(
     break;
 
   case 'S':
-    {
-      unsigned const prec = std::max(0, mods.precision);
-      unsigned long long const digits = daytime.second * pow10(prec);
-      // Integer part.
-      sb.format(digits / pow10(prec), mods.get_width(2), mods.get_pad('0'));
-      if (mods.precision >= 0) {
-        sb << '.';
-        // Fractional part.
-        if (mods.precision > 0) 
-          sb.format(digits % pow10(prec), prec, '0');
-      }
-    }
+    format_second(
+      sb, daytime.second, mods.precision, mods.get_width(2), mods.get_pad('0'));
     break;
 
   default:
@@ -300,16 +332,7 @@ format_time_zone(
   switch (pattern[pos]) {
   case 'E':
   case 'z':
-    {
-      sb << (time_zone.offset < 0 ? '-' : '+');
-      auto const off = std::abs(time_zone.offset);
-      auto const hr = off / SECS_PER_HOUR;
-      auto const mn = off % SECS_PER_HOUR / SECS_PER_MIN;
-      sb.format(hr, mods.get_width(2), '0');
-      if (pattern[pos] == 'E')
-        sb << ':';
-      sb.format(mn, mods.get_width(2), '0');
-    }
+    format_iso_offset(sb, time_zone, pattern[pos] == 'E', mods.get_width(2));
     break;
 
   case 'e':
@@ -360,13 +383,36 @@ bool
 format_time(
   string const& pattern,
   size_t& pos,
-  StringBuilder& /*sb*/,
-  Modifiers const& /*mods*/)
+  StringBuilder& sb,
+  Modifiers const& mods,
+  FullDate const& date,
+  HmsDaytime const& daytime,
+  TimeZoneParts const& time_zone)
 {
   switch (pattern[pos]) {
   case 'c':
     // FIXME: Locale.
     throw TimeFormatError("not implemented: %c");
+    break;
+
+  case 'i':
+    // FIXME: Factor out an ISO time formatting function.
+    sb.format(date.ymd_date.year, 4, '0');
+    if (!mods.abbreviate)
+      sb << '-';
+    sb.format(date.ymd_date.month, 2, '0');
+    if (!mods.abbreviate)
+      sb << '-';
+    sb.format(date.ymd_date.day, 2, '0');
+    sb << (mods.str_case == '_' ? 't' : 'T');
+    sb.format(daytime.hour, 2, '0');
+    if (!mods.abbreviate)
+      sb << ':';
+    sb.format(daytime.minute, 2, '0');
+    if (!mods.abbreviate)
+      sb << ':';
+    format_second(sb, daytime.second, mods.precision);
+    format_iso_offset(sb, time_zone, !mods.abbreviate);
     break;
 
   default:
@@ -441,7 +487,9 @@ Format::format(
       if (   parts.have_date
           && parts.have_daytime
           && parts.have_time_zone
-          && format_time(pattern_, pos, sb, mods))
+          && format_time(
+            pattern_, pos, sb, mods, 
+            parts.date, parts.daytime, parts.time_zone))
         break;
 
       // If we made it this far, it's not a valid character.

@@ -1,8 +1,8 @@
 # Work List
 
-1. Change formatting.  Instead of %k etc, support:
-   - adjust ISO/RFC predefined format strings
-   - add predefines format strings with subsecond/customizable accuracy
+1. Adjust/clean up C++ predefined format strings.
+1. Add modifier for ISO time with NATO suffix.
+1. Fast-track RFC 3339 formatting function.
 1. Clean up default formats; provide aliases in patterns?
    - RFC 3339
    - Zulu vs numerial offset
@@ -11,7 +11,6 @@
    - default with various second precision
 1. Support UTF-8 in format patterns.
 1. Add an easy way to print RFC 3339 time in display, system time zones.
-1. Fast-track RFC 3339 formatting function.
 1. Revisit type definitions.
    - Benchmark 2^n vs. 10^n types.
    - Add exact us, ns types.

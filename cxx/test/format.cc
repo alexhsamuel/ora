@@ -183,6 +183,17 @@ TEST(TimeFormat, iso_D) {
   EXPECT_EQ("20180128", DateFormat("%~D")(date));
 }
 
+TEST(TimeFormat, iso_i) {
+  auto const time = from_local(2018/JAN/28, from_hms(20, 20, 8.762939453125), *UTC);
+  
+  EXPECT_EQ("2018-01-28T20:20:08+00:00",        TimeFormat("%i")(time));
+  EXPECT_EQ("20180128T202008+0000",             TimeFormat("%~i")(time));
+  EXPECT_EQ("2018-01-28t20:20:08+00:00",        TimeFormat("%_i")(time));
+  EXPECT_EQ("2018-01-28T20:20:08.+00:00",       TimeFormat("%.0i")(time));
+  EXPECT_EQ("2018-01-28T20:20:08.762+00:00",    TimeFormat("%.3i")(time));
+  EXPECT_EQ("2018-01-28T20:20:08.762939453125+00:00", TimeFormat("%.12i")(time));
+}
+
 TEST(TimeFormat, iso_invalid) {
   EXPECT_EQ("INVALID        ",              TimeFormat::ISO_LOCAL_BASIC(Time::INVALID));
   EXPECT_EQ("MISSING            ",          TimeFormat::ISO_LOCAL_EXTENDED(Time::MISSING));

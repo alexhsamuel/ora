@@ -15,7 +15,7 @@ g       %g the last two digits of the week number of the week date
 H    %H %H the 24-hour hour number
 h
 I    %I %I the 12-hour hour number
-i
+i       %i ISO 8601 time (without hyphens and colons, if abbreviated)
 J
 j    %j %j the one-indexed ordinal day of the year
 K
