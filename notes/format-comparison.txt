@@ -13,7 +13,9 @@ f  - %f %f 6 fractional digits (truncated) of seconds
 G       %G the full week year of the week date
 g       %g the last two digits of the week number of the week date
 H  - %H %H the 24-hour hour number
-   * %I %h the 12-hour hour number
+h
+I  - %I %I the 12-hour hour number
+i
 J
 j  - %j %j the one-indexed ordinal day of the year
 K

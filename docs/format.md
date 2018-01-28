@@ -25,8 +25,8 @@ The following format codes are supported for daytimes and times:
 | Code | Expansion |
 |:----:|:----------|
 | '%f' | 6 fractional digits (truncated) of seconds |
-| `%h` | the 12-hour hour number |
 | `%H` | the 24-hour hour number |
+| `%I` | the 12-hour hour number |
 | `%M` | the minute number |
 | `%p` | either "AM", for hour < 12, or "PM", otherwise |
 | `%S` | seconds of the minute |

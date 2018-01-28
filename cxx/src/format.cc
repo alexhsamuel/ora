@@ -235,15 +235,15 @@ format_daytime(
     }
     break;
 
-  case 'h':
+  case 'H':
+    sb.format(daytime.hour, mods.get_width(2), mods.get_pad('0'));
+    break;
+
+  case 'I':
     {
       unsigned const hour = daytime.hour % 12;
       sb.format(hour == 0 ? 12 : hour, mods.get_width(2), mods.get_pad('0'));
     }
-    break;
-
-  case 'H':
-    sb.format(daytime.hour, mods.get_width(2), mods.get_pad('0'));
     break;
 
   case 'M':
