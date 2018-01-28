@@ -295,6 +295,10 @@ format_time_zone(
   TimeZoneParts const& time_zone)
 {
   switch (pattern[pos]) {
+  case 'e':
+    sb << get_time_zone_offset_letter(time_zone.offset);
+    break;
+
   case 'o':
     sb << (time_zone.offset < 0 ? '-' : '+');
     sb.format(std::abs(time_zone.offset), mods.get_width(5), mods.get_pad('0'));
@@ -325,10 +329,6 @@ format_time_zone(
       sb << ':';
       sb.format(mn, mods.get_width(2), '0');
     }
-    break;
-
-  case 'z':
-    sb << get_time_zone_offset_letter(time_zone.offset);
     break;
 
   case 'Z':
@@ -455,11 +455,11 @@ Format::format(
 
 namespace time {
 
-TimeFormat const TimeFormat::DEFAULT("%Y-%m-%dT%H:%M:%S%z", "INVALID", "MISSING");
+TimeFormat const TimeFormat::DEFAULT("%Y-%m-%dT%H:%M:%S%e", "INVALID", "MISSING");
 TimeFormat const TimeFormat::ISO_LOCAL_BASIC            = "%Y%m%dT%H%M%S";
 TimeFormat const TimeFormat::ISO_LOCAL_EXTENDED         = "%Y-%m-%dT%H:%M:%S";
-TimeFormat const TimeFormat::ISO_ZONE_LETTER_BASIC      = "%Y%m%dT%H%M%S%z";
-TimeFormat const TimeFormat::ISO_ZONE_LETTER_EXTENDED   = "%Y-%m-%dT%H:%M:%S%z";
+TimeFormat const TimeFormat::ISO_ZONE_LETTER_BASIC      = "%Y%m%dT%H%M%S%e";
+TimeFormat const TimeFormat::ISO_ZONE_LETTER_EXTENDED   = "%Y-%m-%dT%H:%M:%S%e";
 TimeFormat const TimeFormat::ISO_ZONE_BASIC             = "%Y%m%dT%H%M%S%Q%q";
 TimeFormat const TimeFormat::ISO_ZONE_EXTENDED          = "%Y-%m-%dT%H:%M:%S%Q:%q";
 

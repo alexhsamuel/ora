@@ -1,7 +1,8 @@
 - %A %A the weekday name
   %a NA the weekday abbreviated name
-  %b NA the month abbreviated name
 - %B %B the month name
+  %b NA the month abbreviated name
+
 - %d %d the one-indexed day of the month
      %D (not implemented)
      %g the last two digits of the week number of the week date
@@ -25,9 +26,9 @@
      %q the minutes part of the time zone offset
      %Q the hours part of the time zone offset, as signed two-digit int
      %u the six-character time zone offset, e.g. +00:00
+     %e the [military time zone](https://en.wikipedia.org/wiki/List_of_military_time_zones) letter
 - %Z %Z the time zone name
-*    %z the [military time zone](https://en.wikipedia.org/wiki/List_of_military_time_zones) letter
-  %z    5-char UTC offset, e.g. +00:00
+  %z    5-char UTC offset, e.g. +0000
   %c    locale's date/time representation
   %x    locale's date representation
   %X    locale's time representation
