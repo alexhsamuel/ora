@@ -11,8 +11,8 @@ The following format codes are supported for dates and times:
 | `%a` | the weekday abbreviated name; same as `%~A` |
 | `%B` | the month name |
 | `%b` | the month abbreviated name; same as `%~B` |
+| `%D` | the date as "YYYY-MM-DD", or "YYYYMMDD" for `%~D` |
 | `%d` | the one-indexed day of the month |
-| `%D` | (not implemented) |
 | `%g` | the last two digits of the week year of the ISO week date |
 | `%G` | the week year of the ISO week date |
 | `%j` | the one-indexed ordinal day of the year |

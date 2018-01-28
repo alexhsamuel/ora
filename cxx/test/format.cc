@@ -29,7 +29,6 @@ TEST(TimeFormat, all) {
   EXPECT_EQ("July (Jul)",       TimeFormat("%B (%~B)")(time, *tz));
   EXPECT_THROW(TimeFormat("%c")(time, *tz), TimeFormatError);  // FIXME
   EXPECT_EQ("28",               TimeFormat("%d")(time, *tz));
-  EXPECT_THROW(TimeFormat("%D")(time, *tz), TimeFormatError);  // FIXME
   EXPECT_EQ("000000",           TimeFormat("%f")(time, *tz));
   EXPECT_EQ("13",               TimeFormat("%g")(time, *tz));
   EXPECT_EQ("2013",             TimeFormat("%G")(time, *tz));
@@ -41,7 +40,6 @@ TEST(TimeFormat, all) {
   EXPECT_EQ("PM",               TimeFormat("%p")(time, *tz));
   EXPECT_EQ("UTC-04h, 00m",     TimeFormat("UTC%Qh, %qm")(time, *tz));
   EXPECT_EQ("38",               TimeFormat("%S")(time, *tz));
-  EXPECT_THROW(TimeFormat("%T")(time, *tz), TimeFormatError);  // FIXME
   EXPECT_EQ("week 30 of 2013",  TimeFormat("week %V of %G")(time, *tz));
   EXPECT_EQ("7 = Sunday (Sun)", TimeFormat("%u = %A (%~A)")(time, *tz));
   EXPECT_EQ("0 = Sunday (Sun)", TimeFormat("%w = %A (%~A)")(time, *tz));
@@ -172,6 +170,17 @@ TEST(TimeFormat, iso) {
   EXPECT_EQ("2013-07-28T19:37:38Z",         TimeFormat::ISO_ZONE_LETTER_EXTENDED(time));
   EXPECT_EQ("20130728T153738-0400",         TimeFormat::ISO_ZONE_BASIC(time, DTZ));
   EXPECT_EQ("2013-07-28T15:37:38-04:00",    TimeFormat::ISO_ZONE_EXTENDED(time, DTZ));
+}
+
+TEST(TimeFormat, iso_D) {
+  auto const time = from_local(2018/JAN/28, from_hms(20, 20, 8.0), *UTC);
+  auto const date = 2018/JAN/28;
+
+  EXPECT_EQ("2018-01-28", TimeFormat("%D")(time));
+  EXPECT_EQ("2018-01-28", DateFormat("%D")(date));
+
+  EXPECT_EQ("20180128", TimeFormat("%~D")(time));
+  EXPECT_EQ("20180128", DateFormat("%~D")(date));
 }
 
 TEST(TimeFormat, iso_invalid) {

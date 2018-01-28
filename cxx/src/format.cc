@@ -154,13 +154,18 @@ format_date(
     format_string(sb, mods, get_month_abbr(date.ymd_date.month));
     break;
 
-  case 'd':
-    sb.format(date.ymd_date.day, mods.get_width(2), mods.get_pad('0'));
+  case 'D':
+    sb.format(date.ymd_date.year, 4, '0');
+    if (!mods.abbreviate)
+      sb << '-';
+    sb.format(date.ymd_date.month, 2, '0');
+    if (!mods.abbreviate)
+      sb << '-';
+    sb.format(date.ymd_date.day, 2, '0');
     break;
 
-  case 'D':
-    // FIXME: Locale.
-    throw TimeFormatError("not implemented: %D");
+  case 'd':
+    sb.format(date.ymd_date.day, mods.get_width(2), mods.get_pad('0'));
     break;
 
   case 'g':

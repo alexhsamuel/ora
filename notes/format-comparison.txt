@@ -4,7 +4,7 @@ B    %B %B the month name
 b    %b %b the month abbreviated name
 C
 c  L %c    locale's date/time representation
-D       %D (not implemented)
+D       %D ISO 8601 date (without hyphens, if abbreviated)
 d    %d %d the one-indexed day of the month
 E       %E the six-character time zone offset, e.g. +00:00
 e       %e the [military time zone](https://en.wikipedia.org/wiki/List_of_military_time_zones) letter
