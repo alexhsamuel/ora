@@ -112,7 +112,7 @@ Cron provides overloads for `to_string` and `operator<<` that render a date in t
 `DateFormat` provides flexible formatting of dates.  An instance takes an extended [strftime](http://man7.org/linux/man-pages/man3/strftime.3.html)-style format string; see [format.md](format.md) for codes.  Its `operator()` formats a date.
 
 ```c++
-DateFormat fmt("%~^W, %0d %b %Y");
+DateFormat fmt("%~^W, %0d %B %Y");
 std::cout << fmt(1973/DEC/3);  // prints 'MON, 3 December 1973'
 ```
 

@@ -1,5 +1,6 @@
-  %b    the month abbreviated name
-* %B %b the month name
+  %a NA the weekday abbreviated name
+  %b NA the month abbreviated name
+- %B %B the month name
 - %d %d the one-indexed day of the month
      %D (not implemented)
      %g the last two digits of the week number of the week date
@@ -11,7 +12,6 @@
   %W    the zero-indexed Monday week number of the year
 - %w %w the weekday number, 0 = Sunday through 6 = Saturday
 * %A %W the weekday name
-  %a    the weekday abbreviated name
 - %y %y the last two digits of the year
 - %Y %Y the full year
 - %f %f 6 fractional digits (truncated) of seconds

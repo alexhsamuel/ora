@@ -142,7 +142,7 @@ format_date(
   FullDate const& date)
 {
   switch (pattern[pos]) {
-  case 'b':
+  case 'B':
     format_string(
       sb, mods, 
       mods.abbreviate ? get_month_abbr(date.ymd_date.month) 

@@ -7,7 +7,7 @@ The following format codes are supported for dates and times:
 
 | Code | Expansion |
 |:----:|:----------|
-| `%b` | the month name |
+| `%B` | the month name |
 | `%d` | the one-indexed day of the month |
 | `%D` | (not implemented) |
 | `%g` | the last two digits of the week number of the week date |

@@ -26,7 +26,7 @@ TEST(TimeFormat, invalid) {
 TEST(TimeFormat, all) {
   auto const tz = get_time_zone("US/Eastern");
   auto const time = from_local(2013/JUL/28, from_hms(15, 37, 38.0), *tz);
-  EXPECT_EQ("July (Jul)",       TimeFormat("%b (%~b)")(time, *tz));
+  EXPECT_EQ("July (Jul)",       TimeFormat("%B (%~B)")(time, *tz));
   EXPECT_THROW(TimeFormat("%c")(time, *tz), TimeFormatError);  // FIXME
   EXPECT_EQ("28",               TimeFormat("%d")(time, *tz));
   EXPECT_THROW(TimeFormat("%D")(time, *tz), TimeFormatError);  // FIXME
@@ -71,8 +71,8 @@ TEST(TimeFormat, str_width) {
   auto const time = from_local(2013/JAN/1, from_hms(6, 7, 8.0), *tz);
   EXPECT_EQ("     TUESDAY", TimeFormat("%12^W")(time, *tz));
   EXPECT_EQ("         TUE", TimeFormat("%12^~W")(time, *tz));
-  EXPECT_EQ("*****JANUARY", TimeFormat("%#*12^b")(time, *tz));
-  EXPECT_EQ("*********JAN", TimeFormat("%#*12^~b")(time, *tz));
+  EXPECT_EQ("*****JANUARY", TimeFormat("%#*12^B")(time, *tz));
+  EXPECT_EQ("*********JAN", TimeFormat("%#*12^~B")(time, *tz));
 }
 
 TEST(TimeFormat, rounding) {
@@ -129,11 +129,11 @@ TEST(TimeFormat, pad) {
 TEST(TimeFormat, str_case) {
   auto const tz = get_time_zone("US/Eastern");
   auto const time = from_local(2013/JAN/1, from_hms(6, 7, 8.01234), *tz);
-  EXPECT_EQ("1 = JAN",          TimeFormat("%0m = %^~b")(time));
-  EXPECT_EQ("1 = JAN",          TimeFormat("%0m = %~^b")(time));
-  EXPECT_EQ("1 = jan",          TimeFormat("%0m = %_~b")(time));
-  EXPECT_EQ("1 = jan",          TimeFormat("%0m = %~_b")(time));
-  EXPECT_EQ("1 = JANUARY",      TimeFormat("%0m = %^b")(time));
+  EXPECT_EQ("1 = JAN",          TimeFormat("%0m = %^~B")(time));
+  EXPECT_EQ("1 = JAN",          TimeFormat("%0m = %~^B")(time));
+  EXPECT_EQ("1 = jan",          TimeFormat("%0m = %_~B")(time));
+  EXPECT_EQ("1 = jan",          TimeFormat("%0m = %~_B")(time));
+  EXPECT_EQ("1 = JANUARY",      TimeFormat("%0m = %^B")(time));
 
   EXPECT_EQ("2 = Tue",          TimeFormat("%0w = %~W")(time));
   EXPECT_EQ("2 = TUE",          TimeFormat("%0w = %^~W")(time));
