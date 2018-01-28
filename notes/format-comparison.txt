@@ -39,7 +39,7 @@ s
 T       %T (not implemented)
 t
 U  - %U    the zero-indexed Sunday week number of the year
-u  - %u    ISO 8601 weekday as a decimal number, 1 = Monday through 7 = Sunday
+u    %u %u ISO 8601 weekday as a decimal number, 1 = Monday through 7 = Sunday
 V    %V %V ISO 8601 week as a decimal number
 v
 W  - %W    the zero-indexed Monday week number of the year

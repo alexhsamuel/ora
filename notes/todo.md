@@ -13,7 +13,6 @@
    - default with various second precision
 1. Add an easy way to print RFC 3339 time in display, system time zones.
 1. Fast-track RFC 3339 formatting function.
-1. Add DTZ, STZ objects for display, system time zones.
 1. Revisit type definitions.
    - Benchmark 2^n vs. 10^n types.
    - Add exact us, ns types.
@@ -44,6 +43,7 @@
 1. Locale support in formatting.
 1. Docstrings for Time methods.
 1. Test that the display time zone is thread local.
+1. Add DTZ, STZ objects for display, system time zones.
 1. Cache `Format` instances used by Python.
 
 

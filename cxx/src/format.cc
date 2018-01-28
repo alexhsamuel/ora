@@ -188,10 +188,15 @@ format_date(
       date.week_date.week, mods.get_width(2), mods.get_pad('0'));
     break;
 
-  case 'w':
-    // FIXME: Generalize?
+  case 'u':
     sb.format(
       weekday::ENCODING_ISO::encode(date.week_date.weekday),
+      mods.get_width(1), mods.get_pad('0'));
+    break;
+
+  case 'w':
+    sb.format(
+      weekday::ENCODING_CLIB::encode(date.week_date.weekday),
       mods.get_width(1), mods.get_pad('0'));
     break;
 

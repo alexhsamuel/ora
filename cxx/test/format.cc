@@ -43,7 +43,8 @@ TEST(TimeFormat, all) {
   EXPECT_EQ("38",               TimeFormat("%S")(time, *tz));
   EXPECT_THROW(TimeFormat("%T")(time, *tz), TimeFormatError);  // FIXME
   EXPECT_EQ("week 30 of 2013",  TimeFormat("week %V of %G")(time, *tz));
-  EXPECT_EQ("7 = Sunday (Sun)", TimeFormat("%w = %A (%~A)")(time, *tz));
+  EXPECT_EQ("7 = Sunday (Sun)", TimeFormat("%u = %A (%~A)")(time, *tz));
+  EXPECT_EQ("0 = Sunday (Sun)", TimeFormat("%w = %A (%~A)")(time, *tz));
   EXPECT_EQ("13",               TimeFormat("%y")(time, *tz));
   EXPECT_EQ("2013",             TimeFormat("%Y")(time, *tz));
   EXPECT_THROW(TimeFormat("%Z")(time, *tz), TimeFormatError);  // FIXME
