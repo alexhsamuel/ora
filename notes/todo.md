@@ -3,14 +3,13 @@
 1. Change formatting.  Instead of %k etc, support:
    - adjust ISO/RFC predefined format strings
    - add predefines format strings with subsecond/customizable accuracy
-   - add missing strftime format codes
-   - support UTF-8 patterns
 1. Clean up default formats; provide aliases in patterns?
    - RFC 3339
    - Zulu vs numerial offset
    - default
    - make second precision type-specific?
    - default with various second precision
+1. Support UTF-8 in format patterns.
 1. Add an easy way to print RFC 3339 time in display, system time zones.
 1. Fast-track RFC 3339 formatting function.
 1. Revisit type definitions.
@@ -45,6 +44,7 @@
 1. Test that the display time zone is thread local.
 1. Add DTZ, STZ objects for display, system time zones.
 1. Cache `Format` instances used by Python.
+1. Add missing strftime format codes: %U, %W.
 
 
 # C++ API

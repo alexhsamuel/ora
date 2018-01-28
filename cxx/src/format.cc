@@ -272,11 +272,6 @@ format_daytime(
     }
     break;
 
-  case 'T':
-    // FIXME: Locale.
-    throw TimeFormatError("not implemented: %T");
-    break;
-
   default:
     // Did not match anything.
     return false;

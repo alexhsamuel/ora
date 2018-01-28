@@ -33,7 +33,6 @@ The following format codes are supported for daytimes and times:
 | `%M` | the minute number |
 | `%p` | either "AM", for hour < 12, or "PM", otherwise |
 | `%S` | seconds of the minute |
-| `%T` | (not implemented) |
 
 The following format codes are supported for times only:
 
