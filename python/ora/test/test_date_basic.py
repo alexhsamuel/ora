@@ -4,6 +4,7 @@ import pytest
 
 import ora
 from   ora import *
+from   ora import Date, Date16, TimeZone, now, today, UTC
 
 import data
 
@@ -50,7 +51,7 @@ def test_comparison_sampled1():
         assert not date <  date
 
 
-def test_comparison_sampled1():
+def test_comparison_sampled2():
     for date0 in data.sample_dates(3881):
         for date1 in data.sample_dates(3391):
             assert date0 < date1 or date0 == date1 or date0 > date1
@@ -119,12 +120,12 @@ def test_format():
     assert format(date, "%Y-%m-%d")             == "2016-07-10"
     assert format(date, "%Y/%m/%d")             == "2016/07/10"
     assert format(date, "%d#%d")                == "10#10"
-    assert format(date, "%G~%V~%_~W")           == "2016~27~sun"
+    assert format(date, "%G~%V~%_~A")           == "2016~27~sun"
 
     assert format(Date.INVALID, "%Y-%m-%d")     == "INVALID   "
     assert format(Date.INVALID, "%Y/%m/%d")     == "INVALID   "
     assert format(Date.MISSING, "%d#%d")        == "MISSI"
-    assert format(Date.MISSING, "%G~%V~%^~W")   == "MISSING    "
+    assert format(Date.MISSING, "%G~%V~%^~A")   == "MISSING    "
 
 
 def test_std():

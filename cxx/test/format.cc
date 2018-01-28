@@ -44,7 +44,7 @@ TEST(TimeFormat, all) {
   EXPECT_THROW(TimeFormat("%T")(time, *tz), TimeFormatError);  // FIXME
   EXPECT_EQ("-",                TimeFormat("%U")(time, *tz));
   EXPECT_EQ("week 30 of 2013",  TimeFormat("week %V of %G")(time, *tz));
-  EXPECT_EQ("7 = Sunday (Sun)", TimeFormat("%w = %W (%~W)")(time, *tz));
+  EXPECT_EQ("7 = Sunday (Sun)", TimeFormat("%w = %A (%~A)")(time, *tz));
   EXPECT_EQ("13",               TimeFormat("%y")(time, *tz));
   EXPECT_EQ("2013",             TimeFormat("%Y")(time, *tz));
   EXPECT_THROW(TimeFormat("%Z")(time, *tz), TimeFormatError);  // FIXME
@@ -69,8 +69,8 @@ TEST(TimeFormat, width) {
 TEST(TimeFormat, str_width) {
   auto const tz = get_time_zone("US/Eastern");
   auto const time = from_local(2013/JAN/1, from_hms(6, 7, 8.0), *tz);
-  EXPECT_EQ("     TUESDAY", TimeFormat("%12^W")(time, *tz));
-  EXPECT_EQ("         TUE", TimeFormat("%12^~W")(time, *tz));
+  EXPECT_EQ("     TUESDAY", TimeFormat("%12^A")(time, *tz));
+  EXPECT_EQ("         TUE", TimeFormat("%12^~A")(time, *tz));
   EXPECT_EQ("*****JANUARY", TimeFormat("%#*12^B")(time, *tz));
   EXPECT_EQ("*********JAN", TimeFormat("%#*12^~B")(time, *tz));
 }
@@ -135,13 +135,13 @@ TEST(TimeFormat, str_case) {
   EXPECT_EQ("1 = jan",          TimeFormat("%0m = %~_B")(time));
   EXPECT_EQ("1 = JANUARY",      TimeFormat("%0m = %^B")(time));
 
-  EXPECT_EQ("2 = Tue",          TimeFormat("%0w = %~W")(time));
-  EXPECT_EQ("2 = TUE",          TimeFormat("%0w = %^~W")(time));
-  EXPECT_EQ("2 = TUE",          TimeFormat("%0w = %~^W")(time));
-  EXPECT_EQ("2 = tue",          TimeFormat("%0w = %_~W")(time));
-  EXPECT_EQ("2 = tue",          TimeFormat("%0w = %~_W")(time));
-  EXPECT_EQ("2 = TUESDAY",      TimeFormat("%0w = %^W")(time));
-  EXPECT_EQ("2 = Tuesday",      TimeFormat("%0w = %W")(time));
+  EXPECT_EQ("2 = Tue",          TimeFormat("%0w = %~A")(time));
+  EXPECT_EQ("2 = TUE",          TimeFormat("%0w = %^~A")(time));
+  EXPECT_EQ("2 = TUE",          TimeFormat("%0w = %~^A")(time));
+  EXPECT_EQ("2 = tue",          TimeFormat("%0w = %_~A")(time));
+  EXPECT_EQ("2 = tue",          TimeFormat("%0w = %~_A")(time));
+  EXPECT_EQ("2 = TUESDAY",      TimeFormat("%0w = %^A")(time));
+  EXPECT_EQ("2 = Tuesday",      TimeFormat("%0w = %A")(time));
 }
 
 TEST(TimeFormat, display_time_zone) {

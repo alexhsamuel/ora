@@ -4,10 +4,10 @@ import pytest
 
 import ora
 from   ora import *
-from   ora import Time, SmallTime, Unix32Time, Daytime, UTC
-from   ora import to_local, from_local, now, display_time_zone
+from   ora import Time, Time128, SmallTime, Unix32Time, Daytime, UTC, MIDNIGHT
+from   ora import to_local, from_local, now, display_time_zone, get_system_time_zone
 import data
-from   tools import *
+from   tools import xeq
 
 #-------------------------------------------------------------------------------
 
@@ -95,12 +95,12 @@ def test_format():
     assert format(time, "%Y,%m,%d,%H,%M,%S")            == "2016,07,11,09,34,15"
     assert format(time, "%1H%M %^p")                    == "934 AM"
     assert format(time, "%%%%%H%M%.5S%%%%")             == "%%093415.62500%%"
-    assert format(time, "%~_W!")                        == "mon!"
+    assert format(time, "%~_A!")                        == "mon!"
 
     assert format(Time.INVALID, "%Y,%m,%d,%H,%M,%S")    == "INVALID            "
     assert format(Time.INVALID, "%1H%M %^p")            == "INVALI"
     assert format(Time.MISSING, "%%%%%H%M%.5S%%%%")     == "MISSING         "
-    assert format(Time.MISSING, "%~W!")                 == "MISS"
+    assert format(Time.MISSING, "%~A!")                 == "MISS"
 
 
 def test_format_tz():

@@ -7,6 +7,7 @@ The following format codes are supported for dates and times:
 
 | Code | Expansion |
 |:----:|:----------|
+| `%A` | the weekday name |
 | `%B` | the month name |
 | `%d` | the one-indexed day of the month |
 | `%D` | (not implemented) |
@@ -16,7 +17,6 @@ The following format codes are supported for dates and times:
 | `%m` | the one-indexed month number |
 | `%V` | the one-indexed week number of the year |
 | `%w` | the weekday number, 0 = Sunday through 6 = Saturday |
-| `%W` | the weekday name |
 | `%y` | the last two digits of the year |
 | `%Y` | the full year |
 

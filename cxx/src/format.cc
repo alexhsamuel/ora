@@ -142,6 +142,13 @@ format_date(
   FullDate const& date)
 {
   switch (pattern[pos]) {
+  case 'A':
+    format_string(
+      sb, mods, 
+      mods.abbreviate ? get_weekday_abbr(date.week_date.weekday) 
+        : get_weekday_name(date.week_date.weekday));
+    break;
+
   case 'B':
     format_string(
       sb, mods, 
@@ -188,13 +195,6 @@ format_date(
     sb.format(
       weekday::ENCODING_ISO::encode(date.week_date.weekday),
       mods.get_width(1), mods.get_pad('0'));
-    break;
-
-  case 'W':
-    format_string(
-      sb, mods, 
-      mods.abbreviate ? get_weekday_abbr(date.week_date.weekday) 
-        : get_weekday_name(date.week_date.weekday));
     break;
 
   case 'y':
