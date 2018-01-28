@@ -8,7 +8,9 @@ The following format codes are supported for dates and times:
 | Code | Expansion |
 |:----:|:----------|
 | `%A` | the weekday name |
+| `%a` | the weekday abbreviated name; same as `%~A` |
 | `%B` | the month name |
+| `%b` | the month abbreviated name; same as `%~B` |
 | `%d` | the one-indexed day of the month |
 | `%D` | (not implemented) |
 | `%g` | the last two digits of the week number of the week date |

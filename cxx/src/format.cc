@@ -149,11 +149,19 @@ format_date(
         : get_weekday_name(date.week_date.weekday));
     break;
 
+  case 'a':
+    format_string(sb, mods, get_weekday_abbr(date.week_date.weekday));
+    break;
+
   case 'B':
     format_string(
       sb, mods, 
       mods.abbreviate ? get_month_abbr(date.ymd_date.month) 
         : get_month_name(date.ymd_date.month));
+    break;
+
+  case 'b':
+    format_string(sb, mods, get_month_abbr(date.ymd_date.month));
     break;
 
   case 'd':

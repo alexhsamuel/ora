@@ -127,10 +127,20 @@ def test_format():
     assert format(date, "%d#%d")                == "10#10"
     assert format(date, "%G~%V~%_~A")           == "2016~27~sun"
 
+
+def test_format_invalid():
     assert format(Date.INVALID, "%Y-%m-%d")     == "INVALID   "
     assert format(Date.INVALID, "%Y/%m/%d")     == "INVALID   "
     assert format(Date.MISSING, "%d#%d")        == "MISSI"
     assert format(Date.MISSING, "%G~%V~%^~A")   == "MISSING    "
+
+
+def test_format_abbrev():
+    d = Date(2018, 1, 28)
+    assert format(d, "this wd is %a")  == "this wd is Sun"
+    assert format(d, "this wd is %~A") == "this wd is Sun"
+    assert format(d, "this mo is %b")  == "this mo is Jan"
+    assert format(d, "this mo is %~B") == "this mo is Jan"
 
 
 def test_std():
