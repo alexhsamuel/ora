@@ -23,8 +23,7 @@
      %T (not implemented)
      %o the total signed time zone offset in seconds
      %q the minutes part of the time zone offset
-     %Q the hours part of the time zone offset
-*    %U the sign of the time zone offset
+     %Q the hours part of the time zone offset, as signed two-digit int
      %u the six-character time zone offset, e.g. +00:00
 - %Z %Z the time zone name
 *    %z the [military time zone](https://en.wikipedia.org/wiki/List_of_military_time_zones) letter
