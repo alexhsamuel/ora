@@ -3,29 +3,29 @@
 1. Adjust/clean up C++ predefined format strings.
 1. Add modifier for ISO time with NATO suffix.
 1. Fast-track RFC 3339 formatting function.
+1. Make Time(datetime, tz) work for naive datetime.
 1. Clean up default formats; provide aliases in patterns?
    - RFC 3339
    - Zulu vs numerial offset
    - default
    - make second precision type-specific?
    - default with various second precision
-1. Support UTF-8 in format patterns.
+1. Intro Python documentation in rst.
+1. ReadTheDocs support.
 1. Add an easy way to print RFC 3339 time in display, system time zones.
+1. Basic string parsing for `convert_to_*()` functions.
+1. Full parsing support.
 1. Revisit type definitions.
    - Benchmark 2^n vs. 10^n types.
    - Add exact us, ns types.
 1. Benchmark tick computations.
-1. Intro Python documentation in rst.
-1. ReadTheDocs support.
 1. Fix rounding of ora.now(UsecTime).
 1. Remove Time.get_parts().
 1. Relax numpy setup dependency.
-1. Make Time(datetime, tz) work for naive datetime.
+1. Support UTF-8 in format patterns.
 1. Build conda package.
 1. Rename `InvalidDateError` -> `BadDateError` _et fils_.
 1. timezone etc. namespace cleanup
-1. Basic string parsing for `convert_to_*()` functions.
-1. Full parsing support.
 1. Daytime and Time rounding functions.  Maybe like Arrow's `floor()`, `ceil()`?
 1. Use `fold` attribute per [PEP-495](https://www.python.org/dev/peps/pep-0495/)
 1. Clean up C++ Time and localization functions; document.
