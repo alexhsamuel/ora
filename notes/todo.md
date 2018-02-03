@@ -1,15 +1,7 @@
 # Work List
 
-1. Adjust/clean up C++ predefined format strings.
-1. Add modifier for ISO time with NATO suffix.
 1. Fast-track RFC 3339 formatting function.
 1. Make Time(datetime, tz) work for naive datetime.
-1. Clean up default formats; provide aliases in patterns?
-   - RFC 3339
-   - Zulu vs numerial offset
-   - default
-   - make second precision type-specific?
-   - default with various second precision
 1. Intro Python documentation in rst.
 1. ReadTheDocs support.
 1. Add an easy way to print RFC 3339 time in display, system time zones.
@@ -44,6 +36,7 @@
 1. Add DTZ, STZ objects for display, system time zones.
 1. Cache `Format` instances used by Python.
 1. Add missing strftime format codes: %U, %W.
+1. Adjust/clean up C++ predefined format strings.
 
 
 # C++ API

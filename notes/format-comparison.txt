@@ -36,7 +36,7 @@ R
 r
 S    %S %S seconds of the minute
 s
-T
+T       %T ISO 8601 time with military time zone letter
 t
 U  - %U    the zero-indexed Sunday week number of the year
 u    %u %u ISO 8601 weekday as a decimal number, 1 = Monday through 7 = Sunday

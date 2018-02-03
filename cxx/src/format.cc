@@ -396,6 +396,7 @@ format_time(
     break;
 
   case 'i':
+  case 'T':
     // FIXME: Factor out an ISO time formatting function.
     sb.format(date.ymd_date.year, 4, '0');
     if (!mods.abbreviate)
@@ -412,7 +413,10 @@ format_time(
     if (!mods.abbreviate)
       sb << ':';
     format_second(sb, daytime.second, mods.precision);
-    format_iso_offset(sb, time_zone, !mods.abbreviate);
+    if (pattern[pos] == 'i')
+      format_iso_offset(sb, time_zone, !mods.abbreviate);
+    else
+      sb << get_time_zone_offset_letter(time_zone.offset);
     break;
 
   default:
@@ -596,7 +600,7 @@ time_zone_offset_letters[25] = {
 // correspondence, because it is not a round hour offset from UTC.
 char const
 time_zone_offset_letter_missing
-  = '*';
+  = '?';
 
 
 string const

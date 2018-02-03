@@ -208,6 +208,31 @@ TEST(TimeFormat, iso_i_tz) {
   EXPECT_EQ("2018-01-28T20:20:08.762939453125+00:00", TimeFormat("%.12i")(time, *UTC));
 }
 
+TEST(TimeFormat, iso_T) {
+  auto const time = from_local(2018/JAN/28, from_hms(20, 20, 8.762939453125), *UTC);
+  
+  EXPECT_EQ("2018-01-28T20:20:08Z",             TimeFormat("%T")(time));
+  EXPECT_EQ("20180128T202008Z",                 TimeFormat("%~T")(time));
+  EXPECT_EQ("2018-01-28t20:20:08Z",             TimeFormat("%_T")(time));
+  EXPECT_EQ("2018-01-28T20:20:08.Z",            TimeFormat("%.0T")(time));
+  EXPECT_EQ("2018-01-28T20:20:08.762Z",         TimeFormat("%.3T")(time));
+  EXPECT_EQ("2018-01-28T20:20:08.762939453125Z", TimeFormat("%.12T")(time));
+}
+
+TEST(TimeFormat, iso_T_tz) {
+  auto const time = from_local(2018/JAN/28, from_hms(20, 20, 8.762939453125), *UTC);
+  auto const tz0 = get_time_zone("US/Eastern");
+  auto const tz1 = get_time_zone("Asia/Tokyo");
+  auto const tz2 = get_time_zone("Asia/Kolkata");
+  
+  EXPECT_EQ("2018-01-28T15:20:08R",             TimeFormat("%T")(time, *tz0));
+  EXPECT_EQ("20180129T052008I",                 TimeFormat("%~T")(time, *tz1));
+  EXPECT_EQ("2018-01-29t01:50:08?",             TimeFormat("%_T")(time, *tz2));
+  EXPECT_EQ("2018-01-28T15:20:08.R",            TimeFormat("%.0T")(time, *tz0));
+  EXPECT_EQ("2018-01-29T01:50:08.762?",         TimeFormat("%.3T")(time, *tz2));
+  EXPECT_EQ("2018-01-28T20:20:08.762939453125Z", TimeFormat("%.12T")(time, *UTC));
+}
+
 TEST(TimeFormat, iso_invalid) {
   EXPECT_EQ("INVALID        ",              TimeFormat::ISO_LOCAL_BASIC(Time::INVALID));
   EXPECT_EQ("MISSING            ",          TimeFormat::ISO_LOCAL_EXTENDED(Time::MISSING));
