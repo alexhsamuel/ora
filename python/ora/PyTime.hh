@@ -274,7 +274,7 @@ PyTime<TIME>::add_to(
     pattern += ".";
     pattern += std::to_string(precision);
   }
-  pattern += "SZ";
+  pattern += "S%E";
   str_format_ = make_unique<ora::time::TimeFormat>(pattern);
 
   // Add in static data members.

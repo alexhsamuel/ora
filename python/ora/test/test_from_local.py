@@ -4,6 +4,7 @@ import pytz
 import pytest
 
 import ora
+from   ora import Time, NsecTime, Date, Daytime, from_local, to_local, UTC
 from   ora import *
 import data
 
@@ -12,22 +13,22 @@ import data
 def test_utc0():
     t = from_local((1973/Dec/3, 7200.125), UTC)
     # FIXME
-    assert(str(t) == "1973-12-03T02:00:00.12500000Z")
+    assert(str(t) == "1973-12-03T02:00:00.12500000+00:00")
 
 
 def test_nsec_time():
     # FIXME
     t = from_local((1900/Jan/1, 0), UTC, Time=NsecTime)
-    assert str(t) == "1900-01-01T00:00:00.0000000000Z"
+    assert str(t) == "1900-01-01T00:00:00.0000000000+00:00"
 
     t = from_local((2444/May/29, Daytime(1, 53, 3.999999997)), UTC, Time=NsecTime)
-    assert str(t) == "2444-05-29T01:53:03.9999999972Z"
+    assert str(t) == "2444-05-29T01:53:03.9999999972+00:00"
 
     with pytest.raises(OverflowError):
         from_local((2444/May/29, Daytime(1, 53, 5)), UTC, Time=NsecTime)
 
     t = from_local((1973/Dec/3, 7200.125), UTC, Time=NsecTime)
-    assert str(t) == "1973-12-03T02:00:00.1250000000Z"
+    assert str(t) == "1973-12-03T02:00:00.1250000000+00:00"
 
 
     
