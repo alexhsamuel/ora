@@ -22,6 +22,11 @@ namespace ora {
 // Functions
 //------------------------------------------------------------------------------
 
+extern void format_iso_time(
+  StringBuilder& sb, YmdDate const& date, HmsDaytime const& daytime, 
+  TimeZoneParts const& time_zone, 
+  int precision, bool compact=false, bool capital=true, bool military=false);
+
 extern std::string const& get_month_name(Month month);
 extern Month parse_month_name(std::string const& str);
 extern std::string const& get_month_abbr(Month month);

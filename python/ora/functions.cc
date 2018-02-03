@@ -60,6 +60,33 @@ days_in_year(
 
 
 ref<Object>
+format_iso(
+  Module* /* module */,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* arg_names[] = {"time", "time_zone", "precision", nullptr};
+  Object* time_arg;
+  Object* tz_arg = nullptr;
+  int precision = -1;
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "O|Oi", arg_names, &time_arg, &tz_arg, &precision);
+
+  auto api = PyTimeAPI::get(time_arg);
+  if (api == nullptr)
+    throw TypeError("not a Time");
+  auto const tz = tz_arg == nullptr ? UTC : convert_to_time_zone(tz_arg);
+
+  auto ldd = api->to_local_datenum_daytick(time_arg, *tz);
+  StringBuilder sb;
+  format_iso_time(
+    sb, datenum_to_ymd(ldd.datenum), daytick_to_hms(ldd.daytick), 
+    ldd.time_zone, precision);
+  return Unicode::from(sb.str());
+}
+
+
+ref<Object>
 from_local(
   Module* /* module */,
   Tuple* const args,
@@ -265,6 +292,7 @@ add_functions(
   return methods
     .add<days_in_month>             ("days_in_month",           docstring::days_in_month)
     .add<days_in_year>              ("days_in_year",            docstring::days_in_year)
+    .add<format_iso>                ("format_iso",              docstring::format_iso)
     .add<from_local>                ("from_local",              docstring::from_local)
     .add<get_display_time_zone>     ("get_display_time_zone",   docstring::get_display_time_zone)
     .add<get_system_time_zone>      ("get_system_time_zone",    docstring::get_system_time_zone)

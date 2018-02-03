@@ -12,6 +12,7 @@ extern doc_t type;
 
 extern doc_t days_in_month;
 extern doc_t days_in_year;
+extern doc_t format_iso;
 extern doc_t from_local;
 extern doc_t get_display_time_zone;
 extern doc_t get_system_time_zone;

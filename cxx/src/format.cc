@@ -164,7 +164,6 @@ format_iso_offset(
 }
 
 
-
 bool
 format_date(
   string const& pattern,
@@ -397,26 +396,9 @@ format_time(
 
   case 'i':
   case 'T':
-    // FIXME: Factor out an ISO time formatting function.
-    sb.format(date.ymd_date.year, 4, '0');
-    if (!mods.abbreviate)
-      sb << '-';
-    sb.format(date.ymd_date.month, 2, '0');
-    if (!mods.abbreviate)
-      sb << '-';
-    sb.format(date.ymd_date.day, 2, '0');
-    sb << (mods.str_case == '_' ? 't' : 'T');
-    sb.format(daytime.hour, 2, '0');
-    if (!mods.abbreviate)
-      sb << ':';
-    sb.format(daytime.minute, 2, '0');
-    if (!mods.abbreviate)
-      sb << ':';
-    format_second(sb, daytime.second, mods.precision);
-    if (pattern[pos] == 'i')
-      format_iso_offset(sb, time_zone, !mods.abbreviate);
-    else
-      sb << get_time_zone_offset_letter(time_zone.offset);
+    format_iso_time(
+      sb, date.ymd_date, daytime, time_zone, mods.precision, mods.abbreviate, 
+      mods.str_case != '_', pattern[pos] == 'T');
     break;
 
   default:
@@ -613,6 +595,40 @@ weekday_abbrs[] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 
 
 }  // anonymous
+
+
+inline void
+format_iso_time(
+  StringBuilder& sb,
+  YmdDate const& date,
+  HmsDaytime const& daytime,
+  TimeZoneParts const& time_zone,
+  int const precision,
+  bool const compact,
+  bool const capital,
+  bool const military)
+{
+  // FIXME: Factor out an ISO time formatting function.
+  sb.format(date.year, 4, '0');
+  if (!compact)
+    sb << '-';
+  sb.format(date.month, 2, '0');
+  if (!compact)
+    sb << '-';
+  sb.format(date.day, 2, '0');
+  sb << (capital ? 'T' : 't');
+  sb.format(daytime.hour, 2, '0');
+  if (!compact)
+    sb << ':';
+  sb.format(daytime.minute, 2, '0');
+  if (!compact)
+    sb << ':';
+  format_second(sb, daytime.second, precision);
+  if (military)
+    sb << get_time_zone_offset_letter(time_zone.offset);
+  else
+    format_iso_offset(sb, time_zone, !compact);
+}
 
 
 inline string const& 

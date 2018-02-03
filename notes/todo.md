@@ -1,6 +1,6 @@
 # Work List
 
-1. Fast-track RFC 3339 formatting function.
+1. Add default precision to TimeAPI; use for formatting.
 1. Make Time(datetime, tz) work for naive datetime.
 1. Intro Python documentation in rst.
 1. ReadTheDocs support.

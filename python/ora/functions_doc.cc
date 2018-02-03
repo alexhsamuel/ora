@@ -41,6 +41,13 @@ days_in_year =
 ;
 
 doc_t
+format_iso =
+"Formats a time in ISO 8601 / RFC 3339 format.\n"
+"\n"
+"@signature\n"
+"  format_iso(time, time_zone=UTC, precision=-1)\n";
+
+doc_t
 from_local =
 "Computes time from local time (date and daytime) and a time zone.\n"
 "\n"
