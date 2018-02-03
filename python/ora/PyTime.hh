@@ -269,12 +269,12 @@ PyTime<TIME>::add_to(
     name + ".MISSING");
 
   // Build the str format.  
-  std::string pattern = "%Y-%m-%dT%H:%M:%";
+  std::string pattern = "%";
   if (precision > 0) {
     pattern += ".";
     pattern += std::to_string(precision);
   }
-  pattern += "S%E";
+  pattern += "i";
   str_format_ = make_unique<ora::time::TimeFormat>(pattern);
 
   // Add in static data members.
