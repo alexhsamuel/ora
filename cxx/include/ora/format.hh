@@ -384,7 +384,6 @@ format_iso_time(
   bool const capital=true,
   bool const military=false)
 {
-  // FIXME: Factor out an ISO time formatting function.
   sb.format(date.year, 4, '0');
   if (!compact)
     sb << '-';
