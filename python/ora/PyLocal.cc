@@ -91,6 +91,7 @@ tp_richcompare(
       case Py_LE: result = d0->lt(d1) || (d0->eq(d1) && y0->le(y1)); break;
       case Py_GT: result = d0->gt(d1) || (d0->eq(d1) && y0->gt(y1)); break;
       case Py_GE: result = d0->gt(d1) || (d0->eq(d1) && y0->ge(y1)); break;
+      default: result = false;  // should be unreachable
       }
       return Bool::from(result);
     }
