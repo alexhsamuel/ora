@@ -79,7 +79,7 @@ format_iso(
 
   auto ldd = api->to_local_datenum_daytick(time_arg, *tz);
   StringBuilder sb;
-  format_iso_time(
+  time::format_iso_time(
     sb, datenum_to_ymd(ldd.datenum), daytick_to_hms(ldd.daytick), 
     ldd.time_zone, precision);
   return Unicode::from(sb.str());

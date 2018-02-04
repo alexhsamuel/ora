@@ -396,7 +396,7 @@ format_time(
 
   case 'i':
   case 'T':
-    format_iso_time(
+    time::format_iso_time(
       sb, date.ymd_date, daytime, time_zone, mods.precision, mods.abbreviate, 
       mods.str_case != '_', pattern[pos] == 'T');
     break;
@@ -502,6 +502,40 @@ TimeFormat const TimeFormat::ISO_ZONE_LETTER_EXTENDED   = "%Y-%m-%dT%H:%M:%S%e";
 TimeFormat const TimeFormat::ISO_ZONE_BASIC             = "%Y%m%dT%H%M%S%Q%q";
 TimeFormat const TimeFormat::ISO_ZONE_EXTENDED          = "%Y-%m-%dT%H:%M:%S%Q:%q";
 
+extern void
+format_iso_time(
+  StringBuilder& sb,
+  YmdDate const& date,
+  HmsDaytime const& daytime,
+  TimeZoneParts const& time_zone,
+  int const precision,
+  bool const compact,
+  bool const capital,
+  bool const military)
+{
+  // FIXME: Factor out an ISO time formatting function.
+  sb.format(date.year, 4, '0');
+  if (!compact)
+    sb << '-';
+  sb.format(date.month, 2, '0');
+  if (!compact)
+    sb << '-';
+  sb.format(date.day, 2, '0');
+  sb << (capital ? 'T' : 't');
+  sb.format(daytime.hour, 2, '0');
+  if (!compact)
+    sb << ':';
+  sb.format(daytime.minute, 2, '0');
+  if (!compact)
+    sb << ':';
+  format_second(sb, daytime.second, precision);
+  if (military)
+    sb << get_time_zone_offset_letter(time_zone.offset);
+  else
+    format_iso_offset(sb, time_zone, !compact);
+}
+
+
 }  // namespace time
 
 //------------------------------------------------------------------------------
@@ -595,40 +629,6 @@ weekday_abbrs[] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 
 
 }  // anonymous
-
-
-inline void
-format_iso_time(
-  StringBuilder& sb,
-  YmdDate const& date,
-  HmsDaytime const& daytime,
-  TimeZoneParts const& time_zone,
-  int const precision,
-  bool const compact,
-  bool const capital,
-  bool const military)
-{
-  // FIXME: Factor out an ISO time formatting function.
-  sb.format(date.year, 4, '0');
-  if (!compact)
-    sb << '-';
-  sb.format(date.month, 2, '0');
-  if (!compact)
-    sb << '-';
-  sb.format(date.day, 2, '0');
-  sb << (capital ? 'T' : 't');
-  sb.format(daytime.hour, 2, '0');
-  if (!compact)
-    sb << ':';
-  sb.format(daytime.minute, 2, '0');
-  if (!compact)
-    sb << ':';
-  format_second(sb, daytime.second, precision);
-  if (military)
-    sb << get_time_zone_offset_letter(time_zone.offset);
-  else
-    format_iso_offset(sb, time_zone, !compact);
-}
 
 
 inline string const& 
