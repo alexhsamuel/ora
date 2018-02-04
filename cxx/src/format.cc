@@ -123,47 +123,6 @@ format_string(
 }
 
 
-inline void
-format_second(
-  StringBuilder& sb,
-  Second const second,
-  int const precision=-1,
-  int const width=2,
-  char const pad='0')
-{
-  // FIXME: Improve this logic.  See fixfmt.
-  unsigned const prec = std::max(0, precision);
-  long long const prec10 = pow10(prec);
-  auto const digits = std::div((long long) (second * prec10), prec10);
-  // Integer part.
-  sb.format(digits.quot, width, pad);
-  if (precision >= 0) {
-    sb << '.';
-    // Fractional part.
-    if (precision > 0) 
-      sb.format(digits.rem, prec, '0');
-  }
-}
-
-
-inline void
-format_iso_offset(
-  StringBuilder& sb,
-  TimeZoneParts const& time_zone,
-  bool const colon=true,
-  int const width=2)
-{
-  sb << (time_zone.offset < 0 ? '-' : '+');
-  auto const off = std::abs(time_zone.offset);
-  auto const hr = off / SECS_PER_HOUR;
-  auto const mn = off % SECS_PER_HOUR / SECS_PER_MIN;
-  sb.format(hr, width, '0');
-  if (colon)
-    sb << ':';
-  sb.format(mn, width, '0');
-}
-
-
 bool
 format_date(
   string const& pattern,
@@ -501,40 +460,6 @@ TimeFormat const TimeFormat::ISO_ZONE_LETTER_BASIC      = "%Y%m%dT%H%M%S%e";
 TimeFormat const TimeFormat::ISO_ZONE_LETTER_EXTENDED   = "%Y-%m-%dT%H:%M:%S%e";
 TimeFormat const TimeFormat::ISO_ZONE_BASIC             = "%Y%m%dT%H%M%S%Q%q";
 TimeFormat const TimeFormat::ISO_ZONE_EXTENDED          = "%Y-%m-%dT%H:%M:%S%Q:%q";
-
-extern void
-format_iso_time(
-  StringBuilder& sb,
-  YmdDate const& date,
-  HmsDaytime const& daytime,
-  TimeZoneParts const& time_zone,
-  int const precision,
-  bool const compact,
-  bool const capital,
-  bool const military)
-{
-  // FIXME: Factor out an ISO time formatting function.
-  sb.format(date.year, 4, '0');
-  if (!compact)
-    sb << '-';
-  sb.format(date.month, 2, '0');
-  if (!compact)
-    sb << '-';
-  sb.format(date.day, 2, '0');
-  sb << (capital ? 'T' : 't');
-  sb.format(daytime.hour, 2, '0');
-  if (!compact)
-    sb << ':';
-  sb.format(daytime.minute, 2, '0');
-  if (!compact)
-    sb << ':';
-  format_second(sb, daytime.second, precision);
-  if (military)
-    sb << get_time_zone_offset_letter(time_zone.offset);
-  else
-    format_iso_offset(sb, time_zone, !compact);
-}
-
 
 }  // namespace time
 
