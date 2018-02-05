@@ -556,7 +556,7 @@ weekday_abbrs[] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 }  // anonymous
 
 
-inline string const& 
+string const& 
 get_month_name(
   Month const month)
 {
@@ -566,7 +566,7 @@ get_month_name(
 }
 
 
-inline Month 
+Month 
 parse_month_name(
   string const& str)
 {
@@ -577,7 +577,7 @@ parse_month_name(
 }
 
 
-inline string const& 
+string const& 
 get_month_abbr(
   Month const month)
 {
@@ -587,7 +587,7 @@ get_month_abbr(
 }
 
 
-inline Month 
+Month 
 parse_month_abbr(
   string const& str)
 {
@@ -598,7 +598,7 @@ parse_month_abbr(
 }
 
 
-inline char
+char
 get_time_zone_offset_letter(
   TimeZoneOffset const offset)
 {
@@ -616,7 +616,7 @@ get_time_zone_offset_letter(
 }
 
 
-inline string const& 
+string const& 
 get_weekday_name(
   Weekday weekday)
 {
@@ -626,7 +626,7 @@ get_weekday_name(
 }
 
 
-inline Weekday 
+Weekday 
 parse_weekday_name(
   string const& str)
 {
@@ -637,7 +637,7 @@ parse_weekday_name(
 }
 
 
-inline string const& 
+string const& 
 get_weekday_abbr(
   Weekday weekday)
 {
