@@ -13,7 +13,8 @@ install:
   - python setup.py install --old-and-unmanageable
 
 script: 
-  - env -u TZ pytest python -v
+  - python -c "import ora"
+  - env -u TZ pytest python/ -v
 
 addons:
     apt:
