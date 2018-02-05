@@ -22,10 +22,10 @@ namespace ora {
 // Functions
 //------------------------------------------------------------------------------
 
-extern std::string const& get_month_name(Month month);
-extern Month parse_month_name(std::string const& str);
-extern std::string const& get_month_abbr(Month month);
-extern Month parse_month_abbr(std::string const& str);
+std::string const& get_month_name(Month month);
+Month parse_month_name(std::string const& str);
+std::string const& get_month_abbr(Month month);
+Month parse_month_abbr(std::string const& str);
 
 /*
  * Returns the military / nautical time zone offset letter.
@@ -35,12 +35,12 @@ extern Month parse_month_abbr(std::string const& str);
  * corresponding to an offset.  If there is no military time zone, returns an
  * unspecified nonalphabetic character.
  */
-extern char get_time_zone_offset_letter(TimeZoneOffset);
+char get_time_zone_offset_letter(TimeZoneOffset);
 
-extern std::string const& get_weekday_name(Weekday weekday);
-extern Weekday parse_weekday_name(std::string const& str);
-extern std::string const& get_weekday_abbr(Weekday weekday);
-extern Weekday parse_weekday_abbr(std::string const& str);
+std::string const& get_weekday_name(Weekday weekday);
+Weekday parse_weekday_name(std::string const& str);
+std::string const& get_weekday_abbr(Weekday weekday);
+Weekday parse_weekday_abbr(std::string const& str);
 
 //------------------------------------------------------------------------------
 
@@ -373,7 +373,7 @@ private:
 };
 
 
-extern inline void
+inline void
 format_iso_time(
   StringBuilder& sb,
   YmdDate const& date,

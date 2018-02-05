@@ -17,6 +17,7 @@
 1. Support UTF-8 in format patterns.
 1. Build conda package.
 1. Rename `InvalidDateError` -> `BadDateError` _et fils_.
+1. Remove superflous `extern`.
 1. timezone etc. namespace cleanup
 1. Daytime and Time rounding functions.  Maybe like Arrow's `floor()`, `ceil()`?
 1. Use `fold` attribute per [PEP-495](https://www.python.org/dev/peps/pep-0495/)
