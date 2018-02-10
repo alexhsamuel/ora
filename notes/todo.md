@@ -4,7 +4,7 @@
 1. Make Time(datetime, tz) work for naive datetime.
 1. Intro Python documentation in rst.
 1. ReadTheDocs support.
-1. Add an easy way to print RFC 3339 time in display, system time zones.
+1. Relax numpy setup dependency.
 1. Basic string parsing for `convert_to_*()` functions.
 1. Full parsing support.
 1. Revisit type definitions.
@@ -13,7 +13,6 @@
 1. Benchmark tick computations.
 1. Fix rounding of ora.now(UsecTime).
 1. Remove Time.get_parts().
-1. Relax numpy setup dependency.
 1. Support UTF-8 in format patterns.
 1. Build conda package.
 1. Rename `InvalidDateError` -> `BadDateError` _et fils_.
