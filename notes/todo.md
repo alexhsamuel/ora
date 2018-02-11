@@ -5,6 +5,7 @@
    - date parse unit tests
    - ignore modifiers
    - API?
+   - better exception type
    - fast parse_date_iso(), etc.
 1. Basic string parsing for `convert_to_*()` functions.
 1. Add default precision to TimeAPI; use for formatting.
