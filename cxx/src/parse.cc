@@ -14,8 +14,6 @@ using std::string;
 
 namespace {
 
-#define TRY(expr) do { if (!(expr)) return false; } while (false)
-
 template<class INT>
 bool
 parse_integer(
@@ -45,65 +43,26 @@ parse_integer(
 }
 
 
-template<>
-bool
-parse_integer(
-  char const*& p,
-  unsigned char& val)
+template<size_t MAX_DIGITS>
+inline int
+parse_unsigned(
+  char const*& p)
 {
+  int val;
+
   if (isdigit(*p)) 
     val = *p++ - '0';
   else
-    return false;
+    return -1;
 
-  if (isdigit(*p))
-    val = val * 10 + (*p++ - '0');
-  else
-    return true;
+#pragma GCC unroll 9
+  for (size_t i = 0; i < MAX_DIGITS - 1; ++i)
+    if (isdigit(*p))
+      val = val * 10 + (*p++ - '0');
+    else
+      return val;
 
-  if (isdigit(*p))
-    val = val * 10 + (*p++ - '0');
-  else
-    return true;
-
-  // OK if there are no more digits, and the value so far hasn't overflowed.
-  return !isdigit(*p) && (*p & ~0xff) == 0;
-}
-
-
-template<>
-bool
-parse_integer(
-  char const*& p,
-  unsigned short& val)
-{
-  if (isdigit(*p)) 
-    val = *p++ - '0';
-  else
-    return false;
-
-  if (isdigit(*p))
-    val = val * 10 + (*p++ - '0');
-  else
-    return true;
-
-  if (isdigit(*p))
-    val = val * 10 + (*p++ - '0');
-  else
-    return true;
-
-  if (isdigit(*p))
-    val = val * 10 + (*p++ - '0');
-  else
-    return true;
-
-  if (isdigit(*p))
-    val = val * 10 + (*p++ - '0');
-  else
-    return true;
-
-  // OK if there are no more digits, and the value so far hasn't overflowed.
-  return !isdigit(*p) && (*p & ~0xffff) == 0;
+  return val;
 }
 
 
@@ -143,15 +102,32 @@ parse_date_parts(
       // parse_modifiers(p, mods);
 
       switch (*p) {
-      case 'd':
-        TRY(parse_integer(s, parts.ymd_date.day));
-        break;
-      case 'm':
-        TRY(parse_integer(s, parts.ymd_date.month));
-        break;
-      case 'Y':
-        TRY(parse_integer(s, *(unsigned short*) &parts.ymd_date.year));
-        break;
+      case 'd': {
+        auto const i = parse_unsigned<2>(s);
+        if (day_is_valid(i))
+          parts.ymd_date.day = i;
+        else
+          return false;
+      } break;
+
+      case 'm': {
+        auto const i = parse_unsigned<2>(s);
+        if (month_is_valid(i))
+          parts.ymd_date.month = i;
+        else
+          return false;
+      } break;
+
+      case 'Y': {
+        auto const i = parse_unsigned<4>(s);
+        if (year_is_valid(i))
+          parts.ymd_date.year = i;
+        else
+          return false;
+      } break;
+
+      default:
+        return false;
       }
       ++p;
     }

@@ -207,7 +207,12 @@ parse_date(
   Arg::ParseTupleAndKeywords(args, kw_args, "ss", arg_names, &pattern, &string);
 
   // FIXME: Support other date types.
-  return PyDate<Date>::create(ora::date::parse(pattern, string));
+  auto const date = ora::date::parse<Date>(pattern, string);
+  if (date.is_valid())
+    return PyDate<Date>::create(date);
+  else
+    // FIXME
+    throw ValueError("parse error");
 }
 
 
