@@ -577,6 +577,23 @@ parse_month_name(
 }
 
 
+bool
+parse_month_name(
+  char const*& p,
+  Month& month)
+{
+  for (Month m = MONTH_MIN; m < MONTH_END; ++m) {
+    auto const& name = month_names[(int) m - 1];
+    if (strncmp(name.c_str(), p, name.length()) == 0) {
+      p += name.length();
+      month = m;
+      return true;
+    }
+  }
+  return false;
+}
+
+
 string const& 
 get_month_abbr(
   Month const month)

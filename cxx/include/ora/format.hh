@@ -24,6 +24,7 @@ namespace ora {
 
 std::string const& get_month_name(Month month);
 Month parse_month_name(std::string const& str);
+bool parse_month_name(char const*& p, Month& month);
 std::string const& get_month_abbr(Month month);
 Month parse_month_abbr(std::string const& str);
 

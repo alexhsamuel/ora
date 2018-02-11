@@ -1,5 +1,6 @@
 #include <cstdint>
 
+#include "ora/format.hh"
 #include "ora/lib/math.hh"
 #include "ora/parse.hh"
 
@@ -14,6 +15,8 @@ using std::string;
 
 namespace {
 
+#define TRY(stmt) do { if (!(stmt)) return false; } while(false)
+
 /*
  * Skips over formatting modifiers; see `parse_modifiers`.
  */
@@ -23,7 +26,7 @@ skip_modifiers(
 {
   bool decimal = false;
 
-  while (true)
+  for (; *p != 0; ++p)
     switch (*p) {
     case '.':
       if (decimal)
@@ -75,6 +78,51 @@ parse_unsigned(
 }
 
 
+inline bool
+parse_d(
+  char const*& s,
+  Day& day)
+{
+  auto const i = parse_unsigned<2>(s);
+  if (day_is_valid(i)) {
+    day = i;
+    return true;
+  }
+  else
+    return false;
+}
+
+
+inline bool
+parse_m(
+  char const*& s,
+  Month& month)
+{
+  auto const i = parse_unsigned<2>(s);
+  if (month_is_valid(i)) {
+    month = i;
+    return true;
+  }
+  else
+    return false;
+}
+
+
+inline bool
+parse_Y(
+  char const*& s,
+  Year& year)
+{
+  auto const i = parse_unsigned<4>(s);
+  if (year_is_valid(i)) {
+    year = i;
+    return true;
+  }
+  else
+    return false;
+}
+
+
 }  // anonymous namespace
 
 
@@ -110,29 +158,10 @@ parse_date_parts(
       skip_modifiers(p);
 
       switch (*p) {
-      case 'd': {
-        auto const i = parse_unsigned<2>(s);
-        if (day_is_valid(i))
-          parts.ymd_date.day = i;
-        else
-          return false;
-      } break;
-
-      case 'm': {
-        auto const i = parse_unsigned<2>(s);
-        if (month_is_valid(i))
-          parts.ymd_date.month = i;
-        else
-          return false;
-      } break;
-
-      case 'Y': {
-        auto const i = parse_unsigned<4>(s);
-        if (year_is_valid(i))
-          parts.ymd_date.year = i;
-        else
-          return false;
-      } break;
+      case 'B': TRY(parse_month_name(s, parts.ymd_date.month)); break;
+      case 'd': TRY(parse_d(s, parts.ymd_date.day)); break;
+      case 'm': TRY(parse_m(s, parts.ymd_date.month)); break;
+      case 'Y': TRY(parse_Y(s, parts.ymd_date.year)); break;
 
       default:
         return false;
