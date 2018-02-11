@@ -159,6 +159,7 @@ parse_date_parts(
 
       switch (*p) {
       case 'B': TRY(parse_month_name(s, parts.ymd_date.month)); break;
+      case 'b': TRY(parse_month_abbr(s, parts.ymd_date.month)); break;
       case 'd': TRY(parse_d(s, parts.ymd_date.day)); break;
       case 'm': TRY(parse_m(s, parts.ymd_date.month)); break;
       case 'Y': TRY(parse_Y(s, parts.ymd_date.year)); break;

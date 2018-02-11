@@ -615,6 +615,23 @@ parse_month_abbr(
 }
 
 
+bool
+parse_month_abbr(
+  char const*& p,
+  Month& month)
+{
+  for (Month m = MONTH_MIN; m < MONTH_END; ++m) {
+    auto const& abbr = month_abbrs[(int) m - 1];
+    if (strncmp(abbr.c_str(), p, abbr.length()) == 0) {
+      p += abbr.length();
+      month = m;
+      return true;
+    }
+  }
+  return false;
+}
+
+
 char
 get_time_zone_offset_letter(
   TimeZoneOffset const offset)

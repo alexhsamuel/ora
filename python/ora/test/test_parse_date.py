@@ -32,6 +32,22 @@ def test_month_name():
         parse_date("%Y %B %d", "2018 11")
 
 
+def test_month_abbr():
+    assert parse_date("%Y %b %d", "2018 Jan 1")  == Date(2018,  1,  1)
+    assert parse_date("%Yx%bx%d", "2018xOctx31") == Date(2018, 10, 31)
+
+    with pytest.raises(ValueError):
+        parse_date("%Y %B %d", "2018 Wednesday 11")
+    with pytest.raises(ValueError):
+        parse_date("%Y %B %d", "2018 Feb 11")
+    with pytest.raises(ValueError):
+        parse_date("%Y %B %d", "2018 Febuary 11")
+    with pytest.raises(ValueError):
+        parse_date("%Y %B %d", "2018 Februaryy 11")
+    with pytest.raises(ValueError):
+        parse_date("%Y %B %d", "2018 11")
+
+
 def test_ymd_mismatch():
     with pytest.raises(ValueError):
         parse_date("%Y-%m-%d", "20180211")
