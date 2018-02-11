@@ -14,35 +14,6 @@ using std::string;
 
 namespace {
 
-template<class INT>
-bool
-parse_integer(
-  char const*& p,
-  INT& val)
-{
-  if (isdigit(*p)) {
-    // First digit.
-    val = *p++ - '0';
-    // Remaining digits.
-    while (true)
-      if (isdigit(*p))
-        if (   mul_overflow(val, 10, val)
-            || add_overflow(val, *p - '0', val))
-          // Overflowed.
-          return false;
-        else
-          // Successfully processed the digit.
-          ;
-      else
-        // Not a digit; we're done.
-        return true;
-  }
-  else
-    // No digits.
-    return false;
-}
-
-
 template<size_t MAX_DIGITS>
 inline int
 parse_unsigned(
