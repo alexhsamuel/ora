@@ -12,9 +12,16 @@ namespace date {
 //------------------------------------------------------------------------------
 
 // Forward declarations.
+template<class DATE=Date> DATE from_ordinal_date(Year, Ordinal);
 template<class DATE=Date> DATE from_ymd(Year, Month, Day);
+template<class DATE=Date> DATE from_week_date(Year, Week, Weekday);
+
+template<class DATE=Date> inline DATE from_ordinal_date(OrdinalDate const& d)
+  { return from_ordinal_date<DATE>(d.year, d.ordinal); }
 template<class DATE=Date> inline DATE from_ymd(YmdDate const& d)
   { return from_ymd<DATE>(d.year, d.month, d.day); }
+template<class DATE=Date> inline DATE from_week_date(WeekDate const& d)
+  { return from_week_date<DATE>(d.week_year, d.week, d.weekday); }
 
 // Synonyms for static factory methods; included for completeness.
 template<class DATE=Date> inline DATE from_datenum(Datenum const d)
@@ -22,6 +29,7 @@ template<class DATE=Date> inline DATE from_datenum(Datenum const d)
 template<class DATE=Date> inline DATE from_offset(typename DATE::Offset const o)
   { return DATE::from_offset(o); }
 
+// FIXME: Remove.
 template<class DATE=Date> 
 inline DATE 
 from_iso_date(
@@ -41,7 +49,7 @@ from_iso_date(
  * Throws <InvalidDateError> if the ordinal date is invalid.
  * Throws <DateRangeError> if the ordinal date is out of range.
  */
-template<class DATE=Date> 
+template<class DATE> 
 inline DATE 
 from_ordinal_date(
   Year const year,
@@ -55,12 +63,41 @@ from_ordinal_date(
 
 
 /*
+ * Creates a date from parts.
+ *
+ * Uses components of FullDate in this order of precedence:
+ * - YMD date, if fully specified.
+ * - Week date, if fully specified.
+ * - Ordinal date, if fully specified.
+ */
+template<class DATE=Date>
+inline DATE
+from_parts(
+  FullDate const parts)
+{
+  if (   year_is_valid(parts.ymd_date.year)
+      && month_is_valid(parts.ymd_date.month)
+      && day_is_valid(parts.ymd_date.day))
+    return from_ymd<DATE>(parts.ymd_date);
+  else if (   year_is_valid(parts.week_date.week_year)
+           && week_is_valid(parts.week_date.week)
+           && weekday_is_valid(parts.week_date.weekday))
+    return from_week_date<DATE>(parts.week_date);
+  else if (   year_is_valid(parts.ordinal_date.year)
+           && ordinal_is_valid(parts.ordinal_date.ordinal))
+    return from_ordinal_date<DATE>(parts.ordinal_date);
+  else
+    return DATE::INVALID;
+}
+
+
+/*
  * Creates a date from a week date.
  *
  * Throws <InvalidDateError> if the week date is invalid.
  * Throws <DateRangeError> if the week date is out of range.
  */
-template<class DATE=Date> 
+template<class DATE> 
 inline DATE 
 from_week_date(
   Year const week_year,

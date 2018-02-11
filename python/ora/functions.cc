@@ -9,6 +9,8 @@
 #include "PyTime.hh"
 #include "util.hh"
 
+using namespace std::string_literals;
+
 //------------------------------------------------------------------------------
 
 namespace ora {
@@ -201,19 +203,28 @@ parse_date(
   Tuple* const args,
   Dict* const kw_args)
 {
-  static char const* arg_names[] = {"pattern", "string", nullptr};
+  static char const* arg_names[] = {"pattern", "string", "Date", nullptr};
   char const* pattern;
   char const* string;
-  Arg::ParseTupleAndKeywords(args, kw_args, "ss", arg_names, &pattern, &string);
+  PyTypeObject* date_type = &PyDateDefault::type_;
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "ss|$O", arg_names, &pattern, &string, &date_type);
 
-  // FIXME: Support other date types.
-  auto const date = ora::date::parse<Date>(pattern, string);
-  if (date.is_valid())
-    return PyDate<Date>::create(date);
+  auto const api = PyDateAPI::get(date_type);
+  if (api == nullptr)
+    throw TypeError("not a date type");
+
+  FullDate parts;
+  char const* p = pattern;
+  char const* s = string;
+  if (ora::date::parse_date_parts(p, s, parts))
+    return api->from_parts(parts);
   else
     // FIXME
-    throw ValueError("parse error");
-}
+    throw ValueError(
+      "parse error at pattern pos "s + to_string<int>(p - pattern)
+      + ", string pos " + to_string<int>(s - string));
+} 
 
 
 ref<Object>
