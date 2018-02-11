@@ -14,6 +14,45 @@ using std::string;
 
 namespace {
 
+/*
+ * Skips over formatting modifiers; see `parse_modifiers`.
+ */
+inline bool
+skip_modifiers(
+  char const*& p)
+{
+  bool decimal = false;
+
+  while (true)
+    switch (*p) {
+    case '.':
+      if (decimal)
+        // Two decimal points.
+        return false;
+      else
+        decimal = true;
+      break;
+
+    case '0': case '1': case '2': case '3': case '4':
+    case '5': case '6': case '7': case '8': case '9':
+    case '^': case '_': case '~':
+      break;
+
+    case '#':
+      if (*++p == 0)
+        // Must be followed by another character.
+        return false;
+      break;
+
+    default:
+      return true;
+    }
+
+  // Unrechable.
+  return false;
+}
+
+
 template<size_t MAX_DIGITS>
 inline int
 parse_unsigned(
@@ -68,8 +107,7 @@ parse_date_parts(
           // Didn't match %.
           return false;
 
-      // Modifiers mods;
-      // parse_modifiers(p, mods);
+      skip_modifiers(p);
 
       switch (*p) {
       case 'd': {
