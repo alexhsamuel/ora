@@ -196,6 +196,22 @@ now(
 
 
 ref<Object>
+parse_date(
+  Module* /* module */,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* arg_names[] = {"pattern", "string", nullptr};
+  char const* pattern;
+  char const* string;
+  Arg::ParseTupleAndKeywords(args, kw_args, "ss", arg_names, &pattern, &string);
+
+  // FIXME: Support other date types.
+  return PyDate<Date>::create(ora::date::parse(pattern, string));
+}
+
+
+ref<Object>
 set_display_time_zone(
   Module* /* module */,
   Tuple* const args,
@@ -299,6 +315,7 @@ add_functions(
     .add<get_zoneinfo_dir>          ("get_zoneinfo_dir",        docstring::get_zoneinfo_dir)
     .add<is_leap_year>              ("is_leap_year",            docstring::is_leap_year)
     .add<now>                       ("now",                     docstring::now)
+    .add<parse_date>                ("parse_date",              nullptr)  // FIXME
     .add<set_display_time_zone>     ("set_display_time_zone",   docstring::set_display_time_zone)
     .add<set_zoneinfo_dir>          ("set_zoneinfo_dir",        docstring::set_zoneinfo_dir)
     .add<to_local>                  ("to_local",                docstring::to_local)
