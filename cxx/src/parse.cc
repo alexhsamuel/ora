@@ -55,7 +55,7 @@ parse_unsigned(
   else
     return -1;
 
-#pragma GCC unroll 9
+#pragma unroll 9
   for (size_t i = 0; i < MAX_DIGITS - 1; ++i)
     if (isdigit(*p))
       val = val * 10 + (*p++ - '0');
