@@ -1,12 +1,17 @@
 # Work List
 
+1. Full parsing support.
+   - remaining date fields
+   - date parse unit tests
+   - ignore modifiers
+   - API?
+   - fast parse_date_iso(), etc.
+1. Basic string parsing for `convert_to_*()` functions.
 1. Add default precision to TimeAPI; use for formatting.
 1. Make Time(datetime, tz) work for naive datetime.
 1. Intro Python documentation in rst.
 1. ReadTheDocs support.
 1. Relax numpy setup dependency.
-1. Basic string parsing for `convert_to_*()` functions.
-1. Full parsing support.
 1. Revisit type definitions.
    - Benchmark 2^n vs. 10^n types.
    - Add exact us, ns types.
