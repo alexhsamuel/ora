@@ -148,9 +148,6 @@ namespace ymddate {
 // Type class
 //------------------------------------------------------------------------------
 
-// FIXME: Elsewhere.
-#define MULTILINE(...) #__VA_ARGS__
-
 /*
  * Template for a Python extension type wrapping a date class.
  *
