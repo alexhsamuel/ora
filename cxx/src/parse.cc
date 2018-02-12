@@ -169,6 +169,29 @@ parse_year(
 }
 
 
+inline bool
+parse_iso_date(
+  char const*& s,
+  YmdDate& date,
+  bool compact=false)
+{
+  TRY(parse_year(s, date.year));
+  if (!compact) {
+    if (*s != '-')
+      return false;
+    ++s;
+  }
+  TRY(parse_month(s, date.month));
+  if (!compact) {
+    if (*s != '-')
+      return false;
+    ++s;
+  }
+  TRY(parse_day(s, date.day));
+  return true;
+}
+
+
 }  // anonymous namespace
 
 
@@ -208,7 +231,7 @@ parse_date_parts(
       case 'a': TRY(parse_weekday_abbr(s, parts.week_date.weekday)); break;
       case 'B': TRY(parse_month_name(s, parts.ymd_date.month)); break;
       case 'b': TRY(parse_month_abbr(s, parts.ymd_date.month)); break;
-   // case 'D':
+      case 'D': TRY(parse_iso_date(s, parts.ymd_date)); break;
       case 'd': TRY(parse_day(s, parts.ymd_date.day)); break;
       case 'G': TRY(parse_year(s, parts.week_date.week_year)); break;
    // case 'g':

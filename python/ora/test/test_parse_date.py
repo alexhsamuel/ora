@@ -16,6 +16,14 @@ def test_ymd():
     assert parse_date("%Y-%m-%d", "9999-12-31") == Date(9999, 12, 31)
 
 
+def test_iso():
+    assert parse_date("%D", "2018-02-11") == Date(2018,  2, 11)
+    assert parse_date("%D", "2018-2-11" ) == Date(2018,  2, 11)
+
+    assert parse_date("%D", "1-1-1"     ) == Date(   1,  1,  1)
+    assert parse_date("%D", "9999-12-31") == Date(9999, 12, 31)
+
+
 def test_month_name():
     assert parse_date("%Y %B %d", "2018 February 11") == Date(2018,  2, 11)
     assert parse_date("%Yx%Bx%d", "2018xDecemberx31") == Date(2018, 12, 31)
