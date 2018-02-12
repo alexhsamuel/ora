@@ -126,3 +126,10 @@ def test_weekday_abbr():
     assert parse_date("%a %V %G", "Mon 9 2018") == Date(2018,  2, 26)
 
 
+def test_ordinal():
+    assert parse_date("%Y-%j", "2018-001") == Date(2018,  1,  1)
+    assert parse_date("%Y**%j", "2018**1") == Date(2018,  1,  1)
+    assert parse_date("%Y%j" , "2018365" ) == Date(2018, 12, 31)
+    assert parse_date("%Y-%j", "2020-366") == Date(2020, 12, 31)
+
+
