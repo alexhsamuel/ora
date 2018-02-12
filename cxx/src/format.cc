@@ -671,6 +671,23 @@ parse_weekday_name(
 }
 
 
+bool
+parse_weekday_name(
+  char const*& p,
+  Weekday& weekday)
+{
+  for (Weekday w = 0; w < 7; ++w) {
+    auto const& name = weekday_names[w];
+    if (strncmp(name.c_str(), p, name.length()) == 0) {
+      p += name.length();
+      weekday = w;
+      return true;
+    }
+  }
+  return false;
+}
+
+
 string const& 
 get_weekday_abbr(
   Weekday weekday)
@@ -689,6 +706,23 @@ parse_weekday_abbr(
     if (weekday_abbrs[weekday] == str)
       return weekday;
   throw ValueError(string("bad weekday abbr: ") + str);
+}
+
+
+bool
+parse_weekday_abbr(
+  char const*& p,
+  Weekday& weekday)
+{
+  for (Weekday w = 0; w < 7; ++w) {
+    auto const& abbr = weekday_abbrs[w];
+    if (strncmp(abbr.c_str(), p, abbr.length()) == 0) {
+      p += abbr.length();
+      weekday = w;
+      return true;
+    }
+  }
+  return false;
 }
 
 

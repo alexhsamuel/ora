@@ -1,5 +1,6 @@
 #include <cstdint>
 
+#include "ora/date_math.hh"
 #include "ora/format.hh"
 #include "ora/lib/math.hh"
 #include "ora/parse.hh"
@@ -79,7 +80,7 @@ parse_unsigned(
 
 
 inline bool
-parse_d(
+parse_day(
   char const*& s,
   Day& day)
 {
@@ -94,7 +95,7 @@ parse_d(
 
 
 inline bool
-parse_m(
+parse_month(
   char const*& s,
   Month& month)
 {
@@ -109,7 +110,52 @@ parse_m(
 
 
 inline bool
-parse_Y(
+parse_weekday_iso(
+  char const*& s,
+  Weekday& weekday)
+{
+  auto const i = parse_unsigned<1>(s);
+  if (ora::weekday::ENCODING_ISO::is_valid(i)) {
+    weekday = ora::weekday::ENCODING_ISO::decode(i);
+    return true;
+  }
+  else
+    return false;
+}
+
+
+inline bool
+parse_week(
+  char const*& s,
+  Week& week)
+{
+  auto const i = parse_unsigned<2>(s);
+  if (week_is_valid(i)) {
+    week = i;
+    return true;
+  }
+  else
+    return false;
+}
+
+
+inline bool
+parse_weekday_unix(
+  char const*& s,
+  Weekday& weekday)
+{
+  auto const i = parse_unsigned<1>(s);
+  if (ora::weekday::ENCODING_CRON::is_valid(i)) {
+    weekday = ora::weekday::ENCODING_CRON::decode(i);
+    return true;
+  }
+  else
+    return false;
+}
+
+
+inline bool
+parse_year(
   char const*& s,
   Year& year)
 {
@@ -158,11 +204,17 @@ parse_date_parts(
       skip_modifiers(p);
 
       switch (*p) {
+      case 'A': TRY(parse_weekday_name(s, parts.week_date.weekday)); break;
+      case 'a': TRY(parse_weekday_abbr(s, parts.week_date.weekday)); break;
       case 'B': TRY(parse_month_name(s, parts.ymd_date.month)); break;
       case 'b': TRY(parse_month_abbr(s, parts.ymd_date.month)); break;
-      case 'd': TRY(parse_d(s, parts.ymd_date.day)); break;
-      case 'm': TRY(parse_m(s, parts.ymd_date.month)); break;
-      case 'Y': TRY(parse_Y(s, parts.ymd_date.year)); break;
+      case 'd': TRY(parse_day(s, parts.ymd_date.day)); break;
+      case 'G': TRY(parse_year(s, parts.week_date.week_year)); break;
+      case 'm': TRY(parse_month(s, parts.ymd_date.month)); break;
+      case 'u': TRY(parse_weekday_iso(s, parts.week_date.weekday)); break;
+      case 'V': TRY(parse_week(s, parts.week_date.week)); break;
+      case 'w': TRY(parse_weekday_unix(s, parts.week_date.weekday)); break;
+      case 'Y': TRY(parse_year(s, parts.ymd_date.year)); break;
 
       default:
         return false;

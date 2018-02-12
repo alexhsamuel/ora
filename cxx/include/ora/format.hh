@@ -41,8 +41,10 @@ char get_time_zone_offset_letter(TimeZoneOffset);
 
 std::string const& get_weekday_name(Weekday weekday);
 Weekday parse_weekday_name(std::string const& str);
+bool parse_weekday_name(char const*& p, Weekday& weekday);
 std::string const& get_weekday_abbr(Weekday weekday);
 Weekday parse_weekday_abbr(std::string const& str);
+bool parse_weekday_abbr(char const*& p, Weekday& weekday);
 
 //------------------------------------------------------------------------------
 

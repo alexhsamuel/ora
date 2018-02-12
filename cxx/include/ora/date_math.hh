@@ -388,7 +388,7 @@ using ENCODING_ISO      = Convention<MONDAY, 1>;
  */
 using ENCODING_CLIB     = Convention<SUNDAY, 0>;
 
-};
+}  // namespace weekday
 
 
 //------------------------------------------------------------------------------

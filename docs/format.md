@@ -17,9 +17,9 @@ The following format codes are supported for dates and times:
 | `%G` | the week year of the ISO week date |
 | `%j` | the one-indexed ordinal day of the year |
 | `%m` | the one-indexed month number |
+| `%u` | the weekday number of the ISO week date, 1 = Monday through 7 = Sunday |
 | `%V` | the one-indexed week number of the ISO week date |
 | `%w` | the weekday number, 0 = Sunday through 6 = Saturday |
-| `%u` | the weekday number of the ISO week date, 1 = Monday through 7 = Sunday |
 | `%y` | the last two digits of the year |
 | `%Y` | the full year |
 
