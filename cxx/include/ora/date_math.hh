@@ -130,6 +130,23 @@ get_weekday(
 
 
 /*
+ * Infers the full year for a two-digit year.
+ *
+ * This calculation is arbitrary.
+ */
+inline Year constexpr
+infer_two_digit_year(
+  int const val)
+{
+  return 
+      val <   0 ? YEAR_INVALID
+    : val <  69 ? 2000 + val
+    : val < 100 ? 1900 + val
+    :             YEAR_INVALID;
+}
+
+
+/*
  * Returns the datenum for Jan 1 of 'year'.
  */
 inline Datenum constexpr

@@ -112,6 +112,21 @@ parse_month(
 
 
 inline bool
+parse_two_digit_year(
+  char const*& s,
+  Year& year)
+{
+  auto const i = parse_unsigned<2>(s);
+  if (0 <= i && i < 100) {
+    year = infer_two_digit_year(i);
+    return true;
+  }
+  else
+    return false;
+}
+
+
+inline bool
 parse_weekday_iso(
   char const*& s,
   Weekday& weekday)
@@ -236,14 +251,14 @@ parse_date_parts(
       case 'D': TRY(parse_iso_date(s, parts.ymd_date)); break;
       case 'd': TRY(parse_day(s, parts.ymd_date.day)); break;
       case 'G': TRY(parse_year(s, parts.week_date.week_year)); break;
-   // case 'g':
+      case 'g': TRY(parse_two_digit_year(s, parts.week_date.week_year)); break;
    // case 'j':
       case 'm': TRY(parse_month(s, parts.ymd_date.month)); break;
       case 'u': TRY(parse_weekday_iso(s, parts.week_date.weekday)); break;
       case 'V': TRY(parse_week(s, parts.week_date.week)); break;
       case 'w': TRY(parse_weekday_unix(s, parts.week_date.weekday)); break;
       case 'Y': TRY(parse_year(s, parts.ymd_date.year)); break;
-   // case 'y': 
+      case 'y': TRY(parse_two_digit_year(s, parts.ymd_date.year)); break;
 
       default:
         return false;
