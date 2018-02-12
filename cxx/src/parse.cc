@@ -208,13 +208,17 @@ parse_date_parts(
       case 'a': TRY(parse_weekday_abbr(s, parts.week_date.weekday)); break;
       case 'B': TRY(parse_month_name(s, parts.ymd_date.month)); break;
       case 'b': TRY(parse_month_abbr(s, parts.ymd_date.month)); break;
+   // case 'D':
       case 'd': TRY(parse_day(s, parts.ymd_date.day)); break;
       case 'G': TRY(parse_year(s, parts.week_date.week_year)); break;
+   // case 'g':
+   // case 'j':
       case 'm': TRY(parse_month(s, parts.ymd_date.month)); break;
       case 'u': TRY(parse_weekday_iso(s, parts.week_date.weekday)); break;
       case 'V': TRY(parse_week(s, parts.week_date.week)); break;
       case 'w': TRY(parse_weekday_unix(s, parts.week_date.weekday)); break;
       case 'Y': TRY(parse_year(s, parts.ymd_date.year)); break;
+   // case 'y': 
 
       default:
         return false;
