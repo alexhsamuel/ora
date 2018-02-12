@@ -1,3 +1,5 @@
+#pragma GCC diagnostic ignored "-Wparentheses"
+
 #include <cstdint>
 
 #include "ora/date_math.hh"
