@@ -343,6 +343,14 @@ parse_date_parts(
 
 namespace daytime {
 
+struct ParseExtra
+{
+  Hour hour_12 = HOUR_INVALID;
+  int am_pm = 0;
+  int usec = -1;
+};
+
+
 bool parse_daytime_parts(
   char const*& p,
   char const*& s,
@@ -351,17 +359,19 @@ bool parse_daytime_parts(
   // Second may be omitted.
   parts.second = 0;
 
-  Hour hour_12 = HOUR_INVALID;
-  int am_pm = 0;
-  int usec = -1;
+  ParseExtra extra;
 
   while (true)
     if (*p == 0 && *s == 0) {
       // Completed successfully.
-      if (parts.hour == HOUR_INVALID && hour_12 != HOUR_INVALID && am_pm != -1)
-        parts.hour = (hour_12 == 12 ? 0 : hour_12) + (am_pm == 1 ? 12 : 0);
-      if (usec != -1 && parts.second != SECOND_INVALID)
-        parts.second = int(parts.second) + usec * 1e-6;
+      if (   parts.hour == HOUR_INVALID 
+          && extra.hour_12 != HOUR_INVALID 
+          && extra.am_pm != -1)
+        parts.hour = 
+            (extra.hour_12 == 12 ? 0 : extra.hour_12) 
+          + (extra.am_pm == 1 ? 12 : 0);
+      if (extra.usec != -1 && parts.second != SECOND_INVALID)
+        parts.second = int(parts.second) + extra.usec * 1e-6;
       return true;
     }
     else if (*p == '%') {
@@ -387,7 +397,7 @@ bool parse_daytime_parts(
           return false;
         else 
           // If fewer than six digits, scale to zero-pad on the right.
-          usec = i * ora::lib::pow10(6 - (s - last_s));
+          extra.usec = i * ora::lib::pow10(6 - (s - last_s));
       }; break;
 
       case 'H': TRY(parse_hour(s, parts.hour)); break;
@@ -395,7 +405,7 @@ bool parse_daytime_parts(
       case 'I': {
         auto const i = parse_unsigned<2>(s);
         if (1 <= i && i <= 12)
-          hour_12 = i;
+          extra.hour_12 = i;
         else
           return false;
       }; break;
@@ -405,10 +415,10 @@ bool parse_daytime_parts(
       case 'p':
         if (   (*s == 'a' || *s == 'A')
             && (*(s + 1) == 'm' || *(s + 1) == 'M'))
-          am_pm = 0;
+          extra.am_pm = 0;
         else if (   (*s == 'p' || *s == 'P')
                  && (*(s + 1) == 'm' || *(s + 1) == 'M'))
-          am_pm = 1;
+          extra.am_pm = 1;
         else
           return false;
         s += 2;
@@ -432,6 +442,13 @@ bool parse_daytime_parts(
 
 }  // namespace daytime
 
+
+//------------------------------------------------------------------------------
+
+namespace time {
+
+
+}  // namespace time
 
 //------------------------------------------------------------------------------
 
