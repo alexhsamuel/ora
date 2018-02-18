@@ -352,7 +352,7 @@ bool parse_daytime_parts(
   parts.second = 0;
 
   Hour hour_12 = HOUR_INVALID;
-  int am_pm = -1;
+  int am_pm = 0;
   int usec = -1;
 
   while (true)
@@ -381,15 +381,13 @@ bool parse_daytime_parts(
 
       switch (*p) {
       case 'f': {
-        auto const last_p = p;
+        auto const last_s = s;
         auto i = parse_unsigned<6>(s);
         if (i == -1) 
           return false;
-        else {
-          for (int digits = p - last_p; digits < 6; ++p)
-            i *= 10;
-          usec = i;
-        }
+        else 
+          // If fewer than six digits, scale to zero-pad on the right.
+          usec = i * ora::lib::pow10(6 - (s - last_s));
       }; break;
 
       case 'H': TRY(parse_hour(s, parts.hour)); break;
@@ -405,15 +403,15 @@ bool parse_daytime_parts(
       case 'M': TRY(parse_minute(s, parts.minute)); break;
 
       case 'p':
-        if (   (*p == 'a' || *p == 'A')
-            && (*(p + 1) == 'm' || *(p + 1) == 'M'))
+        if (   (*s == 'a' || *s == 'A')
+            && (*(s + 1) == 'm' || *(s + 1) == 'M'))
           am_pm = 0;
-        else if (   (*p == 'p' || *p == 'P')
-                 && (*(p + 1) == 'm' || *(p + 1) == 'M'))
+        else if (   (*s == 'p' || *s == 'P')
+                 && (*(s + 1) == 'm' || *(s + 1) == 'M'))
           am_pm = 1;
         else
           return false;
-        ++p;
+        s += 2;
         break;
 
       case 'S': TRY(parse_second(s, parts.second)); break;
