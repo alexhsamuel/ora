@@ -82,6 +82,24 @@ parse_unsigned(
 
 
 inline bool
+parse_am_pm(
+  char const*& s,
+  int& am_pm)
+{
+  if (   (*s == 'a' || *s == 'A')
+      && (*(s + 1) == 'm' || *(s + 1) == 'M'))
+    am_pm = 0;
+  else if (   (*s == 'p' || *s == 'P')
+           && (*(s + 1) == 'm' || *(s + 1) == 'M'))
+    am_pm = 1;
+  else
+    return false;
+  s += 2;
+  return true;
+}
+
+
+inline bool
 parse_day(
   char const*& s,
   Day& day)
@@ -104,6 +122,21 @@ parse_hour(
   auto const i = parse_unsigned<2>(s);
   if (hour_is_valid(i)) {
     hour = i;
+    return true;
+  }
+  else
+    return false;
+}
+
+
+inline bool
+parse_hour12(
+  char const*& s,
+  Hour& hour12)
+{
+  auto const i = parse_unsigned<2>(s);
+  if (1 <= i && i <= 12) {
+    hour12 = i;
     return true;
   }
   else
@@ -184,6 +217,23 @@ parse_two_digit_year(
   }
   else
     return false;
+}
+
+
+inline bool
+parse_usec(
+  char const*& s,
+  int& usec)
+{
+  auto const last_s = s;
+  auto i = parse_unsigned<6>(s);
+  if (i == -1) 
+    return false;
+  else {
+    // If fewer than six digits, scale to zero-pad on the right.
+    usec = i * ora::lib::pow10(6 - (s - last_s));
+    return true;
+  }
 }
 
 
@@ -351,6 +401,25 @@ struct ParseExtra
 };
 
 
+inline void
+adjust(
+  ParseExtra& extra,
+  HmsDaytime& hms)
+{
+  if (   hms.hour == HOUR_INVALID 
+      && extra.hour_12 != HOUR_INVALID 
+      && extra.am_pm != -1)
+    // Replace hour with 12 hour and AM/PM indicator.
+    hms.hour = 
+        (extra.hour_12 == 12 ? 0 : extra.hour_12) 
+      + (extra.am_pm == 1 ? 12 : 0);
+
+  if (extra.usec != -1 && hms.second != SECOND_INVALID)
+    // Replace fractional seconds with scaled usec.
+    hms.second = int(hms.second) + extra.usec * 1e-6;
+}
+
+
 bool parse_daytime_parts(
   char const*& p,
   char const*& s,
@@ -364,14 +433,7 @@ bool parse_daytime_parts(
   while (true)
     if (*p == 0 && *s == 0) {
       // Completed successfully.
-      if (   parts.hour == HOUR_INVALID 
-          && extra.hour_12 != HOUR_INVALID 
-          && extra.am_pm != -1)
-        parts.hour = 
-            (extra.hour_12 == 12 ? 0 : extra.hour_12) 
-          + (extra.am_pm == 1 ? 12 : 0);
-      if (extra.usec != -1 && parts.second != SECOND_INVALID)
-        parts.second = int(parts.second) + extra.usec * 1e-6;
+      adjust(extra, parts);
       return true;
     }
     else if (*p == '%') {
@@ -390,40 +452,11 @@ bool parse_daytime_parts(
       skip_modifiers(p);
 
       switch (*p) {
-      case 'f': {
-        auto const last_s = s;
-        auto i = parse_unsigned<6>(s);
-        if (i == -1) 
-          return false;
-        else 
-          // If fewer than six digits, scale to zero-pad on the right.
-          extra.usec = i * ora::lib::pow10(6 - (s - last_s));
-      }; break;
-
+      case 'f': TRY(parse_usec(s, extra.usec)); break;
       case 'H': TRY(parse_hour(s, parts.hour)); break;
-
-      case 'I': {
-        auto const i = parse_unsigned<2>(s);
-        if (1 <= i && i <= 12)
-          extra.hour_12 = i;
-        else
-          return false;
-      }; break;
-
+      case 'I': TRY(parse_hour12(s, extra.hour_12)); break;
       case 'M': TRY(parse_minute(s, parts.minute)); break;
-
-      case 'p':
-        if (   (*s == 'a' || *s == 'A')
-            && (*(s + 1) == 'm' || *(s + 1) == 'M'))
-          extra.am_pm = 0;
-        else if (   (*s == 'p' || *s == 'P')
-                 && (*(s + 1) == 'm' || *(s + 1) == 'M'))
-          extra.am_pm = 1;
-        else
-          return false;
-        s += 2;
-        break;
-
+      case 'p': TRY(parse_am_pm(s, extra.am_pm)); break;
       case 'S': TRY(parse_second(s, parts.second)); break;
 
       default:
