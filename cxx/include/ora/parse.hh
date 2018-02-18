@@ -53,5 +53,13 @@ parse(
 
 //------------------------------------------------------------------------------
 
+namespace daytime {
+
+extern bool parse_daytime_parts(char const*& pattern, char const*& string, HmsDaytime& parts);
+
+}  // namespace daytime
+
+//------------------------------------------------------------------------------
+
 }  // namespace ora
 

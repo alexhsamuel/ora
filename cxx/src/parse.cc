@@ -59,7 +59,7 @@ skip_modifiers(
 }
 
 
-template<size_t MAX_DIGITS>
+template<size_t MAX_DIGITS, bool FIXED=false>
 inline int
 parse_unsigned(
   char const*& p)
@@ -75,7 +75,7 @@ parse_unsigned(
     if (isdigit(*p))
       val = val * 10 + (*p++ - '0');
     else
-      return val;
+      return FIXED ? -1 : val;
 
   return val;
 }
@@ -89,6 +89,36 @@ parse_day(
   auto const i = parse_unsigned<2>(s);
   if (day_is_valid(i)) {
     day = i;
+    return true;
+  }
+  else
+    return false;
+}
+
+
+inline bool
+parse_hour(
+  char const*& s,
+  Hour& hour)
+{
+  auto const i = parse_unsigned<2>(s);
+  if (hour_is_valid(i)) {
+    hour = i;
+    return true;
+  }
+  else
+    return false;
+}
+
+
+inline bool
+parse_minute(
+  char const*& s,
+  Minute& minute)
+{
+  auto const i = parse_unsigned<2, true>(s);
+  if (minute_is_valid(i)) {
+    minute = i;
     return true;
   }
   else
@@ -119,6 +149,22 @@ parse_ordinal(
   auto const i = parse_unsigned<3>(s);
   if (ordinal_is_valid(i)) {
     ordinal = i;
+    return true;
+  }
+  else
+    return false;
+}
+
+
+inline bool
+parse_second(
+  char const*& s,
+  Second& second)
+{
+  // FIXME: Parse factional seconds.
+  auto const i = parse_unsigned<2, true>(s);
+  if (second_is_valid(i)) {
+    second = i;
     return true;
   }
   else
@@ -291,6 +337,102 @@ parse_date_parts(
 
 
 }  // namespace date
+
+
+//------------------------------------------------------------------------------
+
+namespace daytime {
+
+bool parse_daytime_parts(
+  char const*& p,
+  char const*& s,
+  HmsDaytime& parts)
+{
+  // Second may be omitted.
+  parts.second = 0;
+
+  Hour hour_12 = HOUR_INVALID;
+  int am_pm = -1;
+  int usec = -1;
+
+  while (true)
+    if (*p == 0 && *s == 0) {
+      // Completed successfully.
+      if (parts.hour == HOUR_INVALID && hour_12 != HOUR_INVALID && am_pm != -1)
+        parts.hour = (hour_12 == 12 ? 0 : hour_12) + (am_pm == 1 ? 12 : 0);
+      if (usec != -1 && parts.second != SECOND_INVALID)
+        parts.second = int(parts.second) + usec * 1e-6;
+      return true;
+    }
+    else if (*p == '%') {
+      ++p;
+      if (*p == '%')
+        // Literal '%'.
+        if (*s == '%') {
+          ++p;
+          ++s;
+          continue;
+        }
+        else
+          // Didn't match %.
+          return false;
+
+      skip_modifiers(p);
+
+      switch (*p) {
+      case 'f': {
+        auto const last_p = p;
+        auto i = parse_unsigned<6>(s);
+        if (i == -1) 
+          return false;
+        else {
+          for (int digits = p - last_p; digits < 6; ++p)
+            i *= 10;
+          usec = i;
+        }
+      }; break;
+
+      case 'H': TRY(parse_hour(s, parts.hour)); break;
+
+      case 'I': {
+        auto const i = parse_unsigned<2>(s);
+        if (1 <= i && i <= 12)
+          hour_12 = i;
+        else
+          return false;
+      }; break;
+
+      case 'M': TRY(parse_minute(s, parts.minute)); break;
+
+      case 'p':
+        if (   (*p == 'a' || *p == 'A')
+            && (*(p + 1) == 'm' || *(p + 1) == 'M'))
+          am_pm = 0;
+        else if (   (*p == 'p' || *p == 'P')
+                 && (*(p + 1) == 'm' || *(p + 1) == 'M'))
+          am_pm = 1;
+        else
+          return false;
+        ++p;
+        break;
+
+      case 'S': TRY(parse_second(s, parts.second)); break;
+
+      default:
+        return false;
+      }
+      ++p;
+    }
+    else if (*p == *s) {
+      ++p;
+      ++s;
+    }
+    else
+      return false;
+}
+
+
+}  // namespace daytime
 
 
 //------------------------------------------------------------------------------

@@ -87,6 +87,7 @@ public:
   // API methods.
   virtual ora::Daytick              get_daytick(Object* daytime) const = 0;
   virtual ref<Object>               from_daytick(ora::Daytick) const = 0;
+  virtual ref<Object>               from_hms(HmsDaytime) const = 0;
   virtual bool                      is_invalid(Object* daytime) const = 0;
   virtual bool                      is_missing(Object* daytime) const = 0;
 
@@ -170,6 +171,8 @@ private:
       { return ((PyDaytime*) daytime)->daytime_.get_daytick(); }
     virtual ref<Object> from_daytick(ora::Daytick const daytick) const
       { return PyDaytime::create(ora::daytime::from_daytick<Daytime>(daytick)); }
+    virtual ref<Object> from_hms(HmsDaytime const parts) const
+      { return PyDaytime::create(ora::daytime::from_hms(parts)); }
     virtual bool is_invalid(Object* const daytime) const
       { return ((PyDaytime*) daytime)->daytime_.is_invalid(); }
     virtual bool is_missing(Object* const daytime) const
