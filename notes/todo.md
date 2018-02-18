@@ -1,9 +1,6 @@
 # Work List
 
 1. Full parsing support.
-   - remaining date fields
-   - date parse unit tests
-   - ignore modifiers
    - API?
    - better exception type
    - fast parse_date_iso(), etc.
