@@ -202,7 +202,7 @@ private:
     virtual ref<Object> from_datenum(ora::Datenum const datenum) const
       { return PyDate::create(ora::date::from_datenum<Date>(datenum)); }
     virtual ref<Object> from_parts(ora::FullDate const parts) const
-      { return PyDate::create(ora::date::from_parts(parts)); }
+      { return PyDate::create(ora::date::from_datenum(parts_to_datenum(parts))); }
     virtual bool is_invalid(Object* const date) const
       { return ((PyDate*) date)->date_.is_invalid(); }
     virtual bool is_missing(Object* const date) const

@@ -63,35 +63,6 @@ from_ordinal_date(
 
 
 /*
- * Creates a date from parts.
- *
- * Uses components of FullDate in this order of precedence:
- * - YMD date, if fully specified.
- * - Week date, if fully specified.
- * - Ordinal date, if fully specified.
- */
-template<class DATE=Date>
-inline DATE
-from_parts(
-  FullDate const parts)
-{
-  if (   year_is_valid(parts.ymd_date.year)
-      && month_is_valid(parts.ymd_date.month)
-      && day_is_valid(parts.ymd_date.day))
-    return from_ymd<DATE>(parts.ymd_date);
-  else if (   year_is_valid(parts.week_date.week_year)
-           && week_is_valid(parts.week_date.week)
-           && weekday_is_valid(parts.week_date.weekday))
-    return from_week_date<DATE>(parts.week_date);
-  else if (   year_is_valid(parts.ordinal_date.year)
-           && ordinal_is_valid(parts.ordinal_date.ordinal))
-    return from_ordinal_date<DATE>(parts.ordinal_date);
-  else
-    return DATE::INVALID;
-}
-
-
-/*
  * Creates a date from a week date.
  *
  * Throws <InvalidDateError> if the week date is invalid.

@@ -335,6 +335,38 @@ datenum_to_ymdi(
 }
 
 
+/*
+ * Computes datenum from parts.
+ *
+ * Uses components of FullDate in this order of precedence:
+ * - YMD date, if fully specified.
+ * - Week date, if fully specified.
+ * - Ordinal date, if fully specified.
+ */
+inline Datenum
+parts_to_datenum(
+  FullDate const parts)
+{
+  if (ymd_is_valid(
+      parts.ymd_date.year, parts.ymd_date.month, parts.ymd_date.day))
+    return ymd_to_datenum(
+      parts.ymd_date.year, parts.ymd_date.month, parts.ymd_date.day);
+
+  else if (week_date_is_valid(
+      parts.week_date.week_year, parts.week_date.week, parts.week_date.weekday))
+    return week_date_to_datenum(
+      parts.week_date.week_year, parts.week_date.week, parts.week_date.weekday);
+
+  else if (ordinal_date_is_valid(
+      parts.ordinal_date.year, parts.ordinal_date.ordinal))
+    return ordinal_date_to_datenum(
+      parts.ordinal_date.year, parts.ordinal_date.ordinal);
+
+  else
+    return DATENUM_INVALID;
+}
+
+
 //------------------------------------------------------------------------------
 
 namespace weekday {
