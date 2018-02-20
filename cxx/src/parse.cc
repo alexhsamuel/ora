@@ -221,6 +221,33 @@ parse_two_digit_year(
 
 
 inline bool
+parse_iso_tz_offset(
+  char const*& s,
+  TimeZoneOffset& tz_offset)
+{
+  int sign;
+  if (*s == '+')
+    sign = 1;
+  else if (*s == '-')
+    sign = -1;
+  else
+    return false;
+  ++s;
+  int const hours = parse_unsigned<2>(s);
+  if (hours == -1)
+    return false;
+  if (*s != ':')
+    return false;
+  ++s;
+  int const minutes = parse_unsigned<2, true>(s);
+  if (minutes == -1)
+    return false;
+  tz_offset = sign * (hours * SECS_PER_HOUR + minutes * SECS_PER_MIN);
+  return true;
+}
+
+
+inline bool
 parse_usec(
   char const*& s,
   int& usec)
@@ -423,17 +450,17 @@ adjust(
 bool parse_daytime_parts(
   char const*& p,
   char const*& s,
-  HmsDaytime& parts)
+  HmsDaytime& hms)
 {
   // Second may be omitted.
-  parts.second = 0;
+  hms.second = 0;
 
   ParseExtra extra;
 
   while (true)
     if (*p == 0 && *s == 0) {
       // Completed successfully.
-      adjust(extra, parts);
+      adjust(extra, hms);
       return true;
     }
     else if (*p == '%') {
@@ -453,11 +480,11 @@ bool parse_daytime_parts(
 
       switch (*p) {
       case 'f': TRY(parse_usec(s, extra.usec)); break;
-      case 'H': TRY(parse_hour(s, parts.hour)); break;
+      case 'H': TRY(parse_hour(s, hms.hour)); break;
       case 'I': TRY(parse_hour12(s, extra.hour_12)); break;
-      case 'M': TRY(parse_minute(s, parts.minute)); break;
+      case 'M': TRY(parse_minute(s, hms.minute)); break;
       case 'p': TRY(parse_am_pm(s, extra.am_pm)); break;
-      case 'S': TRY(parse_second(s, parts.second)); break;
+      case 'S': TRY(parse_second(s, hms.second)); break;
 
       default:
         return false;
@@ -479,6 +506,80 @@ bool parse_daytime_parts(
 //------------------------------------------------------------------------------
 
 namespace time {
+
+bool
+parse_time_parts(
+  char const*& p,
+  char const*& s,
+  FullDate& date,
+  HmsDaytime& hms,
+  TimeZoneInfo& tz)
+{
+  // Second may be omitted.
+  hms.second = 0;
+
+  daytime::ParseExtra extra;
+
+  while (true)
+    if (*p == 0 && *s == 0) {
+      // Completed successfully.
+      daytime::adjust(extra, hms);
+      return true;
+    }
+    else if (*p == '%') {
+      ++p;
+      if (*p == '%')
+        // Literal '%'.
+        if (*s == '%') {
+          ++p;
+          ++s;
+          continue;
+        }
+        else
+          // Didn't match %.
+          return false;
+
+      skip_modifiers(p);
+
+      switch (*p) {
+      case 'A': TRY(parse_weekday_name(s, date.week_date.weekday)); break;
+      case 'a': TRY(parse_weekday_abbr(s, date.week_date.weekday)); break;
+      case 'B': TRY(parse_month_name(s, date.ymd_date.month)); break;
+      case 'b': TRY(parse_month_abbr(s, date.ymd_date.month)); break;
+      case 'D': TRY(parse_iso_date(s, date.ymd_date)); break;
+      case 'd': TRY(parse_day(s, date.ymd_date.day)); break;
+      case 'G': TRY(parse_year(s, date.week_date.week_year)); break;
+      case 'g': TRY(parse_two_digit_year(s, date.week_date.week_year)); break;
+      case 'j': TRY(parse_ordinal(s, date.ordinal_date.ordinal)); break;
+      case 'm': TRY(parse_month(s, date.ymd_date.month)); break;
+      case 'u': TRY(parse_weekday_iso(s, date.week_date.weekday)); break;
+      case 'V': TRY(parse_week(s, date.week_date.week)); break;
+      case 'w': TRY(parse_weekday_unix(s, date.week_date.weekday)); break;
+      case 'Y': TRY(parse_year(s, date.ymd_date.year)); 
+                date.ordinal_date.year = date.ymd_date.year; break;
+      case 'y': TRY(parse_two_digit_year(s, date.ymd_date.year)); break;
+
+      case 'f': TRY(parse_usec(s, extra.usec)); break;
+      case 'H': TRY(parse_hour(s, hms.hour)); break;
+      case 'I': TRY(parse_hour12(s, extra.hour_12)); break;
+      case 'M': TRY(parse_minute(s, hms.minute)); break;
+      case 'p': TRY(parse_am_pm(s, extra.am_pm)); break;
+      case 'S': TRY(parse_second(s, hms.second)); break;
+
+      case 'E': TRY(parse_iso_tz_offset(s, tz.offset)); break;
+
+      default:
+        return false;
+      }
+      ++p;
+    }
+    else if (*p == *s) {
+      ++p;
+      ++s;
+    }
+    else
+      return false;
+}
 
 
 }  // namespace time

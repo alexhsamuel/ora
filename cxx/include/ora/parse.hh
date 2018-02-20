@@ -11,7 +11,8 @@ namespace ora {
 
 namespace date {
 
-extern bool parse_date_parts(char const*& pattern, char const*& string, FullDate& parts);
+extern bool parse_date_parts(
+  char const*& pattern, char const*& string, FullDate& parts);
 
 inline FullDate 
 parse_date_parts(
@@ -55,9 +56,27 @@ parse(
 
 namespace daytime {
 
-extern bool parse_daytime_parts(char const*& pattern, char const*& string, HmsDaytime& parts);
+extern bool parse_daytime_parts(
+  char const*& pattern, char const*& string, HmsDaytime& hms);
 
 }  // namespace daytime
+
+//------------------------------------------------------------------------------
+
+namespace time {
+
+// FIXME: Elsewhere.
+struct TimeZoneInfo
+{
+  TimeZoneOffset offset = TIME_ZONE_OFFSET_INVALID;
+  std::string name;
+};
+
+extern bool parse_time_parts(
+  char const*& pattern, char const*& string, 
+  FullDate& date, HmsDaytime& hms, TimeZoneInfo& tz);
+
+}
 
 //------------------------------------------------------------------------------
 
