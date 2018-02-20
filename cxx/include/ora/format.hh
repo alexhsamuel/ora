@@ -39,6 +39,14 @@ bool parse_month_abbr(char const*& p, Month& month);
  */
 char get_time_zone_offset_letter(TimeZoneOffset);
 
+/*
+ * Returns the time zone offset represented by tbe military / time zone offset
+ * letter.
+ *
+ * If the letter is invalid, returns TIME_ZONE_OFFSET_INVALID.
+ */
+TimeZoneOffset parse_time_zone_offset_letter(char letter);
+
 std::string const& get_weekday_name(Weekday weekday);
 Weekday parse_weekday_name(std::string const& str);
 bool parse_weekday_name(char const*& p, Weekday& weekday);

@@ -252,6 +252,22 @@ parse_tz_offset(
 
 
 inline bool
+parse_tz_offset_letter(
+  char const*& s,
+  TimeZoneOffset& tz_offset)
+{
+  auto const off = parse_time_zone_offset_letter(*s);
+  if (off == TIME_ZONE_OFFSET_INVALID)
+    return false;
+  else {
+    ++s;
+    tz_offset = off;
+    return true;
+  }
+}
+
+
+inline bool
 parse_usec(
   char const*& s,
   int& usec)
@@ -571,6 +587,7 @@ parse_time_parts(
       case 'S': TRY(parse_second(s, hms.second)); break;
 
       case 'E': TRY(parse_tz_offset(s, tz.offset)); break;
+      case 'e': TRY(parse_tz_offset_letter(s, tz.offset)); break;
       case 'z': TRY(parse_tz_offset(s, tz.offset, false)); break;
 
       default:

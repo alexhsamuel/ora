@@ -537,6 +537,37 @@ time_zone_offset_letters[25] = {
 };
 
 
+// Inverse of the above, for 'A' through 'Z'.
+TimeZoneOffset const
+time_zone_letter_offsets[26] = {
+   1 * (int) SECS_PER_HOUR,    // A
+   2 * (int) SECS_PER_HOUR,    // B
+   3 * (int) SECS_PER_HOUR,    // C
+   4 * (int) SECS_PER_HOUR,    // D
+   5 * (int) SECS_PER_HOUR,    // E
+   6 * (int) SECS_PER_HOUR,    // F
+   7 * (int) SECS_PER_HOUR,    // G
+   8 * (int) SECS_PER_HOUR,    // H
+   9 * (int) SECS_PER_HOUR,    // I
+  TIME_ZONE_OFFSET_INVALID,    // J
+  10 * (int) SECS_PER_HOUR,    // K
+  11 * (int) SECS_PER_HOUR,    // L
+  12 * (int) SECS_PER_HOUR,    // M
+  -1 * (int) SECS_PER_HOUR,    // N
+  -2 * (int) SECS_PER_HOUR,    // O
+  -3 * (int) SECS_PER_HOUR,    // P
+  -4 * (int) SECS_PER_HOUR,    // Q
+  -5 * (int) SECS_PER_HOUR,    // R
+  -6 * (int) SECS_PER_HOUR,    // S
+  -7 * (int) SECS_PER_HOUR,    // T
+  -8 * (int) SECS_PER_HOUR,    // U
+  -9 * (int) SECS_PER_HOUR,    // V
+ -10 * (int) SECS_PER_HOUR,    // W
+ -11 * (int) SECS_PER_HOUR,    // X
+ -12 * (int) SECS_PER_HOUR,    // Y
+   0                ,          // Z
+};
+
 // The letter to use for a time zone offset that has no military / nautical
 // correspondence, because it is not a round hour offset from UTC.
 char const
@@ -657,6 +688,17 @@ get_weekday_name(
   if (! weekday_is_valid(weekday))
     throw ValueError("bad weekday");
   return weekday_names[(int) weekday];
+}
+
+
+TimeZoneOffset
+parse_time_zone_offset_letter(
+  char const letter)
+{
+  return
+      'A' <= letter && letter <= 'Z' 
+    ? time_zone_letter_offsets[letter - 'A']
+    : TIME_ZONE_OFFSET_INVALID;
 }
 
 
