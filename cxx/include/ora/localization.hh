@@ -19,6 +19,24 @@ inline TIME
 from_local(
   Datenum const         datenum,
   Daytick const         daytick,
+  TimeZoneOffset const  tz_offset)
+{
+  if (! datenum_is_valid(datenum)) 
+    throw InvalidDateError();
+  if (! daytick_is_valid(daytick))
+    throw InvalidDaytimeError();
+
+  return time::from_offset<TIME>(
+    time::datenum_daytick_to_offset<typename TIME::Traits>(
+      datenum, daytick, tz_offset));
+}
+
+
+template<class TIME=time::Time>
+inline TIME
+from_local(
+  Datenum const         datenum,
+  Daytick const         daytick,
   TimeZone const&       time_zone,
   bool const            first=true)
 {

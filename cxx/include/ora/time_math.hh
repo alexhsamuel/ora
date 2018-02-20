@@ -36,12 +36,11 @@ convert_offset(
 
 
 template<class TRAITS>
-inline typename TRAITS::Offset 
+inline typename TRAITS::Offset
 datenum_daytick_to_offset(
   Datenum const datenum,
   Daytick const daytick,
-  TimeZone const& tz,
-  bool const first)
+  TimeZoneOffset const tz_offset)
 {
   using Offset = typename TRAITS::Offset;
   static auto constexpr denominator = TRAITS::denominator;
@@ -49,15 +48,6 @@ datenum_daytick_to_offset(
   // The datenum of the day containing the minimum time.
   static auto constexpr min_datenum 
     = (Datenum) (TRAITS::base + TRAITS::min / (Offset) SECS_PER_DAY);
-
-  Offset tz_offset;
-  try {
-    tz_offset = tz.get_parts_local(datenum, daytick, first).offset;
-  }
-  catch (NonexistentDateDaytime) {
-    // FIXME: Don't catch and rethrow...
-    throw NonexistentDateDaytime();
-  }
 
   Offset date_diff = (int64_t) datenum - base;
   Offset daytime_offset
@@ -84,6 +74,26 @@ datenum_daytick_to_offset(
     throw TimeRangeError();
   else
     return offset;
+}
+
+
+
+template<class TRAITS>
+inline typename TRAITS::Offset 
+datenum_daytick_to_offset(
+  Datenum const datenum,
+  Daytick const daytick,
+  TimeZone const& tz,
+  bool const first)
+{
+  try {
+    return datenum_daytick_to_offset<TRAITS>(
+      datenum, daytick, tz.get_parts_local(datenum, daytick, first).offset);
+  }
+  catch (NonexistentDateDaytime) {
+    // FIXME: Don't catch and rethrow...
+    throw NonexistentDateDaytime();
+  }
 }
 
 
