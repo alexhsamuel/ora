@@ -221,9 +221,10 @@ parse_two_digit_year(
 
 
 inline bool
-parse_iso_tz_offset(
+parse_tz_offset(
   char const*& s,
-  TimeZoneOffset& tz_offset)
+  TimeZoneOffset& tz_offset,
+  bool const colon=true)
 {
   int sign;
   if (*s == '+')
@@ -233,12 +234,15 @@ parse_iso_tz_offset(
   else
     return false;
   ++s;
-  int const hours = parse_unsigned<2>(s);
+  // FIXME: Accept one-digit hours for ISO-style offsets?
+  int const hours = parse_unsigned<2, true>(s);
   if (hours == -1)
     return false;
-  if (*s != ':')
-    return false;
-  ++s;
+  if (colon) {
+    if (*s != ':')
+      return false;
+    ++s;
+  }
   int const minutes = parse_unsigned<2, true>(s);
   if (minutes == -1)
     return false;
@@ -430,7 +434,7 @@ struct ParseExtra
 
 inline void
 adjust(
-  ParseExtra& extra,
+  ParseExtra const& extra,
   HmsDaytime& hms)
 {
   if (   hms.hour == HOUR_INVALID 
@@ -566,7 +570,8 @@ parse_time_parts(
       case 'p': TRY(parse_am_pm(s, extra.am_pm)); break;
       case 'S': TRY(parse_second(s, hms.second)); break;
 
-      case 'E': TRY(parse_iso_tz_offset(s, tz.offset)); break;
+      case 'E': TRY(parse_tz_offset(s, tz.offset)); break;
+      case 'z': TRY(parse_tz_offset(s, tz.offset, false)); break;
 
       default:
         return false;
