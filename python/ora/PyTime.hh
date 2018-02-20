@@ -103,6 +103,7 @@ public:
     { return get(obj->ob_type);  }
 
   // API methods.
+  virtual ref<Object>               from_local_datenum_daytick(ora::Datenum, ora::Daytick, TimeZoneOffset) const = 0; 
   virtual ref<Object>               from_local_datenum_daytick(ora::Datenum, ora::Daytick, ora::TimeZone const&, bool) const = 0; 
   virtual int64_t                   get_epoch_time(Object* time) const = 0;
   virtual ora::time::Time128        get_time128(Object* time) const = 0;
@@ -185,6 +186,9 @@ public:
 
     virtual ora::time::Time128 get_time128(Object* const time) const
       { return ora::time::Time128(((PyTime*) time)->time_); }
+
+    virtual ref<Object> from_local_datenum_daytick(ora::Datenum const datenum, ora::Daytick const daytick, TimeZoneOffset const tz_offset) const
+      { return PyTime::create(ora::from_local<Time>(datenum, daytick, tz_offset)); }
 
     virtual ref<Object> from_local_datenum_daytick(ora::Datenum const datenum, ora::Daytick const daytick, ora::TimeZone const& tz, bool first) const
       { return PyTime::create(ora::from_local<Time>(datenum, daytick, tz, first)); }
