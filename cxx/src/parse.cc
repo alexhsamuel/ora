@@ -588,6 +588,10 @@ parse_time_parts(
 
       case 'E': TRY(parse_tz_offset(s, tz.offset)); break;
       case 'e': TRY(parse_tz_offset_letter(s, tz.offset)); break;
+   // case 'i': ISO format
+   // case 'o': total offset in sec
+   // case 'T': abbreviated ISO format
+   // case 'Z': time zone name  
       case 'z': TRY(parse_tz_offset(s, tz.offset, false)); break;
 
       default:
