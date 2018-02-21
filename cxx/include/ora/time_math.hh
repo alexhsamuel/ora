@@ -49,24 +49,26 @@ datenum_daytick_to_offset(
   static auto constexpr min_datenum 
     = (Datenum) (TRAITS::base + TRAITS::min / (Offset) SECS_PER_DAY);
 
-  // FIXME: There's very likely a cleaner way to handle this in general.
-  // We need to add these three terms:
+  // To obtain the final offset, we need to add these three terms:
   //
-  //   date * 86400 * denominator
-  //   -tz_offset * demoninator
-  //   daytick / DAYTICK_PER_SEC * denominator
+  // 1. The date portion: the date offset from the base date, times 86400.
   //
-  // bearing in mind that the Offset type may be unsigned.
+  //       date_diff * 86400 * denominator
+  //
+  // 2. The time zone offset portion: 
+  //
+  //       -tz_offset * demoninator
+  //
+  // 3. The daytime portion, rescaled appropriately.
+  //
+  //       daytick / DAYTICK_PER_SEC * denominator
+  //
+  // Bear in mind that the Offset type may be unsigned.
 
-  Offset date_diff = (int64_t) datenum - base;
-  Offset daytime_offset = rescale_int(daytick, DAYTICK_PER_SEC, denominator);
-  auto tz_off = tz_offset;
-  if (tz_off > 0 && tz_off * denominator > daytime_offset) {
-    // The time zone offset rolls us back to the previous day.
-    tz_off -= SECS_PER_DAY;
-    --date_diff;
-  }
-  daytime_offset -= denominator * tz_off;
+  int64_t const date_secs = ((int64_t) datenum - base) * SECS_PER_DAY;
+  int64_t date_tz_secs = date_secs - tz_offset;
+
+  auto daytime_offset = rescale_int(daytick, DAYTICK_PER_SEC, denominator);
 
   // Special case: if the time occurs on the first representable date, but
   // midnight of that date is not representable, we'd overflow if we computed
@@ -76,18 +78,15 @@ datenum_daytick_to_offset(
       && TRAITS::min % SECS_PER_DAY != 0
       && daytime_offset > 0
       && datenum < min_datenum) {
-    ++date_diff;
+    date_tz_secs += SECS_PER_DAY;
     daytime_offset -= SECS_PER_DAY * denominator;
   }
     
-  // Compute the offset for midnight on the date, then add the offset for the
-  // daytime, checking for overflows.
   Offset offset;
-  if (   mul_overflow(denominator * SECS_PER_DAY, date_diff, offset)
+  if (   mul_overflow(denominator, (Offset) date_tz_secs, offset)
       || add_overflow(offset, daytime_offset, offset))
     throw TimeRangeError();
-  else
-    return offset;
+  return offset;
 }
 
 
