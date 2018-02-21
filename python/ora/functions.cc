@@ -264,17 +264,21 @@ parse_time(
   Dict* const kw_args)
 {
   static char const* arg_names[] 
-    = {"pattern", "string", "first", "Time", nullptr};
+    = {"pattern", "string", "time_zone", "first", "Time", nullptr};
   char const* pattern;
   char const* string;
-  PyTypeObject* time_type = &PyTimeDefault::type_;
+  Object* tz_arg = nullptr;
   int first = true;
+  PyTypeObject* time_type = &PyTimeDefault::type_;
   Arg::ParseTupleAndKeywords(
-    args, kw_args, "ss|$pO", arg_names, &pattern, &string, &first, &time_type);
+    args, kw_args, "ss|O$pO", arg_names, 
+    &pattern, &string, &tz_arg, &first, &time_type);
 
   auto const api = PyTimeAPI::get(time_type);
   if (api == nullptr)
     throw TypeError("not a time type");
+
+  auto const tz = tz_arg == nullptr ? nullptr : convert_to_time_zone(tz_arg);
 
   FullDate date;
   HmsDaytime hms;
@@ -285,9 +289,7 @@ parse_time(
     // FIXME: Factor this logic into a function.
     auto const datenum = parts_to_datenum(date);
     auto const daytick = hms_to_daytick(hms.hour, hms.minute, hms.second);
-    if (tz_info.name.empty())
-      return api->from_local_datenum_daytick(datenum, daytick, tz_info.offset);
-    else {
+    if (!tz_info.name.empty()) {
       TimeZone_ptr tz;
       try {
         tz = get_time_zone(tz_info.name);
@@ -297,6 +299,12 @@ parse_time(
       }
       return api->from_local_datenum_daytick(datenum, daytick, *tz, first);
     }
+    else if (time_zone_offset_is_valid(tz_info.offset))
+      return api->from_local_datenum_daytick(datenum, daytick, tz_info.offset);
+    else if (tz != nullptr) 
+      return api->from_local_datenum_daytick(datenum, daytick, *tz, first);
+    else
+      throw py::ValueError("no time zone");
   }
   else
     // FIXME

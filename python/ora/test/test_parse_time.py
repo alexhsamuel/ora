@@ -67,3 +67,17 @@ def test_tz_name_invalid():
         parse_time("%Y-%m-%d %H:%M [%Z]", "2018-02-20 20:50 []")
 
 
+def test_default_time_zone():
+    with pytest.raises(ValueError):
+        parse_time("%Y-%m-%d %H:%M", "2018-02-20 20:48")
+
+    t = parse_time("%Y-%m-%d %H:%M", "2018-02-20 20:48", time_zone=UTC)
+    assert t == Time(2018, 2, 20, 20, 48, 0, UTC)
+
+    t = parse_time("%Y-%m-%d %H:%M", "2018-02-20 20:48", time_zone="US/Eastern")
+    assert t == Time(2018, 2, 20, 20, 48, 0, "America/New_York")
+
+    t = parse_time("%Y-%m-%d %H:%M %Z", "2018-02-20 20:48 America/Los_Angeles", time_zone="US/Eastern")
+    assert t == Time(2018, 2, 20, 20, 48, 0, "America/Los_Angeles")
+
+

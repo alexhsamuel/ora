@@ -1,8 +1,8 @@
 # Work List
 
 1. Full parsing support.
-   - (default) time zone argument to `parse_time()`
    - modifiers
+   - docstrings for parse functions
    - figure out how to parse "%S.%f"; see `test_parse_daytime.py:test_usec()`
    - better exception type
    - fast parse_date_iso(), etc.
