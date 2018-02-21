@@ -49,6 +49,15 @@ datenum_daytick_to_offset(
   static auto constexpr min_datenum 
     = (Datenum) (TRAITS::base + TRAITS::min / (Offset) SECS_PER_DAY);
 
+  // FIXME: There's very likely a cleaner way to handle this in general.
+  // We need to add these three terms:
+  //
+  //   date * 86400 * denominator
+  //   -tz_offset * demoninator
+  //   daytick / DAYTICK_PER_SEC * denominator
+  //
+  // bearing in mind that the Offset type may be unsigned.
+
   Offset date_diff = (int64_t) datenum - base;
   Offset daytime_offset = rescale_int(daytick, DAYTICK_PER_SEC, denominator);
   auto tz_off = tz_offset;
