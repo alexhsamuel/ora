@@ -50,9 +50,14 @@ datenum_daytick_to_offset(
     = (Datenum) (TRAITS::base + TRAITS::min / (Offset) SECS_PER_DAY);
 
   Offset date_diff = (int64_t) datenum - base;
-  Offset daytime_offset
-    =   rescale_int(daytick, DAYTICK_PER_SEC, denominator) 
-      - denominator * tz_offset;
+  Offset daytime_offset = rescale_int(daytick, DAYTICK_PER_SEC, denominator);
+  auto tz_off = tz_offset;
+  if (tz_off > 0 && tz_off * denominator > daytime_offset) {
+    // The time zone offset rolls us back to the previous day.
+    tz_off -= SECS_PER_DAY;
+    --date_diff;
+  }
+  daytime_offset -= denominator * tz_off;
 
   // Special case: if the time occurs on the first representable date, but
   // midnight of that date is not representable, we'd overflow if we computed
