@@ -90,3 +90,4 @@ def test_12hour():
     assert parse_daytime("%I:%M %p", "11:15 PM" ) == Daytime(23, 15,  0)
     assert parse_daytime("%I:%M %p", "11:59 PM" ) == Daytime(23, 59,  0)
 
+
