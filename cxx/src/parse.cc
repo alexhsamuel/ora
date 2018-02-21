@@ -231,10 +231,20 @@ parse_second(
   char const*& s,
   Second& second)
 {
-  // FIXME: Parse factional seconds.
-  auto const i = parse_unsigned<2, true>(s);
-  if (second_is_valid(i)) {
-    second = i;
+  // FIMXE: Use a faster fractional parsing computation, or better yet work
+  // entirely in terms of dayticks.
+  auto const whole = parse_unsigned<2, true>(s);
+  if (second_is_valid(whole)) {
+    if (*s == '.') {
+      char const* end;
+      auto const frac = strtod(s, const_cast<char**>(&end));
+      if (end == s)
+        return false;
+      s = end;
+      second = whole + frac;
+    }
+    else
+      second = whole;
     return true;
   }
   else
