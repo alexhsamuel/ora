@@ -1,6 +1,6 @@
 import pytest
 
-from   ora import parse_time, Time, Time128
+from   ora import parse_time, Time, Time128, UTC
 
 #-------------------------------------------------------------------------------
 
@@ -45,5 +45,19 @@ def test_iso_letter():
     assert parse_time("%T", "2018-02-20T15:49:42Y") == Time(2018,  2, 20, 15, 49, 42, "Etc/GMT+12")
     assert parse_time("%T", "2018-02-20T15:49:42E") == Time(2018,  2, 20, 15, 49, 42, "Etc/GMT-5")
     assert parse_time("%T", "2018-02-20T15:49:42M") == Time(2018,  2, 20, 15, 49, 42, "Etc/GMT-12")
+
+
+def test_tz_name():
+    assert parse_time("%Y-%m-%d %H:%M %Z", "2018-02-20 20:50 US/Eastern") == Time(2018, 2, 20, 20, 50, 0, "US/Eastern")
+    assert parse_time("%Y-%m-%d %H:%M %Z", "2018-02-20 20:50 UTC") == Time(2018, 2, 20, 20, 50, 0, UTC)
+    assert parse_time("%Y-%m-%d %H:%M %Z", "2018-02-20 20:50 Asia/Tokyo") == Time(2018, 2, 20, 20, 50, 0, "Asia/Tokyo")
+    assert parse_time("%Y-%m-%d %H:%M %Z foo", "2018-02-20 20:50 Asia/Kolkata foo") == Time(2018, 2, 20, 20, 50, 0, "Asia/Kolkata")
+
+
+def test_tz_name_invalid():
+    with pytest.raises(ValueError):
+        parse_time("%Y-%m-%d %H:%M %Z", "2018-02-20 20:50 America/London")
+    with pytest.raises(ValueError):
+        parse_time("%Y-%m-%d %H:%M [%Z]", "2018-02-20 20:50 []")
 
 

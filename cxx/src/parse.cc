@@ -257,6 +257,23 @@ parse_two_digit_year(
 }
 
 
+/*
+ * Parses a time zone name.
+ *
+ * Assumes a time zone name matches:
+ *   [A-Za-z0-9/_+-]+
+ */
+inline bool
+parse_tz_name(
+  char const*& s,
+  std::string& name)
+{
+  for (; isalnum(*s) || *s == '/' || *s == '_' || *s == '+' || *s == '-'; ++s)
+    name += *s;
+  return !name.empty();
+}
+
+
 inline bool
 parse_tz_offset(
   char const*& s,
@@ -668,7 +685,7 @@ parse_time_parts(
       case 'i': TRY(parse_iso_time(s, date.ymd_date, hms, tz.offset)); break;
       case 'o': TRY(parse_tz_offset_secs(s, tz.offset)); break;
       case 'T': TRY(parse_iso_time(s, date.ymd_date, hms, tz.offset, true)); break;
-   // case 'Z': time zone name  
+      case 'Z': TRY(parse_tz_name(s, tz.name)); break;
       case 'z': TRY(parse_tz_offset(s, tz.offset, false)); break;
 
       default:

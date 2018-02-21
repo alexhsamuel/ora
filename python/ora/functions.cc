@@ -263,26 +263,40 @@ parse_time(
   Tuple* const args,
   Dict* const kw_args)
 {
-  static char const* arg_names[] = {"pattern", "string", "Time", nullptr};
+  static char const* arg_names[] 
+    = {"pattern", "string", "first", "Time", nullptr};
   char const* pattern;
   char const* string;
-  PyTypeObject* daytime_type = &PyTimeDefault::type_;
+  PyTypeObject* time_type = &PyTimeDefault::type_;
+  int first = true;
   Arg::ParseTupleAndKeywords(
-    args, kw_args, "ss|$O", arg_names, &pattern, &string, &daytime_type);
+    args, kw_args, "ss|$pO", arg_names, &pattern, &string, &first, &time_type);
 
-  auto const api = PyTimeAPI::get(daytime_type);
+  auto const api = PyTimeAPI::get(time_type);
   if (api == nullptr)
     throw TypeError("not a time type");
 
   FullDate date;
   HmsDaytime hms;
-  ora::time::TimeZoneInfo tz;
+  ora::time::TimeZoneInfo tz_info;
   char const* p = pattern;
   char const* s = string;
-  if (ora::time::parse_time_parts(p, s, date, hms, tz)) {
+  if (ora::time::parse_time_parts(p, s, date, hms, tz_info)) {
+    // FIXME: Factor this logic into a function.
     auto const datenum = parts_to_datenum(date);
     auto const daytick = hms_to_daytick(hms.hour, hms.minute, hms.second);
-    return api->from_local_datenum_daytick(datenum, daytick, tz.offset);
+    if (tz_info.name.empty())
+      return api->from_local_datenum_daytick(datenum, daytick, tz_info.offset);
+    else {
+      TimeZone_ptr tz;
+      try {
+        tz = get_time_zone(tz_info.name);
+      }
+      catch (ora::lib::ValueError) {
+        throw py::ValueError(std::string("not a time zone: ") + tz_info.name);
+      }
+      return api->from_local_datenum_daytick(datenum, daytick, *tz, first);
+    }
   }
   else
     // FIXME

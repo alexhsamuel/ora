@@ -190,7 +190,7 @@ public:
     virtual ref<Object> from_local_datenum_daytick(ora::Datenum const datenum, ora::Daytick const daytick, TimeZoneOffset const tz_offset) const
       { return PyTime::create(ora::from_local<Time>(datenum, daytick, tz_offset)); }
 
-    virtual ref<Object> from_local_datenum_daytick(ora::Datenum const datenum, ora::Daytick const daytick, ora::TimeZone const& tz, bool first) const
+    virtual ref<Object> from_local_datenum_daytick(ora::Datenum const datenum, ora::Daytick const daytick, ora::TimeZone const& tz, bool const first) const
       { return PyTime::create(ora::from_local<Time>(datenum, daytick, tz, first)); }
 
     virtual ref<Object> now() const
