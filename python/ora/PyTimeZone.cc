@@ -74,7 +74,7 @@ maybe_time_zone(
       throw py::ValueError(string("not a time zone: ") + tz_name);
     }
   }
-    
+
   // If it's a string, interpret it as a time zone name.
   // FIXME: It might be worth speeding this up further by maintaining a mapping
   // from interned str objects to time zones?
