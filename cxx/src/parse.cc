@@ -62,22 +62,45 @@ skip_modifiers(
 template<size_t MAX_DIGITS, bool FIXED=false>
 inline int
 parse_unsigned(
-  char const*& p)
+  char const*& s)
 {
   int val;
 
-  if (isdigit(*p)) 
-    val = *p++ - '0';
+  if (isdigit(*s)) 
+    val = *s++ - '0';
   else
     return -1;
 
   for (size_t i = 0; i < MAX_DIGITS - 1; ++i)
-    if (isdigit(*p))
-      val = val * 10 + (*p++ - '0');
+    if (isdigit(*s))
+      val = val * 10 + (*s++ - '0');
     else
       return FIXED ? -1 : val;
 
   return val;
+}
+
+
+template<size_t MAX_DIGITS>
+inline bool
+parse_signed(
+  char const*& s,
+  int& val)
+{
+  int sign = 1;
+  if (*s == '-') {
+    sign = -1;
+    ++s;
+  }
+  else if (*s == '+')
+    ++s;
+  int const abs = parse_unsigned<MAX_DIGITS>(s);
+  if (abs == -1)
+    return false;
+  else {
+    val = sign * abs;
+    return true;
+  }
 }
 
 
@@ -264,6 +287,15 @@ parse_tz_offset_letter(
     tz_offset = off;
     return true;
   }
+}
+
+
+inline bool
+parse_tz_offset_secs(
+  char const*& s,
+  TimeZoneOffset& tz_offset)
+{
+  return parse_signed<5>(s, tz_offset);
 }
 
 
@@ -589,7 +621,7 @@ parse_time_parts(
       case 'E': TRY(parse_tz_offset(s, tz.offset)); break;
       case 'e': TRY(parse_tz_offset_letter(s, tz.offset)); break;
    // case 'i': ISO format
-   // case 'o': total offset in sec
+      case 'o': TRY(parse_tz_offset_secs(s, tz.offset)); break;
    // case 'T': abbreviated ISO format
    // case 'Z': time zone name  
       case 'z': TRY(parse_tz_offset(s, tz.offset, false)); break;
