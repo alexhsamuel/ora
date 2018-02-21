@@ -231,24 +231,29 @@ parse_second(
   char const*& s,
   Second& second)
 {
-  // FIMXE: Use a faster fractional parsing computation, or better yet work
-  // entirely in terms of dayticks.
-  auto const whole = parse_unsigned<2, true>(s);
-  if (second_is_valid(whole)) {
-    if (*s == '.') {
-      char const* end;
-      auto const frac = strtod(s, const_cast<char**>(&end));
-      if (end == s)
-        return false;
+  if (*s != 0 && *(s + 1) != 0 && *(s + 2) == '.') {
+    // Fractional seconds.
+    // FIMXE: Use a faster fractional parsing computation, or better yet work
+    // entirely in terms of dayticks.
+    char const* end;
+    second = strtod(s, const_cast<char**>(&end));
+    if (end != s && second_is_valid(second)) {
       s = end;
-      second = whole + frac;
+      return true;
     }
     else
-      second = whole;
-    return true;
+      return false;
   }
-  else
-    return false;
+  else {
+    // Whole seconds only.
+    auto const i = parse_unsigned<2, true>(s);
+    if (second_is_valid(i)) {
+      second = i;
+      return true;
+    }
+    else
+      return false;
+  }
 }
 
 
