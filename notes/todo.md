@@ -1,11 +1,13 @@
 # Work List
 
 1. Full parsing support.
-   - API?
    - fractional seconds
+   - (default) time zone argument to parse_time()
+   - modifiers
    - better exception type
    - fast parse_date_iso(), etc.
    - parse_ex variants
+   - C++ API?
 1. Format time zone name; clean up time zone structs.
 1. Basic string parsing for `convert_to_*()` functions.
 1. Add default precision to TimeAPI; use for formatting.
