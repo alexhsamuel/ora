@@ -302,21 +302,6 @@ format_time_zone(
     sb.format(std::abs(time_zone.offset), mods.get_width(5), mods.get_pad('0'));
     break;
 
-  case 'q':
-    {
-      unsigned const offset_min = std::abs(time_zone.offset) % SECS_PER_HOUR / SECS_PER_MIN;
-      sb.format(offset_min, mods.get_width(2), mods.get_pad('0'));
-    }
-    break;
-
-  case 'Q':
-    {
-      sb << (time_zone.offset < 0 ? '-' : '+');
-      unsigned const offset_hour = std::abs(time_zone.offset) / SECS_PER_HOUR;
-      sb.format(offset_hour, mods.get_width(2), mods.get_pad('0'));
-    }
-    break;
-
   case 'Z':
     // FIXME: Time zone full name.
     if (mods.abbreviate)
@@ -458,8 +443,8 @@ TimeFormat const TimeFormat::ISO_LOCAL_BASIC            = "%Y%m%dT%H%M%S";
 TimeFormat const TimeFormat::ISO_LOCAL_EXTENDED         = "%Y-%m-%dT%H:%M:%S";
 TimeFormat const TimeFormat::ISO_ZONE_LETTER_BASIC      = "%Y%m%dT%H%M%S%e";
 TimeFormat const TimeFormat::ISO_ZONE_LETTER_EXTENDED   = "%Y-%m-%dT%H:%M:%S%e";
-TimeFormat const TimeFormat::ISO_ZONE_BASIC             = "%Y%m%dT%H%M%S%Q%q";
-TimeFormat const TimeFormat::ISO_ZONE_EXTENDED          = "%Y-%m-%dT%H:%M:%S%Q:%q";
+TimeFormat const TimeFormat::ISO_ZONE_BASIC             = "%~i";
+TimeFormat const TimeFormat::ISO_ZONE_EXTENDED          = "%i";
 
 }  // namespace time
 

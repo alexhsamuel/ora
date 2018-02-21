@@ -30,8 +30,8 @@ O
 o       %o the total signed time zone offset in seconds
 P
 p    %p %p either "AM", for hour < 12, or "PM", otherwise
-Q       %Q the hours part of the time zone offset, as signed two-digit int
-q       %q the minutes part of the time zone offset
+Q
+q
 R
 r
 S    %S %S seconds of the minute
