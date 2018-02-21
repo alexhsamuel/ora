@@ -33,3 +33,17 @@ def test_tz_letter():
     assert parse_time("%Y-%m-%dT%H:%M:%S%e", "2018-02-21T10:49:42M") == Time(2018,  2, 21, 10, 49, 42, "Etc/GMT-12")
 
 
+def test_iso():
+    assert parse_time("%i", "2018-02-20T15:49:42+00:00") == Time(2018,  2, 20, 15, 49, 42, "UTC")
+    assert parse_time("%i", "2018-02-20T15:49:42-12:00") == Time(2018,  2, 20, 15, 49, 42, "Etc/GMT+12")
+    assert parse_time("%i", "2018-02-20T15:49:42+05:30") == Time(2018,  2, 20, 15, 49, 42, "Asia/Kolkata")
+    assert parse_time("%i", "2018-02-20T15:49:42+12:00") == Time(2018,  2, 20, 15, 49, 42, "Etc/GMT-12")
+
+
+def test_iso_letter():
+    assert parse_time("%T", "2018-02-20T15:49:42Z") == Time(2018,  2, 20, 15, 49, 42, "UTC")
+    assert parse_time("%T", "2018-02-20T15:49:42Y") == Time(2018,  2, 20, 15, 49, 42, "Etc/GMT+12")
+    assert parse_time("%T", "2018-02-20T15:49:42E") == Time(2018,  2, 20, 15, 49, 42, "Etc/GMT-5")
+    assert parse_time("%T", "2018-02-20T15:49:42M") == Time(2018,  2, 20, 15, 49, 42, "Etc/GMT-12")
+
+

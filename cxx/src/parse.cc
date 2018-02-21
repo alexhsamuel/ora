@@ -59,6 +59,20 @@ skip_modifiers(
 }
 
 
+inline bool
+parse_char(
+  char const*& s,
+  char c)
+{
+  if (*s == c) {
+    ++s;
+    return true;
+  }
+  else
+    return false;
+}
+
+
 template<size_t MAX_DIGITS, bool FIXED=false>
 inline int
 parse_unsigned(
@@ -380,21 +394,52 @@ inline bool
 parse_iso_date(
   char const*& s,
   YmdDate& date,
-  bool compact=false)
+  bool const compact=false)
 {
   TRY(parse_year(s, date.year));
-  if (!compact) {
-    if (*s != '-')
-      return false;
-    ++s;
-  }
+  if (!compact)
+    TRY(parse_char(s, '-'));
   TRY(parse_month(s, date.month));
-  if (!compact) {
-    if (*s != '-')
-      return false;
-    ++s;
-  }
+  if (!compact)
+    TRY(parse_char(s, '-'));
   TRY(parse_day(s, date.day));
+  return true;
+}
+
+
+inline bool
+parse_iso_daytime(
+  char const*& s,
+  HmsDaytime& hms,
+  bool const compact=false)
+{
+  TRY(parse_hour(s, hms.hour));
+  if (!compact)
+    TRY(parse_char(s, ':'));
+  TRY(parse_minute(s, hms.minute));
+  if (!compact)
+    TRY(parse_char(s, ':'));
+  TRY(parse_second(s, hms.second));
+  return true;
+}
+
+
+inline bool
+parse_iso_time(
+  char const*& s,
+  YmdDate& date,
+  HmsDaytime& hms,
+  TimeZoneOffset& tz_offset,
+  bool const letter=false,
+  bool const compact=false)
+{
+  TRY(parse_iso_date(s, date, compact));
+  TRY(parse_char(s, 'T'));
+  TRY(parse_iso_daytime(s, hms, compact));
+  if (letter)
+    TRY(parse_tz_offset_letter(s, tz_offset));
+  else
+    TRY(parse_tz_offset(s, tz_offset));
   return true;
 }
 
@@ -620,9 +665,9 @@ parse_time_parts(
 
       case 'E': TRY(parse_tz_offset(s, tz.offset)); break;
       case 'e': TRY(parse_tz_offset_letter(s, tz.offset)); break;
-   // case 'i': ISO format
+      case 'i': TRY(parse_iso_time(s, date.ymd_date, hms, tz.offset)); break;
       case 'o': TRY(parse_tz_offset_secs(s, tz.offset)); break;
-   // case 'T': abbreviated ISO format
+      case 'T': TRY(parse_iso_time(s, date.ymd_date, hms, tz.offset, true)); break;
    // case 'Z': time zone name  
       case 'z': TRY(parse_tz_offset(s, tz.offset, false)); break;
 
