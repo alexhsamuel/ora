@@ -315,6 +315,37 @@ parse_time(
 
 
 ref<Object>
+parse_time_iso(
+  Module* /* module */,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* arg_names[] = {"string", "Time", nullptr};
+  char const* string;
+  PyTypeObject* time_type = &PyTimeDefault::type_;
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "s|$O", arg_names, &string, &time_type);
+
+  auto const api = PyTimeAPI::get(time_type);
+  if (api == nullptr)
+    throw TypeError("not a time type");
+
+  YmdDate ymd;
+  HmsDaytime hms;
+  TimeZoneOffset tz_offset;
+  char const* s = string;
+  if (ora::time::parse_iso_time(s, ymd, hms, tz_offset)) {
+    auto const datenum = ymd_to_datenum(ymd.year, ymd.month, ymd.day);
+    auto const daytick = hms_to_daytick(hms.hour, hms.minute, hms.second);
+    return api->from_local_datenum_daytick(datenum, daytick, tz_offset);
+  }
+  else
+    // FIXME
+    throw ValueError("parse error at pos "s + to_string<int>(s - string));
+} 
+
+
+ref<Object>
 set_display_time_zone(
   Module* /* module */,
   Tuple* const args,
@@ -421,6 +452,7 @@ add_functions(
     .add<parse_date>                ("parse_date",              nullptr)  // FIXME
     .add<parse_daytime>             ("parse_daytime",           nullptr)  // FIXME
     .add<parse_time>                ("parse_time",              nullptr)  // FIXME
+    .add<parse_time_iso>            ("parse_time_iso",          nullptr)  // FIXME
     .add<set_display_time_zone>     ("set_display_time_zone",   docstring::set_display_time_zone)
     .add<set_zoneinfo_dir>          ("set_zoneinfo_dir",        docstring::set_zoneinfo_dir)
     .add<to_local>                  ("to_local",                docstring::to_local)

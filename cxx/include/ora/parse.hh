@@ -65,6 +65,10 @@ extern bool parse_daytime_parts(
 
 namespace time {
 
+extern bool parse_iso_time(
+  char const*&, YmdDate&, HmsDaytime&, TimeZoneOffset&,
+  bool const letter=false, bool const compact=false);
+
 // FIXME: Elsewhere.
 struct TimeZoneInfo
 {

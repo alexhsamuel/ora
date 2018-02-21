@@ -456,26 +456,6 @@ parse_iso_daytime(
 }
 
 
-inline bool
-parse_iso_time(
-  char const*& s,
-  YmdDate& date,
-  HmsDaytime& hms,
-  TimeZoneOffset& tz_offset,
-  bool const letter=false,
-  bool const compact=false)
-{
-  TRY(parse_iso_date(s, date, compact));
-  TRY(parse_char(s, 'T'));
-  TRY(parse_iso_daytime(s, hms, compact));
-  if (letter)
-    TRY(parse_tz_offset_letter(s, tz_offset));
-  else
-    TRY(parse_tz_offset(s, tz_offset));
-  return true;
-}
-
-
 }  // anonymous namespace
 
 
@@ -635,6 +615,26 @@ bool parse_daytime_parts(
 //------------------------------------------------------------------------------
 
 namespace time {
+
+inline bool
+parse_iso_time(
+  char const*& s,
+  YmdDate& date,
+  HmsDaytime& hms,
+  TimeZoneOffset& tz_offset,
+  bool const letter,
+  bool const compact)
+{
+  TRY(parse_iso_date(s, date, compact));
+  TRY(parse_char(s, 'T'));
+  TRY(parse_iso_daytime(s, hms, compact));
+  if (letter)
+    TRY(parse_tz_offset_letter(s, tz_offset));
+  else
+    TRY(parse_tz_offset(s, tz_offset));
+  return true;
+}
+
 
 bool
 parse_time_parts(

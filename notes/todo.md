@@ -1,8 +1,10 @@
 # Work List
 
 1. Full parsing support.
+   - parse_time_iso() tests
    - modifiers
    - docstrings for parse functions
+   - benchmarks
    - figure out how to parse "%S.%f"; see `test_parse_daytime.py:test_usec()`
    - better exception type
    - fast parse_date_iso(), etc.
