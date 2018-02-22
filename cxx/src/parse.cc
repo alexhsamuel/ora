@@ -1,4 +1,5 @@
 #pragma GCC diagnostic ignored "-Wparentheses"
+#pragma GCC diagnostic ignored "-Wdangling-else"
 
 #include <cstdint>
 
@@ -616,7 +617,7 @@ bool parse_daytime_parts(
 
 namespace time {
 
-inline bool
+bool
 parse_iso_time(
   char const*& s,
   YmdDate& date,
