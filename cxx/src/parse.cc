@@ -74,25 +74,25 @@ parse_char(
 }
 
 
-template<size_t MAX_DIGITS, bool FIXED=false>
-inline int
+template<size_t MAX_DIGITS, bool FIXED=false, class INT=int>
+inline bool
 parse_unsigned(
-  char const*& s)
+  char const*& s,
+  INT& val)
 {
-  int val;
-
   if (isdigit(*s)) 
     val = *s++ - '0';
   else
-    return -1;
+    return false;
 
   for (size_t i = 0; i < MAX_DIGITS - 1; ++i)
     if (isdigit(*s))
       val = val * 10 + (*s++ - '0');
     else
-      return FIXED ? -1 : val;
+      return !FIXED;
 
-  return val;
+  // Got all digits.
+  return true;
 }
 
 
@@ -109,13 +109,10 @@ parse_signed(
   }
   else if (*s == '+')
     ++s;
-  int const abs = parse_unsigned<MAX_DIGITS>(s);
-  if (abs == -1)
-    return false;
-  else {
-    val = sign * abs;
-    return true;
-  }
+  int abs;
+  TRY(parse_unsigned<MAX_DIGITS>(s, abs));
+  val = sign * abs;
+  return true;
 }
 
 
@@ -142,13 +139,8 @@ parse_day(
   char const*& s,
   Day& day)
 {
-  auto const i = parse_unsigned<2>(s);
-  if (day_is_valid(i)) {
-    day = i;
-    return true;
-  }
-  else
-    return false;
+  TRY(parse_unsigned<2>(s, day));
+  return day_is_valid(day);
 }
 
 
@@ -157,13 +149,8 @@ parse_hour(
   char const*& s,
   Hour& hour)
 {
-  auto const i = parse_unsigned<2>(s);
-  if (hour_is_valid(i)) {
-    hour = i;
-    return true;
-  }
-  else
-    return false;
+  TRY(parse_unsigned<2>(s, hour));
+  return hour_is_valid(hour);
 }
 
 
@@ -172,13 +159,8 @@ parse_hour12(
   char const*& s,
   Hour& hour12)
 {
-  auto const i = parse_unsigned<2>(s);
-  if (1 <= i && i <= 12) {
-    hour12 = i;
-    return true;
-  }
-  else
-    return false;
+  TRY(parse_unsigned<2>(s, hour12));
+  return 1 <= hour12 && hour12 <= 12;
 }
 
 
@@ -187,13 +169,8 @@ parse_minute(
   char const*& s,
   Minute& minute)
 {
-  auto const i = parse_unsigned<2, true>(s);
-  if (minute_is_valid(i)) {
-    minute = i;
-    return true;
-  }
-  else
-    return false;
+  TRY((parse_unsigned<2, true>(s, minute)));
+  return minute_is_valid(minute);
 }
 
 
@@ -202,13 +179,8 @@ parse_month(
   char const*& s,
   Month& month)
 {
-  auto const i = parse_unsigned<2>(s);
-  if (month_is_valid(i)) {
-    month = i;
-    return true;
-  }
-  else
-    return false;
+  TRY(parse_unsigned<2>(s, month));
+  return month_is_valid(month);
 }
 
 
@@ -217,13 +189,8 @@ parse_ordinal(
   char const*& s,
   Ordinal& ordinal)
 {
-  auto const i = parse_unsigned<3>(s);
-  if (ordinal_is_valid(i)) {
-    ordinal = i;
-    return true;
-  }
-  else
-    return false;
+  TRY(parse_unsigned<3>(s, ordinal));
+  return ordinal_is_valid(ordinal);
 }
 
 
@@ -234,7 +201,7 @@ parse_second(
 {
   if (*s != 0 && *(s + 1) != 0 && *(s + 2) == '.') {
     // Fractional seconds.
-    // FIMXE: Use a faster fractional parsing computation, or better yet work
+    // FIXME: Use a faster fractional parsing computation, or better yet work
     // entirely in terms of dayticks.
     char const* end;
     second = strtod(s, const_cast<char**>(&end));
@@ -247,13 +214,8 @@ parse_second(
   }
   else {
     // Whole seconds only.
-    auto const i = parse_unsigned<2, true>(s);
-    if (second_is_valid(i)) {
-      second = i;
-      return true;
-    }
-    else
-      return false;
+    TRY((parse_unsigned<2, true>(s, second)));
+    return second_is_valid(second);
   }
 }
 
@@ -263,9 +225,10 @@ parse_two_digit_year(
   char const*& s,
   Year& year)
 {
-  auto const i = parse_unsigned<2>(s);
-  if (0 <= i && i < 100) {
-    year = infer_two_digit_year(i);
+  int year2;
+  TRY(parse_unsigned<2>(s, year2));
+  if (0 <= year2 && year2 < 100) {
+    year = infer_two_digit_year(year2);
     return true;
   }
   else
@@ -305,17 +268,12 @@ parse_tz_offset(
     return false;
   ++s;
   // FIXME: Accept one-digit hours for ISO-style offsets?
-  int const hours = parse_unsigned<2, true>(s);
-  if (hours == -1)
-    return false;
-  if (colon) {
-    if (*s != ':')
-      return false;
-    ++s;
-  }
-  int const minutes = parse_unsigned<2, true>(s);
-  if (minutes == -1)
-    return false;
+  int hours;
+  TRY((parse_unsigned<2, true>(s, hours)));
+  if (colon) 
+    TRY(parse_char(s, ':'));
+  int minutes;
+  TRY((parse_unsigned<2, true>(s, minutes)));
   tz_offset = sign * (hours * SECS_PER_HOUR + minutes * SECS_PER_MIN);
   return true;
 }
@@ -352,14 +310,10 @@ parse_usec(
   int& usec)
 {
   auto const last_s = s;
-  auto i = parse_unsigned<6>(s);
-  if (i == -1) 
-    return false;
-  else {
-    // If fewer than six digits, scale to zero-pad on the right.
-    usec = i * ora::lib::pow10(6 - (s - last_s));
-    return true;
-  }
+  TRY(parse_unsigned<6>(s, usec));
+  // If fewer than six digits, scale to zero-pad on the right.
+  usec *= ora::lib::pow10(6 - (s - last_s));
+  return true;
 }
 
 
@@ -368,9 +322,10 @@ parse_weekday_iso(
   char const*& s,
   Weekday& weekday)
 {
-  auto const i = parse_unsigned<1>(s);
-  if (ora::weekday::ENCODING_ISO::is_valid(i)) {
-    weekday = ora::weekday::ENCODING_ISO::decode(i);
+  int w;
+  TRY(parse_unsigned<1>(s, w));
+  if (ora::weekday::ENCODING_ISO::is_valid(w)) {
+    weekday = ora::weekday::ENCODING_ISO::decode(w);
     return true;
   }
   else
@@ -383,13 +338,8 @@ parse_week(
   char const*& s,
   Week& week)
 {
-  auto const i = parse_unsigned<2>(s);
-  if (week_is_valid(i)) {
-    week = i;
-    return true;
-  }
-  else
-    return false;
+  TRY(parse_unsigned<2>(s, week));
+  return week_is_valid(week);
 }
 
 
@@ -398,9 +348,10 @@ parse_weekday_unix(
   char const*& s,
   Weekday& weekday)
 {
-  auto const i = parse_unsigned<1>(s);
-  if (ora::weekday::ENCODING_CRON::is_valid(i)) {
-    weekday = ora::weekday::ENCODING_CRON::decode(i);
+  int w;
+  TRY(parse_unsigned<1>(s, w));
+  if (ora::weekday::ENCODING_CRON::is_valid(w)) {
+    weekday = ora::weekday::ENCODING_CRON::decode(w);
     return true;
   }
   else
@@ -413,13 +364,8 @@ parse_year(
   char const*& s,
   Year& year)
 {
-  auto const i = parse_unsigned<4>(s);
-  if (year_is_valid(i)) {
-    year = i;
-    return true;
-  }
-  else
-    return false;
+  TRY(parse_unsigned<4>(s, year));
+  return year_is_valid(year);
 }
 
 
@@ -446,7 +392,9 @@ parse_iso_daytime(
   HmsDaytime& hms,
   bool const compact=false)
 {
-  TRY(parse_hour(s, hms.hour));
+  TRY((parse_unsigned<2, true>(s, hms.hour)));
+  if (!hour_is_valid(hms.hour))
+    return false;
   if (!compact)
     TRY(parse_char(s, ':'));
   TRY(parse_minute(s, hms.minute));
