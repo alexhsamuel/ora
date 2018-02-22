@@ -24,7 +24,6 @@ def test_hm():
     assert parse_daytime("%H:%M", "23:06") == Daytime(23,  6,  0)
     
 
-@pytest.mark.xfail
 def test_hms_fractional():
     assert parse_daytime("%H:%M:%S", "23:06:09."   ) == Daytime(23,  6,  9.0)
     assert parse_daytime("%H:%M:%S", "23:06:09.0"  ) == Daytime(23,  6,  9.0)
