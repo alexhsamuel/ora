@@ -334,7 +334,7 @@ parse_time_iso(
   HmsDaytime hms;
   TimeZoneOffset tz_offset;
   char const* s = string;
-  if (ora::time::parse_iso_time(s, ymd, hms, tz_offset)) {
+  if (ora::time::parse_iso_time(s, ymd, hms, tz_offset) && *s == 0) {
     auto const datenum = ymd_to_datenum(ymd.year, ymd.month, ymd.day);
     auto const daytick = hms_to_daytick(hms.hour, hms.minute, hms.second);
     return api->from_local_datenum_daytick(datenum, daytick, tz_offset);

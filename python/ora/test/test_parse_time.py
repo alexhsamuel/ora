@@ -1,6 +1,6 @@
 import pytest
 
-from   ora import parse_time, Time, Time128, UTC
+from   ora import parse_time, parse_time_iso, Time, Time128, UTC
 
 #-------------------------------------------------------------------------------
 
@@ -79,5 +79,54 @@ def test_default_time_zone():
 
     t = parse_time("%Y-%m-%d %H:%M %Z", "2018-02-20 20:48 America/Los_Angeles", time_zone="US/Eastern")
     assert t == Time(2018, 2, 20, 20, 48, 0, "America/Los_Angeles")
+
+
+def test_parse_time_iso():
+    t = parse_time_iso("2018-02-22T04:09:11.25282922+00:00")
+    assert t == Time(2018, 2, 22, 4, 9, 11.25282922, UTC)
+
+    t = parse_time_iso("2018-02-22T04:09:11.2528+00:00")
+    assert t == Time(2018, 2, 22, 4, 9, 11.2528, UTC)
+
+    t = parse_time_iso("2018-02-22T04:09:11.+00:00")
+    assert t == Time(2018, 2, 22, 4, 9, 11, UTC)
+
+    t = parse_time_iso("2018-02-22T04:09:11+00:00")
+    assert t == Time(2018, 2, 22, 4, 9, 11, UTC)
+
+    t = parse_time_iso("2018-02-22T05:09:11+01:00")
+    assert t == Time(2018, 2, 22, 4, 9, 11, UTC)
+
+    t = parse_time_iso("2018-02-22T03:09:11-01:00")
+    assert t == Time(2018, 2, 22, 4, 9, 11, UTC)
+
+
+def test_parse_time_iso_invalid():
+    with pytest.raises(ValueError):
+        parse_time_iso("2018-02-22T04:09:11.25282922+0:00")
+    with pytest.raises(ValueError):
+        parse_time_iso("2018-02-22T04:09:11.25282922+00:0")
+    with pytest.raises(ValueError):
+        parse_time_iso("2018-02-22T04:09:11.25282922+0000")
+    with pytest.raises(ValueError):
+        parse_time_iso("2018-02-22T04:09:11.25282922*00:00")
+    with pytest.raises(ValueError):
+        parse_time_iso("2018-02-22T04:09:11.25282922")
+    with pytest.raises(ValueError):
+        parse_time_iso("2018-02-22T04:09+00:00")
+    with pytest.raises(ValueError):
+        parse_time_iso("2018-02-22T04:9:11.25282922+00:00")
+    with pytest.raises(ValueError):
+        parse_time_iso("2018-02-22T4:09:11.25282922+00:00")
+    with pytest.raises(ValueError):
+        parse_time_iso("2018-02-22 04:09:11.25282922 +00:00")
+    with pytest.raises(ValueError):
+        parse_time_iso("  2018-02-22T04:09:11.25282922+00:00")
+    with pytest.raises(ValueError):
+        parse_time_iso("2018-02-22T04:09:11.25282922+00:00 is now")
+    with pytest.raises(ValueError):
+        parse_time_iso("")
+    with pytest.raises(TypeError):
+        parse_time_iso(None)
 
 
