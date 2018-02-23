@@ -70,6 +70,17 @@ except KeyError:
 
 #-------------------------------------------------------------------------------
 
+class ParseError(ValueError):
+    """
+    An error while parsing a date, time, or daytime.
+    """
+
+    pass
+
+
+
+#-------------------------------------------------------------------------------
+
 class Weekday(enum.IntEnum):
     """
     A day of the (seven-day) week.

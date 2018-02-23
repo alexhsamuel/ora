@@ -20,6 +20,31 @@ namespace {
 
 //------------------------------------------------------------------------------
 
+Exception
+parse_error(
+  size_t const string_pos)
+{
+  static auto exc_type = import("ora", "ParseError");
+  return Exception(
+    exc_type, "parse error at pos "s + to_string<int>(string_pos));
+}
+
+
+Exception
+parse_error(
+  size_t const pattern_pos,
+  size_t const string_pos)
+{
+  static auto exc_type = import("ora", "ParseError");
+  return Exception(
+    exc_type, 
+      "parse error at pattern pos "s + to_string<int>(pattern_pos)
+    + ", string pos " + to_string<int>(string_pos));
+}
+
+
+//------------------------------------------------------------------------------
+
 ref<Object>
 days_in_month(
   Module* /* module */,
@@ -220,10 +245,7 @@ parse_date(
   if (ora::date::parse_date_parts(p, s, parts))
     return api->from_parts(parts);
   else
-    // FIXME
-    throw ValueError(
-      "parse error at pattern pos "s + to_string<int>(p - pattern)
-      + ", string pos " + to_string<int>(s - string));
+    throw parse_error(p - pattern, s - string);
 } 
 
 
@@ -250,10 +272,7 @@ parse_daytime(
   if (ora::daytime::parse_daytime_parts(p, s, parts))
     return api->from_hms(parts);
   else
-    // FIXME
-    throw ValueError(
-      "parse error at pattern pos "s + to_string<int>(p - pattern)
-      + ", string pos " + to_string<int>(s - string));
+    throw parse_error(p - pattern, s - string);
 } 
 
 
@@ -307,10 +326,7 @@ parse_time(
       throw py::ValueError("no time zone");
   }
   else
-    // FIXME
-    throw ValueError(
-      "parse error at pattern pos "s + to_string<int>(p - pattern)
-      + ", string pos " + to_string<int>(s - string));
+    throw parse_error(p - pattern, s - string);
 } 
 
 
@@ -340,8 +356,7 @@ parse_time_iso(
     return api->from_local_datenum_daytick(datenum, daytick, tz_offset);
   }
   else
-    // FIXME
-    throw ValueError("parse error at pos "s + to_string<int>(s - string));
+    throw parse_error(s - string);
 } 
 
 

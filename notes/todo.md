@@ -4,9 +4,9 @@
    - modifiers: pad, str_case, abbreviate
    - docstrings for parse functions
    - figure out how to parse "%S.%f"; see `test_parse_daytime.py:test_usec()`
-   - better exception type
    - parse_ex variants
    - C++ API?
+1. Sloppy time and date parsing.
 1. When parsing fractional seconds, work in terms of dayticks.
 1. Format time zone name; clean up time zone structs.
 1. Basic string parsing for `convert_to_*()` functions.
