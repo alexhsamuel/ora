@@ -100,6 +100,12 @@ def test_parse_time_iso():
     t = parse_time_iso("2018-02-22T03:09:11-01:00")
     assert t == Time(2018, 2, 22, 4, 9, 11, UTC)
 
+    t = parse_time_iso("2018-02-22T04:09:11Z")
+    assert t == Time(2018, 2, 22, 4, 9, 11, UTC)
+
+    t = parse_time_iso("2018-02-22T05:09:11A")
+    assert t == Time(2018, 2, 22, 4, 9, 11, UTC)
+
 
 def test_parse_time_iso_invalid():
     with pytest.raises(ValueError):

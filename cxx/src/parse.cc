@@ -571,16 +571,16 @@ parse_iso_time(
   YmdDate& date,
   HmsDaytime& hms,
   TimeZoneOffset& tz_offset,
-  bool const letter,
+  int const letter_mode,
   bool const compact)
 {
   TRY(parse_iso_date(s, date, compact));
   TRY(parse_char(s, 'T'));
   TRY(parse_iso_daytime(s, hms, compact));
-  if (letter)
-    TRY(parse_tz_offset_letter(s, tz_offset));
-  else
+  if ((letter_mode == -1 && (*s == '+' || *s == '-'))|| letter_mode == 0)
     TRY(parse_tz_offset(s, tz_offset));
+  else
+    TRY(parse_tz_offset_letter(s, tz_offset));
   return true;
 }
 

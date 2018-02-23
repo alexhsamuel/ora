@@ -65,9 +65,13 @@ extern bool parse_daytime_parts(
 
 namespace time {
 
+/*
+ * If `letter_mode` is 1, parse a military time zone offset; if 0, parse
+ * a full UTC offset.  If -1, accept either.
+ */
 extern bool parse_iso_time(
   char const*&, YmdDate&, HmsDaytime&, TimeZoneOffset&,
-  bool const letter=false, bool const compact=false);
+  int const letter_mode=-1, bool const compact=false);
 
 // FIXME: Elsewhere.
 struct TimeZoneInfo
