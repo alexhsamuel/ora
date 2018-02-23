@@ -3,7 +3,6 @@
 1. Full parsing support.
    - modifiers: pad, str_case, abbreviate
    - docstrings for parse functions
-   - benchmarks
    - figure out how to parse "%S.%f"; see `test_parse_daytime.py:test_usec()`
    - better exception type
    - parse_ex variants

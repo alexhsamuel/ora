@@ -284,6 +284,41 @@ def benchmark_date_format():
     yield "format(Date, tzfmt)"     , benchmark(lambda: format(d, "%Y-%m-%d@America/New_York"))
 
 
+def benchmark_time_parse_iso_z():
+    now_us  = '2018-02-23T05:02:02.327973Z'
+    now_s   = '2018-02-23T05:02:02Z'
+
+    import datetime
+    strptime = datetime.datetime.strptime
+    yield "parse(now_s, ISOFMT_S)"  , benchmark(lambda: strptime(now_s, "%Y-%m-%dT%H:%M:%SZ"))
+    yield "parse(now_us, ISOFMT_US)", benchmark(lambda: strptime(now_us, "%Y-%m-%dT%H:%M:%S.%fZ"))
+
+    try:
+        from udatetime import from_string
+    except ImportError:
+        pass
+    else:
+        yield "udatetime.from_string(now_s)"    , benchmark(lambda: from_string(now_s))
+        yield "udatetime.from_string(now_us)"   , benchmark(lambda: from_string(now_us))
+
+    try:
+        from iso8601 import parse_date
+    except ImportError:
+        pass
+    else:
+        yield "iso8601.parse_date(now_s)"       , benchmark(lambda: parse_date(now_s))
+        yield "iso8601.parse_date(now_us)"      , benchmark(lambda: parse_date(now_us))
+
+    from ora import parse_time, parse_time_iso
+    yield "parse_time(now_s, ISOFMT)", benchmark(lambda: parse_time("%Y-%m-%dT%H:%M:%S%e", now_s))
+    yield "parse_time(now_us, ISOFMT)", benchmark(lambda: parse_time("%Y-%m-%dT%H:%M:%S%e", now_us))
+    yield "parse_time(now_s, '%T')" , benchmark(lambda: parse_time("%T", now_s))
+    yield "parse_time(now_us, '%T')", benchmark(lambda: parse_time("%T", now_us))
+    yield "parse_time_iso(now_s)"   , benchmark(lambda: parse_time_iso(now_s))
+    yield "parse_time_iso(now_us)"  , benchmark(lambda: parse_time_iso(now_us))
+
+
+
 def benchmark_time_comparison():
     import datetime
     t0 = datetime.datetime.utcnow()
@@ -317,6 +352,7 @@ summarize(benchmark_convert_tz())
 summarize(benchmark_today_local())
 summarize(benchmark_time_format())
 summarize(benchmark_date_format())
+summarize(benchmark_time_parse_iso_z())
 summarize(benchmark_time_comparison())
 
 
