@@ -309,6 +309,16 @@ def benchmark_time_parse_iso_z():
         yield "iso8601.parse_date(now_s)"       , benchmark(lambda: parse_date(now_s))
         yield "iso8601.parse_date(now_us)"      , benchmark(lambda: parse_date(now_us))
 
+    from numpy import datetime64
+    yield "datetime64(now_s)"       , benchmark(lambda: datetime64(now_s))
+    yield "datetime64(now_us)"      , benchmark(lambda: datetime64(now_us))
+    yield "datetime64(now_s, 's')"  , benchmark(lambda: datetime64(now_s, 's'))
+    yield "datetime64(now_us, 'ns')", benchmark(lambda: datetime64(now_us, 'ns'))
+
+    from pandas import Timestamp
+    yield "Timestamp(now_s)"        , benchmark(lambda: Timestamp(now_s))
+    yield "Timestamp(now_us)"       , benchmark(lambda: Timestamp(now_us))
+
     from ora import parse_time, parse_time_iso
     yield "parse_time(now_s, ISOFMT)", benchmark(lambda: parse_time("%Y-%m-%dT%H:%M:%S%e", now_s))
     yield "parse_time(now_us, ISOFMT)", benchmark(lambda: parse_time("%Y-%m-%dT%H:%M:%S%e", now_us))
