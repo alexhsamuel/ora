@@ -575,7 +575,10 @@ parse_iso_time(
   bool const compact)
 {
   TRY(parse_iso_date(s, date, compact));
-  TRY(parse_char(s, 'T'));
+  if (*s == 'T' || *s == 't')
+    ++s;
+  else
+    return false;
   TRY(parse_iso_daytime(s, hms, compact));
   if ((letter_mode == -1 && (*s == '+' || *s == '-'))|| letter_mode == 0)
     TRY(parse_tz_offset(s, tz_offset));
