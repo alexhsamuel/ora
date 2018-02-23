@@ -58,21 +58,20 @@ def test_comparison_sampled2():
             assert date0 == date1 or date0 != date1
 
 
-@pytest.mark.xfail
 def test_order():
     assert     Date.MAX     >= Date.MIN
     assert     Date.MIN     <= Date.MAX
     assert     Date.MIN     <  Date.MAX
     assert     Date.MAX     >  Date.MIN
 
-    assert not Date.INVALID <= Date.INVALID
+    assert     Date.INVALID <= Date.INVALID
     assert not Date.INVALID <  Date.INVALID
-    assert not Date.INVALID >= Date.INVALID
+    assert     Date.INVALID >= Date.INVALID
     assert not Date.INVALID >  Date.INVALID
 
-    assert not Date.MISSING <= Date.MISSING
+    assert     Date.MISSING <= Date.MISSING
     assert not Date.MISSING <  Date.MISSING
-    assert not Date.MISSING >= Date.MISSING
+    assert     Date.MISSING >= Date.MISSING
     assert not Date.MISSING >  Date.MISSING
 
 
