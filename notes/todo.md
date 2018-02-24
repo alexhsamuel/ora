@@ -1,6 +1,7 @@
 # Work List
 
 1. Vendor gtest.
+1. Conda package, and mention in README.
 1. Sloppy time and date parsing.
 1. Intro Python documentation in rst.
 1. ReadTheDocs support.
