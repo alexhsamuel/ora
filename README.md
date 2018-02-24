@@ -30,7 +30,9 @@ Similar to `datetime`, Ora uses the
 ([proleptic](https://en.wikipedia.org/wiki/Proleptic_Gregorian_calendar))
 Gregorian calendar, for years 1 &ndash; 9999 only.  Alternate calendars and
 B.C.E. dates are not provided.  There is no support for leap seconds,
-relativistic effects, or astronomical times.
+relativistic effects, or astronomical times.  However, time precision of 1 ns
+or smaller is supported.
+
 
 ### Platform
 
