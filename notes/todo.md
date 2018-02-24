@@ -1,7 +1,5 @@
 # Work List
 
-1. Vendor gtest.
-1. Don't tar up zoneinfo files; commit directly.  Remove setup.py hack.
 1. Conda package, and mention in README.
 1. Sloppy time and date parsing.
 1. Intro Python documentation in rst.
@@ -12,6 +10,7 @@
 1. Basic string parsing for `convert_to_*()` functions.
 1. Make Time(datetime, tz) work for naive datetime.
 1. Relax numpy setup dependency.
+1. Replace first with fold to match `datetime`.
 1. Revisit type definitions.
    - Benchmark 2^n vs. 10^n types.
    - Add exact us, ns types.
@@ -56,11 +55,6 @@
 - Interpret and apply the "future transitions" field in tzinfo files.
 
 # Python API
-
-- Rename `DayInterval` to `DayDuration`.
-- Make `first` a keyword-only argument everywhere.
-- Add wrappers for formatters.  This would be for efficiency?  Or does this go
-  in [fixfmt](http://github.com/alexhsamuel/fixfmt)?
 
 ## PyDate
 
