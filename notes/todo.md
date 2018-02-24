@@ -62,15 +62,12 @@
 
 ## PyDate
 
-- parsing strings
 - shifts by year, month, hour, minute
 - "Thursday of the last week of the month"-style function
 - docstrings
 - unit tests
 
 ## PyDaytime
-
-- parsing strings
 
 ## PyTimeZone
 
