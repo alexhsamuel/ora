@@ -1,11 +1,7 @@
 # Work List
 
 1. Sloppy time and date parsing.
-1. Full parsing support.
-   - modifiers: pad, str_case, abbreviate
-   - figure out how to parse "%S.%f"; see `test_parse_daytime.py:test_usec()`
-   - parse_ex variants
-   - C++ API?
+1. Fix rounding of ora.now(UsecTime).
 1. When parsing fractional seconds, work in terms of dayticks.
 1. Basic string parsing for `convert_to_*()` functions.
 1. Add default precision to TimeAPI; use for formatting.
@@ -16,8 +12,13 @@
 1. Revisit type definitions.
    - Benchmark 2^n vs. 10^n types.
    - Add exact us, ns types.
+1. Convert docstrings to rst.
 1. Benchmark tick computations.
-1. Fix rounding of ora.now(UsecTime).
+1. More parsing support.
+   - modifiers: pad, str_case, abbreviate
+   - figure out how to parse "%S.%f"; see `test_parse_daytime.py:test_usec()`
+   - parse_ex variants
+   - C++ API?
 1. Remove Time.get_parts().
 1. Support UTF-8 in format patterns.
 1. Build conda package.
