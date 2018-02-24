@@ -1,4 +1,4 @@
-# Setup
+# Requirements
 
 To build and test Ora, you'll require:
 - A C++14 compiler, such as GCC >= 6
@@ -7,23 +7,16 @@ To build and test Ora, you'll require:
 - pytz (for testing)
 - pytest (for testing)
 
-To run tests, build Google's gtest (one time only):
-
-```sh
-cd external/gtest
-make gtest_main.a
-```
-
-To unpack the time zone data (one time only):
-
-```
-make zoneinfo
-```
-
 
 # Developing
 
-WRITEME.
+Add the `python/` subdirectory to your `PYTHONPATH`.
+
+To build C++ and Python libraries: `make`.
+
+To run C++ and Python tests, `make test`.
+
+You may also use `setup.py` to build, and `pytest` to run Python tests.
 
 
 # Packaging
