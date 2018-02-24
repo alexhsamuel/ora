@@ -3,7 +3,6 @@
 #include <time.h>
 
 #include "ora.hh"
-#include "functions_doc.hh"
 #include "py.hh"
 #include "PyDate.hh"
 #include "PyTime.hh"
@@ -16,9 +15,22 @@ using namespace std::string_literals;
 namespace ora {
 namespace py {
 
-namespace {
+//------------------------------------------------------------------------------
+// Docstrings
+//------------------------------------------------------------------------------
+
+namespace docstring {
+
+using doct_t = char const* const;
+
+#include "functions.docstrings.hh.inc"
+#include "functions.docstrings.cc.inc"
+
+}  // namespace docstring
 
 //------------------------------------------------------------------------------
+
+namespace {
 
 Exception
 parse_error(
