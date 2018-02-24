@@ -15,39 +15,6 @@ using std::string;
 //------------------------------------------------------------------------------
 
 string
-mode_as_str(
-  mode_t mode)
-{
-  switch (mode) {
-  case O_RDONLY                         : return "r";
-  case O_WRONLY | O_CREAT               : return "w";
-  case O_RDWR   | O_CREAT               : return "w+";
-  case O_WRONLY | O_CREAT | O_APPEND    : return "a";
-  case O_RDWR   | O_CREAT | O_APPEND    : return "a+";
-  default:
-    // FIXME: No good.  What do we do??
-    assert(false);
-  };
-}
-
-
-mode_t
-mode_from_str(
-  string const& str)
-{
-  if      (str == "r" ) return O_RDONLY;
-  else if (str == "w" ) return O_WRONLY | O_CREAT;
-  else if (str == "w+") return O_RDWR   | O_CREAT;
-  else if (str == "a" ) return O_WRONLY | O_CREAT | O_APPEND;
-  else if (str == "a+") return O_RDWR   | O_CREAT | O_APPEND;
-  else
-    throw ValueError(string("bad mode: ") + str);
-}
-
-
-//------------------------------------------------------------------------------
-
-string
 load_text(
   int fd)
 {
@@ -73,17 +40,6 @@ load_text(
   assert(num_read == size);
   // FIXME: Do we need this copy?
   return string(buffer, size);
-}
-
-
-string
-load_text_for_arg(
-  string const& arg)
-{
-  if (arg == "-")
-    return load_text(STDIN_FILENO);
-  else
-    return load_text(Filename(arg));
 }
 
 
