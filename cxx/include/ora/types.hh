@@ -6,7 +6,6 @@
 
 #include "ora/lib/exc.hh"
 #include "ora/lib/math.hh"
-#include "ora/lib/ranged.hh"
 
 namespace ora {
 
