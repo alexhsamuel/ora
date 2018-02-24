@@ -20,7 +20,7 @@ class RangedError
  * the closed interval [`MIN_`, `MAX_`].  Instances with values not in the range
  * may be constructed with unchecked(Value).
  */
-template<typename VAL, VAL MIN_, VAL MAX_, bool CLOSED_=false, VAL INV_=std::numeric_limits<VAL>::max()>
+template<class VAL, VAL MIN_, VAL MAX_, bool CLOSED_=false, VAL INV_=std::numeric_limits<VAL>::max()>
 class Ranged
 {
 public:
@@ -125,19 +125,19 @@ private:
 };
 
 
-// template<typename VAL, VAL MIN_, VAL MAX_, bool CLOSED_, VAL INV_>
+// template<class VAL, VAL MIN_, VAL MAX_, bool CLOSED_, VAL INV_>
 // typename Ranged<VAL, MIN_, MAX_, CLOSED_, INV_>::Value constexpr
 // Ranged<VAL, MIN_, MAX_, CLOSED_, INV_>::MIN;
 
-// template<typename VAL, VAL MIN_, VAL MAX_, bool CLOSED_, VAL INV_>
+// template<class VAL, VAL MIN_, VAL MAX_, bool CLOSED_, VAL INV_>
 // typename Ranged<VAL, MIN_, MAX_, CLOSED_, INV_>::Value constexpr
 // Ranged<VAL, MIN_, MAX_, CLOSED_, INV_>::MAX;
 
-// template<typename VAL, VAL MIN_, VAL MAX_, bool CLOSED_, VAL INV_>
+// template<class VAL, VAL MIN_, VAL MAX_, bool CLOSED_, VAL INV_>
 // Ranged<VAL, MIN_, MAX_, CLOSED_, INV_> constexpr
 // Ranged<VAL, MIN_, MAX_, CLOSED_, INV_>::INVALID;
 
-// template<typename VAL, VAL MIN_, VAL MAX_, bool CLOSED_, VAL INV_>
+// template<class VAL, VAL MIN_, VAL MAX_, bool CLOSED_, VAL INV_>
 // bool constexpr
 // Ranged<VAL, MIN_, MAX_, CLOSED_, INV_>::CLOSED;
 

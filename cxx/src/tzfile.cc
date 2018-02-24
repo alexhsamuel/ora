@@ -30,11 +30,11 @@ public:
   bool is_empty() const { return pos_ == end_; }
   char const* get_position() const { return pos_; }
   void skip(size_t size);
-  template<typename T> T next();
+  template<class T> T next();
 
 private:
 
-  template<typename T> static T swap(T value);
+  template<class T> static T swap(T value);
 
   char const* pos_;
   char const* const end_;
@@ -52,7 +52,7 @@ Scanner::skip(
 }
 
 
-template<typename T>
+template<class T>
 inline T
 Scanner::next()
 {

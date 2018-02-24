@@ -28,7 +28,7 @@ WHITESPACE
 // Functions
 //------------------------------------------------------------------------------
 
-template<typename T> 
+template<class T> 
 inline std::string
 to_string(
   T val)

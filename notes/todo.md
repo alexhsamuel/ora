@@ -123,10 +123,6 @@
 
 - Investigate why `cal` doesn't agree for older dates
 
-- Make a 'zoneinfo dir' abstraction; load time zones from there.
-
-- typename -> class
-
 # Maybe / someday
 
 - Add an (upper) "bound" constant for time, date, daytime counts that is

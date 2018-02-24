@@ -7,7 +7,7 @@ namespace lib {
 
 //------------------------------------------------------------------------------
 
-template<typename VAL>
+template<class VAL>
 inline VAL*
 default_new()
 {
@@ -15,7 +15,7 @@ default_new()
 }
 
 
-template<typename VAL, VAL* (*ALLOCATE)()=default_new<VAL>>
+template<class VAL, VAL* (*ALLOCATE)()=default_new<VAL>>
 class LazyPointer
 {
 public:
