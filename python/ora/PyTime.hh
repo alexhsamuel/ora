@@ -237,10 +237,10 @@ private:
   static ref<Object> get_valid                  (PyTime*, void*);
   static GetSets<PyTime> tp_getsets_;
 
+  /** Default precision for decimal representations.  */
+  static int precision_;
   /** Date format used to generate the repr.  */
   static unique_ptr<ora::time::TimeFormat> repr_format_;
-  /** Date format used to generate the str.  */
-  static unique_ptr<ora::time::TimeFormat> str_format_;
 
   static Type build_type(string const& type_name);
 
@@ -264,23 +264,15 @@ PyTime<TIME>::add_to(
 
   // Choose precision for seconds that captures actual precision of the time
   // class (up to 1 fs).
-  auto const precision 
+  precision_
     = std::min((size_t) ceil(log10((long double) Time::DENOMINATOR)), 15ul);
 
   // Build the repr format.
   repr_format_ = make_unique<ora::time::TimeFormat>(
-    name + "(%0Y, %0m, %0d, %0H, %0M, %0." + std::to_string(precision) + "S, UTC)",
+      name + "(%0Y, %0m, %0d, %0H, %0M, %0." 
+    + std::to_string(precision_) + "S, UTC)",
     name + ".INVALID",
     name + ".MISSING");
-
-  // Build the str format.  
-  std::string pattern = "%";
-  if (precision > 0) {
-    pattern += ".";
-    pattern += std::to_string(precision);
-  }
-  pattern += "i";
-  str_format_ = make_unique<ora::time::TimeFormat>(pattern);
 
   // Add in static data members.
   Dict* const dict = (Dict*) type_.tp_dict;
@@ -394,8 +386,19 @@ ref<Unicode>
 PyTime<TIME>::tp_str(
   PyTime* const self)
 {
-  // FIXME: Not UTC?
-  return Unicode::from((*str_format_)(self->time_, *ora::UTC));  
+  if (self->time_.is_invalid())
+    return Unicode::from("INVALID");
+  else if (self->time_.is_missing())
+    return Unicode::from("MISSING");
+  else {
+    // FIXME: Display time zone?
+    auto const ldd = to_local_datenum_daytick(self->time_, *UTC);
+    StringBuilder sb;
+    time::format_iso_time(
+      sb, datenum_to_ymd(ldd.datenum), daytick_to_hms(ldd.daytick),
+      ldd.time_zone, precision_);
+    return Unicode::FromStringAndSize((char const*) sb, sb.length());
+  }
 }
 
 
@@ -545,7 +548,7 @@ PyTime<TIME>::method___format__(
 
   // If the format pattern is empty, use the default str format.
   if (*fmt == '\0')
-    return Unicode::from((*str_format_)(self->time_));
+    return tp_str(self);
   else
     return Unicode::from(ora::time::LocalTimeFormat::parse(fmt)(self->time_));
 }
@@ -733,8 +736,8 @@ PyTime<TIME>::repr_format_;
 
 
 template<class TIME>
-unique_ptr<ora::time::TimeFormat>
-PyTime<TIME>::str_format_;
+int
+PyTime<TIME>::precision_;
 
 
 //------------------------------------------------------------------------------

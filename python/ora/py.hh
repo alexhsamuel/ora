@@ -952,8 +952,8 @@ public:
   static auto FromString(char* utf8)
     { return ref<Unicode>::take(PyUnicode_FromString(utf8)); }
   // FIXME: Cast on const here?
-  static auto FromStringAndSize(char* utf8, size_t length)
-    { return ref<Unicode>::take(PyUnicode_FromStringAndSize(utf8, length)); }
+  static auto FromStringAndSize(char const* utf8, size_t length)
+    { return ref<Unicode>::take(PyUnicode_FromStringAndSize((char*) utf8, length)); }
 
   static auto from(std::string const& str)
     { return FromStringAndSize(const_cast<char*>(str.c_str()), str.length()); }
