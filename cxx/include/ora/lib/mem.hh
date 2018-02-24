@@ -10,7 +10,7 @@ namespace lib {
 /* 
  * Advances pointer `p` by `step` bytes. 
  */
-template<typename T>
+template<class T>
 inline T*
 step(
   T* const p,

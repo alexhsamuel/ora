@@ -3,7 +3,6 @@
 #include <time.h>
 
 #include "ora.hh"
-#include "functions_doc.hh"
 #include "py.hh"
 #include "PyDate.hh"
 #include "PyTime.hh"
@@ -16,9 +15,22 @@ using namespace std::string_literals;
 namespace ora {
 namespace py {
 
-namespace {
+//------------------------------------------------------------------------------
+// Docstrings
+//------------------------------------------------------------------------------
+
+namespace docstring {
+
+using doct_t = char const* const;
+
+#include "functions.docstrings.hh.inc"
+#include "functions.docstrings.cc.inc"
+
+}  // namespace docstring
 
 //------------------------------------------------------------------------------
+
+namespace {
 
 Exception
 parse_error(
@@ -464,10 +476,10 @@ add_functions(
     .add<get_zoneinfo_dir>          ("get_zoneinfo_dir",        docstring::get_zoneinfo_dir)
     .add<is_leap_year>              ("is_leap_year",            docstring::is_leap_year)
     .add<now>                       ("now",                     docstring::now)
-    .add<parse_date>                ("parse_date",              nullptr)  // FIXME
-    .add<parse_daytime>             ("parse_daytime",           nullptr)  // FIXME
-    .add<parse_time>                ("parse_time",              nullptr)  // FIXME
-    .add<parse_time_iso>            ("parse_time_iso",          nullptr)  // FIXME
+    .add<parse_date>                ("parse_date",              docstring::parse_date)
+    .add<parse_daytime>             ("parse_daytime",           docstring::parse_daytime)
+    .add<parse_time>                ("parse_time",              docstring::parse_time)
+    .add<parse_time_iso>            ("parse_time_iso",          docstring::parse_time_iso)
     .add<set_display_time_zone>     ("set_display_time_zone",   docstring::set_display_time_zone)
     .add<set_zoneinfo_dir>          ("set_zoneinfo_dir",        docstring::set_zoneinfo_dir)
     .add<to_local>                  ("to_local",                docstring::to_local)

@@ -77,7 +77,7 @@ pow10(
 /**
  * Returns true if 'val' is in the (closed) range ['min', 'max'].
  */
-template<typename T>
+template<class T>
 inline constexpr bool
 in_range(
   T min,
@@ -91,7 +91,7 @@ in_range(
 /**
  * Returns true if 'val' is in the half-open range ['min', 'bound').
  */
-template<typename T>
+template<class T>
 inline constexpr bool
 in_interval(
   T min,
@@ -106,7 +106,7 @@ in_interval(
 /*
  * True if `val` overflows when conveted from integer types `FROM` to `TO`.
  */
-template<typename TO, typename FROM>
+template<class TO, class FROM>
 inline bool constexpr
 overflows(
   FROM val) 
@@ -131,7 +131,7 @@ overflows(
 }
 
 
-template<typename T>
+template<class T>
 inline T
 round_div(
   T num,

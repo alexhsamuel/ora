@@ -71,7 +71,7 @@ namespace time {
  */
 extern bool parse_iso_time(
   char const*&, YmdDate&, HmsDaytime&, TimeZoneOffset&,
-  int const letter_mode=-1, bool const compact=false);
+  bool const compact=false);
 
 // FIXME: Elsewhere.
 struct TimeZoneInfo

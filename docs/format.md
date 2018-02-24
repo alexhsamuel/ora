@@ -42,7 +42,7 @@ The following format codes are supported for times only:
 | `%e` | the [military (NATO) time zone](https://en.wikipedia.org/wiki/List_of_military_time_zones) letter |
 | `%i` | the ISO 8601 time format |
 | `%o` | the total signed time zone offset in seconds |
-| '%T` | the ISO 8601 time format using military time zone letter |
+| '%T` | the ISO 8601 time format using 'Z' for UTC |
 | `%Z` | the time zone name |
 | `%z` | the five-character time zone offset, e.g. +0000 |
 

@@ -51,13 +51,20 @@ if sys.platform == "darwin":
 
 #-------------------------------------------------------------------------------
 
+# Hack.  We haven't unpacked the zoneinfo files yet, so we have to pass
+# setuptools a list and populate it later.
+zoneinfo_files = []
+
 # Convince setuptools to call our C++ build.
 
 class BuildExt(setuptools.command.build_ext.build_ext):
 
     def run(self):
-        subprocess.check_call(["make", "cxx", "docstrings"])
+        global zoneinfo_files
+        subprocess.check_call(["make", "cxx", "docstrings", "share"])
         setuptools.command.build_ext.build_ext.run(self)
+        zoneinfo_files.extend(enumerate_data_files("share/zoneinfo"))
+        assert len(zoneinfo_files) > 0
 
 
 
@@ -118,7 +125,7 @@ setup(
         ),
     ],
 
-    data_files=list(enumerate_data_files("share/zoneinfo")),
+    data_files=zoneinfo_files,
 
     cmdclass={
         "build_ext" : BuildExt,

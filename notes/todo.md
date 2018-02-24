@@ -1,28 +1,29 @@
 # Work List
 
-1. Full parsing support.
-   - modifiers: pad, str_case, abbreviate
-   - docstrings for parse functions
-   - figure out how to parse "%S.%f"; see `test_parse_daytime.py:test_usec()`
-   - parse_ex variants
-   - C++ API?
+1. Vendor gtest.
+1. Don't tar up zoneinfo files; commit directly.  Remove setup.py hack.
+1. Conda package, and mention in README.
 1. Sloppy time and date parsing.
-1. When parsing fractional seconds, work in terms of dayticks.
-1. Format time zone name; clean up time zone structs.
-1. Basic string parsing for `convert_to_*()` functions.
-1. Add default precision to TimeAPI; use for formatting.
-1. Make Time(datetime, tz) work for naive datetime.
 1. Intro Python documentation in rst.
 1. ReadTheDocs support.
+1. Fix rounding of ora.now(UsecTime).
+1. Add default precision to TimeAPI; use for formatting.
+1. When parsing fractional seconds, work in terms of dayticks.
+1. Basic string parsing for `convert_to_*()` functions.
+1. Make Time(datetime, tz) work for naive datetime.
 1. Relax numpy setup dependency.
 1. Revisit type definitions.
    - Benchmark 2^n vs. 10^n types.
    - Add exact us, ns types.
+1. Convert docstrings to rst.
 1. Benchmark tick computations.
-1. Fix rounding of ora.now(UsecTime).
+1. More parsing support.
+   - modifiers: pad, str_case, abbreviate
+   - figure out how to parse "%S.%f"; see `test_parse_daytime.py:test_usec()`
+   - parse_ex variants
+   - C++ API?
 1. Remove Time.get_parts().
 1. Support UTF-8 in format patterns.
-1. Build conda package.
 1. Rename `InvalidDateError` -> `BadDateError` _et fils_.
 1. Remove superflous `extern`.
 1. timezone etc. namespace cleanup
@@ -45,6 +46,7 @@
 1. Cache `Format` instances used by Python.
 1. Add missing strftime format codes: %U, %W.
 1. Adjust/clean up C++ predefined format strings.
+1. Clean up time zone structs.
 
 
 # C++ API
@@ -62,15 +64,12 @@
 
 ## PyDate
 
-- parsing strings
 - shifts by year, month, hour, minute
 - "Thursday of the last week of the month"-style function
 - docstrings
 - unit tests
 
 ## PyDaytime
-
-- parsing strings
 
 ## PyTimeZone
 
@@ -122,10 +121,6 @@
 - Put back `from_parts()` overloading in date, time, daytime ctors?
 
 - Investigate why `cal` doesn't agree for older dates
-
-- Make a 'zoneinfo dir' abstraction; load time zones from there.
-
-- typename -> class
 
 # Maybe / someday
 

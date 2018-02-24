@@ -1,3 +1,4 @@
+from   argparse import ArgumentParser
 from   contextlib import suppress
 from   time import perf_counter
 import itertools
@@ -109,223 +110,217 @@ def benchmark(fn, *, quantile=0.05):
 
 def benchmark_raw_now():
     from time import time
-    yield "time.time()"             , benchmark(lambda: time())
+    yield "time"    , "time.time()"     , benchmark(lambda: time())
 
     import datetime
     utcnow = datetime.datetime.utcnow
-    yield "datetime.utcnow()"       , benchmark(lambda: utcnow())
+    yield "datetime", "utcnow()"        , benchmark(lambda: utcnow())
 
     from ora import now, Time, SmallTime, NsecTime
-    yield "ora.now()"               , benchmark(lambda: now())
-    yield "ora.now(Time)"           , benchmark(lambda: now(Time))
-    yield "ora.now(SmallTime)"      , benchmark(lambda: now(SmallTime))
-    yield "ora.now(NsecTime)"       , benchmark(lambda: now(NsecTime))
+    yield "ora", "now()"                , benchmark(lambda: now())
+    yield "ora", "now(Time)"            , benchmark(lambda: now(Time))
+    yield "ora", "now(SmallTime)"       , benchmark(lambda: now(SmallTime))
+    yield "ora", "now(NsecTime)"        , benchmark(lambda: now(NsecTime))
 
     with suppress(ImportError):
         from ora import NsTime
-        yield "ora.now(NsTime)"     , benchmark(lambda: now(NsTime))
+        yield "ora" , "now(NsTime)"     , benchmark(lambda: now(NsTime))
 
 
 def benchmark_utc_now():
     import datetime
     now = datetime.datetime.now
     utcnow = datetime.datetime.utcnow
-    from pytz import UTC
-    yield "datetime.utcnow()"       , benchmark(lambda: utcnow())
-    yield "datetime.now(UTC)"       , benchmark(lambda: now(UTC))
+    UTC = datetime.timezone.utc
+    yield "datetime", "utcnow()"        , benchmark(lambda: utcnow())
+    yield "datetime", "now(UTC)"        , benchmark(lambda: now(UTC))
 
     from ora import now, Time, SmallTime, NsecTime, UTC, to_local
-    yield "ora.now() @ UTC"         , benchmark(lambda: now() @ UTC)
-    yield "to_local(ora.now(), UTC)", benchmark(lambda: to_local(now(), UTC))
-    yield "ora.now(Time) @ UTC"     , benchmark(lambda: now(Time) @ UTC)
-    yield "ora.now(SmallTime) @ UTC", benchmark(lambda: now(SmallTime) @ UTC)
-    yield "ora.now(NsecTIme) @ UTC" , benchmark(lambda: now(NsecTime) @ UTC)
+    yield "ora", "now() @ UTC"          , benchmark(lambda: now() @ UTC)
+    yield "ora", "to_local(now(), UTC)" , benchmark(lambda: to_local(now(), UTC))
+    yield "ora", "now(Time) @ UTC"      , benchmark(lambda: now(Time) @ UTC)
+    yield "ora", "now(SmallTime) @ UTC" , benchmark(lambda: now(SmallTime) @ UTC)
+    yield "ora", "now(NsecTIme) @ UTC"  , benchmark(lambda: now(NsecTime) @ UTC)
 
     with suppress(ImportError):
         from ora import NsTime
-        yield "ora.now(NsTime) @ UTC", benchmark(lambda: now(NsTime) @ UTC)
+        yield "ora", "now(NsTime) @ UTC", benchmark(lambda: now(NsTime) @ UTC)
 
 
 def benchmark_local_now():
     import datetime
     now = datetime.datetime.now
-    yield "datetime.now()"          , benchmark(lambda: now())
+    yield "datetime", "now()"           , benchmark(lambda: now())
 
     from ora import now, Time, SmallTime, NsecTime, get_display_time_zone, to_local
     z = get_display_time_zone()
-    yield "ora.now() @ z"           , benchmark(lambda: now() @ z)
-    yield "to_local(ora.now(), z)",   benchmark(lambda: to_local(now(), z))
-    yield "ora.now(Time) @ z"       , benchmark(lambda: now(Time) @ z)
-    yield "ora.now(SmallTime) @ z"  , benchmark(lambda: now(SmallTime) @ z)
-    yield "ora.now(NsecTIme) @ z"   , benchmark(lambda: now(NsecTime) @ z)
+    yield "ora", "now() @ z"            , benchmark(lambda: now() @ z)
+    yield "ora", "to_local(now(), z)"   , benchmark(lambda: to_local(now(), z))
+    yield "ora", "now(Time) @ z"        , benchmark(lambda: now(Time) @ z)
+    yield "ora", "now(SmallTime) @ z"   , benchmark(lambda: now(SmallTime) @ z)
+    yield "ora", "now(NsecTIme) @ z"    , benchmark(lambda: now(NsecTime) @ z)
 
     with suppress(ImportError):
         from ora import NsTime
-        yield "ora.now(NsTime) @ z" , benchmark(lambda: now(NsTime) @ z)
+        yield "ora", "now(NsTime) @ z"  , benchmark(lambda: now(NsTime) @ z)
 
 
 def benchmark_tz_now():
     import datetime
     now = datetime.datetime.now
     z = pytz.timezone("America/New_York")
-    yield "datetime.now(z)"         , benchmark(lambda: now(z))
+    yield "datetime", "now(z)"          , benchmark(lambda: now(z))
 
     from ora import now, Time, SmallTime, NsecTime, TimeZone, to_local
     z = TimeZone("America/New_York")
-    yield "ora.now() @ z"           , benchmark(lambda: now() @ z)
-    yield "to_local(ora.now(), z)"  , benchmark(lambda: to_local(now(), z))
-    yield "ora.now(Time) @ z"       , benchmark(lambda: now(Time) @ z)
-    yield "ora.now(SmallTime) @ z"  , benchmark(lambda: now(SmallTime) @ z)
-    yield "ora.now(NsecTime) @ z"   , benchmark(lambda: now(NsecTime) @ z)
+    yield "ora", "now() @ z"            , benchmark(lambda: now() @ z)
+    yield "ora", "to_local(now(), z)"   , benchmark(lambda: to_local(now(), z))
+    yield "ora", "now(Time) @ z"        , benchmark(lambda: now(Time) @ z)
+    yield "ora", "now(SmallTime) @ z"   , benchmark(lambda: now(SmallTime) @ z)
+    yield "ora", "now(NsecTime) @ z"    , benchmark(lambda: now(NsecTime) @ z)
 
     with suppress(ImportError):
         from ora import NsTime
-        yield "ora.now(NsTime) @ z" , benchmark(lambda: now(NsTime) @ z)
+        yield "ora", "now(NsTime) @ z"  , benchmark(lambda: now(NsTime) @ z)
 
 
 def benchmark_time_literal():
     from datetime import datetime
-    yield "datetime(...)"           , benchmark(lambda: datetime(2018, 1, 6, 16, 51, 45, 123456))
+    yield "datetime", "datetime(…)"     , benchmark(lambda: datetime(2018, 1, 6, 16, 51, 45, 123456))
 
     import pytz
-    tz = pytz.timezone("America/New_York")
-    yield "tz.localize(datetime(...))", benchmark(lambda: tz.localize(datetime(2018, 1, 6, 16, 51, 45, 123456)))
+    z = pytz.timezone("America/New_York")
+    yield "pytz", "z.localize(datetime(…))", benchmark(lambda: z.localize(datetime(2018, 1, 6, 16, 51, 45, 123456)))
 
     import dateutil.tz
-    tz = dateutil.tz.gettz("America/New_York")
-    yield "datetime(..., tz)", benchmark(lambda: datetime(2018, 1, 6, 16, 51, 45, 123456, tz))
+    z = dateutil.tz.gettz("America/New_York")
+    yield "dateutil", "datetime(…, z)"  , benchmark(lambda: datetime(2018, 1, 6, 16, 51, 45, 123456, z))
 
     from ora import Date, Daytime, Time, TimeZone, from_local, Jan
-    tz = TimeZone("America/New_York")
-    yield "(Date(...), Daytime(...)) @ tz", benchmark(lambda: (Date(2018, 1, 6), Daytime(16, 51, 45.123456)) @ tz)
-    yield "(Y/M/D, Daytime(...)) @ tz", benchmark(lambda: (2018/Jan/6, Daytime(16, 51, 45.123456)) @ tz)
-    yield "from_local((Date(...), Time(...)), tz)", benchmark(lambda: from_local((Date(2018, 1, 6), Daytime(16, 51, 45.123456)), tz))
-    yield "from_local((Date(...), Time(...)), 'tz')", benchmark(lambda: from_local((Date(2018, 1, 6), Daytime(16, 51, 45.123456)), "America/New_York"))
-    yield "Time(..., tz)"           , benchmark(lambda: Time(2018, 1, 6, 16, 51, 45.123456, tz))
-    yield "Time(..., 'tz')"         , benchmark(lambda: Time(2018, 1, 6, 16, 51, 45.123456, "America/New_York"))
+    z = TimeZone("America/New_York")
+    yield "ora", "(Date(…), Daytime(…)) @ z", benchmark(lambda: (Date(2018, 1, 6), Daytime(16, 51, 45.123456)) @ z)
+    yield "ora", "(Y/M/D, Daytime(…)) @ z", benchmark(lambda: (2018/Jan/6, Daytime(16, 51, 45.123456)) @ z)
+    yield "ora", "from_local((Date(…), Time(…)), z)", benchmark(lambda: from_local((Date(2018, 1, 6), Daytime(16, 51, 45.123456)), z))
+    yield "ora", "from_local((Date(…), Time(…)), '…')", benchmark(lambda: from_local((Date(2018, 1, 6), Daytime(16, 51, 45.123456)), "America/New_York"))
+    yield "ora", "Time(…, z)"           , benchmark(lambda: Time(2018, 1, 6, 16, 51, 45.123456, z))
+    yield "ora", "Time(…, '…')"         , benchmark(lambda: Time(2018, 1, 6, 16, 51, 45.123456, "America/New_York"))
 
 
 def benchmark_convert_tz():
     import datetime
     import pytz
-    tz0 = pytz.timezone("America/New_York")
-    tz1 = pytz.timezone("Asia/Tokyo")
+    z0 = pytz.timezone("America/New_York")
+    z1 = pytz.timezone("Asia/Tokyo")
     t = datetime.datetime(2018, 1, 5, 21, 17, 56, 123456)
-    yield "localize().astimezone()" , benchmark(lambda: tz0.localize(t).astimezone(tz1))
+    yield "pytz", "z0.localize(t).astimezone(z1)", benchmark(lambda: z0.localize(t).astimezone(z1))
 
     import dateutil.tz
-    tz0 = dateutil.tz.gettz("America/New_York")
-    tz1 = dateutil.tz.gettz("Asia/Tokyo")
+    z0 = dateutil.tz.gettz("America/New_York")
+    z1 = dateutil.tz.gettz("Asia/Tokyo")
     t = datetime.datetime(2018, 1, 5, 21, 17, 56, 123456)
-    yield "replace(tzinfo).astimezone()", benchmark(lambda: t.replace(tzinfo=tz0).astimezone(tz1))
-
-    t = datetime.datetime(2018, 1, 5, 21, 17, 56, 123456, tz0)
-    yield "t.astimezone()"          , benchmark(lambda: t.astimezone(tz1))
+    yield "dateutil", "replace(tzinfo=z0).astimezone(z1)", benchmark(lambda: t.replace(tzinfo=z0).astimezone(z1))
+    t = datetime.datetime(2018, 1, 5, 21, 17, 56, 123456, z0)
+    yield "dateutil", "t.astimezone(z1)", benchmark(lambda: t.astimezone(z1))
 
     from ora import Date, Daytime, Time, TimeZone, to_local, from_local
-    tz0 = TimeZone("America/New_York")
-    tz1 = TimeZone("Asia/Tokyo")
+    z0 = TimeZone("America/New_York")
+    z1 = TimeZone("Asia/Tokyo")
     t = Date(2018, 1, 5), Daytime(21, 17, 56.123456)
-    yield "t @ tz0 @ tz1"            , benchmark(lambda: t @ tz0 @ tz1)
-    yield "to_local(from_local(t, tz0), tz1)", benchmark(lambda: to_local(from_local(t, tz0), tz1))
+    yield "ora", "t @ z0 @ z1"          , benchmark(lambda: t @ z0 @ z1)
+    yield "ora", "to_local(from_local(t, z0), z1)", benchmark(lambda: to_local(from_local(t, z0), z1))
     with suppress(ImportError):
         from ora import NsDaytime
         t = Date(2018, 1, 5), NsDaytime(21, 17, 56.123456)
-        yield "t @ tz0 @ tz1 [NsDaytime]", benchmark(lambda: t @ tz0 @ tz1)
-        yield "to_local(from_local(t, tz0), tz1)", benchmark(lambda: to_local(from_local(t, tz0), tz1))
+        yield "ora", "t @ z0 @ z1 [NsDaytime]", benchmark(lambda: t @ z0 @ z1)
+        yield "ora", "to_local(from_local(t, z0), z1)", benchmark(lambda: to_local(from_local(t, z0), z1))
 
 
 def benchmark_today_local():
     import datetime
     today = datetime.date.today
-    yield "date.today()"            , benchmark(lambda: today())
+    yield "datetime", "date.today()"    , benchmark(lambda: today())
 
     from ora import today, get_display_time_zone, Date, Date16
     z = get_display_time_zone()
-    yield "ora.today(z)"            , benchmark(lambda: today(z))
-    yield "ora.today('display')"    , benchmark(lambda: today("display"))
-    yield "ora.today(z, Date)"      , benchmark(lambda: today(z, Date))
-    yield "ora.today('display', Date)", benchmark(lambda: today("display", Date))
-    yield "ora.today(z, Date16)"    , benchmark(lambda: today(z, Date16))
-    yield "ora.today('display', Date16)", benchmark(lambda: today("display", Date16))
+    yield "ora", "today(z)"            , benchmark(lambda: today(z))
+    yield "ora", "today('display')"    , benchmark(lambda: today("display"))
+    yield "ora", "today(z, Date)"      , benchmark(lambda: today(z, Date))
+    yield "ora", "today('display', Date)", benchmark(lambda: today("display", Date))
+    yield "ora", "today(z, Date16)"    , benchmark(lambda: today(z, Date16))
+    yield "ora", "today('display', Date16)", benchmark(lambda: today("display", Date16))
 
 
 def benchmark_time_format():
     import datetime
     t = datetime.datetime.utcnow()
-    yield "str(datetime)"           , benchmark(lambda: str(t))
-    yield "format(datetime, py_fmt)", benchmark(lambda: format(t, "%Y-%m-%d %H:%M:%S.%f"))
-    yield "format(datetime, rfc)"   , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%S.%fZ"))
+    yield "datetime", "str(t)"          , benchmark(lambda: str(t))
+    yield "datetime", "format(t, pyfmt)", benchmark(lambda: format(t, "%Y-%m-%d %H:%M:%S.%f"))
+    yield "datetime", "format(t, rfc)"  , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%S.%fZ"))
+    yield "datetime", "t.isoformat()"   , benchmark(lambda: t.isoformat())
 
     import ora
     t = ora.now()
-    yield "str(Time)"               , benchmark(lambda: str(t))
-    yield "format(Time, py_fmt)"    , benchmark(lambda: format(t, "%Y-%m-%d %H:%M:%.6S"))
-    yield "format(Time, rfc)"       , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%.6SZ"))
-    yield "format(Time, dstrfc)"    , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%.6SZ@"))
-    yield "format(Time, tzrfc)"     , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%.6SZ@America/New_York"))
-    yield "format(Time, utcrfc)"    , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%.6SZ@UTC"))
-    yield "Time.format(rfc)"        , benchmark(lambda: t.format("%Y-%m-%d"))
-    yield "Time.format(rfc, tzname)", benchmark(lambda: t.format("%Y-%m-%d", "America/New_York"))
+    yield "ora", "str(Time)"            , benchmark(lambda: str(t))
+    yield "ora", "format(Time, pyfmt)"  , benchmark(lambda: format(t, "%Y-%m-%d %H:%M:%.6S"))
+    yield "ora", "format(Time, rfc)"    , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%.6SZ"))
+    yield "ora", "format(Time, dstrfc)" , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%.6SZ@"))
+    yield "ora", "format(Time, tzrfc)"  , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%.6SZ@America/New_York"))
+    yield "ora", "format(Time, utcrfc)" , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%.6SZ@UTC"))
+    yield "ora", "Time.format(rfc)"     , benchmark(lambda: t.format("%Y-%m-%d"))
+    yield "ora", "Time.format(rfc, '…')", benchmark(lambda: t.format("%Y-%m-%d", "America/New_York"))
     z = ora.TimeZone("America/New_York")
-    yield "Time.format(rfc, z)"     , benchmark(lambda: t.format("%Y-%m-%d", z))
+    yield "ora", "Time.format(rfc, z)"  , benchmark(lambda: t.format("%Y-%m-%d", z))
 
 
 def benchmark_date_format():
     import datetime
     d = datetime.date(2018, 1, 14)
-    yield "str(date)"               , benchmark(lambda: str(d))
-    yield "format(date, fmt)"       , benchmark(lambda: format(d, "%Y-%m-%d"))
+    yield "datetime", "str(d)"          , benchmark(lambda: str(d))
+    yield "datetime", "format(d, fmt)"  , benchmark(lambda: format(d, "%Y-%m-%d"))
 
     import ora
     d = ora.Date(2018, 1, 14)
-    yield "str(Date)"               , benchmark(lambda: str(d))
-    yield "format(Date, fmt)"       , benchmark(lambda: format(d, "%Y-%m-%d"))
-    yield "format(Date, tzfmt)"     , benchmark(lambda: format(d, "%Y-%m-%d@America/New_York"))
+    yield "ora", "str(d)"               , benchmark(lambda: str(d))
+    yield "ora", "format(d, fmt)"       , benchmark(lambda: format(d, "%Y-%m-%d"))
+    yield "ora", "format(d, tzfmt)"     , benchmark(lambda: format(d, "%Y-%m-%d@America/New_York"))
 
 
 def benchmark_time_parse_iso_z():
-    now_us  = '2018-02-23T05:02:02.327973Z'
-    now_s   = '2018-02-23T05:02:02Z'
+    us  = '2018-02-23T05:02:02.327973Z'
+    s   = '2018-02-23T05:02:02Z'
 
     import datetime
     strptime = datetime.datetime.strptime
-    yield "parse(now_s, ISOFMT_S)"  , benchmark(lambda: strptime(now_s, "%Y-%m-%dT%H:%M:%SZ"))
-    yield "parse(now_us, ISOFMT_US)", benchmark(lambda: strptime(now_us, "%Y-%m-%dT%H:%M:%S.%fZ"))
+    yield "datetime", "strptime(s, ISOFMT_S)", benchmark(lambda: strptime(s, "%Y-%m-%dT%H:%M:%SZ"))
+    yield "datetime", "strptime(us, ISOFMT_US)", benchmark(lambda: strptime(us, "%Y-%m-%dT%H:%M:%S.%fZ"))
 
-    try:
+    with suppress(ImportError):
         from udatetime import from_string
-    except ImportError:
-        pass
-    else:
-        yield "udatetime.from_string(now_s)"    , benchmark(lambda: from_string(now_s))
-        yield "udatetime.from_string(now_us)"   , benchmark(lambda: from_string(now_us))
+        yield "udatetime", "from_string(s)", benchmark(lambda: from_string(s))
+        yield "udatetime", "from_string(us)", benchmark(lambda: from_string(us))
 
-    try:
+    with suppress(ImportError):
         from iso8601 import parse_date
-    except ImportError:
-        pass
-    else:
-        yield "iso8601.parse_date(now_s)"       , benchmark(lambda: parse_date(now_s))
-        yield "iso8601.parse_date(now_us)"      , benchmark(lambda: parse_date(now_us))
+        yield "iso8601", "parse_date(s)", benchmark(lambda: parse_date(s))
+        yield "iso8601", "parse_date(us)", benchmark(lambda: parse_date(us))
 
     from numpy import datetime64
-    yield "datetime64(now_s)"       , benchmark(lambda: datetime64(now_s))
-    yield "datetime64(now_us)"      , benchmark(lambda: datetime64(now_us))
-    yield "datetime64(now_s, 's')"  , benchmark(lambda: datetime64(now_s, 's'))
-    yield "datetime64(now_us, 'ns')", benchmark(lambda: datetime64(now_us, 'ns'))
+    yield "np", "datetime64(s)"         , benchmark(lambda: datetime64(s))
+    yield "np", "datetime64(us)"        , benchmark(lambda: datetime64(us))
+    yield "np", "datetime64(s, 's')"    , benchmark(lambda: datetime64(s, 's'))
+    yield "np", "datetime64(us, 'ns')"  , benchmark(lambda: datetime64(us, 'ns'))
 
     from pandas import Timestamp
-    yield "Timestamp(now_s)"        , benchmark(lambda: Timestamp(now_s))
-    yield "Timestamp(now_us)"       , benchmark(lambda: Timestamp(now_us))
+    yield "pd", "Timestamp(s)"          , benchmark(lambda: Timestamp(s))
+    yield "pd", "Timestamp(us)"         , benchmark(lambda: Timestamp(us))
 
     from ora import parse_time, parse_time_iso
-    yield "parse_time(now_s, ISOFMT)", benchmark(lambda: parse_time("%Y-%m-%dT%H:%M:%S%e", now_s))
-    yield "parse_time(now_us, ISOFMT)", benchmark(lambda: parse_time("%Y-%m-%dT%H:%M:%S%e", now_us))
-    yield "parse_time(now_s, '%T')" , benchmark(lambda: parse_time("%T", now_s))
-    yield "parse_time(now_us, '%T')", benchmark(lambda: parse_time("%T", now_us))
-    yield "parse_time_iso(now_s)"   , benchmark(lambda: parse_time_iso(now_s))
-    yield "parse_time_iso(now_us)"  , benchmark(lambda: parse_time_iso(now_us))
+    yield "ora", "parse_time(s, ISOFMT)", benchmark(lambda: parse_time("%Y-%m-%dT%H:%M:%S%e", s))
+    yield "ora", "parse_time(us, ISOFMT)", benchmark(lambda: parse_time("%Y-%m-%dT%H:%M:%S%e", us))
+    yield "ora", "parse_time(s, '%T')"  , benchmark(lambda: parse_time("%T", s))
+    yield "ora", "parse_time(us, '%T')" , benchmark(lambda: parse_time("%T", us))
+    yield "ora", "parse_time_iso(s)"    , benchmark(lambda: parse_time_iso(s))
+    yield "ora", "parse_time_iso(us)"   , benchmark(lambda: parse_time_iso(us))
 
 
 
@@ -333,36 +328,42 @@ def benchmark_time_comparison():
     import datetime
     t0 = datetime.datetime.utcnow()
     t1 = datetime.datetime.utcnow()
-    yield "datetime =="             , benchmark(lambda: t0 == t1)
-    yield "datetime !="             , benchmark(lambda: t0 != t1)
-    yield "datetime <"              , benchmark(lambda: t0 <  t1)
-    yield "datetime <="             , benchmark(lambda: t0 <= t1)
+    yield "datetime", "t0 == t1"        , benchmark(lambda: t0 == t1)
+    yield "datetime", "t0 != t1"        , benchmark(lambda: t0 != t1)
+    yield "datetime", "t0 <  t1"        , benchmark(lambda: t0 <  t1)
+    yield "datetime", "t0 <= t1"        , benchmark(lambda: t0 <= t1)
 
     import ora
     t0 = ora.now()
     t1 = ora.now()
-    yield "Time =="                 , benchmark(lambda: t0 == t1)
-    yield "Time !="                 , benchmark(lambda: t0 != t1)
-    yield "Time < "                 , benchmark(lambda: t0 <  t1)
-    yield "Time <="                 , benchmark(lambda: t0 <= t1)
+    yield "ora", "t0 == t1"             , benchmark(lambda: t0 == t1)
+    yield "ora", "t0 != t1"             , benchmark(lambda: t0 != t1)
+    yield "ora", "t0 <  t1"             , benchmark(lambda: t0 <  t1)
+    yield "ora", "t0 <= t1"             , benchmark(lambda: t0 <= t1)
 
 
-def summarize(benchmarks):
-    for name, elapsed in benchmarks:
-        print("{:40s} {:7.3f} µs".format(name, elapsed / 1e-6))
+#-------------------------------------------------------------------------------
+
+parser = ArgumentParser()
+parser.add_argument(
+    "category", metavar="CATEGORY", nargs="?", default=None,
+    help="run CATEGORY benchmarks [def: all]")
+args = parser.parse_args()
+
+if args.category is None:
+    fns = [ 
+        (n[10 :], f)
+        for n, f in globals().items() 
+        if n.startswith("benchmark_") 
+    ]
+else:
+    fns = [(args.category, globals()["benchmark_" + args.category])]
+
+for cat, fn in fns:
+    print(cat)
+    print("-" * 63)
+    for lib, name, elapsed in fn():
+        print("{:10s} {:40s} {:8.3f} µs".format(lib, name, elapsed / 1e-6))
     print()
-
-
-summarize(benchmark_raw_now())
-summarize(benchmark_utc_now())
-summarize(benchmark_local_now())
-summarize(benchmark_tz_now())
-summarize(benchmark_time_literal())
-summarize(benchmark_convert_tz())
-summarize(benchmark_today_local())
-summarize(benchmark_time_format())
-summarize(benchmark_date_format())
-summarize(benchmark_time_parse_iso_z())
-summarize(benchmark_time_comparison())
 
 

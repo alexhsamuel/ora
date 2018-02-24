@@ -145,7 +145,7 @@ $(CXX_TST_BINS): $(GTEST_LIB) $(CXX_LIB)
 $(CXX_TST_BINS): LDLIBS += $(GTEST_LIB) $(CXX_LIB)
 
 # Use our zoneinfo directory for running tests.
-$(CXX_TST_OKS):	    	$(ZONEINFO_DIR)
+$(CXX_TST_OKS):	    	share
 $(CXX_TST_OKS): export ZONEINFO = $(ABSTOP)/$(ZONEINFO_DIR)
 
 # Running tests.
@@ -198,13 +198,13 @@ $(PY_OBJS):    	    	$(PY_DOCSTR_CC) $(PY_DOCSTR_HH)
 # Phony targets
 
 .PHONY: all
-all:			cxx python 
+all:			cxx python share 
 
 .PHONY: test
 test:			test-cxx test-python
 
 .PHONY: clean
-clean:			clean-cxx clean-python 
+clean:			clean-cxx clean-python clean-share
 
 .PHONY: depclean
 depclean:   	    	
@@ -237,6 +237,13 @@ docstrings: 	    	$(PY_DOCSTR_CC) $(PY_DOCSTR_HH)
 .PHONY: test-python
 test-python: 		$(PY_EXTMOD)
 	$(PYTEST) python
+
+.PHONY: share
+share:	    	    	$(ZONEINFO_DIR)
+
+.PHONY: clean-share
+clean-share:
+	rm -rf $(ZONEINFO_DIR)
 
 # Use this target as a dependency to force another target to be rebuilt.
 .PHONY: force

@@ -7,7 +7,6 @@
 #include <string>
 
 #include "ora/lib/exc.hh"
-#include "ora/lib/ptr.hh"
 #include "ora/lib/string.hh"
 #include "ora/lib/string_builder.hh"
 #include "ora/date_type.hh"
@@ -411,8 +410,8 @@ format_iso_time(
   if (!compact)
     sb << ':';
   format_second(sb, daytime.second, precision);
-  if (military)
-    sb << get_time_zone_offset_letter(time_zone.offset);
+  if (military && time_zone.offset == 0)
+    sb << 'Z';
   else
     format_iso_offset(sb, time_zone, !compact);
 }

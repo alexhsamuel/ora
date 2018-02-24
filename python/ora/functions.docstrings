@@ -1,0 +1,237 @@
+#-*- python -*-
+
+days_in_month = """
+Returns the number of days in a month.
+
+The year must be provided to account for leap years.
+
+  >>> days_in_month(2000, Jan)
+  31
+  >>> days_in_month(2000, Feb)
+  29
+  >>> days_in_month(2001, Feb)
+  28
+
+@signature
+  days_in_month(year, month)
+@rtype
+  `int`
+"""
+
+days_in_year = """
+Returns the number of days in a year dates.
+
+  >>> days_in_year(2016)
+  366
+  >>> days_in_year(2017)
+  365
+
+@signature
+  days_in_year(year)
+"""
+
+
+format_iso = """
+Formats a time in ISO 8601 / RFC 3339 format.
+
+@signature
+  format_iso(time, time_zone=UTC, precision=-1)
+"""
+
+
+from_local = """
+Computes time from local time (date and daytime) and a time zone.
+
+This is the primary function from converting local times, as humans usually
+represent them, to actual times.  For example, UTC noon on 2016 Nov 11:
+
+  >>> date = Date(2016, Nov, 11)
+  >>> daytime = Daytime(12, 0, 0)
+  >>> ora.from_local((date, daytime), 'UTC')
+  Time(2016, 11, 11, 12, 0, 0.00000000, UTC)
+
+The same date and daytime in another time zone produces a different time:
+
+  >>> ora.from_local((date, daytime), 'US/Eastern')
+  Time(2016, 11, 11, 17, 0, 0.00000000, UTC)
+
+@signature
+  from_local(local_time, time_zone, first=True, Time=Time)
+@param local_time
+  A `(date, daytime)` pair containing the local time representation.
+@param time_zone
+  A time zone or time zone name.
+@param first
+  If the local time corresponds to two times, as can occur during a DST
+  transition, specifies whether to use the first or second time.
+@param Time
+  The time type to return.
+@raise RuntimeError
+  The specified local time does not exist in the time zone.
+"""
+
+
+get_display_time_zone = """
+Returns the display time zone.
+
+@signature
+  get_display_time_zone()
+"""
+
+
+get_system_time_zone = """
+Returns the system time zone.
+
+@signature
+  get_system_time_zone()
+"""
+
+
+get_zoneinfo_dir = """
+Returns the path to the zoneinfo (Olsen) time zone database.
+
+@signature
+  get_zoneinfo_dir()
+"""
+
+
+is_leap_year = """
+Returns true if `year` is a leap year.
+
+@signature
+  is_leap_year(year)
+"""
+
+
+now = """
+Returns the current time.
+
+@signature
+  now(Time=Time)
+@param Time
+  The time type to return.
+"""
+
+
+parse_date = """
+Parses a time.  
+
+@signature
+  parse_date(pattern, string, *, Date=Date)
+@param pattern
+  The strptime-style format pattern.
+@param string
+  The string to parse.
+@param Date
+  The type for the parsed date.
+"""
+
+
+parse_daytime = """
+Parses a daytime.
+
+@signature
+  parse_daytime(pattern, string, *, Daytime=Daytime)
+@param pattern
+  The strptime-style format pattern.
+@param string
+  The string to parse.
+@param Daytime
+  The type for the parsed daytime.
+"""
+
+
+parse_time = """
+Parses a time
+
+The pattern and string must specify the date, daytime, and time zone or time
+zone offset.  The seconds portion of the daytime may be omitted and default to
+zero.  The time zone may be omitted if specified as an argument.
+
+@signature
+  parse_daytime(pattern, string, tz=None, *, first=True, Time=Time)
+@param pattern
+  The strptime-style format pattern.
+@param string
+  The string to parse.
+@param tz
+  The default time zone, if the pattern and string do not specify a time
+  zone or time zone offset.
+@param first
+  If the local time corresponds to two times, as can occur during a DST
+  transition, specifies whether to use the first or second time.
+@param Time
+  The type for the parsed time.
+"""
+
+
+parse_time_iso = """
+Parses a time in ISO 8601 / RFC 3339 format.
+
+The string must be in the format 'YYYY-MM-DDTHH:MM:SS+ZZ:ZZ'.  The time zone
+offset '+ZZ:ZZ' may be replaced by a single Z, for UTC time.
+
+@signature
+  parse_daytime(string, *, Time=Time)
+@param Time
+  The type for the parsed time.
+"""
+
+
+set_display_time_zone = """
+Sets the display time zone to `time_zone`.
+
+@signature
+  set_display_time_zone(time_zone)
+"""
+
+
+set_zoneinfo_dir = """
+Sets the path to the zoneinfo (Olsen) time zone database.
+
+@signature
+  set_zoneinfo-dir(path)
+"""
+
+
+to_local = """
+Converts a time to a local date and daytime representation.
+
+This is the primary function for converting actual times to local dates and
+daytimes as humans usually represent them.  For example, UTC noon on 2016
+Nov 11:
+
+  >>> time = Time(2016, 11, 11, 12, 0, 0, UTC)
+  >>> ora.to_local(time, 'UTC')
+  LocalTime(date=Date(2016, Oct, 10), daytime=Daytime(12, 0, 0.000000000000000))
+
+The same time converts to a different (date, daytime) pair in another time
+zone:
+
+  >>> ora.to_local(time, 'US/Eastern')
+  LocalTime(date=Date(2016, Nov, 11), daytime=Daytime(8, 0, 0.000000000000000))
+
+@signature
+  to_local(time, time_zone, Date=Date, Daytime=Daytime)
+@param Date
+  The date type to produce.
+@param Daytime
+  The daytime type to produce.
+@return
+  A (date, daytime) tuple.  The fields may also be accessed as `date` and
+  `daytime` attributes.
+"""
+
+
+today = """
+Returns the current date in a given time zone.
+
+The time zone is mandatory, as at any given time different parts of the
+world are on two different dates.
+
+@signature
+  today(time_zone, Date=Date)
+@param Date
+  The date type to return.
+"""
+

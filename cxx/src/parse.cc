@@ -571,7 +571,6 @@ parse_iso_time(
   YmdDate& date,
   HmsDaytime& hms,
   TimeZoneOffset& tz_offset,
-  int const letter_mode,
   bool const compact)
 {
   TRY(parse_iso_date(s, date, compact));
@@ -580,10 +579,13 @@ parse_iso_time(
   else
     return false;
   TRY(parse_iso_daytime(s, hms, compact));
-  if ((letter_mode == -1 && (*s == '+' || *s == '-'))|| letter_mode == 0)
-    TRY(parse_tz_offset(s, tz_offset));
+  // Accept only 'Z' for UTC, not any other military time zone letter.
+  if (*s == 'Z') {
+    tz_offset = 0;
+    ++s;
+  }
   else
-    TRY(parse_tz_offset_letter(s, tz_offset));
+    TRY(parse_tz_offset(s, tz_offset));
   return true;
 }
 
@@ -649,9 +651,9 @@ parse_time_parts(
 
       case 'E': TRY(parse_tz_offset(s, tz.offset)); break;
       case 'e': TRY(parse_tz_offset_letter(s, tz.offset)); break;
-      case 'i': TRY(parse_iso_time(s, date.ymd_date, hms, tz.offset)); break;
+      case 'i': 
+      case 'T': TRY(parse_iso_time(s, date.ymd_date, hms, tz.offset)); break;
       case 'o': TRY(parse_tz_offset_secs(s, tz.offset)); break;
-      case 'T': TRY(parse_iso_time(s, date.ymd_date, hms, tz.offset, true)); break;
       case 'Z': TRY(parse_tz_name(s, tz.name)); break;
       case 'z': TRY(parse_tz_offset(s, tz.offset, false)); break;
 
