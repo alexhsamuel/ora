@@ -3,7 +3,6 @@
 1. Sloppy time and date parsing.
 1. Full parsing support.
    - modifiers: pad, str_case, abbreviate
-   - docstrings for parse functions
    - figure out how to parse "%S.%f"; see `test_parse_daytime.py:test_usec()`
    - parse_ex variants
    - C++ API?

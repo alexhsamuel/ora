@@ -113,6 +113,71 @@ Returns the current time.
 """
 
 
+parse_date = """
+Parses a time.  
+
+@signature
+  parse_date(pattern, string, *, Date=Date)
+@param pattern
+  The strptime-style format pattern.
+@param string
+  The string to parse.
+@param Date
+  The type for the parsed date.
+"""
+
+
+parse_daytime = """
+Parses a daytime.
+
+@signature
+  parse_daytime(pattern, string, *, Daytime=Daytime)
+@param pattern
+  The strptime-style format pattern.
+@param string
+  The string to parse.
+@param Daytime
+  The type for the parsed daytime.
+"""
+
+
+parse_time = """
+Parses a time
+
+The pattern and string must specify the date, daytime, and time zone or time
+zone offset.  The seconds portion of the daytime may be omitted and default to
+zero.  The time zone may be omitted if specified as an argument.
+
+@signature
+  parse_daytime(pattern, string, tz=None, *, first=True, Time=Time)
+@param pattern
+  The strptime-style format pattern.
+@param string
+  The string to parse.
+@param tz
+  The default time zone, if the pattern and string do not specify a time
+  zone or time zone offset.
+@param first
+  If the local time corresponds to two times, as can occur during a DST
+  transition, specifies whether to use the first or second time.
+@param Time
+  The type for the parsed time.
+"""
+
+
+parse_time_iso = """
+Parses a time in ISO 8601 / RFC 3339 format.
+
+The string must be in the format 'YYYY-MM-DDTHH:MM:SS+ZZ:ZZ'.  The time zone
+offset '+ZZ:ZZ' may be replaced by a single Z, for UTC time.
+
+@signature
+  parse_daytime(string, *, Time=Time)
+@param Time
+  The type for the parsed time.
+"""
+
+
 set_display_time_zone = """
 Sets the display time zone to `time_zone`.
 
