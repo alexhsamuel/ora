@@ -45,5 +45,5 @@ Ora is available:
 - On [PyPI](https://pypi.python.org/pypi/ora), as souce and OS/X wheels.
 - On [GitHub](https://github.com/alexhsamuel/ora).
 
-See [notes/developing.md] to build from source.
+See [developing.md](notes/developing.md) to build from source.
 
