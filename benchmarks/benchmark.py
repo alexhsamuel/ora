@@ -1,3 +1,4 @@
+from   argparse import ArgumentParser
 from   contextlib import suppress
 from   time import perf_counter
 import itertools
@@ -347,22 +348,28 @@ def benchmark_time_comparison():
     yield "Time <="                 , benchmark(lambda: t0 <= t1)
 
 
-def summarize(benchmarks):
-    for name, elapsed in benchmarks:
-        print("{:40s} {:7.3f} µs".format(name, elapsed / 1e-6))
+#-------------------------------------------------------------------------------
+
+parser = ArgumentParser()
+parser.add_argument(
+    "category", metavar="CATEGORY", nargs="?", default=None,
+    help="run CATEGORY benchmarks [def: all]")
+args = parser.parse_args()
+
+if args.category is None:
+    fns = [ 
+        (n[10 :], f)
+        for n, f in globals().items() 
+        if n.startswith("benchmark_") 
+    ]
+else:
+    fns = [(args.category, globals()["benchmark_" + args.category])]
+
+for cat, fn in fns:
+    print(cat)
+    print("-" * 52)
+    for name, elapsed in fn():
+        print("{:40s} {:8.3f} µs".format(name, elapsed / 1e-6))
     print()
-
-
-summarize(benchmark_raw_now())
-summarize(benchmark_utc_now())
-summarize(benchmark_local_now())
-summarize(benchmark_tz_now())
-summarize(benchmark_time_literal())
-summarize(benchmark_convert_tz())
-summarize(benchmark_today_local())
-summarize(benchmark_time_format())
-summarize(benchmark_date_format())
-summarize(benchmark_time_parse_iso_z())
-summarize(benchmark_time_comparison())
 
 
