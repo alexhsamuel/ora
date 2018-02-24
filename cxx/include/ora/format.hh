@@ -7,7 +7,6 @@
 #include <string>
 
 #include "ora/lib/exc.hh"
-#include "ora/lib/ptr.hh"
 #include "ora/lib/string.hh"
 #include "ora/lib/string_builder.hh"
 #include "ora/date_type.hh"
