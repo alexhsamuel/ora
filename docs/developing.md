@@ -19,6 +19,12 @@ To run C++ and Python tests, `make test`.
 You may also use `setup.py` to build, and `pytest` to run Python tests.
 
 
+# Benchmarks
+
+Run [`benchmarks.py`](/benchmarks/benchmarks.py) for some performace tests,
+including comparisons to other time and date libraries.
+
+
 # Packaging
 
 Ora packages a copy of the zoneinfo database with its Python package.  The
