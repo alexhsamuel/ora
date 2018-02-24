@@ -225,7 +225,7 @@ test-cxx-bins:	    	$(CXX_TST_BINS)
 test-cxx:   	    	$(CXX_TST_OKS)
 
 .PHONY: python
-python:			$(PY_EXTMOD)
+python:			$(PY_EXTMOD) $(ZONEINFO_DIR)
 
 .PHONY: clean-python
 clean-python:
