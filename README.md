@@ -2,9 +2,6 @@
 
 Ora is a standalone time and date implementation for C++ and Python.
 
-Ora is currently alpha software; bugs are plentiful, and APIs are subject to
-change.
-
 
 # Motivation
 
@@ -24,16 +21,22 @@ but supports easy interoperability.
 
 # Limitations
 
-Ora currently has the following limitations.
+Ora is currently alpha software; bugs are plentiful, and APIs are subject to
+change.
 
-- Support for the
-  ([proleptic](https://en.wikipedia.org/wiki/Proleptic_Gregorian_calendar))
-  Gregorian calendar only.
-- Support for years 1 &ndash; 9999 only; no support for B.C.E. dates.
-- No support for leap seconds or relativistic effects.
-- Support for C++14 and Python 3.6 only.
+### Scope
+
+Similar to `datetime`, Ora uses the
+([proleptic](https://en.wikipedia.org/wiki/Proleptic_Gregorian_calendar))
+Gregorian calendar, for years 1 &ndash; 9999 only.  Alternate calendars and
+B.C.E. dates are not provided.  There is no support for leap seconds,
+relativistic effects, or astronomical times.
+
+### Platform
+
+- Requires C++14 and Python 3.6+.
 - Tested on Linux and OSX.  Not currently tested on Windows.
-- Support for LP64 architectures (so, x86-64 but not x86) only.
+- Tested on x86-64 only.
 
 
 # Installation
