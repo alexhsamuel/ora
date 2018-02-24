@@ -17,7 +17,6 @@ EXTDIR	    	= $(TOP)/external
 SHRDIR	    	= $(TOP)/share
 
 ZONEINFO_DIR 	= $(SHRDIR)/zoneinfo
-ZONEINFO_VERSION= 2017c
 
 #-------------------------------------------------------------------------------
 # C++ configuration
@@ -69,16 +68,6 @@ WRAP_DOCSTRINGS	= $(PY_DIR)/wrap_docstrings
 
 $(GTEST_LIB):	    $(GTEST_DIR)
 	$(MAKE) -C $< $(notdir $@)
-
-#-------------------------------------------------------------------------------
-# zoneinfo
-
-$(ZONEINFO_DIR):
-	rm -rf $@
-	mkdir -p $(dir $@)
-	tar jxf $(EXTDIR)/zoneinfo/zoneinfo-$(ZONEINFO_VERSION).tar.bz2 \
-	    -C $(dir $@)
-	echo $(ZONEINFO_VERSION) > $@/+VERSION
 
 #-------------------------------------------------------------------------------
 # C++ building and linking
@@ -145,7 +134,6 @@ $(CXX_TST_BINS): $(GTEST_LIB) $(CXX_LIB)
 $(CXX_TST_BINS): LDLIBS += $(GTEST_LIB) $(CXX_LIB)
 
 # Use our zoneinfo directory for running tests.
-$(CXX_TST_OKS):	    	share
 $(CXX_TST_OKS): export ZONEINFO = $(ABSTOP)/$(ZONEINFO_DIR)
 
 # Running tests.
@@ -198,13 +186,13 @@ $(PY_OBJS):    	    	$(PY_DOCSTR_CC) $(PY_DOCSTR_HH)
 # Phony targets
 
 .PHONY: all
-all:			cxx python share 
+all:			cxx python
 
 .PHONY: test
 test:			test-cxx test-python
 
 .PHONY: clean
-clean:			clean-cxx clean-python clean-share
+clean:			clean-cxx clean-python
 
 .PHONY: depclean
 depclean:   	    	
@@ -237,13 +225,6 @@ docstrings: 	    	$(PY_DOCSTR_CC) $(PY_DOCSTR_HH)
 .PHONY: test-python
 test-python: 		$(PY_EXTMOD)
 	$(PYTEST) python
-
-.PHONY: share
-share:	    	    	$(ZONEINFO_DIR)
-
-.PHONY: clean-share
-clean-share:
-	rm -rf $(ZONEINFO_DIR)
 
 # Use this target as a dependency to force another target to be rebuilt.
 .PHONY: force

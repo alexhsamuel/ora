@@ -8,5 +8,4 @@ build/
 cfg.sh
 dist/
 python/ora.egg-info/
-share/
 tmp/

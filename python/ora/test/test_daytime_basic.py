@@ -1,12 +1,8 @@
 import datetime
-
 import pytest
 
-import ora
-from   ora import *
-
-import data
-from   util import *
+from   ora import Daytime
+from   util import assert_float_equal
 
 #-------------------------------------------------------------------------------
 
