@@ -336,10 +336,10 @@ def benchmark_time_comparison():
     import ora
     t0 = ora.now()
     t1 = ora.now()
-    yield "ora", "Time =="              , benchmark(lambda: t0 == t1)
-    yield "ora", "Time !="              , benchmark(lambda: t0 != t1)
-    yield "ora", "Time < "              , benchmark(lambda: t0 <  t1)
-    yield "ora", "Time <="              , benchmark(lambda: t0 <= t1)
+    yield "ora", "t0 == t1"             , benchmark(lambda: t0 == t1)
+    yield "ora", "t0 != t1"             , benchmark(lambda: t0 != t1)
+    yield "ora", "t0 <  t1"             , benchmark(lambda: t0 <  t1)
+    yield "ora", "t0 <= t1"             , benchmark(lambda: t0 <= t1)
 
 
 #-------------------------------------------------------------------------------
