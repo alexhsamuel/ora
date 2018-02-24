@@ -1,13 +1,13 @@
 # Work List
 
 1. Sloppy time and date parsing.
-1. Fix rounding of ora.now(UsecTime).
-1. When parsing fractional seconds, work in terms of dayticks.
-1. Basic string parsing for `convert_to_*()` functions.
-1. Add default precision to TimeAPI; use for formatting.
-1. Make Time(datetime, tz) work for naive datetime.
 1. Intro Python documentation in rst.
 1. ReadTheDocs support.
+1. Fix rounding of ora.now(UsecTime).
+1. Add default precision to TimeAPI; use for formatting.
+1. When parsing fractional seconds, work in terms of dayticks.
+1. Basic string parsing for `convert_to_*()` functions.
+1. Make Time(datetime, tz) work for naive datetime.
 1. Relax numpy setup dependency.
 1. Revisit type definitions.
    - Benchmark 2^n vs. 10^n types.
@@ -21,7 +21,6 @@
    - C++ API?
 1. Remove Time.get_parts().
 1. Support UTF-8 in format patterns.
-1. Build conda package.
 1. Rename `InvalidDateError` -> `BadDateError` _et fils_.
 1. Remove superflous `extern`.
 1. timezone etc. namespace cleanup
