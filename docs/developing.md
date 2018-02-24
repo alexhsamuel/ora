@@ -7,14 +7,23 @@ To build and test Ora, you'll require:
 - pytz (for testing)
 - pytest (for testing)
 
-After you clone the repo, you'll have to unpack the zoneinfo database:
+To run tests, build Google's gtest (one time only):
+
+```sh
+cd external/gtest
+make gtest_main.a
 ```
-$ make share/zoneinfo
+
+To unpack the time zone data (one time only):
+
+```
+make zoneinfo
 ```
 
 
 # Developing
 
+WRITEME.
 
 
 # Packaging
@@ -22,4 +31,5 @@ $ make share/zoneinfo
 Ora packages a copy of the zoneinfo database with its Python package.  The
 zoneinfo files are read from C++ code.  For this reason, Ora cannot be packaged
 as an egg.
+
 
