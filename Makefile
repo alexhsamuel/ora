@@ -145,7 +145,7 @@ $(CXX_TST_BINS): $(GTEST_LIB) $(CXX_LIB)
 $(CXX_TST_BINS): LDLIBS += $(GTEST_LIB) $(CXX_LIB)
 
 # Use our zoneinfo directory for running tests.
-$(CXX_TST_OKS):	    	$(ZONEINFO_DIR)
+$(CXX_TST_OKS):	    	share
 $(CXX_TST_OKS): export ZONEINFO = $(ABSTOP)/$(ZONEINFO_DIR)
 
 # Running tests.
@@ -198,7 +198,10 @@ $(PY_OBJS):    	    	$(PY_DOCSTR_CC) $(PY_DOCSTR_HH)
 # Phony targets
 
 .PHONY: all
-all:			cxx python 
+all:			cxx python share 
+
+.PHONY: share
+share:	    	    	$(ZONEINFO_DIR)
 
 .PHONY: test
 test:			test-cxx test-python
@@ -225,7 +228,7 @@ test-cxx-bins:	    	$(CXX_TST_BINS)
 test-cxx:   	    	$(CXX_TST_OKS)
 
 .PHONY: python
-python:			$(PY_EXTMOD) $(ZONEINFO_DIR)
+python:			$(PY_EXTMOD)
 
 .PHONY: clean-python
 clean-python:

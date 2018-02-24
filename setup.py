@@ -56,7 +56,7 @@ if sys.platform == "darwin":
 class BuildExt(setuptools.command.build_ext.build_ext):
 
     def run(self):
-        subprocess.check_call(["make", "cxx", "docstrings"])
+        subprocess.check_call(["make", "cxx", "docstrings", "share"])
         setuptools.command.build_ext.build_ext.run(self)
 
 
