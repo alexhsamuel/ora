@@ -55,6 +55,7 @@ __all__ = (
 # Set the location of the time zone database.  If ZONEINFO is set in the 
 # environment, use it; otherwise, use our own copy of the database.
 try:
+    print("env ZONEINFO")
     set_zoneinfo_dir(os.environ["ZONEINFO"])
 except KeyError:
     _root = Path(__file__).parent.parent
@@ -65,6 +66,7 @@ except KeyError:
     else:
         # Installed.
         _root = Path(sys.prefix)
+    print("using zoneinfo {}".format(_root / "share" / "zoneinfo"))
     set_zoneinfo_dir(str(_root / "share" / "zoneinfo"))
 
 
