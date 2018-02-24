@@ -9,6 +9,7 @@ install:
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
   - pip install pytest
   - pip install pytz 
+  - make share
   - python setup.py install --old-and-unmanageable
 
 script: 

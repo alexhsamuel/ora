@@ -201,14 +201,11 @@ $(PY_OBJS):    	    	$(PY_DOCSTR_CC) $(PY_DOCSTR_HH)
 .PHONY: all
 all:			cxx python share 
 
-.PHONY: share
-share:	    	    	$(ZONEINFO_DIR)
-
 .PHONY: test
 test:			test-cxx test-python
 
 .PHONY: clean
-clean:			clean-cxx clean-python 
+clean:			clean-cxx clean-python clean-share
 
 .PHONY: depclean
 depclean:   	    	
@@ -241,6 +238,13 @@ docstrings: 	    	$(PY_DOCSTR_CC) $(PY_DOCSTR_HH)
 .PHONY: test-python
 test-python: 		$(PY_EXTMOD)
 	$(PYTEST) python
+
+.PHONY: share
+share:	    	    	$(ZONEINFO_DIR)
+
+.PHONY: clean-share
+clean-share:
+	rm -rf $(ZONEINFO_DIR)
 
 # Use this target as a dependency to force another target to be rebuilt.
 .PHONY: force
