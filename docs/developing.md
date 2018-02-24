@@ -21,7 +21,7 @@ You may also use `setup.py` to build, and `pytest` to run Python tests.
 
 # Benchmarks
 
-Run [`benchmarks.py`](/benchmarks/benchmarks.py) for some performace tests,
+Run [`benchmarks.py`](/benchmarks/benchmark.py) for some performace tests,
 including comparisons to other time and date libraries.
 
 
