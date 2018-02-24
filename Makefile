@@ -79,7 +79,6 @@ $(ZONEINFO_DIR):
 	tar jxf $(EXTDIR)/zoneinfo/zoneinfo-$(ZONEINFO_VERSION).tar.bz2 \
 	    -C $(dir $@)
 	echo $(ZONEINFO_VERSION) > $@/+VERSION
-	cd $@; pwd; ls -o
 
 #-------------------------------------------------------------------------------
 # C++ building and linking
