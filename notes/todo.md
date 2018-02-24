@@ -1,13 +1,12 @@
 # Work List
 
-1. Format time zone name; clean up time zone structs.
+1. Sloppy time and date parsing.
 1. Full parsing support.
    - modifiers: pad, str_case, abbreviate
    - docstrings for parse functions
    - figure out how to parse "%S.%f"; see `test_parse_daytime.py:test_usec()`
    - parse_ex variants
    - C++ API?
-1. Sloppy time and date parsing.
 1. When parsing fractional seconds, work in terms of dayticks.
 1. Basic string parsing for `convert_to_*()` functions.
 1. Add default precision to TimeAPI; use for formatting.
@@ -45,6 +44,7 @@
 1. Cache `Format` instances used by Python.
 1. Add missing strftime format codes: %U, %W.
 1. Adjust/clean up C++ predefined format strings.
+1. Clean up time zone structs.
 
 
 # C++ API
