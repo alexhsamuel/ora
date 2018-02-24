@@ -1,10 +1,14 @@
 #!/bin/bash
+#
+# Usage: update-zoninfo.sh VERSION
+#
+# Note: Recent distributions are lzipped.  Requires tar with lunzip support.
+
 set -ex
 
 root="$(cd "$(dirname $0)"/..; pwd)"
 
 tmpdir=$(mktemp -d)
-tmpdir=$HOME/tmp/zoneinfo
 cd $tmpdir
 
 version=$1
@@ -15,11 +19,13 @@ fi
 
 wget https://data.iana.org/time-zones/releases/tzdb-$version.tar.lz
 
-lzcat tzdb-$version.tar.lz | tar xf -
+tar xf tzdb-$version.tar.lz
+cd tzdb-$version
 
 make LOCALTIME=UTC TOPDIR=$tmpdir/install INSTALL
 
-rm -rf $root/share/zoneinfo
-cp -r $tmpdir/install/ext/zoneinfo $root/share/
+rm -rf "$root"/share/zoneinfo
+cp -r $tmpdir/install/usr/share/zoneinfo "$root"/share/
 
-# rm -rf $tmpdir
+rm -rf $tmpdir
+
