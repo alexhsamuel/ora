@@ -67,6 +67,8 @@ as an egg.
 ```
 bumpversion patch  # or minor, major
 git push --tags
+git push
+make clean
 python setup.py sdist upload
 ```
 
