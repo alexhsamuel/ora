@@ -70,9 +70,10 @@ def enumerate_data_files(dir):
     Generates (dir_path, file_paths) pairs for each directory under `dir`,
     where `file_paths` is a list of paths to files in that directory.
     """
-    for dir, subdirs, files in os.walk(dir):
+    for dir, _, files in os.walk(dir):
         yield dir, [ os.path.join(dir, f) for f in files ]
 
+print(list(enumerate_data_files("share/zoneinfo")))
 
 setup(
     name            ="ora",
@@ -97,9 +98,12 @@ setup(
         "numpy",  # FIXME: Relax this.
     ],
 
-    package_dir={"": "python"},
-    packages=["ora"],
-    package_data={"": ["test/*"]},
+    package_dir     ={"": "python"},
+    packages        =["ora"],
+    package_data    ={
+        ""      : ["test/*"],
+        "ora"   : ["zoneinfo/*", "zoneinfo/*/*"],
+    },
 
     ext_modules=[
         Extension(
@@ -116,8 +120,6 @@ setup(
             depends           =glob("python/ora/*.hh") + glob("cxx/include/*.hh"),
         ),
     ],
-
-    data_files=list(enumerate_data_files("share/zoneinfo")),
 
     cmdclass={
         "build_ext" : BuildExt,

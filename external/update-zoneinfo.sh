@@ -7,6 +7,7 @@
 set -ex
 
 root="$(cd "$(dirname $0)"/..; pwd)"
+zoneinfo="$root"/python/ora/zoneinfo
 
 tmpdir=$(mktemp -d)
 cd $tmpdir
@@ -24,9 +25,9 @@ cd tzdb-$version
 
 make LOCALTIME=UTC TOPDIR=$tmpdir/install INSTALL
 
-rm -rf "$root"/share/zoneinfo
-cp -r $tmpdir/install/usr/share/zoneinfo "$root"/share/
-echo $version "$root"/share/zoneinfo/+VERSION
+rm -rf "$zoneinfo"
+cp -r $tmpdir/install/usr/share/zoneinfo "$zoneinfo"
+echo $version "$zoneinfo"/+VERSION
 
 rm -rf $tmpdir
 

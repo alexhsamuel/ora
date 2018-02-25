@@ -4,6 +4,7 @@ import os
 from   pathlib import Path
 import re
 import sys
+import warnings
 
 from   .ext import *
 
@@ -54,19 +55,12 @@ __all__ = (
 
 # Set the location of the time zone database.  If ZONEINFO is set in the 
 # environment, use it; otherwise, use our own copy of the database.
+_INTERNAL_ZONEINFO_DIR = Path(__file__).parent / "zoneinfo"
 try:
-    set_zoneinfo_dir(os.environ["ZONEINFO"])
-except KeyError:
-    _root = Path(__file__).parent.parent
-    # Are we running from a source tree, or installed?
-    if _root.name == "python":
-        # Running from a source tree.
-        _root = _root.parent
-    else:
-        # Installed.
-        _root = Path(sys.prefix)
-    set_zoneinfo_dir(str(_root / "share" / "zoneinfo"))
-
+    set_zoneinfo_dir(os.environ.get("ZONEINFO", str(_INTERNAL_ZONEINFO_DIR)))
+except FileNotFoundError as err:
+    warnings.warn(
+        "missing zoneinfo; check installation or $ZONEINFO: {}".format(err))
 
 #-------------------------------------------------------------------------------
 
