@@ -244,6 +244,9 @@ extern void
 set_zoneinfo_dir(
   fs::Filename const& dir)
 {
+  if (!ora::lib::fs::check(dir, ora::lib::fs::EXISTS, ora::lib::fs::DIRECTORY))
+    throw ora::lib::fs::FileNotFoundError(dir);
+
   // Invalidate cache; contents of the new directory may be different.
   time_zones.clear();
   zoneinfo_dir = dir;

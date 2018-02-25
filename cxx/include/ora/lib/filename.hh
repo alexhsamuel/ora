@@ -40,6 +40,20 @@ enum AccessMode
   EXISTS
 };
 
+
+//------------------------------------------------------------------------------
+
+class FileNotFoundError
+  : public Error
+{
+public:
+
+  FileNotFoundError(std::string const& filename) : Error(filename) {}
+  virtual ~FileNotFoundError() throw () {}
+
+};
+
+
 //------------------------------------------------------------------------------
 
 class Filename
