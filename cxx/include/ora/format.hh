@@ -356,7 +356,12 @@ public:
       else if (tz_name == "UTC")
         tz = UTC;
       else if (tz_name == "system")
-        tz = ora::get_system_time_zone();
+        try {
+          tz = ora::get_system_time_zone();
+        }
+        catch (RuntimeError) {
+          tz = UTC;
+        }
       else
         tz = ora::get_time_zone(tz_name);
       if (at == 0)

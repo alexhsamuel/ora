@@ -84,6 +84,8 @@ Returns the system time zone.
 
 @signature
   get_system_time_zone()
+@raise RuntimeError
+  No system time zone could be determined.
 """
 
 

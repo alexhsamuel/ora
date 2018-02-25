@@ -83,7 +83,13 @@ maybe_time_zone(
     if (strcmp(tz_name, "display") == 0)
       return ora::get_display_time_zone();
     else if (strcmp(tz_name, "system") == 0)
-      return ora::get_system_time_zone();
+      try {
+        return ora::get_system_time_zone();
+      }
+      catch (ora::lib::RuntimeError) {
+        // Fall back to UTC if the system time zone isn't specified.
+        return UTC;
+      }
     else
       try {
         return ora::get_time_zone(tz_name);

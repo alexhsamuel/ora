@@ -5,18 +5,11 @@ import pytest
 import ora
 from   ora import *
 from   ora import Time, Time128, SmallTime, Unix32Time, Daytime, UTC, MIDNIGHT
-from   ora import to_local, from_local, now, display_time_zone, get_system_time_zone
+from   ora import to_local, from_local, now, display_time_zone
 import data
 from   tools import xeq
 
 #-------------------------------------------------------------------------------
-
-try:
-    SYSTEM_TIME_ZONE = get_system_time_zone()
-except RuntimeError:
-    # No system time zone set.
-    SYSTEM_TIME_ZONE = None
-
 
 def test_min():
     assert     Time.MIN.valid
@@ -159,12 +152,15 @@ def test_format_method_display():
         assert time.format(fmt, "display")      == "2017-12-31 16:00:00"
 
 
-@pytest.mark.skipif(SYSTEM_TIME_ZONE is None, reason="no system time zone")
 def test_format_method_system():
     time = (2018/Jan/1, Daytime(0, 0, 0)) @ UTC
     fmt = "%Y-%m-%d %H:%M:%S"
     sys = time.format(fmt, "system")
-    assert sys == time.format(fmt, SYSTEM_TIME_ZONE)
+    try:
+        stz = ora.get_system_time_zone()
+    except RuntimeError:
+        stz = UTC
+    assert sys == time.format(fmt, stz)
     assert sys == format(time, fmt + "@system")
 
 
