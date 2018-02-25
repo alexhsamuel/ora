@@ -45,7 +45,7 @@ or smaller is supported.
 
 Ora is distributed:
 
-- On [PyPI](https://pypi.python.org/pypi/ora), as source and OS/X binary wheels:
+- On [PyPI](https://pypi.python.org/pypi/ora), as source and OS/X binary wheel:
   ```
   pip install ora
   ```
