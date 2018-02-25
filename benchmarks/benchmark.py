@@ -259,17 +259,18 @@ def benchmark_time_format():
     yield "datetime", "t.isoformat()"   , benchmark(lambda: t.isoformat())
 
     import ora
+    from ora import format_time
     t = ora.now()
-    yield "ora", "str(Time)"            , benchmark(lambda: str(t))
-    yield "ora", "format(Time, pyfmt)"  , benchmark(lambda: format(t, "%Y-%m-%d %H:%M:%.6S"))
-    yield "ora", "format(Time, rfc)"    , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%.6SZ"))
-    yield "ora", "format(Time, dstrfc)" , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%.6SZ@"))
-    yield "ora", "format(Time, tzrfc)"  , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%.6SZ@America/New_York"))
-    yield "ora", "format(Time, utcrfc)" , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%.6SZ@UTC"))
-    yield "ora", "Time.format(rfc)"     , benchmark(lambda: t.format("%Y-%m-%d"))
-    yield "ora", "Time.format(rfc, '…')", benchmark(lambda: t.format("%Y-%m-%d", "America/New_York"))
+    yield "ora", "str(t)"               , benchmark(lambda: str(t))
+    yield "ora", "format(t, pyfmt)"     , benchmark(lambda: format(t, "%Y-%m-%d %H:%M:%.6S"))
+    yield "ora", "format(t, rfc)"       , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%.6SZ"))
+    yield "ora", "format(t, dstrfc)"    , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%.6SZ@"))
+    yield "ora", "format(t, tzrfc)"     , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%.6SZ@America/New_York"))
+    yield "ora", "format(t, utcrfc)"    , benchmark(lambda: format(t, "%Y-%m-%dT%H:%M:%.6SZ@UTC"))
+    yield "ora", "format_time(rfc, t)"  , benchmark(lambda: format_time("%Y-%m-%d", t))
+    yield "ora", "format_time(rfc, t, '…')", benchmark(lambda: format_time("%Y-%m-%d", t, "America/New_York"))
     z = ora.TimeZone("America/New_York")
-    yield "ora", "Time.format(rfc, z)"  , benchmark(lambda: t.format("%Y-%m-%d", z))
+    yield "ora", "format_time(rfc, t, z)", benchmark(lambda: format_time("%Y-%m-%d", t, z))
 
 
 def benchmark_date_format():
