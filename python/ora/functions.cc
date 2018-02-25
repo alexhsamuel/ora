@@ -99,6 +99,37 @@ days_in_year(
 
 
 ref<Object>
+format_time(
+  Module* /* module */,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] 
+    = {"pattern", "time", "time_zone", nullptr};
+  Object* time_arg;
+  char* pattern;
+  Object* time_zone = nullptr;
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "sO|O", arg_names, &pattern, &time_arg, &time_zone);
+
+  auto api = PyTimeAPI::get(time_arg);
+  if (api == nullptr)
+    throw TypeError("not a Time");
+  auto const tz = 
+    time_zone == nullptr ? ora::UTC : convert_to_time_zone(time_zone);
+
+  // FIXME: Need to convert to LocalDatenumDayticks to format, but must handle
+  // invalid and missing dates first.
+  ora::time::TimeFormat const fmt(pattern);
+  return Unicode::from(
+      api->is_invalid(time_arg) ? fmt.get_invalid()
+    : api->is_missing(time_arg) ? fmt.get_missing()
+    : fmt(api->to_local_datenum_daytick(time_arg, *tz)));
+  // return Unicode::from(ora::time::TimeFormat(pattern)(->time_, *tz));
+}
+
+
+ref<Object>
 format_time_iso(
   Module* /* module */,
   Tuple* const args,
@@ -469,6 +500,7 @@ add_functions(
   return methods
     .add<days_in_month>             ("days_in_month",           docstring::days_in_month)
     .add<days_in_year>              ("days_in_year",            docstring::days_in_year)
+    .add<format_time>               ("format_time",             docstring::format_time)
     .add<format_time_iso>           ("format_time_iso",         docstring::format_time_iso)
     .add<from_local>                ("from_local",              docstring::from_local)
     .add<get_display_time_zone>     ("get_display_time_zone",   docstring::get_display_time_zone)

@@ -41,10 +41,3 @@ Methods may raise these exceptions:
 
 """
 
-format = """
-Formats the time as a localized string.
-
-@signature 
-  format(pattern, time_zone=UTC)
-"""
-

@@ -5,7 +5,7 @@ import pytest
 import ora
 from   ora import *
 from   ora import Time, Time128, SmallTime, Unix32Time, Daytime, UTC, MIDNIGHT
-from   ora import to_local, from_local, now, display_time_zone
+from   ora import to_local, from_local, now, display_time_zone, format_time
 import data
 from   tools import xeq
 
@@ -134,33 +134,33 @@ def test_format_tz_empty_in_pattern():
         assert t == "time is now 2017-12-09T10:42:20R"
 
     
-def test_format_method():
+def test_format_time():
     time = (2018/Jan/1, Daytime(0, 0, 0)) @ UTC
     fmt = "%Y-%m-%d %H:%M:%S"
-    assert time.format(fmt)                     == "2018-01-01 00:00:00"
-    assert time.format(fmt, UTC)                == "2018-01-01 00:00:00"
-    assert time.format(fmt, "America/New_York") == "2017-12-31 19:00:00"
-    assert time.format(fmt, "Asia/Kolkata")     == "2018-01-01 05:30:00"
+    assert format_time(fmt, time)                       == "2018-01-01 00:00:00"
+    assert format_time(fmt, time, UTC)                  == "2018-01-01 00:00:00"
+    assert format_time(fmt, time, "America/New_York")   == "2017-12-31 19:00:00"
+    assert format_time(fmt, time, "Asia/Kolkata")       == "2018-01-01 05:30:00"
     tz = ora.TimeZone("Asia/Manila")
-    assert time.format(fmt, tz)                 == "2018-01-01 08:00:00"
+    assert format_time(fmt, time, tz)                   == "2018-01-01 08:00:00"
 
 
 def test_format_method_display():
     time = (2018/Jan/1, Daytime(0, 0, 0)) @ UTC
     fmt = "%Y-%m-%d %H:%M:%S"
     with display_time_zone("America/Los_Angeles"):
-        assert time.format(fmt, "display")      == "2017-12-31 16:00:00"
+        assert format_time(fmt, time, "display")        == "2017-12-31 16:00:00"
 
 
 def test_format_method_system():
     time = (2018/Jan/1, Daytime(0, 0, 0)) @ UTC
     fmt = "%Y-%m-%d %H:%M:%S"
-    sys = time.format(fmt, "system")
+    sys = format_time(fmt, time, "system")
     try:
         stz = ora.get_system_time_zone()
     except RuntimeError:
         stz = UTC
-    assert sys == time.format(fmt, stz)
+    assert sys == format_time(fmt, time, stz)
     assert sys == format(time, fmt + "@system")
 
 

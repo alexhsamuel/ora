@@ -31,6 +31,14 @@ Returns the number of days in a year dates.
 """
 
 
+format_time = """
+Formats the time as a localized string.
+
+@signature 
+  format_time(pattern, time, time_zone=UTC)
+"""
+
+
 format_time_iso = """
 Formats a time in ISO 8601 / RFC 3339 format.
 

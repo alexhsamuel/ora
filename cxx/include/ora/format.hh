@@ -242,6 +242,21 @@ public:
 
   using Format::Format;
 
+  std::string
+  operator()(
+    LocalDatenumDaytick const& ldd)
+    const
+  {
+    return format(Parts{
+      .date           = datenum_to_full_date(ldd.datenum), 
+      .have_date      = true,
+      .daytime        = daytick_to_hms(ldd.daytick), 
+      .have_daytime   = true,
+      .time_zone      = ldd.time_zone, 
+      .have_time_zone = true,
+    });
+  }
+
   /*
    * If `fixed` is true, the result is of fixed width.
    */
@@ -257,18 +272,9 @@ public:
       return fixed ? get_invalid_pad() : get_invalid();
     else if (time.is_missing())
       return fixed ? get_missing_pad() : get_missing();
-    else {
+    else
       // FIXME: Don't use daytick, which may lose precision.
-      auto const ldd = to_local_datenum_daytick(time, time_zone);
-      return format(Parts{
-        .date           = datenum_to_full_date(ldd.datenum), 
-        .have_date      = true,
-        .daytime        = daytick_to_hms(ldd.daytick), 
-        .have_daytime   = true,
-        .time_zone      = ldd.time_zone, 
-        .have_time_zone = true,
-      });
-    }
+      return operator()(to_local_datenum_daytick(time, time_zone));
   }
 
   template<class TIME> 
