@@ -16,7 +16,6 @@ requirements:
     - numpy
     - python
     - setuptools
-    - toolchain
   run:
     - libgcc
     - numpy
