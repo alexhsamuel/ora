@@ -93,9 +93,8 @@ setup(
     ],    
 
     python_requires='>=3.6',
-    # FIXME: Relax this.
-    requires        =[
-        "numpy",
+    install_requires=[
+        "numpy",  # FIXME: Relax this.
     ],
 
     package_dir={"": "python"},
