@@ -1,6 +1,7 @@
 # Work List
 
 1. Conda package, and mention in README.
+1. Install zoneinfo under conda; check pip and conda install locations.
 1. Sloppy time and date parsing.
 1. Intro Python documentation in rst.
 1. ReadTheDocs support.
