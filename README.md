@@ -43,9 +43,23 @@ or smaller is supported.
 
 # Installation
 
-Ora is available:
-- On [PyPI](https://pypi.python.org/pypi/ora), as souce and OS/X wheels.
+Ora is distributed:
+
+- On [PyPI](https://pypi.python.org/pypi/ora), as source and OS/X binary wheels:
+  ```
+  pip install ora
+  ```
+
+- On [Anaconda](https://anaconda.org/alexhsamuel/ora), as Linux x64 and OS/X
+  conda packages:
+  ```
+  conda install -c alexhsamuel ora
+  ```
+
 - On [GitHub](https://github.com/alexhsamuel/ora).
 
-See [developing.md](docs/developing.md) to build from source.
+Building from source requires a C++14 compiler.  See
+[developing.md](docs/developing.md) for more information.
+
+
 
