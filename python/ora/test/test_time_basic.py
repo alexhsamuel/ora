@@ -11,6 +11,13 @@ from   tools import xeq
 
 #-------------------------------------------------------------------------------
 
+try:
+    SYSTEM_TIME_ZONE = get_system_time_zone()
+except RuntimeError:
+    # No system time zone set.
+    SYSTEM_TIME_ZONE = None
+
+
 def test_min():
     assert     Time.MIN.valid
     assert not Time.MIN.invalid
@@ -152,11 +159,12 @@ def test_format_method_display():
         assert time.format(fmt, "display")      == "2017-12-31 16:00:00"
 
 
+@pytest.mark.skipif(SYSTEM_TIME_ZONE is None, reason="no system time zone")
 def test_format_method_system():
     time = (2018/Jan/1, Daytime(0, 0, 0)) @ UTC
     fmt = "%Y-%m-%d %H:%M:%S"
     sys = time.format(fmt, "system")
-    assert sys == time.format(fmt, get_system_time_zone())
+    assert sys == time.format(fmt, SYSTEM_TIME_ZONE)
     assert sys == format(time, fmt + "@system")
 
 

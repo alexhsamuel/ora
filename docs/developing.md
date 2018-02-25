@@ -68,13 +68,13 @@ as an egg.
 bumpversion patch  # or minor, major
 git push --tags
 git push
-make clean
 python setup.py sdist upload
 ```
 
 ### OS/X binary
 
 ```
+make clean; rm -rf build
 python setup.py bdist_wheel upload
 conda build conda-recipe --python 3.6
 anaconda upload ...

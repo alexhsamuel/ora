@@ -5,6 +5,13 @@ from   ora import *
 
 #-------------------------------------------------------------------------------
 
+try:
+    SYSTEM_TIME_ZONE = get_system_time_zone()
+except RuntimeError:
+    # No system time zone set.
+    SYSTEM_TIME_ZONE = None
+
+
 def test_utc():
     assert UTC.name == "UTC"
 
@@ -147,21 +154,21 @@ def test_nonexistent():
         tz.at_local((date, daytime))
 
 
+@pytest.mark.skipif(SYSTEM_TIME_ZONE is None, reason="no system time zone")
 def test_display():
-    stz = get_system_time_zone()
-    assert isinstance(stz, TimeZone)
+    assert isinstance(SYSTEM_TIME_ZONE, TimeZone)
     dtz = get_display_time_zone()
-    assert isinstance(stz, TimeZone)
-    assert dtz == stz
+    assert isinstance(dtz, TimeZone)
+    assert dtz == SYSTEM_TIME_ZONE
 
     with display_time_zone("Pacific/Galapagos"):
-        assert get_system_time_zone().name == stz.name
+        assert get_system_time_zone().name == SYSTEM_TIME_ZONE.name
         dtz = get_display_time_zone()
         assert isinstance(dtz, TimeZone)
         assert dtz.name == "Pacific/Galapagos"
         assert dtz == TimeZone("Pacific/Galapagos")
 
     dtz = get_display_time_zone()
-    assert dtz == stz
+    assert dtz == SYSTEM_TIME_ZONE
     
 
