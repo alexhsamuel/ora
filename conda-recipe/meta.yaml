@@ -14,12 +14,12 @@ source:
 requirements:
   build:
     - numpy
-    - python ==3.6*
+    - python 3.6.*
     - setuptools
   run:
     - libgcc
     - numpy
-    - python ==3.6*
+    - python 3.6.*
 
 build:
   script: python setup.py install
