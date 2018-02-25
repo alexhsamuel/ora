@@ -99,7 +99,7 @@ days_in_year(
 
 
 ref<Object>
-format_iso(
+format_time_iso(
   Module* /* module */,
   Tuple* const args,
   Dict* const kw_args)
@@ -469,7 +469,7 @@ add_functions(
   return methods
     .add<days_in_month>             ("days_in_month",           docstring::days_in_month)
     .add<days_in_year>              ("days_in_year",            docstring::days_in_year)
-    .add<format_iso>                ("format_iso",              docstring::format_iso)
+    .add<format_time_iso>           ("format_time_iso",         docstring::format_time_iso)
     .add<from_local>                ("from_local",              docstring::from_local)
     .add<get_display_time_zone>     ("get_display_time_zone",   docstring::get_display_time_zone)
     .add<get_system_time_zone>      ("get_system_time_zone",    docstring::get_system_time_zone)

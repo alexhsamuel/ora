@@ -31,11 +31,11 @@ Returns the number of days in a year dates.
 """
 
 
-format_iso = """
+format_time_iso = """
 Formats a time in ISO 8601 / RFC 3339 format.
 
 @signature
-  format_iso(time, time_zone=UTC, precision=-1)
+  format_time_iso(time, time_zone=UTC, precision=-1)
 """
 
 

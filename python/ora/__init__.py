@@ -32,6 +32,7 @@ __all__ = (
 
     "days_in_month",
     "days_in_year",
+    "format_time_iso",
     "from_local",
     "get_display_time_zone",
     "get_system_time_zone",
