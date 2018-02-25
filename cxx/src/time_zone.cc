@@ -376,7 +376,13 @@ get_display_time_zone()
     TimeZone_ptr tz;
     if (tz_name == nullptr)
       // TZ is not set; use the system time zone.
-      tz = get_system_time_zone();
+      try {
+        tz = get_system_time_zone();
+      }
+      catch (RuntimeError) {
+        // Unknown system time zone.  Fall back to UTC.
+        tz = UTC;
+      }
     else
       try {
         tz = get_time_zone(tz_name);
