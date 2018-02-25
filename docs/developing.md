@@ -60,3 +60,30 @@ zoneinfo files are read from C++ code.  For this reason, Ora cannot be packaged
 as an egg.
 
 
+# Releasing
+
+### Source:
+
+```
+bumpversion patch  # or minor, major
+git push --tags
+python setup.py sdist upload
+```
+
+### OS/X binary
+
+```
+python setup.py bdist_wheel upload
+conda build conda-recipe --python 3.6
+anaconda upload ...
+```
+
+### Linux binary
+
+```
+docker run -ti --rm continuumio/conda_builder_linux bash
+git clone https://github.com/alexhsamuel/ora
+conda build ora/conda-recipe --python 3.6
+anaconda upload ...
+```
+
