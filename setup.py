@@ -109,7 +109,6 @@ setup(
             extra_compile_args=[
                 "-std=c++14", 
                 "-fdiagnostics-color=always", 
-                "-O0", 
             ],
             include_dirs      =["cxx/include"] + numpy_include_dirs,
             sources           =glob("python/ora/*.cc"),
