@@ -56,7 +56,7 @@ if sys.platform == "darwin":
 class BuildExt(setuptools.command.build_ext.build_ext):
 
     def run(self):
-        subprocess.check_call(["make", "cxx", "docstrings", "share"])
+        subprocess.check_call(["make", "cxx", "docstrings"])
         setuptools.command.build_ext.build_ext.run(self)
 
 
@@ -72,8 +72,6 @@ def enumerate_data_files(dir):
     """
     for dir, _, files in os.walk(dir):
         yield dir, [ os.path.join(dir, f) for f in files ]
-
-print(list(enumerate_data_files("share/zoneinfo")))
 
 setup(
     name            ="ora",
