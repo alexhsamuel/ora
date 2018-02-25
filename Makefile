@@ -14,9 +14,6 @@ TOP 	    	= .
 # FIXME: Hack.  But we don't have realpath on OSX, do we?
 ABSTOP	    	= $(shell pwd)
 EXTDIR	    	= $(TOP)/external
-SHRDIR	    	= $(TOP)/share
-
-ZONEINFO_DIR 	= $(SHRDIR)/zoneinfo
 
 #-------------------------------------------------------------------------------
 # C++ configuration
@@ -134,6 +131,7 @@ $(CXX_TST_BINS): $(GTEST_LIB) $(CXX_LIB)
 $(CXX_TST_BINS): LDLIBS += $(GTEST_LIB) $(CXX_LIB)
 
 # Use our zoneinfo directory for running tests.
+ZONEINFO_DIR 	= $(PY_DIR)/ora/zoneinfo
 $(CXX_TST_OKS): export ZONEINFO = $(ABSTOP)/$(ZONEINFO_DIR)
 
 # Running tests.
