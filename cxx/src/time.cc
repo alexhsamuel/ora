@@ -7,6 +7,7 @@ namespace time {
 
 template class TimeType<TimeTraits>;
 template class TimeType<SmallTimeTraits>;
+template class TimeType<NewTimeTraits>;
 template class TimeType<NsTimeTraits>;
 template class TimeType<NsecTimeTraits>;
 template class TimeType<Unix32TimeTraits>;

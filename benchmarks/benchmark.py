@@ -125,6 +125,9 @@ def benchmark_raw_now():
     with suppress(ImportError):
         from ora import NsTime
         yield "ora" , "now(NsTime)"     , benchmark(lambda: now(NsTime))
+    with suppress(ImportError):
+        from ora import NewTime
+        yield "ora" , "now(NewTime)"    , benchmark(lambda: now(NewTime))
 
 
 def benchmark_utc_now():
@@ -145,6 +148,9 @@ def benchmark_utc_now():
     with suppress(ImportError):
         from ora import NsTime
         yield "ora", "now(NsTime) @ UTC", benchmark(lambda: now(NsTime) @ UTC)
+    with suppress(ImportError):
+        from ora import NewTime
+        yield "ora", "now(NewTime) @ UTC", benchmark(lambda: now(NewTime) @ UTC)
 
 
 def benchmark_local_now():
@@ -163,6 +169,9 @@ def benchmark_local_now():
     with suppress(ImportError):
         from ora import NsTime
         yield "ora", "now(NsTime) @ z"  , benchmark(lambda: now(NsTime) @ z)
+    with suppress(ImportError):
+        from ora import NewTime
+        yield "ora", "now(NewTime) @ z"  , benchmark(lambda: now(NewTime) @ z)
 
 
 def benchmark_tz_now():
@@ -182,6 +191,9 @@ def benchmark_tz_now():
     with suppress(ImportError):
         from ora import NsTime
         yield "ora", "now(NsTime) @ z"  , benchmark(lambda: now(NsTime) @ z)
+    with suppress(ImportError):
+        from ora import NewTime
+        yield "ora", "now(NewTime) @ z"  , benchmark(lambda: now(NewTime) @ z)
 
 
 def benchmark_time_literal():
