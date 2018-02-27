@@ -64,7 +64,7 @@ tp_str(
 {
   return Unicode::from(
     self->date_->Str()->as_utf8_string() 
-    + " " 
+    + "T"
     + self->daytime_->Str()->as_utf8_string());
 }
 
