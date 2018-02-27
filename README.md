@@ -21,8 +21,8 @@ but supports easy interoperability.
 
 # Limitations
 
-Ora is currently alpha software; bugs are plentiful, and APIs are subject to
-change.
+Ora is currently prerelease software; bugs are plentiful, and APIs are subject
+to change.
 
 ### Scope
 
