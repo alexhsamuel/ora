@@ -11,20 +11,17 @@
  *  Note that 10000 years (the year range supported by the library) is about
  *  3.2E+11 s, which requires 39 bits represent with 1 s resolution.
  *
- *  FIXME: Maybe NsecTime should be Time.  Who measures ns before 1900?
- *  - SmallTime -> Time32
- *  - LongTime and LongTime32 to span 1-9999
- *
  *    Bits  Sgn  Denom  Base     Years  Yr. Range  Resolution    Class
  *    ----  ---  -----  ----     -----  ---------  ----------    ------------
  *      32    u  1      1970       136  1970-2106      1  s      SmallTime
- *      32    s  1      1970       136  1902-2038      1  s      Unix32Time
- *      64    s  1      1970      many  0001-9999      1  s      Unix64Time
- *      32    u  1<< 2  1990        34  1990-2024    250 ms
- *      64    u  1<<32  1970       136  1970-2106    230 ps   
- *      64    u  1<<30  1900       544  1900-2444    930 ps      NsecTime
- *      64    u  1<<28  1200      2179  1200-3379      4 ns
- *      64    u  1<<26     1      8716  0001-8717     15 ns      Time
+ *      32    s  1      1970       136  1902-2038      1  s      Time32
+ *      64    s  1      1970      many  0001-9999      1  s      Time64
+ *      32    u  1<< 2  1990        34  1990-2024    250 ms      
+ *      64    u  1<<32  1970       136  1970-2106    230 ps      
+ *      64    u  1<<30  1900       544  1900-2444    930 ps      Time
+ *      64    s  10**9  1970       585  1677-2262      1 ns      NsTime
+ *      64    u  1<<28  1200      2179  1200-3379      4 ns      
+ *      64    u  1<<26     1      8716  0001-8717     15 ns      
  *     128    u  1<<64     1      many  0001-9999     54 zs      Time128
  */
 
@@ -254,8 +251,8 @@ struct TimeTraits
 {
   using Offset = uint64_t;
 
-  static Datenum constexpr base         = 0; 
-  static Offset  constexpr denominator  = (Offset) 1 << 26;
+  static Datenum constexpr base         = 693595;  // 1900-01-01
+  static Offset  constexpr denominator  = (Offset) 1 << 30;
   static Offset  constexpr invalid      = std::numeric_limits<Offset>::max();
   static Offset  constexpr missing      = std::numeric_limits<Offset>::max() - 1;
   static Offset  constexpr min          = 0;
@@ -282,29 +279,29 @@ struct SmallTimeTraits
 
 extern template class TimeType<SmallTimeTraits>;
 using SmallTime = TimeType<SmallTimeTraits>;
-static_assert(Time::is_basic_layout(), "wrong memory layout for SmallTime");
+static_assert(SmallTime::is_basic_layout(), "wrong memory layout for SmallTime");
 
 //------------------------------------------------------------------------------
 
-struct NsecTimeTraits
+struct NsTimeTraits
 {
-  using Offset = uint64_t;
+  using Offset = int64_t;
 
-  static Datenum constexpr base         = 693595;  // 1900-01-01
-  static Offset  constexpr denominator  = (Offset) 1 << 30;
+  static Datenum constexpr base         = DATENUM_UNIX_EPOCH;
+  static Offset  constexpr denominator  = (Offset) 1000000000;
   static Offset  constexpr invalid      = std::numeric_limits<Offset>::max();
   static Offset  constexpr missing      = std::numeric_limits<Offset>::max() - 1;
-  static Offset  constexpr min          = 0;
+  static Offset  constexpr min          = std::numeric_limits<Offset>::min();
   static Offset  constexpr max          = std::numeric_limits<Offset>::max() - 2;
 };
 
-extern template class TimeType<NsecTimeTraits>;
-using NsecTime = TimeType<NsecTimeTraits>;
-static_assert(Time::is_basic_layout(), "wrong memory layout for NsecTime");
+extern template class TimeType<NsTimeTraits>;
+using NsTime = TimeType<NsTimeTraits>;
+static_assert(NsTime::is_basic_layout(), "wrong memory layout for NsTime");
 
 //------------------------------------------------------------------------------
 
-struct Unix32TimeTraits
+struct Time32Traits
 {
   using Offset = int32_t;
 
@@ -316,13 +313,13 @@ struct Unix32TimeTraits
   static Offset  constexpr max          = std::numeric_limits<Offset>::max() - 2;
 };
 
-extern template class TimeType<Unix32TimeTraits>;
-using Unix32Time = TimeType<Unix32TimeTraits>;
-static_assert(Time::is_basic_layout(), "wrong memory layout for Unix32Time");
+extern template class TimeType<Time32Traits>;
+using Time32 = TimeType<Time32Traits>;
+static_assert(Time32::is_basic_layout(), "wrong memory layout for Time32");
 
 //------------------------------------------------------------------------------
 
-struct Unix64TimeTraits
+struct Time64Traits
 {
   using Offset = int64_t;
 
@@ -334,9 +331,9 @@ struct Unix64TimeTraits
   static Offset  constexpr missing      = 253402300801l;
 };
 
-extern template class TimeType<Unix64TimeTraits>;
-using Unix64Time = TimeType<Unix64TimeTraits>;
-static_assert(Time::is_basic_layout(), "wrong memory layout for Unix64Time");
+extern template class TimeType<Time64Traits>;
+using Time64 = TimeType<Time64Traits>;
+static_assert(Time64::is_basic_layout(), "wrong memory layout for Time64");
 
 //------------------------------------------------------------------------------
 
@@ -359,7 +356,7 @@ struct Time128Traits
 
 extern template class TimeType<Time128Traits>;
 using Time128 = TimeType<Time128Traits>;
-static_assert(Time::is_basic_layout(), "wrong memory layout for Time128");
+static_assert(Time128::is_basic_layout(), "wrong memory layout for Time128");
 
 }  // namespace time
 }  // namespace ora

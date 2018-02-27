@@ -116,15 +116,12 @@ def benchmark_raw_now():
     utcnow = datetime.datetime.utcnow
     yield "datetime", "utcnow()"        , benchmark(lambda: utcnow())
 
-    from ora import now, Time, SmallTime, NsecTime
+    from ora import now, Time, SmallTime, NsTime, Time128
     yield "ora", "now()"                , benchmark(lambda: now())
     yield "ora", "now(Time)"            , benchmark(lambda: now(Time))
     yield "ora", "now(SmallTime)"       , benchmark(lambda: now(SmallTime))
-    yield "ora", "now(NsecTime)"        , benchmark(lambda: now(NsecTime))
-
-    with suppress(ImportError):
-        from ora import NsTime
-        yield "ora" , "now(NsTime)"     , benchmark(lambda: now(NsTime))
+    yield "ora", "now(NsTime)"          , benchmark(lambda: now(NsTime))
+    yield "ora", "now(Time128)"         , benchmark(lambda: now(Time128))
 
 
 def benchmark_utc_now():
@@ -135,16 +132,13 @@ def benchmark_utc_now():
     yield "datetime", "utcnow()"        , benchmark(lambda: utcnow())
     yield "datetime", "now(UTC)"        , benchmark(lambda: now(UTC))
 
-    from ora import now, Time, SmallTime, NsecTime, UTC, to_local
+    from ora import now, Time, SmallTime, NsTime, Time128, UTC, to_local
     yield "ora", "now() @ UTC"          , benchmark(lambda: now() @ UTC)
     yield "ora", "to_local(now(), UTC)" , benchmark(lambda: to_local(now(), UTC))
     yield "ora", "now(Time) @ UTC"      , benchmark(lambda: now(Time) @ UTC)
     yield "ora", "now(SmallTime) @ UTC" , benchmark(lambda: now(SmallTime) @ UTC)
-    yield "ora", "now(NsecTIme) @ UTC"  , benchmark(lambda: now(NsecTime) @ UTC)
-
-    with suppress(ImportError):
-        from ora import NsTime
-        yield "ora", "now(NsTime) @ UTC", benchmark(lambda: now(NsTime) @ UTC)
+    yield "ora", "now(NsTime) @ UTC"    , benchmark(lambda: now(NsTime) @ UTC)
+    yield "ora", "now(Time128) @ UTC"   , benchmark(lambda: now(Time128) @ UTC)
 
 
 def benchmark_local_now():
@@ -152,17 +146,14 @@ def benchmark_local_now():
     now = datetime.datetime.now
     yield "datetime", "now()"           , benchmark(lambda: now())
 
-    from ora import now, Time, SmallTime, NsecTime, get_display_time_zone, to_local
+    from ora import now, Time, SmallTime, NsTime, Time128, get_display_time_zone, to_local
     z = get_display_time_zone()
     yield "ora", "now() @ z"            , benchmark(lambda: now() @ z)
     yield "ora", "to_local(now(), z)"   , benchmark(lambda: to_local(now(), z))
     yield "ora", "now(Time) @ z"        , benchmark(lambda: now(Time) @ z)
     yield "ora", "now(SmallTime) @ z"   , benchmark(lambda: now(SmallTime) @ z)
-    yield "ora", "now(NsecTIme) @ z"    , benchmark(lambda: now(NsecTime) @ z)
-
-    with suppress(ImportError):
-        from ora import NsTime
-        yield "ora", "now(NsTime) @ z"  , benchmark(lambda: now(NsTime) @ z)
+    yield "ora", "now(NsTime) @ z"      , benchmark(lambda: now(NsTime) @ z)
+    yield "ora", "now(Time128) @ z"     , benchmark(lambda: now(Time128) @ z)
 
 
 def benchmark_tz_now():
@@ -171,17 +162,14 @@ def benchmark_tz_now():
     z = pytz.timezone("America/New_York")
     yield "datetime", "now(z)"          , benchmark(lambda: now(z))
 
-    from ora import now, Time, SmallTime, NsecTime, TimeZone, to_local
+    from ora import now, Time, SmallTime, NsTime, Time128, TimeZone, to_local
     z = TimeZone("America/New_York")
     yield "ora", "now() @ z"            , benchmark(lambda: now() @ z)
     yield "ora", "to_local(now(), z)"   , benchmark(lambda: to_local(now(), z))
     yield "ora", "now(Time) @ z"        , benchmark(lambda: now(Time) @ z)
     yield "ora", "now(SmallTime) @ z"   , benchmark(lambda: now(SmallTime) @ z)
-    yield "ora", "now(NsecTime) @ z"    , benchmark(lambda: now(NsecTime) @ z)
-
-    with suppress(ImportError):
-        from ora import NsTime
-        yield "ora", "now(NsTime) @ z"  , benchmark(lambda: now(NsTime) @ z)
+    yield "ora", "now(NsTime) @ z"      , benchmark(lambda: now(NsTime) @ z)
+    yield "ora", "now(Time128) @ z"     , benchmark(lambda: now(Time128) @ z)
 
 
 def benchmark_time_literal():
@@ -228,11 +216,6 @@ def benchmark_convert_tz():
     t = Date(2018, 1, 5), Daytime(21, 17, 56.123456)
     yield "ora", "t @ z0 @ z1"          , benchmark(lambda: t @ z0 @ z1)
     yield "ora", "to_local(from_local(t, z0), z1)", benchmark(lambda: to_local(from_local(t, z0), z1))
-    with suppress(ImportError):
-        from ora import NsDaytime
-        t = Date(2018, 1, 5), NsDaytime(21, 17, 56.123456)
-        yield "ora", "t @ z0 @ z1 [NsDaytime]", benchmark(lambda: t @ z0 @ z1)
-        yield "ora", "to_local(from_local(t, z0), z1)", benchmark(lambda: to_local(from_local(t, z0), z1))
 
 
 def benchmark_today_local():

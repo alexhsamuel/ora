@@ -55,7 +55,7 @@ TimeZone::TimeZone()
   : name_("UTC")
 {
   entries_.emplace_back(
-    time::Unix64Time::MIN.get_offset(), 
+    time::Time64::MIN.get_offset(), 
     TzFile::Type{0, false, "UTC", true, true});
 }
 
@@ -79,7 +79,7 @@ TimeZone::TimeZone(
   if (default_type == nullptr) 
     default_type = &tz_file.types_.front();
   // Add a sentry entry.
-  entries_.emplace_back(time::Unix64Time::MIN.get_offset(), *default_type);
+  entries_.emplace_back(time::Time64::MIN.get_offset(), *default_type);
 
   for (auto const& transition : tz_file.transitions_)
     entries_.emplace_back(

@@ -53,10 +53,10 @@ TEST(Time, comparisons) {
 TEST(Time, from_parts) {
   auto const daytime = from_hms(18, 27, 13);
   auto const tz = get_time_zone("US/Eastern");
-  auto const time0 = from_local<Unix32Time>(2013/JUL/29, daytime, *tz);
+  auto const time0 = from_local<Time32>(2013/JUL/29, daytime, *tz);
   EXPECT_EQ(1375136833, time0.get_offset());
 
-  Time::Offset const offset = 4262126704878682112l;
+  Time::Offset const offset = 3848321898005921792;
   Time const time1 = time::from_offset(offset);
   EXPECT_EQ(offset, time1.get_offset());
   TimeParts const parts1 = get_parts(time1, "US/Eastern");
@@ -120,8 +120,8 @@ TEST(Time, from_parts_invalid) {
 
 TEST(Time, get_parts) {
   // 2013 July 28 15:37:38.125 EDT [UTC-4].
-  auto const time = time::from_offset(4262126704887070720l);
-  EXPECT_EQ(1375040258, Unix64Time(time).get_offset());
+  auto const time = time::from_offset(3848321898140139520);
+  EXPECT_EQ(1375040258, Time64(time).get_offset());
 
   auto const time_zone = get_time_zone("US/Eastern");
   TimeParts const parts = get_parts(time, *time_zone);
@@ -177,10 +177,10 @@ TEST(Time, get_parts_display) {
 }
 
 //------------------------------------------------------------------------------
-// Class Unix32Time.
+// Class Time32.
 
-TEST(Unix32Time, zero) {
-  auto const time = time::from_offset<Unix32Time>(1374522232);
+TEST(Time32, zero) {
+  auto const time = time::from_offset<Time32>(1374522232);
 
   auto const date = get_utc_date<Date>(time);
   auto const ymd = get_ymd(date);

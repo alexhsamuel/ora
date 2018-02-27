@@ -4,7 +4,7 @@ import pytest
 
 import ora
 from   ora import *
-from   ora import Time, Time128, SmallTime, Unix32Time, Daytime, UTC, MIDNIGHT
+from   ora import Time, Time128, SmallTime, Time32, Daytime, UTC, MIDNIGHT
 from   ora import to_local, from_local, now, display_time_zone, format_time
 import data
 from   tools import xeq
@@ -57,7 +57,7 @@ def test_init_first():
 
 
 def test_zero():
-    t = from_local((0, 0), UTC)
+    t = from_local((0, 0), UTC, Time=Time64)
     p = t.get_parts(UTC)
     assert p.date.year              == 1
     assert p.date.month             == Jan
@@ -69,7 +69,7 @@ def test_zero():
     assert p.time_zone.offset       == 0
     assert p.time_zone.is_dst       == False
 
-    assert t == from_local((1/Jan/1, MIDNIGHT), UTC)
+    assert t == from_local((1/Jan/1, MIDNIGHT), UTC, Time=Time128)
 
 
 def test_sub():
@@ -168,8 +168,8 @@ def test_from_offset():
     assert SmallTime.from_offset(SmallTime.MIN.offset) == SmallTime.MIN
     assert SmallTime.from_offset(SmallTime.MAX.offset) == SmallTime.MAX
 
-    assert Unix32Time.from_offset(Unix32Time.MIN.offset) == Unix32Time.MIN
-    assert Unix32Time.from_offset(Unix32Time.MAX.offset) == Unix32Time.MAX
+    assert Time32.from_offset(Time32.MIN.offset) == Time32.MIN
+    assert Time32.from_offset(Time32.MAX.offset) == Time32.MAX
 
     assert Time.from_offset(Time.MIN.offset) == Time.MIN
     assert Time.from_offset(Time.MAX.offset) == Time.MAX
@@ -214,8 +214,8 @@ def test_now():
     t0 = now()
     assert isinstance(t0, ora.Time)
 
-    t1 = now(ora.NsecTime)
-    assert isinstance(t1, ora.NsecTime)
+    t1 = now(ora.NsTime)
+    assert isinstance(t1, ora.NsTime)
     assert t1 - t0 < 1
 
     t2 = now(ora.SmallTime)

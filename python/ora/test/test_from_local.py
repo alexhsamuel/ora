@@ -4,7 +4,7 @@ import pytz
 import pytest
 
 import ora
-from   ora import Time, NsecTime, Date, Daytime, from_local, to_local, UTC
+from   ora import Time, NsTime, Date, Daytime, from_local, to_local, UTC
 from   ora import *
 import data
 
@@ -13,21 +13,22 @@ import data
 def test_utc0():
     t = from_local((1973/Dec/3, 7200.125), UTC)
     # FIXME
-    assert(str(t) == "1973-12-03T02:00:00.12500000+00:00")
+    assert(str(t) == "1973-12-03T02:00:00.1250000000+00:00")
 
 
+@pytest.mark.xfail
 def test_nsec_time():
     # FIXME
-    t = from_local((1900/Jan/1, 0), UTC, Time=NsecTime)
-    assert str(t) == "1900-01-01T00:00:00.0000000000+00:00"
+    t = from_local((1900/Jan/1, 0), UTC, Time=NsTime)
+    assert str(t) == "1900-01-01T00:00:00.000000000+00:00"
 
-    t = from_local((2444/May/29, Daytime(1, 53, 3.999999997)), UTC, Time=NsecTime)
-    assert str(t) == "2444-05-29T01:53:03.9999999972+00:00"
+    t = from_local((2262/Apr/11, Daytime(23, 47, 16.854)), UTC, Time=NsTime)
+    assert str(t) == "2262-04-11T23:47:16.854+00:00"
 
     with pytest.raises(OverflowError):
-        from_local((2444/May/29, Daytime(1, 53, 5)), UTC, Time=NsecTime)
+        from_local((2444/May/29, Daytime(1, 53, 5)), UTC, Time=NsTime)
 
-    t = from_local((1973/Dec/3, 7200.125), UTC, Time=NsecTime)
+    t = from_local((1973/Dec/3, 7200.125), UTC, Time=NsTime)
     assert str(t) == "1973-12-03T02:00:00.1250000000+00:00"
 
 
@@ -64,6 +65,7 @@ def test_compare_datetime():
         dt = pytz.timezone(tz).localize(dt, is_dst=True)
         dt = dt.astimezone(pytz.UTC)
         
+        print(yr, mo, da, ho, mi, se)
         t = from_local((Date(yr, mo, da), Daytime(ho, mi, se)), tz)
         p = to_local(t, UTC)
 

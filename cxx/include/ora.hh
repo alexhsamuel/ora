@@ -37,13 +37,13 @@ using daytime::DaytimeFormat;
 using daytime::from_hms;
 using daytime::from_ssm;
 using daytime::UsecDaytime;
-using time::NsecTime;
+using time::NsTime;
 using time::SmallTime;
-using time::Time128;
 using time::Time;
 using time::TimeFormat;
-using time::Unix32Time;
-using time::Unix64Time;
+using time::Time128;
+using time::Time32;
+using time::Time64;
 using time::from_timespec;
 
 }  // namespace ora
