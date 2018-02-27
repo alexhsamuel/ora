@@ -30,7 +30,7 @@
 1. Use `fold` attribute per [PEP-495](https://www.python.org/dev/peps/pep-0495/)
 1. Clean up C++ Time and localization functions; document.
 1. macOS old tzinfo format.
-1. Clean up functions_doc and other old-style docstrings.
+1. Clean up old-style docstrings.
 1. Update docs for nex, namespaces, includes.
 1. C++ constants for months.
 1. Default precision for C++ time, daytime formats (fractional secs?).
@@ -46,6 +46,11 @@
 1. Add missing strftime format codes: %U, %W.
 1. Adjust/clean up C++ predefined format strings.
 1. Clean up time zone structs.
+
+
+# Small fixes
+
+1. Fix `Time.__qualname__` etc.
 
 
 # C++ API
