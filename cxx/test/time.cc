@@ -56,7 +56,7 @@ TEST(Time, from_parts) {
   auto const time0 = from_local<Unix32Time>(2013/JUL/29, daytime, *tz);
   EXPECT_EQ(1375136833, time0.get_offset());
 
-  Time::Offset const offset = 3848321898005921792;
+  Time::Offset const offset = 2131063352439341056;
   Time const time1 = time::from_offset(offset);
   EXPECT_EQ(offset, time1.get_offset());
   TimeParts const parts1 = get_parts(time1, "US/Eastern");
@@ -120,7 +120,7 @@ TEST(Time, from_parts_invalid) {
 
 TEST(Time, get_parts) {
   // 2013 July 28 15:37:38.125 EDT [UTC-4].
-  auto const time = time::from_offset(3848321898140139520);
+  auto const time = time::from_offset(2131063352443535360);
   EXPECT_EQ(1375040258, Unix64Time(time).get_offset());
 
   auto const time_zone = get_time_zone("US/Eastern");

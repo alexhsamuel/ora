@@ -10,19 +10,19 @@ using namespace ora::ez;
 //------------------------------------------------------------------------------
 
 TEST(Time, mins) {
-  EXPECT_EQ(Time::MIN       , from_local_parts            (1900, 1, 1, 0, 0, 0, *UTC));
-  EXPECT_EQ(Time::MIN       , from_local_parts<Time>      (1900, 1, 1, 0, 0, 0, *UTC));
-  EXPECT_EQ(Unix32Time::MIN     , from_local_parts<Unix32Time>    (1901, 12, 13, 20, 45, 52, *UTC));
-  EXPECT_EQ(Unix64Time::MIN     , from_local_parts<Unix64Time>    (1, 1, 1, 0, 0, 0, *UTC));
+  EXPECT_EQ(Time::MIN       , from_local_parts            (1, 1, 1, 0, 0, 0, *UTC));
+  EXPECT_EQ(Time::MIN       , from_local_parts<Time>      (1, 1, 1, 0, 0, 0, *UTC));
+  EXPECT_EQ(Unix32Time::MIN , from_local_parts<Unix32Time>(1901, 12, 13, 20, 45, 52, *UTC));
+  EXPECT_EQ(Unix64Time::MIN , from_local_parts<Unix64Time>(1, 1, 1, 0, 0, 0, *UTC));
   EXPECT_EQ(SmallTime::MIN  , from_local_parts<SmallTime> (1970, 1, 1, 0, 0, 0, *UTC));
   EXPECT_EQ(Time128::MIN    , from_local_parts<Time128>   (1, 1, 1, 0, 0, 0, *UTC));
 }
 
 TEST(Time, maxs) {
-  EXPECT_EQ(Time::MAX       , from_local_parts            (2444, 5, 29, 1, 53, 3.9999999972, *UTC));
-  EXPECT_EQ(Time::MAX       , from_local_parts<Time>      (2444, 5, 29, 1, 53, 3.9999999972, *UTC));
-  EXPECT_EQ(Unix32Time::MAX     , from_local_parts<Unix32Time>    (2038, 1, 19, 3, 14, 5, *UTC));
-  EXPECT_EQ(Unix64Time::MAX     , from_local_parts<Unix64Time>    (9999, 12, 31, 23, 59, 59, *UTC));
+  EXPECT_EQ(Time::MAX       , from_local_parts            (9999, 12, 31, 23, 59, 59.99999997, *UTC));
+  EXPECT_EQ(Time::MAX       , from_local_parts<Time>      (9999, 12, 31, 23, 59, 59.99999997, *UTC));
+  EXPECT_EQ(Unix32Time::MAX , from_local_parts<Unix32Time>(2038, 1, 19, 3, 14, 5, *UTC));
+  EXPECT_EQ(Unix64Time::MAX , from_local_parts<Unix64Time>(9999, 12, 31, 23, 59, 59, *UTC));
   EXPECT_EQ(SmallTime::MAX  , from_local_parts<SmallTime> (2106, 2, 7, 6, 28, 13, *UTC));
 }
 
