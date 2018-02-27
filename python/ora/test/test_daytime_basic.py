@@ -2,7 +2,7 @@ import datetime
 import pytest
 
 from   ora import Daytime
-from   util import assert_float_equal
+from   tools import assert_float_equal
 
 #-------------------------------------------------------------------------------
 
