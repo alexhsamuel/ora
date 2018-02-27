@@ -4,7 +4,8 @@ import pytest
 
 import ora
 from   ora import *
-from   ora import Time, Time128, SmallTime, Unix32Time, Daytime, UTC, MIDNIGHT
+from   ora import Time, Time128, HiTime, SmallTime, Unix32Time
+from   ora import Daytime, UTC, MIDNIGHT
 from   ora import to_local, from_local, now, display_time_zone, format_time
 import data
 from   tools import xeq
@@ -228,5 +229,12 @@ def test_now_invalid():
         now(datetime.time)
     with pytest.raises(TypeError):
         now(int)
+
+
+def test_HiTime():
+    assert HiTime.RESOLUTION < 1e-9
+    t0 = now(HiTime)
+    t1 = t0 + 1e-9
+    assert t1 > t0
 
 

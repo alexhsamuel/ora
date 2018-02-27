@@ -56,7 +56,7 @@ now()
   auto const ts = now_timespec();
   return 
       ts.tv_nsec >= 0
-    ? from_offset<TIME>(timespec_to_offset<TIME>(ts)) 
+    ? TIME::from_offset(timespec_to_offset<TIME>(ts)) 
     : TIME::INVALID;
 }
 

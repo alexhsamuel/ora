@@ -17,7 +17,7 @@
  *      32    s  1      1970       136  1902-2038      1  s      Unix32Time
  *      64    s  1      1970      many  0001-9999      1  s      Unix64Time
  *      32    u  1<< 2  1990        34  1990-2024    250 ms      
- *      64    u  1<<32  1970       136  1970-2106    230 ps      
+ *      64    u  1<<32  1970       136  1970-2106    230 ps      HiTime
  *      64    u  1<<30  1900       544  1900-2444    930 ps      
  *      64    s  10**9  1970       585  1677-2262      1 ns      NsTime
  *      64    u  1<<28  1200      2179  1200-3379      4 ns      
@@ -262,6 +262,24 @@ struct TimeTraits
 extern template class TimeType<TimeTraits>;
 using Time = TimeType<TimeTraits>;
 static_assert(Time::is_basic_layout(), "wrong memory layout for Time");
+
+//------------------------------------------------------------------------------
+
+struct HiTimeTraits
+{
+  using Offset = uint64_t;
+
+  static Datenum constexpr base         = DATENUM_UNIX_EPOCH;
+  static Offset  constexpr denominator  = (Offset) 1 << 32;
+  static Offset  constexpr invalid      = std::numeric_limits<Offset>::max();
+  static Offset  constexpr missing      = std::numeric_limits<Offset>::max() - 1;
+  static Offset  constexpr min          = 0;
+  static Offset  constexpr max          = std::numeric_limits<Offset>::max() - 2;
+};
+
+extern template class TimeType<HiTimeTraits>;
+using HiTime = TimeType<HiTimeTraits>;
+static_assert(HiTime::is_basic_layout(), "wrong memory layout for HiTime");
 
 //------------------------------------------------------------------------------
 

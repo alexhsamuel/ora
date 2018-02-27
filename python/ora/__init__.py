@@ -15,6 +15,7 @@ __all__ = (
     "Date16",
     "Daytime",
     "Daytime32",
+    "HiTime",
     "HmsDaytime",
     "MIDNIGHT",
     "Month",
