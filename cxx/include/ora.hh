@@ -42,8 +42,8 @@ using time::SmallTime;
 using time::Time;
 using time::TimeFormat;
 using time::Time128;
-using time::Time32;
-using time::Time64;
+using time::Unix32Time;
+using time::Unix64Time;
 using time::from_timespec;
 
 }  // namespace ora

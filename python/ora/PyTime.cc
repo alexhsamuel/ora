@@ -47,8 +47,8 @@ PyTimeAPI::apis_;
 template class PyTime<ora::time::Time>;
 template class PyTime<ora::time::SmallTime>;
 template class PyTime<ora::time::NsTime>;
-template class PyTime<ora::time::Time32>;
-template class PyTime<ora::time::Time64>;
+template class PyTime<ora::time::Unix32Time>;
+template class PyTime<ora::time::Unix64Time>;
 template class PyTime<ora::time::Time128>;
 
 //------------------------------------------------------------------------------

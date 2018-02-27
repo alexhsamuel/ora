@@ -14,8 +14,8 @@
  *    Bits  Sgn  Denom  Base     Years  Yr. Range  Resolution    Class
  *    ----  ---  -----  ----     -----  ---------  ----------    ------------
  *      32    u  1      1970       136  1970-2106      1  s      SmallTime
- *      32    s  1      1970       136  1902-2038      1  s      Time32
- *      64    s  1      1970      many  0001-9999      1  s      Time64
+ *      32    s  1      1970       136  1902-2038      1  s      Unix32Time
+ *      64    s  1      1970      many  0001-9999      1  s      Unix64Time
  *      32    u  1<< 2  1990        34  1990-2024    250 ms      
  *      64    u  1<<32  1970       136  1970-2106    230 ps      
  *      64    u  1<<30  1900       544  1900-2444    930 ps      Time
@@ -301,7 +301,7 @@ static_assert(NsTime::is_basic_layout(), "wrong memory layout for NsTime");
 
 //------------------------------------------------------------------------------
 
-struct Time32Traits
+struct Unix32TimeTraits
 {
   using Offset = int32_t;
 
@@ -313,13 +313,13 @@ struct Time32Traits
   static Offset  constexpr max          = std::numeric_limits<Offset>::max() - 2;
 };
 
-extern template class TimeType<Time32Traits>;
-using Time32 = TimeType<Time32Traits>;
-static_assert(Time32::is_basic_layout(), "wrong memory layout for Time32");
+extern template class TimeType<Unix32TimeTraits>;
+using Unix32Time = TimeType<Unix32TimeTraits>;
+static_assert(Unix32Time::is_basic_layout(), "wrong memory layout for Unix32Time");
 
 //------------------------------------------------------------------------------
 
-struct Time64Traits
+struct Unix64TimeTraits
 {
   using Offset = int64_t;
 
@@ -331,9 +331,9 @@ struct Time64Traits
   static Offset  constexpr missing      = 253402300801l;
 };
 
-extern template class TimeType<Time64Traits>;
-using Time64 = TimeType<Time64Traits>;
-static_assert(Time64::is_basic_layout(), "wrong memory layout for Time64");
+extern template class TimeType<Unix64TimeTraits>;
+using Unix64Time = TimeType<Unix64TimeTraits>;
+static_assert(Unix64Time::is_basic_layout(), "wrong memory layout for Unix64Time");
 
 //------------------------------------------------------------------------------
 

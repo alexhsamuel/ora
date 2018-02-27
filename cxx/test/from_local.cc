@@ -12,8 +12,8 @@ using namespace ora::ez;
 TEST(Time, mins) {
   EXPECT_EQ(Time::MIN       , from_local_parts            (1900, 1, 1, 0, 0, 0, *UTC));
   EXPECT_EQ(Time::MIN       , from_local_parts<Time>      (1900, 1, 1, 0, 0, 0, *UTC));
-  EXPECT_EQ(Time32::MIN     , from_local_parts<Time32>    (1901, 12, 13, 20, 45, 52, *UTC));
-  EXPECT_EQ(Time64::MIN     , from_local_parts<Time64>    (1, 1, 1, 0, 0, 0, *UTC));
+  EXPECT_EQ(Unix32Time::MIN     , from_local_parts<Unix32Time>    (1901, 12, 13, 20, 45, 52, *UTC));
+  EXPECT_EQ(Unix64Time::MIN     , from_local_parts<Unix64Time>    (1, 1, 1, 0, 0, 0, *UTC));
   EXPECT_EQ(SmallTime::MIN  , from_local_parts<SmallTime> (1970, 1, 1, 0, 0, 0, *UTC));
   EXPECT_EQ(Time128::MIN    , from_local_parts<Time128>   (1, 1, 1, 0, 0, 0, *UTC));
 }
@@ -21,8 +21,8 @@ TEST(Time, mins) {
 TEST(Time, maxs) {
   EXPECT_EQ(Time::MAX       , from_local_parts            (2444, 5, 29, 1, 53, 3.9999999972, *UTC));
   EXPECT_EQ(Time::MAX       , from_local_parts<Time>      (2444, 5, 29, 1, 53, 3.9999999972, *UTC));
-  EXPECT_EQ(Time32::MAX     , from_local_parts<Time32>    (2038, 1, 19, 3, 14, 5, *UTC));
-  EXPECT_EQ(Time64::MAX     , from_local_parts<Time64>    (9999, 12, 31, 23, 59, 59, *UTC));
+  EXPECT_EQ(Unix32Time::MAX     , from_local_parts<Unix32Time>    (2038, 1, 19, 3, 14, 5, *UTC));
+  EXPECT_EQ(Unix64Time::MAX     , from_local_parts<Unix64Time>    (9999, 12, 31, 23, 59, 59, *UTC));
   EXPECT_EQ(SmallTime::MAX  , from_local_parts<SmallTime> (2106, 2, 7, 6, 28, 13, *UTC));
 }
 
@@ -39,8 +39,8 @@ TEST(Time, from_utc) {
   auto const y = from_hms(23, 30, 15.5);
   EXPECT_EQ(from_local(d, y, *UTC), from_utc(d, y));
 
-  EXPECT_EQ(from_local<Time32>(d, y, *UTC), from_utc<Time32>(d, y));
-  EXPECT_EQ(from_local<Time64>(d, y, *UTC), from_utc<Time64>(d, y));
+  EXPECT_EQ(from_local<Unix32Time>(d, y, *UTC), from_utc<Unix32Time>(d, y));
+  EXPECT_EQ(from_local<Unix64Time>(d, y, *UTC), from_utc<Unix64Time>(d, y));
   EXPECT_EQ(from_local<SmallTime>(d, y, *UTC), from_utc<SmallTime>(d, y));
   EXPECT_EQ(from_local<Time128>(d, y, *UTC), from_utc<Time128>(d, y));
 }

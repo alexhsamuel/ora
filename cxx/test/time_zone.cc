@@ -14,7 +14,7 @@ TEST(TimeZone, get_time_zone) {
 
 TEST(TimeZone, get_parts) {
   // 2013 July 26 14:26:38 EDT.
-  auto const time = time::Time64::from_offset(1374863198);
+  auto const time = time::Unix64Time::from_offset(1374863198);
 
   auto const tz = get_time_zone("US/Eastern");
   auto const parts = tz->get_parts(time);
@@ -42,7 +42,7 @@ TEST(TimeZone, DISABLED_get_system_time_zone) {
   auto const tz = get_system_time_zone();
   EXPECT_EQ("America/New_York", tz->get_name());
 
-  auto const time = time::Time64::from_offset(1374863198);
+  auto const time = time::Unix64Time::from_offset(1374863198);
   auto const parts = tz->get_parts(time);
   EXPECT_TRUE(parts.is_dst);
   EXPECT_EQ(-14400, parts.offset);

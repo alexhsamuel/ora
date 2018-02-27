@@ -929,8 +929,8 @@ convert_to_time(
 extern template class PyTime<ora::time::Time>;
 extern template class PyTime<ora::time::SmallTime>;
 extern template class PyTime<ora::time::NsTime>;
-extern template class PyTime<ora::time::Time32>;
-extern template class PyTime<ora::time::Time64>;
+extern template class PyTime<ora::time::Unix32Time>;
+extern template class PyTime<ora::time::Unix64Time>;
 extern template class PyTime<ora::time::Time128>;
 #endif
 
