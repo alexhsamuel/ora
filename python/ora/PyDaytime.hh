@@ -241,7 +241,7 @@ PyDaytime<DAYTIME>::add_to(
   auto const precision 
     = std::min((size_t) ceil(log10(DAYTIME::DENOMINATOR)), 15ul);
   auto const sec_fmt = 
-    std::string("%0")
+    std::string("%02")
     + (precision > 0 ? "." + std::to_string(precision) : "")
     + "S";
 
