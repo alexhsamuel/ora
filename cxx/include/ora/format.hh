@@ -82,23 +82,6 @@ format_second(
 
 
 inline void
-format_iso_daytime(
-  StringBuilder& sb,
-  HmsDaytime const& daytime,
-  int const precision,
-  bool const compact=false)
-{
-  sb.format(daytime.hour, 2, '0');
-  if (!compact)
-    sb << ':';
-  sb.format(daytime.minute, 2, '0');
-  if (!compact)
-    sb << ':';
-  format_second(sb, daytime.second, precision);
-}
-
-
-inline void
 format_iso_offset(
   StringBuilder& sb,
   TimeZoneParts const& time_zone,
@@ -243,7 +226,121 @@ private:
 
 //------------------------------------------------------------------------------
 
+namespace daytime {
+
+inline void
+format_iso_daytime(
+  StringBuilder& sb,
+  HmsDaytime const& daytime,
+  int const precision,
+  bool const compact=false)
+{
+  sb.format(daytime.hour, 2, '0');
+  if (!compact)
+    sb << ':';
+  sb.format(daytime.minute, 2, '0');
+  if (!compact)
+    sb << ':';
+  format_second(sb, daytime.second, precision);
+}
+
+
+class DaytimeFormat
+  : public _impl::Format
+{
+public:
+  
+  static DaytimeFormat const DEFAULT;
+  static DaytimeFormat const ISO_BASIC;
+  static DaytimeFormat const ISO_EXTENDED;
+  static DaytimeFormat const ISO_BASIC_MSEC;
+  static DaytimeFormat const ISO_EXTENDED_MSEC;
+  static DaytimeFormat const ISO_BASIC_USEC;
+  static DaytimeFormat const ISO_EXTENDED_USEC;
+  static DaytimeFormat const ISO_BASIC_NSEC;
+  static DaytimeFormat const ISO_EXTENDED_NSEC;
+
+  using Format::Format;
+
+  std::string 
+  operator()(
+    HmsDaytime const& hms) 
+    const 
+  { 
+    return format(Parts{
+      .date = {}, .have_date = false,
+      .daytime = hms, .have_daytime = true
+    });
+  }
+
+  template<class TRAITS> 
+  std::string
+  operator()(
+    DaytimeTemplate<TRAITS> const daytime,
+    bool const fixed=true)
+    const 
+  { 
+    return
+        daytime.is_invalid() ? (fixed ? get_invalid_pad() : get_invalid())
+      : daytime.is_missing() ? (fixed ? get_missing_pad() : get_missing())
+      : operator()(get_hms(daytime));
+  }
+
+};
+
+
+template<class TRAITS>
+inline std::string
+to_string(
+  DaytimeTemplate<TRAITS> const daytime)
+{
+  return DaytimeFormat::DEFAULT(daytime, false);
+}
+
+
+template<class TRAITS>
+inline std::ostream&
+operator<<(
+  std::ostream& os,
+  DaytimeTemplate<TRAITS> const daytime)
+{
+  os << to_string(daytime);
+  return os;
+}
+
+
+}  // namespace daytime
+
+//------------------------------------------------------------------------------
+
 namespace time {
+
+inline void
+format_iso_time(
+  StringBuilder& sb,
+  YmdDate const& date,
+  HmsDaytime const& daytime,
+  TimeZoneParts const& time_zone,
+  int const precision,
+  bool const compact=false,
+  bool const capital=true,
+  bool const military=false)
+{
+  sb.format(date.year, 4, '0');
+  if (!compact)
+    sb << '-';
+  sb.format(date.month, 2, '0');
+  if (!compact)
+    sb << '-';
+  sb.format(date.day, 2, '0');
+  sb << (capital ? 'T' : 't');
+  daytime::format_iso_daytime(sb, daytime, precision, compact);
+  if (military && time_zone.offset == 0)
+    sb << 'Z';
+  else
+    format_iso_offset(sb, time_zone, !compact);
+}
+
 
 class TimeFormat
   : public _impl::Format
@@ -413,33 +510,6 @@ private:
 };
 
 
-inline void
-format_iso_time(
-  StringBuilder& sb,
-  YmdDate const& date,
-  HmsDaytime const& daytime,
-  TimeZoneParts const& time_zone,
-  int const precision,
-  bool const compact=false,
-  bool const capital=true,
-  bool const military=false)
-{
-  sb.format(date.year, 4, '0');
-  if (!compact)
-    sb << '-';
-  sb.format(date.month, 2, '0');
-  if (!compact)
-    sb << '-';
-  sb.format(date.day, 2, '0');
-  sb << (capital ? 'T' : 't');
-  format_iso_daytime(sb, daytime, precision, compact);
-  if (military && time_zone.offset == 0)
-    sb << 'Z';
-  else
-    format_iso_offset(sb, time_zone, !compact);
-}
-
-
 }  // namespace time
 
 //------------------------------------------------------------------------------
@@ -501,76 +571,6 @@ operator<<(
 
 
 }  // namespace date
-
-//------------------------------------------------------------------------------
-
-namespace daytime {
-
-class DaytimeFormat
-  : public _impl::Format
-{
-public:
-  
-  static DaytimeFormat const DEFAULT;
-  static DaytimeFormat const ISO_BASIC;
-  static DaytimeFormat const ISO_EXTENDED;
-  static DaytimeFormat const ISO_BASIC_MSEC;
-  static DaytimeFormat const ISO_EXTENDED_MSEC;
-  static DaytimeFormat const ISO_BASIC_USEC;
-  static DaytimeFormat const ISO_EXTENDED_USEC;
-  static DaytimeFormat const ISO_BASIC_NSEC;
-  static DaytimeFormat const ISO_EXTENDED_NSEC;
-
-  using Format::Format;
-
-  std::string 
-  operator()(
-    HmsDaytime const& hms) 
-    const 
-  { 
-    return format(Parts{
-      .date = {}, .have_date = false,
-      .daytime = hms, .have_daytime = true
-    });
-  }
-
-  template<class TRAITS> 
-  std::string
-  operator()(
-    DaytimeTemplate<TRAITS> const daytime,
-    bool const fixed=true)
-    const 
-  { 
-    return
-        daytime.is_invalid() ? (fixed ? get_invalid_pad() : get_invalid())
-      : daytime.is_missing() ? (fixed ? get_missing_pad() : get_missing())
-      : operator()(get_hms(daytime));
-  }
-
-};
-
-
-template<class TRAITS>
-inline std::string
-to_string(
-  DaytimeTemplate<TRAITS> const daytime)
-{
-  return DaytimeFormat::DEFAULT(daytime, false);
-}
-
-
-template<class TRAITS>
-inline std::ostream&
-operator<<(
-  std::ostream& os,
-  DaytimeTemplate<TRAITS> const daytime)
-{
-  os << to_string(daytime);
-  return os;
-}
-
-
-}  // namespace daytime
 
 //------------------------------------------------------------------------------
 

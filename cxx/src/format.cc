@@ -237,7 +237,7 @@ format_daytime(
 {
   switch (pattern[pos]) {
   case 'C':
-    format_iso_daytime(sb, daytime, mods.precision, mods.abbreviate);
+    daytime::format_iso_daytime(sb, daytime, mods.precision, mods.abbreviate);
     break;
 
   case 'f':

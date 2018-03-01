@@ -185,7 +185,7 @@ private:
   static ref<Unicode> tp_repr(PyDaytime* self);
   static Py_hash_t    tp_hash(PyDaytime* self);
   static ref<Unicode> tp_str(PyDaytime* self);
-  static ref<Object> tp_richcompare(PyDaytime* self, Object* other, int comparison);
+  static ref<Object>  tp_richcompare(PyDaytime* self, Object* other, int comparison);
 
   // Number methods.
   static ref<Object> nb_add     (PyDaytime* self, Object* other, bool right);
@@ -213,9 +213,9 @@ private:
   static ref<Object> get_valid                  (PyDaytime* self, void*);
   static GetSets<PyDaytime> tp_getsets_;
 
+  static int precision_;
   /** Date format used to generate the repr and str.  */
   static unique_ptr<ora::daytime::DaytimeFormat> repr_format_;
-  static unique_ptr<ora::daytime::DaytimeFormat> str_format_;
 
   static Type build_type(string const& type_name);
 
@@ -238,23 +238,14 @@ PyDaytime<DAYTIME>::add_to(
 
   // Choose precision for seconds that captures actual precision of the daytime
   // class (up to 1 fs).
-  auto const precision 
-    = std::min((size_t) ceil(log10(DAYTIME::DENOMINATOR)), 15ul);
-  auto const sec_fmt = 
-    std::string("%02")
-    + (precision > 0 ? "." + std::to_string(precision) : "")
-    + "S";
+  precision_ = std::min((size_t) ceil(log10(DAYTIME::DENOMINATOR)), 15ul);
 
   // Build the repr format.
   repr_format_ = make_unique<ora::daytime::DaytimeFormat>(
-    name + "(%0H, %0M, " + sec_fmt + ")",
+    name + "(%0H, %0M, " + std::string("%02")
+    + (precision_ > 0 ? "." + std::to_string(precision_) : "") + "S)",
     name + ".INVALID",
     name + ".MISSING");
-
-  // Build the str format.  Choose precision for seconds that captures actual
-  // precision of the daytime class.
-  std::string pattern = "%H:%M:" + sec_fmt;
-  str_format_ = make_unique<ora::daytime::DaytimeFormat>(pattern);
 
   // Add in static data members.
   auto const dict = (Dict*) type_.tp_dict;
@@ -365,7 +356,16 @@ ref<Unicode>
 PyDaytime<DAYTIME>::tp_str(
   PyDaytime* const self)
 {
-  return Unicode::from((*str_format_)(self->daytime_));  
+  if (self->daytime_.is_invalid())
+    return Unicode::from("INVALID");
+  else if (self->daytime_.is_missing())
+    return Unicode::from("MISSING");
+  else {
+    auto const hms = daytime::get_hms(self->daytime_);
+    StringBuilder sb;
+    daytime::format_iso_daytime(sb, hms, precision_);
+    return Unicode::FromStringAndSize((char const*) sb, sb.length());
+  }
 }
 
 
@@ -483,7 +483,10 @@ PyDaytime<DAYTIME>::method___format__(
     throw TypeError("__format__() takes one argument");
   auto const fmt = args->GetItem(0)->Str()->as_utf8();
 
-  return Unicode::from(ora::DaytimeFormat(fmt)(self->daytime_));
+  if (*fmt == '\0')
+    return tp_str(self);
+  else
+    return Unicode::from(ora::DaytimeFormat(fmt)(self->daytime_));
 }
 
 
@@ -710,12 +713,12 @@ PyDaytime<DAYTIME>::tp_getsets_
 //------------------------------------------------------------------------------
 
 template<class DAYTIME>
-unique_ptr<ora::daytime::DaytimeFormat>
-PyDaytime<DAYTIME>::repr_format_;
+int
+PyDaytime<DAYTIME>::precision_;
 
 template<class DAYTIME>
 unique_ptr<ora::daytime::DaytimeFormat>
-PyDaytime<DAYTIME>::str_format_;
+PyDaytime<DAYTIME>::repr_format_;
 
 //------------------------------------------------------------------------------
 // Type object
