@@ -2,6 +2,8 @@
 
 Ora is a standalone time and date implementation for C++ and Python.
 
+Docs at [http://ora.readthedocs.io/en/latest/](http://ora.readthedocs.io/en/latest/).
+
 
 # Motivation
 
