@@ -29,18 +29,13 @@ but supports easy interoperability.
 Tour
 ----
 
-::
-
-    >>> from ora import *
     >>> time = now()
     >>> print(time)
-    2018-02-27T03:07:08.29307700+00:00
+    2018-03-01T13:07:25.04988400+00:00
 
-    >>> z = TimeZone("America/New_York")
-    >>> date, daytime = time @ z
+    >>> date, daytime = time @ "America/New_York"
     >>> print(date)
-    2018-01-21
-
+    2018-03-01
 
 
 .. toctree::
