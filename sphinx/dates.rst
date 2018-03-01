@@ -4,9 +4,6 @@
     >>> print(d)
     2016-03-15
 
-The `Date16` class is similar, but uses a 16-bit integer internally, and
-therefore has a narrower range of dates it can represent.
-
 
 Date parts
 ----------
@@ -142,3 +139,16 @@ This code was evaluated at approximately 23:00 New York time.
     >>> today(UTC)
     Date(2016, Mar, 16)
  
+
+Other date types
+================
+
+The `Date16` class is similar to `Date`, but uses a 16-bit integer internally,
+and therefore has a narrower range of dates it can represent.
+
+    >>> Date16.MIN
+    Date16(1970, Jan, 1)
+    >>> Date16.MAX
+    Date16(2149, Jun, 4)
+
+
