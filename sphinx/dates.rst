@@ -9,7 +9,7 @@ therefore has a narrower range of dates it can represent.
 
 
 Date parts
-==========
+----------
 
 The components of date representations are available as attributes.  These
 include the default representation, as well as the ordinal date and week date
@@ -22,13 +22,10 @@ representations.
     >>> d.week_year, d.week, d.weekday
     (2016, 10, Weekday.Tue)
 
-These components are also accessible in the `parts` attribute, whose value can
-be unpacked to produce the ordinary date components, but which also has the
-other components as attributes.
+These components are also accessible in the `ymd` attribute, whose value can be
+unpacked to produce the ordinary date components.
 
-    >>> year, month, day = d.parts
-    >>> d.parts.weekday
-    Weekday.Tue
+    >>> year, month, day = d.ymd
 
 There's also a `ymdi` attribute, which contains the date parts encoded in an
 eight-digit decimal integer.
@@ -80,6 +77,12 @@ For example,
 
 Most Ora functions that take a date parameter will accept any of these.
 
+The `std` property produces the corresponding `datetime.date` instance.
+
+    >>> d.std
+    datetime.date(2016, 3, 15)
+
+
 Special dates
 -------------
 
@@ -109,7 +112,8 @@ The `valid` property is true for any date that is not invalid or missing.
 Arithemtic
 ----------
 
-Adding or subtracting from a date shifts the date forward or backward.
+Adding or subtracting from a date shifts the date forward or backward by entire
+days.
 
     >>> print(d + 10)
     2016-03-25
