@@ -1,21 +1,3 @@
-Motivation
-==========
-
-Many Python time libraries already exist, including the standard library
-`datetime` module.  Why another?
-
-Ora provides:
-
-- An opinionated, concise API centered around physical times.
-- Built-in time zones.
-- High performance for all operations.
-- Multiple widths and precisions for times and dates.
-- Rich C++ interoperability.
-
-Ora is not a drop-in replacement for `datetime` or other Python time libraries,
-but supports easy interoperability.
-
-
 Experiments
 -----------
 

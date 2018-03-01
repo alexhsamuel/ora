@@ -2,9 +2,9 @@ Time Zones
 ==========
 
 `TimeZone` represents a time zone, using data loaded from zoneinfo files in the
-[tz database](https://en.wikipedia.org/wiki/Tz_database).  See [this
-link](https://github.com/eggert/tz/blob/master/Theory) for information about the
-tz database and its limitations.
+`tz database <https://en.wikipedia.org/wiki/Tz_database>`.  See `this link
+<https://github.com/eggert/tz/blob/master/Theory>` for information about the tz
+database and its limitations.
 
 Ora includes and uses a recent copy of the zoneinfo files, distinct from those
 typically installed on UNIX-like systems or those installed with `dateutil` or
@@ -34,8 +34,8 @@ Localizing
 
 The principle function of a time zone is to localize a time, _i.e._ to convert a
 time to a date and daytime, or vice versa. The `to_local()` and `from_local()`
-functions do this, as well as the `__matrix_multiply__` ("@") operator.  See
-:ref:`localization`.
+functions do this, as well as the `@` operator (`__matrix_multiply__`) operator.
+See :ref:`localization`.
 
 
 Offsets

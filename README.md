@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/alexhsamuel/ora.svg?branch=master)](https://travis-ci.org/alexhsamuel/ora)
 
-Ora is a standalone time and date implementation for C++ and Python.
+Ora is a freestanding time and date implementation for C++ and Python.
 
 Docs at [http://ora.readthedocs.io/en/latest/](http://ora.readthedocs.io/en/latest/).
 
