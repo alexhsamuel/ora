@@ -1,10 +1,11 @@
 # Work List
 
 1. Default Time.__str__ in display time zone?
-1. Sloppy time and date parsing.
 1. Intro Python documentation in rst.
-1. ReadTheDocs support.
 1. Fix rounding of ora.now(UsecTime).
+1. Use integer math for formatting fractional seconds.  Use dayticks?  Or pre-convert to power-of-10 denominator.
+1. Supress trailing zeros in fractional seconds.
+1. Sloppy time and date parsing.
 1. Add default precision to TimeAPI; use for formatting.
 1. When parsing fractional seconds, work in terms of dayticks.
 1. Basic string parsing for `convert_to_*()` functions.
