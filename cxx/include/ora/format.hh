@@ -65,7 +65,8 @@ format_second(
   int const width=2,
   char const pad='0')
 {
-  // FIXME: Improve this logic.  See fixfmt.
+  // FIXME: Improve this logic.  See fixfmt, or convert to a power-of-10
+  // denominator.  
   unsigned const prec = std::max(0, precision);
   long long const prec10 = pow10(prec);
   auto const digits = std::div((long long) (second * prec10), prec10);
@@ -77,6 +78,23 @@ format_second(
     if (precision > 0) 
       sb.format(digits.rem, prec, '0');
   }
+}
+
+
+inline void
+format_iso_daytime(
+  StringBuilder& sb,
+  HmsDaytime const& daytime,
+  int const precision,
+  bool const compact=false)
+{
+  sb.format(daytime.hour, 2, '0');
+  if (!compact)
+    sb << ':';
+  sb.format(daytime.minute, 2, '0');
+  if (!compact)
+    sb << ':';
+  format_second(sb, daytime.second, precision);
 }
 
 
@@ -414,13 +432,7 @@ format_iso_time(
     sb << '-';
   sb.format(date.day, 2, '0');
   sb << (capital ? 'T' : 't');
-  sb.format(daytime.hour, 2, '0');
-  if (!compact)
-    sb << ':';
-  sb.format(daytime.minute, 2, '0');
-  if (!compact)
-    sb << ':';
-  format_second(sb, daytime.second, precision);
+  format_iso_daytime(sb, daytime, precision, compact);
   if (military && time_zone.offset == 0)
     sb << 'Z';
   else

@@ -2,7 +2,7 @@ A    %A %A the weekday name
 a    %a %a the weekday abbreviated name
 B    %B %B the month name
 b    %b %b the month abbreviated name
-C
+C       %C ISO 8601 daytime representation
 c  L %c    locale's date/time representation
 D       %D ISO 8601 date (without hyphens, if abbreviated)
 d    %d %d the one-indexed day of the month

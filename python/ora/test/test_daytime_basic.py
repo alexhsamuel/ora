@@ -382,3 +382,15 @@ def test_str():
     assert str(Daytime(23, 59, 59.99999)).rstrip("0") == "23:59:59.99999"
 
 
+def test_format_basic():
+    daytime = Daytime(9, 34, 15.625)
+    assert "it's now {}.".format(daytime) == "it's now " + str(daytime) + "."
+
+
+def test_format_C():
+    daytime = Daytime(9, 34, 15.625)
+    assert format(daytime, "%C"  ) == "09:34:15"
+    assert format(daytime, "%.0C") == "09:34:15."
+    assert format(daytime, "%.3C") == "09:34:15.625"
+    assert format(daytime, "%.6C") == "09:34:15.625000"
+    

@@ -236,6 +236,10 @@ format_daytime(
   HmsDaytime const& daytime)
 {
   switch (pattern[pos]) {
+  case 'C':
+    format_iso_daytime(sb, daytime, mods.precision, mods.abbreviate);
+    break;
+
   case 'f':
     {
       unsigned const usec = fmod(daytime.second, 1) * 1e6;
