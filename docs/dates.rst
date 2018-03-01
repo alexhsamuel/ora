@@ -45,7 +45,8 @@ Months and weekdays are both given as enumerations, respectively `Month` and
     >>> Oct
     Month.Oct
 
-The month enumerals also define the `__truediv__` operator to provide this syntactic trick for writing date literals:
+The month enumerals also define the `__truediv__` operator to provide this
+syntactic trick for writing date literals:
 
     >>> 2016/Mar/15
     Date(2016, Mar, 15)
