@@ -155,4 +155,20 @@ and therefore has a narrower range of dates it can represent.
     >>> Date16.MAX
     Date16(2149, Jun, 4)
 
+Convert back and forth using the types themselves.
+
+    >>> d = Date(1973, 12, 3)
+    >>> Date16(d)
+    Date16(1973, Dec, 3)
+
+If you try to convert a date that doesn't fit, you'll get an `OverflowError`.
+
+    >>> battle_of_hastings = Date(1066, Oct, 14)
+    >>> Date16(battle_of_hastings)
+    OverflowError: date not in range
+
+Most functions that return a date object accept a `Date` argument.
+
+    >>> today("America/New_York", Date=Date16)
+    Date16(2018, Mar, 1)
 
