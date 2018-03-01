@@ -8,6 +8,7 @@ Ora, a time and date library
    motivation
    times
    dates
+   time zones
    localization
    limitations
 

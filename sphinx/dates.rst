@@ -1,3 +1,6 @@
+Dates
+=====
+
 `Date` is the default type for dates.
 
     >>> d = Date(2016, 3, 15)
@@ -141,7 +144,7 @@ This code was evaluated at approximately 23:00 New York time.
  
 
 Other date types
-================
+----------------
 
 The `Date16` class is similar to `Date`, but uses a 16-bit integer internally,
 and therefore has a narrower range of dates it can represent.
