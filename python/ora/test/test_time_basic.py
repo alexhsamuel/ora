@@ -113,26 +113,26 @@ def test_format_tz():
 
 def test_format_tz_empty_utc():
     time = (2017/Dec/9, Daytime(15, 42, 20)) @ UTC
-    assert format(time, "@UTC") == "2017-12-09T15:42:20Z"
+    assert format(time, "@UTC") == "2017-12-09T15:42:20+00:00"
 
 
 def test_format_tz_empty_implicit():
     time = (2017/Dec/9, Daytime(15, 42, 20)) @ UTC
     with display_time_zone("America/New_York"):
-        assert format(time, "@") == "2017-12-09T10:42:20R"
+        assert format(time, "@") == "2017-12-09T10:42:20-05:00"
 
     
 def test_format_tz_empty_display():
     time = (2017/Dec/9, Daytime(15, 42, 20)) @ UTC
     with display_time_zone("America/New_York"):
-        assert format(time, "@display") == "2017-12-09T10:42:20R"
+        assert format(time, "@display") == "2017-12-09T10:42:20-05:00"
 
     
 def test_format_tz_empty_in_pattern():
     time = (2017/Dec/9, Daytime(15, 42, 20)) @ UTC
     with display_time_zone("America/New_York"):
         t = format("time is now {:@}".format(time))
-        assert t == "time is now 2017-12-09T10:42:20R"
+        assert t == "time is now 2017-12-09T10:42:20-05:00"
 
     
 def test_format_time():
