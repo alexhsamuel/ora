@@ -2,8 +2,8 @@ Time Zones
 ==========
 
 `TimeZone` represents a time zone, using data loaded from zoneinfo files in the
-`tz database <https://en.wikipedia.org/wiki/Tz_database>`.  See `this link
-<https://github.com/eggert/tz/blob/master/Theory>` for information about the tz
+`tz database <https://en.wikipedia.org/wiki/Tz_database>`_.  See `this link
+<https://github.com/eggert/tz/blob/master/Theory>`_ for information about the tz
 database and its limitations.
 
 Ora includes and uses a recent copy of the zoneinfo files, distinct from those
