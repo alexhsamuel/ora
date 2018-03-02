@@ -3,9 +3,9 @@ Ora, a time and date library
 
 Ora is a freestanding time and date implementation for C++ and Python.
 
-Ora is `hosted on GitHub <http://github.com/alexhsamuel/ora>`.  See
+Ora is `hosted on GitHub <http://github.com/alexhsamuel/ora>`_.  See
 the `installation instructions
-<https://github.com/alexhsamuel/ora/blob/master/README.md#installation>`.
+<https://github.com/alexhsamuel/ora/blob/master/README.md#installation>`_.
 
 
 Introduction
