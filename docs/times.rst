@@ -144,6 +144,6 @@ Convert back and forth using the types themselves.
 Most functions that return a time object accept a `Time` argument, which allows
 you to specify which time class you want.
 
-    >>> now(Time128)
+    >>> now(Time=Time128)
     Time128(2018, 3, 2, 12, 49, 21.010432000000000, UTC)
 
