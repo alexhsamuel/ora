@@ -51,6 +51,7 @@ syntactic trick for writing date literals:
     >>> 2016/Mar/15
     Date(2016, Mar, 15)
 
+
 Date conversion
 ---------------
 
