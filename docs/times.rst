@@ -32,6 +32,7 @@ of UTC components
 Time conversion
 ---------------
 
+.. FIXME
 
 
 
@@ -139,7 +140,7 @@ Convert back and forth using the types themselves.
     >>> NsTime(t)
     NsTime(2018, 3, 2, 12, 30, 0.000000000, UTC)
 
-.. If you try to convert a time that doesn't fit, you'll get an `OverflowError`.
+.. FIXME If you try to convert a time that doesn't fit, you'll get an `OverflowError`.
 
 Most functions that return a time object accept a `Time` argument, which allows
 you to specify which time class you want.
