@@ -442,7 +442,7 @@ Format::format(
 
 namespace time {
 
-TimeFormat const TimeFormat::DEFAULT("%Y-%m-%dT%H:%M:%S%e", "INVALID", "MISSING");
+TimeFormat const TimeFormat::DEFAULT("%i", "INVALID", "MISSING");
 TimeFormat const TimeFormat::ISO_LOCAL_BASIC            = "%Y%m%dT%H%M%S";
 TimeFormat const TimeFormat::ISO_LOCAL_EXTENDED         = "%Y-%m-%dT%H:%M:%S";
 TimeFormat const TimeFormat::ISO_ZONE_LETTER_BASIC      = "%Y%m%dT%H%M%S%e";
