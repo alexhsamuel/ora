@@ -1,7 +1,7 @@
 # Work List
 
-1. Default Time.__str__ in display time zone?
 1. Intro Python documentation in rst.
+1. `print(t @ z)` should show time zone offset.
 1. Fix rounding of ora.now(UsecTime).
 1. Use integer math for formatting fractional seconds.  Use dayticks?  Or pre-convert to power-of-10 denominator.
 1. Supress trailing zeros in fractional seconds.
