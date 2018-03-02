@@ -1,6 +1,7 @@
 import datetime
 import pytest
 
+import ora
 from   ora import Daytime
 from   tools import assert_float_equal
 
@@ -394,3 +395,12 @@ def test_format_C():
     assert format(daytime, "%.3C") == "09:34:15.625"
     assert format(daytime, "%.6C") == "09:34:15.625000"
     
+
+def test_format_iso():
+    daytime = Daytime(9, 34, 15.625)
+    assert ora.format_daytime_iso(daytime    ) == "09:34:15"
+    assert ora.format_daytime_iso(daytime,  0) == "09:34:15."
+    assert ora.format_daytime_iso(daytime,  3) == "09:34:15.625"
+    assert ora.format_daytime_iso(daytime, 12) == "09:34:15.625000000000"
+
+

@@ -99,6 +99,34 @@ days_in_year(
 
 
 ref<Object>
+format_daytime_iso(
+  Module* /* module */,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] = {"daytime", "precision", nullptr};
+  Object* daytime_arg;
+  int precision = -1;
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "O|i", arg_names, &daytime_arg, &precision);
+
+  auto api = PyDaytimeAPI::get(daytime_arg);
+  if (api == nullptr)
+    throw TypeError("not a Daytime");
+
+  if (api->is_invalid(daytime_arg))
+    return Unicode::from("INVALID");
+  else if (api->is_missing(daytime_arg))
+    return Unicode::from("MISSING");
+
+  StringBuilder sb;
+  daytime::format_iso_daytime(
+    sb, daytick_to_hms(api->get_daytick(daytime_arg)), precision);
+  return Unicode::FromStringAndSize(sb, sb.length());
+}
+
+
+ref<Object>
 format_time(
   Module* /* module */,
   Tuple* const args,
@@ -118,14 +146,11 @@ format_time(
   auto const tz = 
     time_zone == nullptr ? ora::UTC : convert_to_time_zone(time_zone);
 
-  // FIXME: Need to convert to LocalDatenumDayticks to format, but must handle
-  // invalid and missing dates first.
   ora::time::TimeFormat const fmt(pattern);
   return Unicode::from(
       api->is_invalid(time_arg) ? fmt.get_invalid()
     : api->is_missing(time_arg) ? fmt.get_missing()
     : fmt(api->to_local_datenum_daytick(time_arg, *tz)));
-  // return Unicode::from(ora::time::TimeFormat(pattern)(->time_, *tz));
 }
 
 
@@ -145,6 +170,12 @@ format_time_iso(
   auto api = PyTimeAPI::get(time_arg);
   if (api == nullptr)
     throw TypeError("not a Time");
+
+  if (api->is_invalid(time_arg))
+    return Unicode::from("INVALID");
+  else if (api->is_missing(time_arg))
+    return Unicode::from("MISSING");
+
   auto const tz = tz_arg == nullptr ? UTC : convert_to_time_zone(tz_arg);
 
   auto ldd = api->to_local_datenum_daytick(time_arg, *tz);
@@ -152,7 +183,7 @@ format_time_iso(
   time::format_iso_time(
     sb, datenum_to_ymd(ldd.datenum), daytick_to_hms(ldd.daytick), 
     ldd.time_zone, precision);
-  return Unicode::from(sb.str());
+  return Unicode::FromStringAndSize(sb, sb.length());
 }
 
 
@@ -500,6 +531,7 @@ add_functions(
   return methods
     .add<days_in_month>             ("days_in_month",           docstring::days_in_month)
     .add<days_in_year>              ("days_in_year",            docstring::days_in_year)
+    .add<format_daytime_iso>        ("format_daytime_iso",      docstring::format_daytime_iso)
     .add<format_time>               ("format_time",             docstring::format_time)
     .add<format_time_iso>           ("format_time_iso",         docstring::format_time_iso)
     .add<from_local>                ("from_local",              docstring::from_local)
