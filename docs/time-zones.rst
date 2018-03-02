@@ -93,6 +93,3 @@ time zone*) instead, use `at_local()`.
     >>> tz.at_local(2016/Mar/18, MIDNIGHT)
     TimeZoneParts(offset=-14400, abbreviation='EDT', is_dst=True)
 
-
-System time zone
-----------------
