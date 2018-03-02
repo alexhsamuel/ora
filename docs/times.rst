@@ -63,12 +63,10 @@ representable times.
     Time(9999, 12, 31, 23, 59, 59.99999997, UTC)
 
 The `RESOLUTION` attribute is the approximate smallest differnece between time
-values.  The `DENOMINATOR` attribute is its reciprocal.  For the `Time` class,
-the resolution is approximately 30 ns.
+values.  For the `Time` class, the resolution is approximately 30 ns.
 
     >>> Time.RESOLUTION
     2.9802322387695312e-08
-
 
 
 Arithmetic
@@ -87,11 +85,34 @@ The difference between two times is likewise the number of seconds between them.
     86400.0
 
 
+Offsets
+-------
+
+Internally, Ora represents a time as the number of "ticks" relative to a fixed
+epoch time.  You can access the number of ticks with the `offset` property.
+
+    >>> print(t)
+    2018-03-02T12:30:00.00000000+00:00
+    >>> t.offset
+    2135927186207539200
+
+Each tick is a second or a fraction of a second as given by the `DENOMINATOR`
+class attribute, and the offset is stored as an unsigned 64-bit integer.  You
+may in fact perform arithmetic directly on these offsets.  For example, to add
+sixty seconds,
+
+    >>> print(Time.from_offset(t.offset + 60 * t.DENOMINATOR))
+    2018-03-02T12:31:00.00000000+00:00
+
+`RESOLUTION` is simply the reciprocal of `DENOMINATOR`.  The default `Time` type
+uses ticks of about 30 ns since 0001-01-01T00:00:00+00:00.
+
+
 Time types
 ----------
 
 In addition to `Time`, a number of time types are available, each with
-a different storage size, range, and resolution
+a different range and resolution.
 
 =============== ======== =========== ====================
 Type            Size     Resolution  Approx Range (years)
@@ -104,3 +125,25 @@ Type            Size     Resolution  Approx Range (years)
 `HiTime`         64 bits 233 fs      1970-2016
 `Time128`       128 bits 54 zs       0001-9999
 =============== ======== =========== ====================
+
+These types differ in the epoch, denominator, and integer type used to store the
+offset.  For example, `NsTime` stores a time as signed 64-bit integer
+nanoseconds since 1970-01-01 UTC midnight.  This representation is often used in
+technical applications, and is also the representation used by NumPy's
+"datetime64[ns]" dtype.
+
+Convert back and forth using the types themselves.
+
+    >>> t
+    Time(2018, 3, 2, 12, 30, 0.00000000, UTC)
+    >>> NsTime(t)
+    NsTime(2018, 3, 2, 12, 30, 0.000000000, UTC)
+
+.. If you try to convert a time that doesn't fit, you'll get an `OverflowError`.
+
+Most functions that return a time object accept a `Time` argument, which allows
+you to specify which time class you want.
+
+    >>> now(Time128)
+    Time128(2018, 3, 2, 12, 49, 21.010432000000000, UTC)
+
