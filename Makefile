@@ -5,7 +5,7 @@ else
 endif
 
 ifeq ($(UNAME),Darwin)
-  MACOSX_DEPLOYMENT_TARGET=10.9
+  export MACOSX_DEPLOYMENT_TARGET = 10.9
 endif
 
 # Default target.
