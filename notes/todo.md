@@ -2,10 +2,12 @@
 
 1. Intro Python documentation in rst.
 1. `print(t @ z)` should show time zone offset.
+1. `d + y @ z`.
 1. Fix rounding of ora.now(UsecTime).
 1. Fixed-offset time zones, corresponding to `datetime.timezone`.
 1. Use integer math for formatting fractional seconds.  Use dayticks?  Or pre-convert to power-of-10 denominator.
 1. Supress trailing zeros in fractional seconds.
+1. Add `EPOCH` class attributes.
 1. Sloppy time and date parsing.
 1. Add default precision to TimeAPI; use for formatting.
 1. When parsing fractional seconds, work in terms of dayticks.
