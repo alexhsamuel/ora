@@ -2,8 +2,19 @@
 
 1. Intro Python documentation in rst.
 1. `print(t @ z)` should show time zone offset.
-1. `d + y @ z`.
-1. Fix rounding of ora.now(UsecTime).
+   - Add time zone offset (and name/abbr?) to `LocalTime`.
+   - Sync up C++ LoalDatenumDaytick, LocalTime, TimeParts.
+   - `LocalTime` should carry datenum, daytick internally?
+   - `LocalTime` should construct Date, Daytime lazily?
+   - Add formatting for `LocalTime`.
+1. Fix rounding in formatting.  I _think_ this is how we should do it: Change
+   daytime formatting to use dayticks rather than HMS parts.  This also avoids
+   the need to convert to floating point seconds.  In the format_iso_time and
+   format_iso_daytime, perform the rounding on the time offset, before splitting
+   into datenum and daytick.  (This can work for integrated time formatting
+   only, not for componentwise formatting!  Rounding has to apply to all
+   components at the same time.)
+1. One too many digits of second precision?
 1. Fixed-offset time zones, corresponding to `datetime.timezone`.
 1. Use integer math for formatting fractional seconds.  Use dayticks?  Or pre-convert to power-of-10 denominator.
 1. Supress trailing zeros in fractional seconds.
