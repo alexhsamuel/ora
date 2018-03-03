@@ -62,7 +62,7 @@ Ora is distributed:
 - On [GitHub](https://github.com/alexhsamuel/ora).
 
 Building from source requires a C++14 compiler.  See
-[developing.md](docs/developing.md) for more information.
+[developing.md](developing.md) for more information.
 
 
 
