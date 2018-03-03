@@ -856,8 +856,16 @@ maybe_time(
 
   // A different instance of the time class?
   auto const api = PyTimeAPI::get(obj);
-  if (api != nullptr) 
-    return {true, TIME(api->get_time128(obj))};
+  if (api != nullptr) {
+    auto const time128 = api->get_time128(obj);
+    // Check explicitly for overflow.
+    // FIXME: This is not the right way to do it.  Instead, check for overflow
+    // when performing the offset arithmetic.  Do this in the C++ conversion 
+    // ctor instead of here.
+    if (time128 < TIME::MIN || time128 > TIME::MAX)
+      throw TimeRangeError();
+    return {true, TIME(time128)};
+  }
 
   // A 'datetime.datetime'?
   if (PyDateTimeAPI == nullptr)

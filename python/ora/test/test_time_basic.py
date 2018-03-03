@@ -238,3 +238,22 @@ def test_HiTime():
     assert t1 > t0
 
 
+def test_range():
+    with pytest.raises(ValueError):
+        Time(0, 0, 0, 0, 0, 0, UTC)
+    # FIXME: Should be overflow?
+    with pytest.raises(ValueError):
+        Time(10000, 0, 0, 0, 0, 0, UTC)
+
+    t0 = Time(1900, 1, 1, 0, 0, 0, UTC)
+    t1 = Time(2200, 1, 1, 0, 0, 0, UTC)
+    with pytest.raises(OverflowError):
+        Unix32Time(t0)
+    with pytest.raises(OverflowError):
+        Unix32Time(t1)
+    with pytest.raises(OverflowError):
+        HiTime(t0)
+    with pytest.raises(OverflowError):
+        HiTime(t1)
+
+
