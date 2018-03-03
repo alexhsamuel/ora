@@ -1,10 +1,10 @@
 import datetime
-
 import pytest
+import time
 
 import ora
 from   ora import *
-from   ora import Time, Time128, HiTime, SmallTime, Unix32Time
+from   ora import Time, Time128, HiTime, NsTime, SmallTime, Unix32Time
 from   ora import Daytime, UTC, MIDNIGHT
 from   ora import to_local, from_local, now, display_time_zone, format_time
 import data
@@ -255,5 +255,12 @@ def test_range():
         HiTime(t0)
     with pytest.raises(OverflowError):
         HiTime(t1)
+
+
+@pytest.mark.xfail
+def test_format_time_rounding():
+    t = NsTime.from_offset(1520089388330965000)
+    s = format_time("%.12S", t)
+    assert s.endswith("5000000")
 
 
