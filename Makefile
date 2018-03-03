@@ -4,6 +4,10 @@ else
   UNAME	       := $(shell uname -s)
 endif
 
+ifeq ($(UNAME),Darwin)
+  MACOSX_DEPLOYMENT_TARGET=10.9
+endif
+
 # Default target.
 all:
 
@@ -202,7 +206,8 @@ cxx:	    	    	$(CXX_LIB)
 .PHONY: clean-cxx
 clean-cxx:
 	rm -f $(CXX_OBJS) $(CXX_LIB) $(CXX_BINS) $(CXX_TST_OBJS) \
-	      $(CXX_TST_BINS) $(CXX_TST_OKS) 
+	      $(CXX_TST_BINS) $(CXX_TST_OKS)
+	$(MAKE) -C $(GTEST_DIR) clean
 
 .PHONY: test-cxx-bins
 test-cxx-bins:	    	$(CXX_TST_BINS)
