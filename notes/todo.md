@@ -45,7 +45,6 @@
 1. Daytime and Time rounding functions.  Maybe like Arrow's `floor()`, `ceil()`?
 1. Use `fold` attribute per [PEP-495](https://www.python.org/dev/peps/pep-0495/)
 1. Clean up C++ Time and localization functions; document.
-1. macOS old tzinfo format.
 1. Clean up old-style docstrings.
 1. Update docs for nex, namespaces, includes.
 1. C++ constants for months.
@@ -62,6 +61,7 @@
 1. Add missing strftime format codes: %U, %W.
 1. Adjust/clean up C++ predefined format strings.
 1. Clean up time zone structs.
+1. macOS old tzinfo format.
 
 
 # Small fixes
