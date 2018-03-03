@@ -14,16 +14,15 @@
    into datenum and daytick.  (This can work for integrated time formatting
    only, not for componentwise formatting!  Rounding has to apply to all
    components at the same time.)
+1. When parsing fractional seconds, work in terms of dayticks.
 1. One too many digits of second precision?
-1. Fixed-offset time zones, corresponding to `datetime.timezone`.
-1. Use integer math for formatting fractional seconds.  Use dayticks?  Or pre-convert to power-of-10 denominator.
 1. Supress trailing zeros in fractional seconds.
 1. Add `EPOCH` class attributes.
+1. Fixed-offset time zones, corresponding to `datetime.timezone`.
 1. Accept `datetime.timezone` time zones.
 1. Accept `dateutil` time zones.
 1. Sloppy time and date parsing.
 1. Add default precision to TimeAPI; use for formatting.
-1. When parsing fractional seconds, work in terms of dayticks.
 1. Basic string parsing for `convert_to_*()` functions.
 1. Make Time(datetime, tz) work for naive datetime.
 1. Relax numpy setup dependency.
