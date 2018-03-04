@@ -1,3 +1,5 @@
+.. _time_zones:
+
 Time Zones
 ==========
 
