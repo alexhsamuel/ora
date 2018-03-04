@@ -55,7 +55,7 @@ PYTHON	    	= python3
 PYTEST	    	= py.test
 PYTHON_CONFIG	= python3-config
 
-NUMPY	    	= no
+ORA_NUMPY      ?= no
 
 # Directories
 PY_DIR	    	= $(TOP)/python
@@ -149,7 +149,7 @@ $(CXX_TST_OKS): export ZONEINFO = $(ABSTOP)/$(ZONEINFO_DIR)
 #-------------------------------------------------------------------------------
 # Python building extension code
 
-ifeq ($(NUMPY),yes)
+ifeq ($(ORA_NUMPY),yes)
   NPY_INCDIRS   = $(shell $(PYTHON) -c 'from numpy.distutils.misc_util import get_numpy_include_dirs as g; print(" ".join(g()));')
   NPY_INCDIRS  += $(PY_PKGDIR)
 
@@ -179,7 +179,7 @@ $(PY_OBJS): CXXFLAGS += -DNDEBUG
 $(PY_EXTMOD): 	    	$(PY_OBJS) $(CXX_LIB)
 $(PY_EXTMOD): LDFLAGS += -L$(PY_PFXDIR)/lib
 
-ifeq ($(NUMPY),yes)
+ifeq ($(ORA_NUMPY),yes)
   $(PY_OBJS): CPPFLAGS += -DORA_NUMPY
 endif
 

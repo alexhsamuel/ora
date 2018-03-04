@@ -92,6 +92,6 @@ anaconda upload ...
 
 # NumPy support
 
-To enable (experimental) NumPy support, build with `NUMPY=yes`.
+To enable (experimental) NumPy support, build with `ORA_NUMPY=yes`.
 
 
