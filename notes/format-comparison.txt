@@ -6,7 +6,7 @@ C       %C ISO 8601 daytime representation
 c  L %c    locale's date/time representation
 D       %D ISO 8601 date (without hyphens, if abbreviated)
 d    %d %d the one-indexed day of the month
-E       %E the six-character time zone offset, e.g. +00:00
+E       %E the six-character UTC offset, e.g. +00:00
 e       %e the [military time zone](https://en.wikipedia.org/wiki/List_of_military_time_zones) letter
 F
 f    %f %f 6 fractional digits (truncated) of seconds
@@ -27,7 +27,7 @@ m    %m %m the one-indexed month number
 N
 n
 O
-o       %o the total signed time zone offset in seconds
+o       %o the total signed UTC offset in seconds
 P
 p    %p %p either "AM", for hour < 12, or "PM", otherwise
 Q
