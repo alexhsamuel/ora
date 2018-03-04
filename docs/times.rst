@@ -32,16 +32,14 @@ of UTC components
 Time conversion
 ---------------
 
-`Time` accepts a wide range of arguments for constructing times.
+You can create a `Time` object from a variety of arguments.  Remember that an
+instance represents a physical time, so if you specify a date and daytime
+representation, you must specify the time zone as well.  
 
 - Year, month, day, hour, minute, second, time zone of a local time.
-- A 7-element sequence of the above.
 - A date, daytime, and time zone.
-- A date, daytime pair and a time zone.
-- Another time instance.
-- An _aware_ `datetime.datetime` instance.
-- An ISO 8601 string.
-- The string `"MAX"` or `"MIN"`.
+- Another time instance, or an _aware_ `datetime.datetime` instance.
+- An ISO 8601 string, or `"MIN"` or `"MAX"`.
 
 
 Special times

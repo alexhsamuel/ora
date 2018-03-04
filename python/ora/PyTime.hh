@@ -912,17 +912,6 @@ convert_to_time(
   if (time.first)
     return time.second;
 
-  if (Sequence::Check(obj)) {
-    auto const parts = cast<Sequence>(obj);
-    auto const length = parts->Length();
-    if (length == 2)
-      return localtime_to_time<TIME>(parts);
-    else if (length == 3)
-      return date_daytime_to_time<TIME>(parts);
-    else if (length == 7)
-      return parts_to_time<TIME>(parts);
-  }
-
   if (Unicode::Check(obj)) {
     auto const str = static_cast<Unicode*>(obj)->as_utf8_string();
     if (str == "MIN")
@@ -937,6 +926,17 @@ convert_to_time(
     catch (ora::TimeParseError) {
       throw py::ValueError("can't parse as time: '"s + str + "'");
     }
+  }
+
+  if (Sequence::Check(obj)) {
+    auto const parts = cast<Sequence>(obj);
+    auto const length = parts->Length();
+    if (length == 2)
+      return localtime_to_time<TIME>(parts);
+    else if (length == 3)
+      return date_daytime_to_time<TIME>(parts);
+    else if (length == 7)
+      return parts_to_time<TIME>(parts);
   }
 
   throw py::TypeError("can't convert to a time: "s + *obj->Repr());

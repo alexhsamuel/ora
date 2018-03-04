@@ -270,42 +270,43 @@ def benchmark_date_format():
 
 
 def benchmark_time_parse_iso_z():
-    us  = '2018-02-23T05:02:02.327973Z'
+    µs  = '2018-02-23T05:02:02.327973Z'
     s   = '2018-02-23T05:02:02Z'
 
     import datetime
     strptime = datetime.datetime.strptime
     yield "datetime", "strptime(s, ISOFMT_S)", benchmark(lambda: strptime(s, "%Y-%m-%dT%H:%M:%SZ"))
-    yield "datetime", "strptime(us, ISOFMT_US)", benchmark(lambda: strptime(us, "%Y-%m-%dT%H:%M:%S.%fZ"))
+    yield "datetime", "strptime(µs, ISOFMT_µS)", benchmark(lambda: strptime(µs, "%Y-%m-%dT%H:%M:%S.%fZ"))
 
     with suppress(ImportError):
         from udatetime import from_string
         yield "udatetime", "from_string(s)", benchmark(lambda: from_string(s))
-        yield "udatetime", "from_string(us)", benchmark(lambda: from_string(us))
+        yield "udatetime", "from_string(µs)", benchmark(lambda: from_string(µs))
 
     with suppress(ImportError):
         from iso8601 import parse_date
         yield "iso8601", "parse_date(s)", benchmark(lambda: parse_date(s))
-        yield "iso8601", "parse_date(us)", benchmark(lambda: parse_date(us))
+        yield "iso8601", "parse_date(µs)", benchmark(lambda: parse_date(µs))
 
     from numpy import datetime64
     yield "np", "datetime64(s)"         , benchmark(lambda: datetime64(s))
-    yield "np", "datetime64(us)"        , benchmark(lambda: datetime64(us))
+    yield "np", "datetime64(µs)"        , benchmark(lambda: datetime64(µs))
     yield "np", "datetime64(s, 's')"    , benchmark(lambda: datetime64(s, 's'))
-    yield "np", "datetime64(us, 'ns')"  , benchmark(lambda: datetime64(us, 'ns'))
+    yield "np", "datetime64(µs, 'ns')"  , benchmark(lambda: datetime64(µs, 'ns'))
 
     from pandas import Timestamp
     yield "pd", "Timestamp(s)"          , benchmark(lambda: Timestamp(s))
-    yield "pd", "Timestamp(us)"         , benchmark(lambda: Timestamp(us))
+    yield "pd", "Timestamp(µs)"         , benchmark(lambda: Timestamp(µs))
 
-    from ora import parse_time, parse_time_iso
+    from ora import Time, parse_time, parse_time_iso
     yield "ora", "parse_time(s, ISOFMT)", benchmark(lambda: parse_time("%Y-%m-%dT%H:%M:%S%e", s))
-    yield "ora", "parse_time(us, ISOFMT)", benchmark(lambda: parse_time("%Y-%m-%dT%H:%M:%S%e", us))
+    yield "ora", "parse_time(µs, ISOFMT)", benchmark(lambda: parse_time("%Y-%m-%dT%H:%M:%S%e", µs))
     yield "ora", "parse_time(s, '%T')"  , benchmark(lambda: parse_time("%T", s))
-    yield "ora", "parse_time(us, '%T')" , benchmark(lambda: parse_time("%T", us))
+    yield "ora", "parse_time(µs, '%T')" , benchmark(lambda: parse_time("%T", µs))
     yield "ora", "parse_time_iso(s)"    , benchmark(lambda: parse_time_iso(s))
-    yield "ora", "parse_time_iso(us)"   , benchmark(lambda: parse_time_iso(us))
-
+    yield "ora", "parse_time_iso(µs)"   , benchmark(lambda: parse_time_iso(µs))
+    yield "ora", "Time(s)"              , benchmark(lambda: Time(s))
+    yield "ora", "Time(µs)"             , benchmark(lambda: Time(µs))
 
 
 def benchmark_time_comparison():

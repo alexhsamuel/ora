@@ -4,11 +4,13 @@ import time
 
 import ora
 from   ora import *
-from   ora import Time, Time128, HiTime, NsTime, SmallTime, Unix32Time
+from   ora import Time, Time128, HiTime, NsTime, SmallTime, Unix32Time, Unix64Time
 from   ora import Daytime, UTC, MIDNIGHT
 from   ora import to_local, from_local, now, display_time_zone, format_time
 import data
 from   tools import xeq
+
+TIME_TYPES = (Time, Time128, HiTime, NsTime, SmallTime, Unix32Time, Unix64Time)
 
 #-------------------------------------------------------------------------------
 
@@ -274,5 +276,11 @@ def test_time_from_iso():
     d, y = t @ "America/New_York"
     assert d == Date(2018, 3, 3)
     assert y == Daytime(19, 41, 56)
+
+
+@pytest.mark.parametrize("Time", TIME_TYPES)
+def test_time_min_max_str(Time):
+    assert Time("MIN") == Time.MIN
+    assert Time("MAX") == Time.MAX
 
 
