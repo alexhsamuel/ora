@@ -140,7 +140,11 @@ Convert back and forth using the types themselves.
     >>> NsTime(t)
     NsTime(2018, 3, 2, 12, 30, 0.000000000, UTC)
 
-.. FIXME If you try to convert a time that doesn't fit, you'll get an `OverflowError`.
+If you try to convert a time that doesn't fit, you'll get an `OverflowError`.
+
+    >>> time = Time(2600, 1, 1, 0, 0, 0, UTC)
+    >>> NsTime(time)
+    OverflowError: time out of range
 
 Most functions that return a time object accept a `Time` argument, which allows
 you to specify which time class you want.
