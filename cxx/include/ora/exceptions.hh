@@ -6,6 +6,8 @@
 
 namespace ora {
 
+using namespace std::string_literals;
+
 //------------------------------------------------------------------------------
 // Exceptions
 //------------------------------------------------------------------------------
@@ -149,6 +151,17 @@ public:
 
   TimeFormatError(std::string const& name) : FormatError(std::string("in time pattern: ") + name) {}
   virtual ~TimeFormatError() = default;
+
+};
+
+
+class TimeParseError
+  : public TimeError
+{
+public:
+
+  TimeParseError(char const* const string): TimeError("can't parse time: "s + string) {}
+  virtual ~TimeParseError() = default;
 
 };
 

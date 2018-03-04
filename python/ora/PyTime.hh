@@ -923,7 +923,21 @@ convert_to_time(
       return parts_to_time<TIME>(parts);
   }
 
-  // FIXME: Parse strings.
+  if (Unicode::Check(obj)) {
+    auto const str = static_cast<Unicode*>(obj)->as_utf8_string();
+    if (str == "MIN")
+      return TIME::MIN;
+    else if (str == "MAX")
+      return TIME::MAX;
+    
+    // FIXME: Sloppy parsing.
+    try {
+      return ora::time::parse_time_iso<TIME>(str.c_str());
+    }
+    catch (ora::TimeParseError) {
+      throw py::ValueError("can't parse as time: '"s + str + "'");
+    }
+  }
 
   throw py::TypeError("can't convert to a time: "s + *obj->Repr());
 }

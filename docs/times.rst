@@ -32,8 +32,16 @@ of UTC components
 Time conversion
 ---------------
 
-.. FIXME
+`Time` accepts a wide range of arguments for constructing times.
 
+- Year, month, day, hour, minute, second, time zone of a local time.
+- A 7-element sequence of the above.
+- A date, daytime, and time zone.
+- A date, daytime pair and a time zone.
+- Another time instance.
+- An _aware_ `datetime.datetime` instance.
+- An ISO 8601 string.
+- The string `"MAX"` or `"MIN"`.
 
 
 Special times

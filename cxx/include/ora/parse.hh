@@ -4,6 +4,7 @@
 
 #include "ora/date_functions.hh"
 #include "ora/date_type.hh"
+#include "ora/localization.hh"
 
 namespace ora {
 
@@ -83,6 +84,25 @@ struct TimeZoneInfo
 extern bool parse_time_parts(
   char const*& pattern, char const*& string, 
   FullDate& date, HmsDaytime& hms, TimeZoneInfo& tz);
+
+template<class TIME>
+TIME
+parse_time_iso(
+  char const* string,
+  bool const compact=false)
+{
+  YmdDate ymd;
+  HmsDaytime hms;
+  TimeZoneOffset tz_offset;
+  if (parse_iso_time(string, ymd, hms, tz_offset) && *string == 0) {
+    auto const datenum = ymd_to_datenum(ymd.year, ymd.month, ymd.day);
+    auto const daytick = hms_to_daytick(hms.hour, hms.minute, hms.second);
+    return ora::from_local<TIME>(datenum, daytick, tz_offset);
+  }
+  else
+    throw TimeParseError(string);
+}
+
 
 }
 

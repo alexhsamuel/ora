@@ -264,3 +264,15 @@ def test_format_time_rounding():
     assert s.endswith("5000000")
 
 
+def test_time_from_iso():
+    t = Time("2018-03-03T19:41:56-05:00")
+    d, y = t @ "America/New_York"
+    assert d == Date(2018, 3, 3)
+    assert y == Daytime(19, 41, 56)
+
+    t = Time("2018-03-04T00:41:56Z")
+    d, y = t @ "America/New_York"
+    assert d == Date(2018, 3, 3)
+    assert y == Daytime(19, 41, 56)
+
+
