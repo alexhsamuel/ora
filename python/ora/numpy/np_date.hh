@@ -77,6 +77,7 @@ private:
   };
 
   static PyArray_Descr* descr_;
+  static int type_number_;
 
 };
 
@@ -112,7 +113,8 @@ DateDtype<PYDATE>::get()
     descr_->c_metadata      = (NpyAuxData*) new API();
     descr_->hash            = -1;
 
-    if (PyArray_RegisterDataType(descr_) < 0)
+    type_number_ = PyArray_RegisterDataType(descr_);
+    if (type_number_ < 0)
       throw py::Exception();
   }
 
@@ -427,6 +429,11 @@ template<class PYDATE>
 PyArray_Descr*
 DateDtype<PYDATE>::descr_
   = nullptr;
+
+template<class PYDATE>
+int
+DateDtype<PYDATE>::type_number_
+  = -1;
 
 
 //------------------------------------------------------------------------------
