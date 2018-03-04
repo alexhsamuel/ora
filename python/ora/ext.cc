@@ -18,8 +18,10 @@ namespace py {
 /* Adds functions from functions.cc.  */
 extern Methods<Module>& add_functions(Methods<Module>&);
 
+#ifdef ORA_NUMPY
 /* The numpy setup function in numpy.cc  */
 extern ref<Object> set_up_numpy(Module*, Tuple*, Dict*);
+#endif
 
 namespace {
 
@@ -34,7 +36,9 @@ module_def{
   nullptr,
   -1,
   add_functions(methods)
+#ifdef ORA_NUMPY
     .add<set_up_numpy>                ("set_up_numpy")
+#endif
 };
 
 

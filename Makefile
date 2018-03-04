@@ -55,11 +55,15 @@ PYTHON	    	= python3
 PYTEST	    	= py.test
 PYTHON_CONFIG	= python3-config
 
+NUMPY	    	= no
+
 # Directories
 PY_DIR	    	= $(TOP)/python
 PY_PKGDIR   	= $(PY_DIR)/ora
 PY_PFXDIR      := $(shell $(PYTHON_CONFIG) --prefix)
-NPY_INCDIRS    := $(shell $(PYTHON) -c 'from numpy.distutils.misc_util import get_numpy_include_dirs as g; print(" ".join(g()));')
+ifeq ($(NUMPY),yes)
+  NPY_INCDIRS  := $(shell $(PYTHON) -c 'from numpy.distutils.misc_util import get_numpy_include_dirs as g; print(" ".join(g()));')
+endif
 
 # Script to wrap docstrings as C++ string literals.
 WRAP_DOCSTRINGS	= $(PY_DIR)/wrap_docstrings
@@ -163,7 +167,9 @@ $(PY_OBJS): CPPFLAGS += $(shell $(PYTHON_CONFIG) --includes)
 $(PY_OBJS): CXXFLAGS += -fno-strict-aliasing -fwrapv
 # FIXME: Remove this.
 $(PY_OBJS): CXXFLAGS += -DNDEBUG
-$(PY_OBJS): CPPFLAGS += $(NPY_INCDIRS:%=-I%)
+ifeq ($(NUMPY),yes)
+  $(PY_OBJS): CPPFLAGS += -DORA_NUMPY $(NPY_INCDIRS:%=-I%)
+endif
 
 # Linking Python exension modules.
 $(PY_EXTMOD): 	    	$(PY_OBJS) $(CXX_LIB)
