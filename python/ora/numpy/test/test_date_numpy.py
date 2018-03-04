@@ -82,9 +82,69 @@ def test_date_from_ordinal_date1():
     arr = ora.numpy.date_from_ordinal_date(year, ordinal)
 
     # Should be:
-    # assert (arr == valid_dates).all()
+    # assert (arr == np.array(valid_dates)).all()
+    assert (arr == np.array(valid_dates, dtype=Date.dtype)).all()
 
-    for expected, date in zip(valid_dates, arr):
-        assert expected == date
+
+def test_eq():
+    arr = np.array(dates, dtype=Date.dtype)
+    assert (arr == arr).all()
+
+
+def test_is_valid():
+    arr = np.array(dates, dtype=Date.dtype)
+    v = ora.numpy.is_valid(arr)
+    assert (v == np.array([ d.valid for d in dates ])).all()
+
+
+def test_add_shift():
+    arr = np.array(dates, dtype=Date.dtype)
+    assert (arr + 1 == np.array((
+        Date.MIN + 1,
+        Date.MIN + 2,
+        1000/Jan/ 2,
+        1001/Jan/ 1,
+        2000/Jan/ 1,
+        2000/Jan/ 2,
+        2004/Feb/29,
+        2004/Mar/ 1,
+        2004/Mar/ 2,
+        Date.MAX -  9999,
+        Date.MAX -   999,
+        Date.MAX -    99,
+        Date.MAX -     9,
+        Date.MAX,
+        Date.INVALID,
+        Date.INVALID,
+        Date.INVALID,
+    ), dtype=Date.dtype)).all()
+    
+
+def test_subtract_shift():
+    arr = np.array(dates, dtype=Date.dtype)
+    assert (arr - 100 == np.array((
+        Date.INVALID,
+        Date.INVALID,
+         999/Sep/23,
+        1000/Sep/22,
+        1999/Sep/22,
+        1999/Sep/23,
+        2003/Nov/20,
+        2003/Nov/21,
+        2003/Nov/22,
+        Date.MAX - 10100,
+        Date.MAX -  1100,
+        Date.MAX -   200,
+        Date.MAX -   110,
+        Date.MAX -   101,
+        Date.MAX -   100,
+        Date.INVALID,
+        Date.INVALID,
+    ), dtype=Date.dtype)).all()
+    
+
+def test_subtract_diff():
+    arr = np.array(dates, dtype=Date.dtype)
+    assert (~ora.numpy.is_valid(arr) | (arr - arr == 0)).all()
 
 

@@ -73,6 +73,7 @@ public:
    */
   void add_loop_1(int arg0_type, int ret0_type, PyUFuncGenericFunction);
   void add_loop_1(PyArray_Descr*, PyArray_Descr*, PyUFuncGenericFunction);
+
   void add_loop_2(int arg0_type, int arg1_type, int ret0_type, PyUFuncGenericFunction);
   void add_loop_2(PyArray_Descr*, PyArray_Descr*, PyArray_Descr*, PyUFuncGenericFunction);
 

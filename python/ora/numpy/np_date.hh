@@ -164,6 +164,40 @@ get_ymd_(
 }  // anonymous namespace
 
 
+namespace wrapper {
+
+template<class DATE>
+inline uint8_t
+equal(
+  DATE const date0,
+  DATE const date1)
+{
+  return ora::date::nex::equal(date0, date1) ? 1 : 0;
+}
+
+
+template<class DATE>
+inline uint8_t
+is_valid(
+  DATE const date)
+{
+  return date.is_valid() ? 1 : 0;
+}
+
+
+template<class DATE>
+inline uint8_t
+not_equal(
+  DATE const date0,
+  DATE const date1)
+{
+  return ora::date::nex::equal(date0, date1) ? 0 : 1;
+}
+
+
+}  // namespace wrapper
+
+
 template<class PYDATE>
 void
 DateDtype<PYDATE>::add(
@@ -201,6 +235,27 @@ DateDtype<PYDATE>::add(
   create_or_get_ufunc(module, "get_ymdi", 1, 1)->add_loop_1(
     dtype->type_num, NPY_INT32, 
     ufunc_loop_1<Date, int32_t, ora::date::nex::get_ymdi<Date>>);
+  create_or_get_ufunc(module, "is_valid", 1, 1)->add_loop_1(
+    dtype->type_num, NPY_BOOL,
+    ufunc_loop_1<Date, uint8_t, wrapper::is_valid<Date>>);
+
+  auto const np_module = Module::ImportModule("numpy");
+
+  create_or_get_ufunc(np_module, "equal", 2, 1)->add_loop_2(
+    dtype->type_num, dtype->type_num, NPY_BOOL,
+    ufunc_loop_2<Date, Date, uint8_t, wrapper::equal<Date>>);
+  create_or_get_ufunc(np_module, "not_equal", 2, 1)->add_loop_2(
+    dtype->type_num, dtype->type_num, NPY_BOOL,
+    ufunc_loop_2<Date, Date, uint8_t, wrapper::not_equal<Date>>);
+  create_or_get_ufunc(np_module, "add", 2, 1)->add_loop_2(
+    dtype->type_num, NPY_INT32, dtype->type_num,
+    ufunc_loop_2<Date, int32_t, Date, ora::date::nex::days_after<Date>>);
+  create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
+    dtype->type_num, NPY_INT32, dtype->type_num,
+    ufunc_loop_2<Date, int32_t, Date, ora::date::nex::days_before<Date>>);
+  create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
+    dtype->type_num, dtype->type_num, NPY_INT32,
+    ufunc_loop_2<Date, Date, int32_t, ora::date::nex::days_between<Date>>);
 }
 
 
