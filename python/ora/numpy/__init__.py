@@ -19,16 +19,20 @@ will have a `dtype` attribute.  For example:
 #-------------------------------------------------------------------------------
 
 import numpy
-from   . import ext
+from   .. import ext
 
-# Add all the numpy stuff to the extension module.
-ext.set_up_numpy()
+try:
+    # Add all the numpy stuff to the extension module.
+    ext.set_up_numpy()
+except AttributeError:
+    # Not built with numpy support.
+    raise ImportError("Ora not build with NumPy support")
+else:
+    # We can't "from .ext.numpy import *" since .ext isn't a package.
+    globals().update({ 
+        n: o 
+        for n, o in ext.numpy.__dict__.items() 
+        if not n.startswith("_") 
+    })
 
-# We can't "from .ext.numpy import *" since .ext isn't a package.
-globals().update({ 
-    n: o 
-    for n, o in ext.numpy.__dict__.items() 
-    if not n.startswith("_") 
-})
-
-del ext
+    del ext

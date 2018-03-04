@@ -61,9 +61,6 @@ NUMPY	    	= no
 PY_DIR	    	= $(TOP)/python
 PY_PKGDIR   	= $(PY_DIR)/ora
 PY_PFXDIR      := $(shell $(PYTHON_CONFIG) --prefix)
-ifeq ($(NUMPY),yes)
-  NPY_INCDIRS  := $(shell $(PYTHON) -c 'from numpy.distutils.misc_util import get_numpy_include_dirs as g; print(" ".join(g()));')
-endif
 
 # Script to wrap docstrings as C++ string literals.
 WRAP_DOCSTRINGS	= $(PY_DIR)/wrap_docstrings
@@ -152,28 +149,39 @@ $(CXX_TST_OKS): export ZONEINFO = $(ABSTOP)/$(ZONEINFO_DIR)
 #-------------------------------------------------------------------------------
 # Python building extension code
 
+ifeq ($(NUMPY),yes)
+  NPY_INCDIRS   = $(shell $(PYTHON) -c 'from numpy.distutils.misc_util import get_numpy_include_dirs as g; print(" ".join(g()));')
+  NPY_INCDIRS  += $(PY_PKGDIR)
+
+  NP_SRCS       = $(wildcard $(PY_PKGDIR)/numpy/*.cc)
+  NP_OBJS       = $(NP_SRCS:%.cc=%.o)
+
+  $(NP_OBJS): CPPFLAGS += $(NPY_INCDIRS:%=-I%)
+endif
+
 # Sources and outputs
-PY_SRCS   	= $(wildcard $(PY_PKGDIR)/*.cc)
+PY_SRCS         = $(wildcard $(PY_PKGDIR)/*.cc) $(NP_SRCS)
 DEPS           += $(PY_SRCS:%.cc=%.cc.d)
-PY_OBJS	    	= $(PY_SRCS:%.cc=%.o)
+PY_OBJS         = $(PY_SRCS:%.cc=%.o)
 PY_EXTMOD_SFX   = $(shell $(PYTHON) -c 'from importlib.machinery import EXTENSION_SUFFIXES as E; print(E[0]); ')
-PY_EXTMOD	= $(PY_PKGDIR)/ext$(PY_EXTMOD_SFX)
-PY_DOCSTR   	= $(wildcard $(PY_PKGDIR)/*.docstrings)
-PY_DOCSTR_CC   	= $(PY_DOCSTR:%.docstrings=%.docstrings.cc.inc)
-PY_DOCSTR_HH   	= $(PY_DOCSTR:%.docstrings=%.docstrings.hh.inc)
+PY_EXTMOD       = $(PY_PKGDIR)/ext$(PY_EXTMOD_SFX)
+PY_DOCSTR       = $(wildcard $(PY_PKGDIR)/*.docstrings)
+PY_DOCSTR_CC    = $(PY_DOCSTR:%.docstrings=%.docstrings.cc.inc)
+PY_DOCSTR_HH    = $(PY_DOCSTR:%.docstrings=%.docstrings.hh.inc)
 
 # Compiling Python extension code.
 $(PY_OBJS): CPPFLAGS += $(shell $(PYTHON_CONFIG) --includes)
 $(PY_OBJS): CXXFLAGS += -fno-strict-aliasing -fwrapv
 # FIXME: Remove this.
 $(PY_OBJS): CXXFLAGS += -DNDEBUG
-ifeq ($(NUMPY),yes)
-  $(PY_OBJS): CPPFLAGS += -DORA_NUMPY $(NPY_INCDIRS:%=-I%)
-endif
 
 # Linking Python exension modules.
 $(PY_EXTMOD): 	    	$(PY_OBJS) $(CXX_LIB)
 $(PY_EXTMOD): LDFLAGS += -L$(PY_PFXDIR)/lib
+
+ifeq ($(NUMPY),yes)
+  $(PY_OBJS): CPPFLAGS += -DORA_NUMPY
+endif
 
 # For compatibility and testing.
 .PHONY: python-setuptools

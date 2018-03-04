@@ -6,7 +6,8 @@ import pytest
 
 import ora
 from   ora import *
-import ora.numpy
+
+pytest.importorskip("ora.numpy")
 
 #-------------------------------------------------------------------------------
 

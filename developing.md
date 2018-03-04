@@ -89,3 +89,9 @@ conda build ora/conda-recipe --python 3.6
 anaconda upload ...
 ```
 
+
+# NumPy support
+
+To enable (experimental) NumPy support, build with `NUMPY=yes`.
+
+
