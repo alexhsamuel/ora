@@ -155,6 +155,7 @@ ifeq ($(ORA_NUMPY),yes)
 
   NP_SRCS       = $(wildcard $(PY_PKGDIR)/numpy/*.cc)
   NP_OBJS       = $(NP_SRCS:%.cc=%.o)
+  DEPS         += $(NP_SRCS:%.cc:%.cc.d)
 
   $(NP_OBJS): CPPFLAGS += $(NPY_INCDIRS:%=-I%)
 endif

@@ -20,7 +20,7 @@ using namespace np;
 // FIXME: For debugging; remove this, eventually.
 bool constexpr
 PRINT_ARR_FUNCS
-  = false;
+  = true;
 
 
 class DateDtypeAPI
@@ -63,6 +63,8 @@ private:
   static int            setitem(Object*, Date*, PyArrayObject*);
   static int            compare(Date const*, Date const*, PyArrayObject*);
 
+  static void           cast_from_object(Object* const*, Date*, npy_intp, void*, void*);
+
   class API
   : public DateDtypeAPI
   {
@@ -77,7 +79,6 @@ private:
   };
 
   static PyArray_Descr* descr_;
-  static int type_number_;
 
 };
 
@@ -90,11 +91,16 @@ DateDtype<PYDATE>::get()
     // Deliberately 'leak' this instance, as it has process lifetime.
     auto const arr_funcs = new PyArray_ArrFuncs;
     PyArray_InitArrFuncs(arr_funcs);
-    arr_funcs->copyswap         = (PyArray_CopySwapFunc*) copyswap;
-    arr_funcs->copyswapn        = (PyArray_CopySwapNFunc*) copyswapn;
-    arr_funcs->getitem          = (PyArray_GetItemFunc*) getitem;
-    arr_funcs->setitem          = (PyArray_SetItemFunc*) setitem;
-    arr_funcs->compare          = (PyArray_CompareFunc*) compare;
+    arr_funcs->copyswap     = (PyArray_CopySwapFunc*) copyswap;
+    arr_funcs->copyswapn    = (PyArray_CopySwapNFunc*) copyswapn;
+    arr_funcs->getitem      = (PyArray_GetItemFunc*) getitem;
+    arr_funcs->setitem      = (PyArray_SetItemFunc*) setitem;
+    arr_funcs->compare      = (PyArray_CompareFunc*) compare;
+    // FIXME: Not sure if this is necessary.
+    arr_funcs->scalarkind   = [](void*) -> int { 
+      if (PRINT_ARR_FUNCS) std::cerr << "scalarkind\n";
+      return NPY_OBJECT_SCALAR; 
+    };
 
     descr_ = PyObject_New(PyArray_Descr, &PyArrayDescr_Type);
     descr_->typeobj         = incref(&PYDATE::type_);
@@ -113,9 +119,19 @@ DateDtype<PYDATE>::get()
     descr_->c_metadata      = (NpyAuxData*) new API();
     descr_->hash            = -1;
 
-    type_number_ = PyArray_RegisterDataType(descr_);
-    if (type_number_ < 0)
+    if (PyArray_RegisterDataType(descr_) < 0)
       throw py::Exception();
+
+    auto const npy_object = PyArray_DescrFromType(NPY_OBJECT);
+
+    if (PyArray_RegisterCastFunc(
+          npy_object, descr_->type_num, 
+          (PyArray_VectorUnaryFunc*) cast_from_object) < 0)
+      throw py::Exception();
+    if (PyArray_RegisterCanCast(
+          npy_object, descr_->type_num, NPY_OBJECT_SCALAR) < 0)
+      throw py::Exception();
+    
   }
 
   return descr_;
@@ -377,6 +393,24 @@ DateDtype<PYDATE>::compare(
 }
 
 
+template<class PYDATE>
+void
+DateDtype<PYDATE>::cast_from_object(
+  Object* const* from,
+  Date* to,
+  npy_intp num,
+  void* /* unused */,
+  void* /* unused */)
+{
+  if (PRINT_ARR_FUNCS)
+    std::cerr << "cast_from_object\n";
+  for (; num > 0; --num, ++from, ++to) {
+    auto const date = maybe_date<Date>(*from);
+    *to = date ? *date : Date::INVALID;
+  }
+}
+
+
 //------------------------------------------------------------------------------
 
 template<class PYDATE>
@@ -484,12 +518,6 @@ template<class PYDATE>
 PyArray_Descr*
 DateDtype<PYDATE>::descr_
   = nullptr;
-
-template<class PYDATE>
-int
-DateDtype<PYDATE>::type_number_
-  = -1;
-
 
 //------------------------------------------------------------------------------
 
