@@ -28,11 +28,10 @@
 1. Add default precision to TimeAPI; use for formatting.
 1. Basic string parsing for `convert_to_*()` functions.
 1. Make Time(datetime, tz) work for naive datetime.
-1. Relax numpy setup dependency.
 1. Replace first with fold to match `datetime`.
 1. Revisit type definitions.
    - Benchmark 2^n vs. 10^n types.
-   - Add exact us, ns types.
+   - Add exact us, ms types.
 1. Convert docstrings to rst.
 1. Benchmark tick computations.
 1. More parsing support.
@@ -65,6 +64,13 @@
 1. Adjust/clean up C++ predefined format strings.
 1. Clean up time zone structs.
 1. macOS old tzinfo format.
+
+## NumPy project
+
+- Add a mechanism for setuptools with/without numpy support.
+- Convert `setup.py` numpy dependency to extras?
+- Conda package with/without numpy.
+- Travis builds with/without numpy.
 
 
 # Small fixes
