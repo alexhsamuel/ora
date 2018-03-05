@@ -1,6 +1,4 @@
 #ifdef ORA_NUMPY
-// Note: Order is important here!
-//
 // In this, and only this, compilation unit, we need to #include the numpy
 // headers without NO_IMPORT_ARRAY #defined.  In all other compilation units,
 // this macro is defined, to make sure a single shared copy of the API is used.
@@ -19,6 +17,8 @@
 
 # include "np/numpy.hh"
 #endif
+
+//------------------------------------------------------------------------------
 
 #include <Python.h>
 #include <datetime.h>
