@@ -151,10 +151,16 @@ $(CXX_TST_OKS): export ZONEINFO = $(ABSTOP)/$(ZONEINFO_DIR)
 
 PY_INCDIRS      = $(PY_PKGDIR)
 PY_SRCS         = $(wildcard $(PY_PKGDIR)/*.cc) 
+PY_CPPFLAGS    += $(PY_INCDIRS:%=-I%)
+PY_CPPFLAGS    += $(shell $(PYTHON_CONFIG) --includes)
+PY_CXXFLAGS    += -fno-strict-aliasing -fwrapv
+PY_CXXFLAGS    += -DNDEBUG  # FIXME: Remove.
+PY_DOCSTR       = $(wildcard $(PY_PKGDIR)/*.docstrings)
 
 ifeq ($(ORA_NUMPY),yes)
   PY_INCDIRS   += $(shell $(PYTHON) -c 'from numpy.distutils.misc_util import get_numpy_include_dirs as g; print(" ".join(g()));')
   PY_SRCS      += $(wildcard $(PY_PKGDIR)/np/*.cc)
+  PY_CPPFLAGS  += -DORA_NUMPY
 endif
 
 # Sources and outputs
@@ -162,39 +168,29 @@ DEPS           += $(PY_SRCS:%.cc=%.cc.d)
 PY_OBJS         = $(PY_SRCS:%.cc=%.o)
 PY_EXTMOD_SFX   = $(shell $(PYTHON) -c 'from importlib.machinery import EXTENSION_SUFFIXES as E; print(E[0]); ')
 PY_EXTMOD       = $(PY_PKGDIR)/ext$(PY_EXTMOD_SFX)
-PY_DOCSTR       = $(wildcard $(PY_PKGDIR)/*.docstrings)
 PY_DOCSTR_CC    = $(PY_DOCSTR:%.docstrings=%.docstrings.cc.inc)
 PY_DOCSTR_HH    = $(PY_DOCSTR:%.docstrings=%.docstrings.hh.inc)
 
 # Compiling Python extension code.
-$(PY_OBJS): CPPFLAGS += $(PY_INCDIRS:%=-I%)
-$(PY_OBJS): CPPFLAGS += $(shell $(PYTHON_CONFIG) --includes)
-$(PY_OBJS): CXXFLAGS += -fno-strict-aliasing -fwrapv
-# FIXME: Remove this.
-$(PY_OBJS): CXXFLAGS += -DNDEBUG
+$(PY_OBJS): CPPFLAGS += $(PY_CPPFLAGS)
+$(PY_OBJS): CXXFLAGS += $(PY_CXXFLAGS)
 
 # Linking Python exension modules.
 $(PY_EXTMOD): 	    	$(PY_OBJS) $(CXX_LIB)
 $(PY_EXTMOD): LDFLAGS += -L$(PY_PFXDIR)/lib
-
-ifeq ($(ORA_NUMPY),yes)
-  $(PY_OBJS): CPPFLAGS += -DORA_NUMPY
-endif
-
-# For compatibility and testing.
-.PHONY: python-setuptools
-python-setuptools:	$(CXX_LIB)
-	cd python; $(PYTHON) setup.py build_ext --inplace
 
 # Wrapping Python extension docstrings as C++ string literals.
 $(PY_DOCSTR_CC): %.cc.inc: % $(WRAP_DOCSTRINGS)
 	$(WRAP_DOCSTRINGS) $<
 $(PY_DOCSTR_HH): %.hh.inc: % $(WRAP_DOCSTRINGS)
 	$(WRAP_DOCSTRINGS) $<
-
 # Require the processed docstring sources to build objects.
-# FIXME: Be more specific.
 $(PY_OBJS):    	    	$(PY_DOCSTR_CC) $(PY_DOCSTR_HH)
+
+# For compatibility and testing.
+.PHONY: python-setuptools
+python-setuptools:	$(CXX_LIB)
+	cd python; $(PYTHON) setup.py build_ext --inplace
 
 #-------------------------------------------------------------------------------
 # Phony targets
