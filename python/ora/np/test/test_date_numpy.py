@@ -66,9 +66,9 @@ def test_arr():
 
 
 def test_get_ordinal_date():
-    od_arr  = ora.numpy.get_ordinal_date(arr)
+    od_arr  = ora.np.get_ordinal_date(arr)
 
-    assert od_arr.dtype == ora.numpy.ORDINAL_DATE_DTYPE
+    assert od_arr.dtype == ora.np.ORDINAL_DATE_DTYPE
     assert od_arr.dtype.names == ("year", "ordinal", )
     
     for d, (y, o) in zip(dates, od_arr):
@@ -83,7 +83,7 @@ def test_get_ordinal_date():
 def test_date_from_ordinal_date0():
     year    = np.array([ d.year for d in valid_dates ], dtype="int16")
     ordinal = np.array([ d.ordinal for d in valid_dates ], dtype="uint16")
-    arr     = ora.numpy.date_from_ordinal_date(year, ordinal)
+    arr     = ora.np.date_from_ordinal_date(year, ordinal)
 
     assert len(arr) == len(valid_dates)
     for d0, d1 in zip(valid_dates, arr):
@@ -92,7 +92,7 @@ def test_date_from_ordinal_date0():
 
 def test_date_from_ordinal_date1():
     year, ordinal = zip(*( (d.year, d.ordinal) for d in valid_dates ))
-    arr = ora.numpy.date_from_ordinal_date(year, ordinal)
+    arr = ora.np.date_from_ordinal_date(year, ordinal)
 
     # Should be:
     # assert (arr == np.array(valid_dates)).all()
@@ -108,7 +108,7 @@ def test_ne():
 
 
 def test_is_valid():
-    v = ora.numpy.is_valid(arr)
+    v = ora.np.is_valid(arr)
     assert (v == np.array([ d.valid for d in dates ])).all()
 
 
@@ -158,10 +158,10 @@ def test_subtract_shift():
 
 def test_subtract_diff():
     dif = arr - arr
-    assert (~ora.numpy.is_valid(arr) | (dif == 0)).all()
+    assert (~ora.np.is_valid(arr) | (dif == 0)).all()
 
     sub = arr - 5
     dif = arr - sub
-    assert (~ora.numpy.is_valid(sub) | (dif == 5)).all()
+    assert (~ora.np.is_valid(sub) | (dif == 5)).all()
 
 

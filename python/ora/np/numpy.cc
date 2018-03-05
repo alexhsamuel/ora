@@ -139,10 +139,10 @@ namespace ora {
 namespace py {
 
 ref<Object>
-set_up_numpy()
+build_np_module()
 {
-  // Put everything in a submodule `numpy` (even though this is not a package).
-  auto mod = Module::New("ora.ext.numpy");
+  // Put everything in a submodule `np` (even though this is not a package).
+  auto mod = Module::New("ora.ext.np");
 
   DateDtype<PyDate<ora::date::Date>>::add(mod);
   DateDtype<PyDate<ora::date::Date16>>::add(mod);

@@ -9,7 +9,7 @@ will have a `dtype` attribute.  For example:
 
   >>> import numpy as np
   >>> from ora import Date
-  >>> import ora.numpy
+  >>> import ora.np
   >>> array = np.zeros(3, dtype=Date.dtype)
   >>> array
   array([Date(1, Jan, 1), Date(1, Jan, 1), Date(1, Jan, 1)], dtype=Date)
@@ -22,15 +22,15 @@ import numpy
 from   .. import ext
 
 try:
-    ext.numpy
+    ext.np
 except AttributeError:
     # Not built with numpy support.
     raise ImportError("Ora not build with NumPy support")
 else:
-    # We can't "from .ext.numpy import *" since .ext isn't a package.
+    # We can't "from .ext.np import *" since .ext isn't a package.
     globals().update({ 
         n: o 
-        for n, o in ext.numpy.__dict__.items() 
+        for n, o in ext.np.__dict__.items() 
         if not n.startswith("_") 
     })
 

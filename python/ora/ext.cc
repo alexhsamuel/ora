@@ -41,7 +41,7 @@ namespace py {
 extern Methods<Module>& add_functions(Methods<Module>&);
 
 #ifdef ORA_NUMPY
-extern ref<Object> set_up_numpy();
+extern ref<Object> build_np_module();
 #endif
 
 namespace {
@@ -136,7 +136,7 @@ PyInit_ext(void)
     TranslateException<FormatError>::to(PyExc_RuntimeError);
 
 #ifdef ORA_NUMPY
-    mod->AddObject("numpy", set_up_numpy());
+    mod->AddObject("np", build_np_module());
 #endif
 
     return mod.release();
