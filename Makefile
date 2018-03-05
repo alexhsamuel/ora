@@ -149,6 +149,7 @@ $(CXX_TST_OKS): export ZONEINFO = $(ABSTOP)/$(ZONEINFO_DIR)
 #-------------------------------------------------------------------------------
 # Python building extension code
 
+# Sources
 PY_INCDIRS      = $(PY_PKGDIR)
 PY_SRCS         = $(wildcard $(PY_PKGDIR)/*.cc) 
 PY_CPPFLAGS    += $(PY_INCDIRS:%=-I%)
@@ -157,13 +158,14 @@ PY_CXXFLAGS    += -fno-strict-aliasing -fwrapv
 PY_CXXFLAGS    += -DNDEBUG  # FIXME: Remove.
 PY_DOCSTR       = $(wildcard $(PY_PKGDIR)/*.docstrings)
 
+# Building with NumPy support
 ifeq ($(ORA_NUMPY),yes)
   PY_INCDIRS   += $(shell $(PYTHON) -c 'from numpy.distutils.misc_util import get_numpy_include_dirs as g; print(" ".join(g()));')
   PY_SRCS      += $(wildcard $(PY_PKGDIR)/np/*.cc)
   PY_CPPFLAGS  += -DORA_NUMPY
 endif
 
-# Sources and outputs
+# Outputs
 DEPS           += $(PY_SRCS:%.cc=%.cc.d)
 PY_OBJS         = $(PY_SRCS:%.cc=%.o)
 PY_EXTMOD_SFX   = $(shell $(PYTHON) -c 'from importlib.machinery import EXTENSION_SUFFIXES as E; print(E[0]); ')
