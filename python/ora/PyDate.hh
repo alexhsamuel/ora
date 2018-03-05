@@ -281,11 +281,10 @@ PyDate<DATE>::add_to(
 {
   // Construct the type struct.
   type_ = build_type(string{module.GetName()} + "." + name);
-  // Hand it to Python.
 #ifdef ORA_NUMPY
-  // FIXME FIXME FIXME
   type_.tp_base = &PyGenericArrType_Type;
 #endif
+  // Hand it to Python.
   type_.Ready();
 
   // Set up the API.

@@ -266,6 +266,68 @@ ufunc_loop_2(
 
 //------------------------------------------------------------------------------
 
+template<class TYPE>
+void
+generic_copyswap(
+  TYPE* const dst,
+  TYPE const* const src,
+  int const swap,
+  PyArrayObject* const arr)
+{
+  if (swap)
+    copy_swapped<sizeof(TYPE)>(src, dst);
+  else
+    copy<sizeof(TYPE)>(src, dst);
+}
+
+
+template<class TYPE>
+void
+generic_copyswapn(
+  TYPE* const dst, 
+  npy_intp const dst_stride, 
+  TYPE const* const src, 
+  npy_intp const src_stride, 
+  npy_intp const n, 
+  int const swap, 
+  PyArrayObject* const arr)
+{
+  if (src_stride == 0) {
+    // Special case: swapped or unswapped fill.
+    TYPE val;
+    if (swap) 
+      copy_swapped<sizeof(TYPE)>(src, &val);
+    else
+      val = *src;
+
+    char* d = (char*) dst;
+    for (npy_intp i = 0; i < n; ++i) {
+      *(TYPE*) d = val;
+      d += dst_stride;
+    }
+  }
+
+  else {
+    char const* s = (char const*) src;
+    char* d = (char*) dst;
+    if (swap) 
+      for (npy_intp i = 0; i < n; ++i) {
+        copy_swapped<sizeof(TYPE)>(s, d);
+        s += src_stride;
+        d += dst_stride;
+      }
+    else 
+      for (npy_intp i = 0; i < n; ++i) {
+        copy<sizeof(TYPE)>(s, d);
+        s += src_stride;
+        d += dst_stride;
+      }
+  }
+}
+
+
+//------------------------------------------------------------------------------
+
 }  // namespace np
 }  // namespace py
 }  // namespace ora

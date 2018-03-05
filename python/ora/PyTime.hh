@@ -18,6 +18,10 @@
 #include "PyTimeZone.hh"
 #include "util.hh"
 
+#ifdef ORA_NUMPY
+# include "np/np_time.hh"
+#endif
+
 namespace ora {
 namespace py {
 
@@ -220,6 +224,10 @@ private:
   static ref<Object>    nb_add                  (PyTime*, Object*, bool);
   static ref<Object>    nb_matrix_multiply      (PyTime*, Object*, bool);
   static ref<Object>    nb_subtract             (PyTime*, Object*, bool);
+  static ref<Object>    nb_int                  (PyTime* self)
+    { throw TypeError("int() argument cannot be a date"); }
+  static ref<Object>    nb_float                (PyTime* self)
+    { throw TypeError("float() argument cannot be a date"); }
   static PyNumberMethods tp_as_number_;
 
   // Methods.
@@ -257,8 +265,15 @@ PyTime<TIME>::add_to(
 {
   // Construct the type struct.
   type_ = build_type(string{module.GetName()} + "." + name);
+#ifdef ORA_NUMPY
+  type_.tp_base = &PyGenericArrType_Type;
+#endif
   // Hand it to Python.
   type_.Ready();
+
+#ifdef ORA_NUMPY
+  TimeDtype<PyTime<TIME>>::set_up_dtype();
+#endif
 
   PyTimeAPI::add(&type_, std::make_unique<API>());
 
@@ -506,9 +521,11 @@ PyTime<TIME>::tp_as_number_ = {
   (binaryfunc)  nullptr,                        // nb_and
   (binaryfunc)  nullptr,                        // nb_xor
   (binaryfunc)  nullptr,                        // nb_or
-  (unaryfunc)   nullptr,                        // nb_int
+  // Work around a NumPy bug (https://github.com/numpy/numpy/issues/10693) by
+  // defining nb_int, nb_float that raise TypeError.
+  (unaryfunc)   wrap<PyTime, nb_int>,           // nb_int
   (void*)       nullptr,                        // nb_reserved
-  (unaryfunc)   nullptr,                        // nb_float
+  (unaryfunc)   wrap<PyTime, nb_float>,         // nb_float
   (binaryfunc)  nullptr,                        // nb_inplace_add
   (binaryfunc)  nullptr,                        // nb_inplace_subtract
   (binaryfunc)  nullptr,                        // nb_inplace_multiply

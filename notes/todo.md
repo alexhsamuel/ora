@@ -67,11 +67,12 @@
 
 ## NumPy project
 
-- Add a mechanism for setuptools with/without numpy support.
 - Convert `setup.py` numpy dependency to extras?
 - Conda package with/without numpy.
 - Travis builds with/without numpy.
-
+- Either dtypes need to initialize to INVALID, or underlying types must handle
+  any bit pattern, so that `np.empty()` doesn't blow things up.
+- Remove `ORA_NUMPY` entirely?
 
 # Small fixes
 
