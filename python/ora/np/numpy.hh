@@ -1,7 +1,10 @@
 #pragma once
 
-#define PY_ARRAY_UNIQUE_SYMBOL ora_numpy
+#define PY_ARRAY_UNIQUE_SYMBOL ora_PyArray_API
+#define PY_UFUNC_UNIQUE_SYMBOL ora_PyUFunc_API
+#define NO_IMPORT
 #define NO_IMPORT_ARRAY
+#define NO_IMPORT_UFUNC
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 
 #include <Python.h>

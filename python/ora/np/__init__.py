@@ -22,8 +22,7 @@ import numpy
 from   .. import ext
 
 try:
-    # Add all the numpy stuff to the extension module.
-    ext.set_up_numpy()
+    ext.numpy
 except AttributeError:
     # Not built with numpy support.
     raise ImportError("Ora not build with NumPy support")
@@ -36,3 +35,4 @@ else:
     })
 
     del ext
+

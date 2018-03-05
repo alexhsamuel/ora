@@ -206,6 +206,7 @@ globals().update(Month.__members__)
 #-------------------------------------------------------------------------------
 # FIXME: Move these into C++ and extension code?
 
+MIDNIGHT = Daytime(0, 0, 0)
 UNIX_EPOCH = (1970/Jan/1, MIDNIGHT) @ UTC
 
 #-------------------------------------------------------------------------------

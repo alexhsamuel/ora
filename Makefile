@@ -149,19 +149,15 @@ $(CXX_TST_OKS): export ZONEINFO = $(ABSTOP)/$(ZONEINFO_DIR)
 #-------------------------------------------------------------------------------
 # Python building extension code
 
+PY_INCDIRS      = $(PY_PKGDIR)
+PY_SRCS         = $(wildcard $(PY_PKGDIR)/*.cc) 
+
 ifeq ($(ORA_NUMPY),yes)
-  NPY_INCDIRS   = $(shell $(PYTHON) -c 'from numpy.distutils.misc_util import get_numpy_include_dirs as g; print(" ".join(g()));')
-  NPY_INCDIRS  += $(PY_PKGDIR)
-
-  NP_SRCS       = $(wildcard $(PY_PKGDIR)/numpy/*.cc)
-  NP_OBJS       = $(NP_SRCS:%.cc=%.o)
-  DEPS         += $(NP_SRCS:%.cc:%.cc.d)
-
-  $(NP_OBJS): CPPFLAGS += $(NPY_INCDIRS:%=-I%)
+  PY_INCDIRS   += $(shell $(PYTHON) -c 'from numpy.distutils.misc_util import get_numpy_include_dirs as g; print(" ".join(g()));')
+  PY_SRCS      += $(wildcard $(PY_PKGDIR)/np/*.cc)
 endif
 
 # Sources and outputs
-PY_SRCS         = $(wildcard $(PY_PKGDIR)/*.cc) $(NP_SRCS)
 DEPS           += $(PY_SRCS:%.cc=%.cc.d)
 PY_OBJS         = $(PY_SRCS:%.cc=%.o)
 PY_EXTMOD_SFX   = $(shell $(PYTHON) -c 'from importlib.machinery import EXTENSION_SUFFIXES as E; print(E[0]); ')
@@ -171,6 +167,7 @@ PY_DOCSTR_CC    = $(PY_DOCSTR:%.docstrings=%.docstrings.cc.inc)
 PY_DOCSTR_HH    = $(PY_DOCSTR:%.docstrings=%.docstrings.hh.inc)
 
 # Compiling Python extension code.
+$(PY_OBJS): CPPFLAGS += $(PY_INCDIRS:%=-I%)
 $(PY_OBJS): CPPFLAGS += $(shell $(PYTHON_CONFIG) --includes)
 $(PY_OBJS): CXXFLAGS += -fno-strict-aliasing -fwrapv
 # FIXME: Remove this.

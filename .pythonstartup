@@ -24,7 +24,7 @@ dt = pytz.UTC.localize(datetime(1973, 12, 3, 12, 30))
 z = TimeZone("US/Eastern")
 
 try:
-    import ora.numpy
+    import ora.np
 except ImportError:
     print("No Ora NumPy support.", file=sys.stderr)
 else:

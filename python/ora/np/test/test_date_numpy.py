@@ -7,7 +7,7 @@ import pytest
 import ora
 from   ora import *
 
-pytest.importorskip("ora.numpy")
+pytest.importorskip("ora.np")
 
 #-------------------------------------------------------------------------------
 
@@ -36,6 +36,9 @@ dates = valid_dates + (
 )
 
 
+arr = np.array(dates)
+
+
 def test_dtype():
     assert hasattr(Date, "dtype")
     assert Date.dtype.itemsize == 4
@@ -43,16 +46,26 @@ def test_dtype():
     assert Date16.dtype.itemsize == 2
 
 
-def test_arr():
+def test_arr_with_dtype():
     arr = np.array(dates, dtype=Date.dtype)
+    assert arr.dtype is Date.dtype
     assert len(arr) == len(dates)
+
+    for i in range(len(arr)):
+        assert arr[i] == dates[i]
+        assert dates[i] == arr[i]
+
+
+def test_arr():
+    assert arr.dtype is Date.dtype
+    assert len(arr) == len(dates)
+
     for i in range(len(arr)):
         assert arr[i] == dates[i]
         assert dates[i] == arr[i]
 
 
 def test_get_ordinal_date():
-    arr     = np.array(dates, dtype=Date.dtype)
     od_arr  = ora.numpy.get_ordinal_date(arr)
 
     assert od_arr.dtype == ora.numpy.ORDINAL_DATE_DTYPE
@@ -87,19 +100,20 @@ def test_date_from_ordinal_date1():
 
 
 def test_eq():
-    arr = np.array(dates, dtype=Date.dtype)
     assert (arr == arr).all()
 
 
+def test_ne():
+    assert not (arr != arr).any()
+
+
 def test_is_valid():
-    arr = np.array(dates, dtype=Date.dtype)
     v = ora.numpy.is_valid(arr)
     assert (v == np.array([ d.valid for d in dates ])).all()
 
 
 def test_add_shift():
-    arr = np.array(dates, dtype=Date.dtype)
-    assert (arr + 1 == np.array((
+    assert (arr + 1 == (
         Date.MIN + 1,
         Date.MIN + 2,
         1000/Jan/ 2,
@@ -117,12 +131,11 @@ def test_add_shift():
         Date.INVALID,
         Date.INVALID,
         Date.INVALID,
-    ), dtype=Date.dtype)).all()
+    )).all()
     
 
 def test_subtract_shift():
-    arr = np.array(dates, dtype=Date.dtype)
-    assert (arr - 100 == np.array((
+    assert (arr - 100 == (
         Date.INVALID,
         Date.INVALID,
          999/Sep/23,
@@ -140,11 +153,15 @@ def test_subtract_shift():
         Date.MAX -   100,
         Date.INVALID,
         Date.INVALID,
-    ), dtype=Date.dtype)).all()
+    )).all()
     
 
 def test_subtract_diff():
-    arr = np.array(dates, dtype=Date.dtype)
-    assert (~ora.numpy.is_valid(arr) | (arr - arr == 0)).all()
+    dif = arr - arr
+    assert (~ora.numpy.is_valid(arr) | (dif == 0)).all()
+
+    sub = arr - 5
+    dif = arr - sub
+    assert (~ora.numpy.is_valid(sub) | (dif == 5)).all()
 
 

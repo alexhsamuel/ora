@@ -14,6 +14,10 @@
 #include "ora.hh"
 #include "py.hh"
 
+#ifdef ORA_NUMPY
+# include "np/numpy.hh"
+#endif
+
 namespace ora {
 namespace py {
 
@@ -222,6 +226,8 @@ private:
   // Number methods.
   static ref<Object> nb_add     (PyDate* self, Object* other, bool right);
   static ref<Object> nb_subtract(PyDate* self, Object* other, bool right);
+  static ref<Object> nb_int     (PyDate* self);
+  static ref<Object> nb_float   (PyDate* self);
   static PyNumberMethods tp_as_number_;
 
   // Methods.
@@ -276,6 +282,10 @@ PyDate<DATE>::add_to(
   // Construct the type struct.
   type_ = build_type(string{module.GetName()} + "." + name);
   // Hand it to Python.
+#ifdef ORA_NUMPY
+  // FIXME FIXME FIXME
+  type_.tp_base = &PyGenericArrType_Type;
+#endif
   type_.Ready();
 
   // Set up the API.
@@ -458,6 +468,24 @@ PyDate<DATE>::nb_subtract(
 
 
 template<class DATE>
+inline ref<Object>
+PyDate<DATE>::nb_int(
+  PyDate* const self)
+{
+  throw TypeError("int() argument cannot be a date");
+}
+
+
+template<class DATE>
+inline ref<Object>
+PyDate<DATE>::nb_float(
+  PyDate* const self)
+{
+  throw TypeError("float() argument cannot be a date");
+}
+
+
+template<class DATE>
 PyNumberMethods
 PyDate<DATE>::tp_as_number_ = {
   (binaryfunc)  wrap<PyDate, nb_add>,           // nb_add
@@ -476,9 +504,11 @@ PyDate<DATE>::tp_as_number_ = {
   (binaryfunc)  nullptr,                        // nb_and
   (binaryfunc)  nullptr,                        // nb_xor
   (binaryfunc)  nullptr,                        // nb_or
-  (unaryfunc)   nullptr,                        // nb_int
+  // Work around a NumPy bug (https://github.com/numpy/numpy/issues/10693) by
+  // defining nb_int, nb_float that raise TypeError.
+  (unaryfunc)   wrap<PyDate, nb_int>,           // nb_int
   (void*)       nullptr,                        // nb_reserved
-  (unaryfunc)   nullptr,                        // nb_float
+  (unaryfunc)   wrap<PyDate, nb_float>,         // nb_float
   (binaryfunc)  nullptr,                        // nb_inplace_add
   (binaryfunc)  nullptr,                        // nb_inplace_subtract
   (binaryfunc)  nullptr,                        // nb_inplace_multiply

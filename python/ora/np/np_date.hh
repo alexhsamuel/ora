@@ -20,7 +20,7 @@ using namespace np;
 // FIXME: For debugging; remove this, eventually.
 bool constexpr
 PRINT_ARR_FUNCS
-  = true;
+  = false;
 
 
 class DateDtypeAPI
@@ -65,6 +65,15 @@ private:
 
   static void           cast_from_object(Object* const*, Date*, npy_intp, void*, void*);
 
+  static npy_bool equal(Date const date0, Date const date1) 
+    { return ora::date::nex::equal(date0, date1) ? NPY_TRUE : NPY_FALSE; }
+  static npy_bool is_valid(Date const date)
+    { return date.is_valid() ? NPY_TRUE : NPY_FALSE; }
+  static npy_bool not_equal(Date const date0, Date const date1)
+    { return ora::date::nex::equal(date0, date1) ? NPY_FALSE : NPY_TRUE; }
+  static int32_t subtract(Date const date1, Date const date0) 
+    { return ora::date::nex::days_between(date0, date1); }
+
   class API
   : public DateDtypeAPI
   {
@@ -101,9 +110,9 @@ DateDtype<PYDATE>::get()
     descr_ = PyObject_New(PyArray_Descr, &PyArrayDescr_Type);
     descr_->typeobj         = incref(&PYDATE::type_);
     descr_->kind            = 'V';
-    descr_->type            = 'j';  // FIXME
+    descr_->type            = 'j';  // FIXME?
     descr_->byteorder       = '=';
-    descr_->flags           = NPY_USE_GETITEM | NPY_USE_SETITEM;  // FIXME?
+    descr_->flags           = 0;
     descr_->type_num        = 0;
     descr_->elsize          = sizeof(Date);
     descr_->alignment       = alignof(Date);
@@ -175,45 +184,13 @@ get_ymd_(
 }  // anonymous namespace
 
 
-namespace wrapper {
-
-template<class DATE>
-inline npy_bool
-equal(
-  DATE const date0,
-  DATE const date1)
-{
-  return ora::date::nex::equal(date0, date1) ? NPY_TRUE : NPY_FALSE;
-}
-
-
-template<class DATE>
-inline npy_bool
-is_valid(
-  DATE const date)
-{
-  return date.is_valid() ? NPY_TRUE : NPY_FALSE;
-}
-
-
-template<class DATE>
-inline npy_bool
-not_equal(
-  DATE const date0,
-  DATE const date1)
-{
-  return ora::date::nex::equal(date0, date1) ? NPY_FALSE : NPY_TRUE;
-}
-
-
-}  // namespace wrapper
-
-
 template<class PYDATE>
 void
 DateDtype<PYDATE>::add(
   Module* const module)
 {
+  auto const np_module = Module::ImportModule("numpy");
+
   // Build or get the dtype.
   auto const dtype = DateDtype<PYDATE>::get();
 
@@ -248,16 +225,14 @@ DateDtype<PYDATE>::add(
     ufunc_loop_1<Date, int32_t, ora::date::nex::get_ymdi<Date>>);
   create_or_get_ufunc(module, "is_valid", 1, 1)->add_loop_1(
     dtype->type_num, NPY_BOOL,
-    ufunc_loop_1<Date, npy_bool, wrapper::is_valid<Date>>);
-
-  auto const np_module = Module::ImportModule("numpy");
+    ufunc_loop_1<Date, npy_bool, is_valid>);
 
   create_or_get_ufunc(np_module, "equal", 2, 1)->add_loop_2(
     dtype->type_num, dtype->type_num, NPY_BOOL,
-    ufunc_loop_2<Date, Date, npy_bool, wrapper::equal<Date>>);
+    ufunc_loop_2<Date, Date, npy_bool, equal>);
   create_or_get_ufunc(np_module, "not_equal", 2, 1)->add_loop_2(
     dtype->type_num, dtype->type_num, NPY_BOOL,
-    ufunc_loop_2<Date, Date, npy_bool, wrapper::not_equal<Date>>);
+    ufunc_loop_2<Date, Date, npy_bool, not_equal>);
   create_or_get_ufunc(np_module, "add", 2, 1)->add_loop_2(
     dtype->type_num, NPY_INT32, dtype->type_num,
     ufunc_loop_2<Date, int32_t, Date, ora::date::nex::days_after<Date>>);
@@ -266,7 +241,7 @@ DateDtype<PYDATE>::add(
     ufunc_loop_2<Date, int32_t, Date, ora::date::nex::days_before<Date>>);
   create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
     dtype->type_num, dtype->type_num, NPY_INT32,
-    ufunc_loop_2<Date, Date, int32_t, ora::date::nex::days_between<Date>>);
+    ufunc_loop_2<Date, Date, int32_t, subtract>);
 }
 
 
