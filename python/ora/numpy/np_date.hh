@@ -96,18 +96,14 @@ DateDtype<PYDATE>::get()
     arr_funcs->getitem      = (PyArray_GetItemFunc*) getitem;
     arr_funcs->setitem      = (PyArray_SetItemFunc*) setitem;
     arr_funcs->compare      = (PyArray_CompareFunc*) compare;
-    // FIXME: Not sure if this is necessary.
-    arr_funcs->scalarkind   = [](void*) -> int { 
-      if (PRINT_ARR_FUNCS) std::cerr << "scalarkind\n";
-      return NPY_OBJECT_SCALAR; 
-    };
+    // FIMXE: Additional methods.
 
     descr_ = PyObject_New(PyArray_Descr, &PyArrayDescr_Type);
     descr_->typeobj         = incref(&PYDATE::type_);
     descr_->kind            = 'V';
     descr_->type            = 'j';  // FIXME
     descr_->byteorder       = '=';
-    descr_->flags           = 0;
+    descr_->flags           = NPY_USE_GETITEM | NPY_USE_SETITEM;  // FIXME?
     descr_->type_num        = 0;
     descr_->elsize          = sizeof(Date);
     descr_->alignment       = alignof(Date);
@@ -131,7 +127,6 @@ DateDtype<PYDATE>::get()
     if (PyArray_RegisterCanCast(
           npy_object, descr_->type_num, NPY_OBJECT_SCALAR) < 0)
       throw py::Exception();
-    
   }
 
   return descr_;
@@ -183,31 +178,31 @@ get_ymd_(
 namespace wrapper {
 
 template<class DATE>
-inline uint8_t
+inline npy_bool
 equal(
   DATE const date0,
   DATE const date1)
 {
-  return ora::date::nex::equal(date0, date1) ? 1 : 0;
+  return ora::date::nex::equal(date0, date1) ? NPY_TRUE : NPY_FALSE;
 }
 
 
 template<class DATE>
-inline uint8_t
+inline npy_bool
 is_valid(
   DATE const date)
 {
-  return date.is_valid() ? 1 : 0;
+  return date.is_valid() ? NPY_TRUE : NPY_FALSE;
 }
 
 
 template<class DATE>
-inline uint8_t
+inline npy_bool
 not_equal(
   DATE const date0,
   DATE const date1)
 {
-  return ora::date::nex::equal(date0, date1) ? 0 : 1;
+  return ora::date::nex::equal(date0, date1) ? NPY_FALSE : NPY_TRUE;
 }
 
 
@@ -229,10 +224,10 @@ DateDtype<PYDATE>::add(
 
   create_or_get_ufunc(module, "get_day", 1, 1)->add_loop_1(
     dtype->type_num, NPY_UINT8, 
-    ufunc_loop_1<Date, uint8_t, ora::date::nex::get_day<Date>>);
+    ufunc_loop_1<Date, npy_bool, ora::date::nex::get_day<Date>>);
   create_or_get_ufunc(module, "get_month", 1, 1)->add_loop_1(
     dtype->type_num, NPY_UINT8, 
-    ufunc_loop_1<Date, uint8_t, ora::date::nex::get_month<Date>>);
+    ufunc_loop_1<Date, npy_bool, ora::date::nex::get_month<Date>>);
   create_or_get_ufunc(module, "get_ordinal_date", 1, 1)->add_loop_1(
     dtype, get_ordinal_date_dtype(),
     ufunc_loop_1<Date, ora::OrdinalDate, get_ordinal_date_<Date>>);
@@ -241,7 +236,7 @@ DateDtype<PYDATE>::add(
     ufunc_loop_1<Date, ora::WeekDate, get_week_date_<Date>>);
   create_or_get_ufunc(module, "get_weekday", 1, 1)->add_loop_1(
     dtype->type_num, NPY_UINT8,
-    ufunc_loop_1<Date, uint8_t, ora::date::nex::get_weekday<Date>>);
+    ufunc_loop_1<Date, npy_bool, ora::date::nex::get_weekday<Date>>);
   create_or_get_ufunc(module, "get_year", 1, 1)->add_loop_1(
     dtype->type_num, NPY_INT16, 
     ufunc_loop_1<Date, int16_t, ora::date::nex::get_year<Date>>);
@@ -253,16 +248,16 @@ DateDtype<PYDATE>::add(
     ufunc_loop_1<Date, int32_t, ora::date::nex::get_ymdi<Date>>);
   create_or_get_ufunc(module, "is_valid", 1, 1)->add_loop_1(
     dtype->type_num, NPY_BOOL,
-    ufunc_loop_1<Date, uint8_t, wrapper::is_valid<Date>>);
+    ufunc_loop_1<Date, npy_bool, wrapper::is_valid<Date>>);
 
   auto const np_module = Module::ImportModule("numpy");
 
   create_or_get_ufunc(np_module, "equal", 2, 1)->add_loop_2(
     dtype->type_num, dtype->type_num, NPY_BOOL,
-    ufunc_loop_2<Date, Date, uint8_t, wrapper::equal<Date>>);
+    ufunc_loop_2<Date, Date, npy_bool, wrapper::equal<Date>>);
   create_or_get_ufunc(np_module, "not_equal", 2, 1)->add_loop_2(
     dtype->type_num, dtype->type_num, NPY_BOOL,
-    ufunc_loop_2<Date, Date, uint8_t, wrapper::not_equal<Date>>);
+    ufunc_loop_2<Date, Date, npy_bool, wrapper::not_equal<Date>>);
   create_or_get_ufunc(np_module, "add", 2, 1)->add_loop_2(
     dtype->type_num, NPY_INT32, dtype->type_num,
     ufunc_loop_2<Date, int32_t, Date, ora::date::nex::days_after<Date>>);
