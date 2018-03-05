@@ -2,6 +2,8 @@ import numpy as np
 from   ora import *
 import pytest
 
+pytest.importorskip("ora.np")
+
 #-------------------------------------------------------------------------------
 
 TIME_TYPES = (SmallTime, Unix32Time, Unix64Time, Time, NsTime, HiTime, Time128)
