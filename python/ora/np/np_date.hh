@@ -71,7 +71,14 @@ private:
     { return date.is_valid() ? NPY_TRUE : NPY_FALSE; }
   static npy_bool not_equal(Date const date0, Date const date1)
     { return ora::date::nex::equal(date0, date1) ? NPY_FALSE : NPY_TRUE; }
-  static int32_t subtract(Date const date1, Date const date0) 
+
+  // Wrap days_after and days_before to accept int64 args.
+  static Date add(Date const date, int64_t const days)
+    { return ora::date::nex::days_after(date, (int32_t) days); }
+  static Date subtract_before(Date const date, int64_t const days)
+    { return ora::date::nex::days_before(date, (int32_t) days); }
+
+  static int32_t subtract_between(Date const date1, Date const date0) 
     { return ora::date::nex::days_between(date0, date1); }
 
   class API
@@ -234,14 +241,14 @@ DateDtype<PYDATE>::add(
     dtype->type_num, dtype->type_num, NPY_BOOL,
     ufunc_loop_2<Date, Date, npy_bool, not_equal>);
   create_or_get_ufunc(np_module, "add", 2, 1)->add_loop_2(
-    dtype->type_num, NPY_INT32, dtype->type_num,
-    ufunc_loop_2<Date, int32_t, Date, ora::date::nex::days_after<Date>>);
+    dtype->type_num, NPY_INT64, dtype->type_num,
+    ufunc_loop_2<Date, int64_t, Date, add>);
   create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
-    dtype->type_num, NPY_INT32, dtype->type_num,
-    ufunc_loop_2<Date, int32_t, Date, ora::date::nex::days_before<Date>>);
+    dtype->type_num, NPY_INT64, dtype->type_num,
+    ufunc_loop_2<Date, int64_t, Date, subtract_before>);
   create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
     dtype->type_num, dtype->type_num, NPY_INT32,
-    ufunc_loop_2<Date, Date, int32_t, subtract>);
+    ufunc_loop_2<Date, Date, int32_t, subtract_between>);
 }
 
 
