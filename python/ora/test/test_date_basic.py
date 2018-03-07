@@ -179,3 +179,13 @@ def test_today_invalid():
         today(UTC, 42)
 
 
+@pytest.mark.xfail
+@pytest.mark.parametrize("Date, width", [(Date, 32), (Date16, 16)])
+def test_add_overflow(Date, width):
+    d = Date(2018, 3, 6)
+    assert d + (1 << width) == Date.INVALID
+    assert d + (Date.MAX.offset - d + 1) == Date.INVALID
+    assert d - (1 << width) == Date.INVALID
+    assert d - (d.offset + 1) == Date.INVALID
+
+
