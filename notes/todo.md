@@ -4,6 +4,12 @@
    - formatting
    - parsing
    - date syntactic sugar
+1. Investigate 'safe integer' math packages for offset arithmetic.
+   - https://github.com/dcleblanc/SafeInt
+   - https://github.com/robertramey/safe_numerics
+   - https://github.com/RobertLeahy/Safe
+   - https://msdn.microsoft.com/en-us/library/windows/desktop/ff521693(v=vs.85).aspx
+   - others
 1. `print(t @ z)` should show time zone offset.
    - Add time zone offset (and name/abbr?) to `LocalTime`.
    - Sync up C++ LoalDatenumDaytick, LocalTime, TimeParts.
