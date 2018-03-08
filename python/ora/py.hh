@@ -1292,6 +1292,11 @@ private:
 
 template<class CLASS>
 using
+UnaryfuncPtr
+  = ref<Object> (*)(CLASS* self);
+
+template<class CLASS>
+using
 BinaryfuncPtr
   = ref<Object> (*)(CLASS* self, Object* other, bool right);
 
@@ -1334,8 +1339,38 @@ using ClassMethodPtr = ref<Object> (*)(PyTypeObject* class_, Tuple* args, Dict* 
 
 
 /**
+ * Wraps a unaryfunc.
+ */
+template<class CLASS, UnaryfuncPtr<CLASS> FUNCTION>
+PyObject*
+wrap(
+  PyObject* self)
+{
+  ref<Object> result;
+  try {
+    try {
+      result = FUNCTION(static_cast<CLASS*>(self));
+    }
+    catch (Exception) {
+      return nullptr;
+    }
+    catch (...) {
+      ExceptionTranslator::translate();
+    }
+  }
+  catch (Exception exc) {
+    return nullptr;
+  }
+  assert(result != nullptr);
+  return result.release();
+}
+
+
+/**
  * Wraps a binaryfunc.
  */
+// FIXME: This is appropriate for comparisons only.  Arbitrary binaryfuncs
+// don't need the type checks, and shouldn't return NotImplemented.
 template<class CLASS, BinaryfuncPtr<CLASS> FUNCTION>
 PyObject*
 wrap(

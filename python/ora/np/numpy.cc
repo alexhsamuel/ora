@@ -2,22 +2,6 @@
 
 #include <Python.h>
 
-// Note: Order is important here!
-//
-// In this, and only this, compilation unit, we need to #include the numpy
-// headers without NO_IMPORT_ARRAY #defined.  In all other compilation units,
-// this macro is defined, to make sure a single shared copy of the API is used.
-// 
-// See http://docs.scipy.org/doc/numpy/reference/c-api.array.html#importing-the-api.
-//
-// FIXME: Encapsulate this so that no human ever ever has to deal with it again.
-#define PY_ARRAY_UNIQUE_SYMBOL ora_numpy
-#define NPY_NO_DEPRECATED_API NPY_API_VERSION
-#include <numpy/arrayobject.h>
-#include <numpy/npy_math.h>
-#include <numpy/ufuncobject.h>
-#include <numpy/npy_3kcompat.h>
-
 #include "py.hh"
 #include "np_date.hh"
 #include "np_daytime.hh"
@@ -155,37 +139,23 @@ namespace ora {
 namespace py {
 
 ref<Object>
-set_up_numpy(
-  Module* const module,
-  Tuple* const args,
-  Dict* kw_args)
+build_np_module()
 {
-  static char const* const arg_names[] = {nullptr};
-  Arg::ParseTupleAndKeywords(args, kw_args, "", arg_names);
+  // Put everything in a submodule `np` (even though this is not a package).
+  auto mod = Module::New("ora.ext.np");
 
-  // Import numpy stuff.
-  if (_import_array() < 0) 
-    throw ImportError("failed to import numpy.core.multiarray"); 
-  if (_import_umath() < 0) 
-    throw ImportError("failed to import numpy.core.umath");
+  DateDtype<PyDate<ora::date::Date>>::add(mod);
+  DateDtype<PyDate<ora::date::Date16>>::add(mod);
+  DaytimeDtype<PyDaytime<ora::daytime::Daytime>>::add(mod);
+  DaytimeDtype<PyDaytime<ora::daytime::Daytime32>>::add(mod);
 
-  // Put everything in a submodule `numpy` (even though this is not a package).
-  auto const sub = Module::New("ora.ext.numpy");
+  mod->AddFunctions(functions);
 
-  DateDtype<PyDate<ora::date::Date>>::add(sub);
-  DateDtype<PyDate<ora::date::Date16>>::add(sub);
-  DaytimeDtype<PyDaytime<ora::daytime::Daytime>>::add(sub);
-  DaytimeDtype<PyDaytime<ora::daytime::Daytime32>>::add(sub);
+  mod->AddObject("ORDINAL_DATE_DTYPE",  (Object*) get_ordinal_date_dtype());
+  mod->AddObject("WEEK_DATE_DTYPE",     (Object*) get_week_date_dtype());
+  mod->AddObject("YMD_DTYPE",           (Object*) get_ymd_dtype());
 
-  sub->AddFunctions(functions);
-
-  sub->AddObject("ORDINAL_DATE_DTYPE",  (Object*) get_ordinal_date_dtype());
-  sub->AddObject("WEEK_DATE_DTYPE",     (Object*) get_week_date_dtype());
-  sub->AddObject("YMD_DTYPE",           (Object*) get_ymd_dtype());
-
-  module->AddObject("numpy", sub);
-
-  return none_ref();
+  return std::move(mod);
 }
 
 

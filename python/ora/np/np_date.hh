@@ -63,6 +63,24 @@ private:
   static int            setitem(Object*, Date*, PyArrayObject*);
   static int            compare(Date const*, Date const*, PyArrayObject*);
 
+  static void           cast_from_object(Object* const*, Date*, npy_intp, void*, void*);
+
+  static npy_bool equal(Date const date0, Date const date1) 
+    { return ora::date::nex::equal(date0, date1) ? NPY_TRUE : NPY_FALSE; }
+  static npy_bool is_valid(Date const date)
+    { return date.is_valid() ? NPY_TRUE : NPY_FALSE; }
+  static npy_bool not_equal(Date const date0, Date const date1)
+    { return ora::date::nex::equal(date0, date1) ? NPY_FALSE : NPY_TRUE; }
+
+  // Wrap days_after and days_before to accept int64 args.
+  static Date add(Date const date, int64_t const days)
+    { return ora::date::nex::days_after(date, (int32_t) days); }
+  static Date subtract_before(Date const date, int64_t const days)
+    { return ora::date::nex::days_before(date, (int32_t) days); }
+
+  static int32_t subtract_between(Date const date1, Date const date0) 
+    { return ora::date::nex::days_between(date0, date1); }
+
   class API
   : public DateDtypeAPI
   {
@@ -89,16 +107,17 @@ DateDtype<PYDATE>::get()
     // Deliberately 'leak' this instance, as it has process lifetime.
     auto const arr_funcs = new PyArray_ArrFuncs;
     PyArray_InitArrFuncs(arr_funcs);
-    arr_funcs->copyswap         = (PyArray_CopySwapFunc*) copyswap;
-    arr_funcs->copyswapn        = (PyArray_CopySwapNFunc*) copyswapn;
-    arr_funcs->getitem          = (PyArray_GetItemFunc*) getitem;
-    arr_funcs->setitem          = (PyArray_SetItemFunc*) setitem;
-    arr_funcs->compare          = (PyArray_CompareFunc*) compare;
+    arr_funcs->copyswap     = (PyArray_CopySwapFunc*) copyswap;
+    arr_funcs->copyswapn    = (PyArray_CopySwapNFunc*) copyswapn;
+    arr_funcs->getitem      = (PyArray_GetItemFunc*) getitem;
+    arr_funcs->setitem      = (PyArray_SetItemFunc*) setitem;
+    arr_funcs->compare      = (PyArray_CompareFunc*) compare;
+    // FIMXE: Additional methods.
 
     descr_ = PyObject_New(PyArray_Descr, &PyArrayDescr_Type);
     descr_->typeobj         = incref(&PYDATE::type_);
     descr_->kind            = 'V';
-    descr_->type            = 'j';  // FIXME
+    descr_->type            = 'j';  // FIXME?
     descr_->byteorder       = '=';
     descr_->flags           = 0;
     descr_->type_num        = 0;
@@ -113,6 +132,16 @@ DateDtype<PYDATE>::get()
     descr_->hash            = -1;
 
     if (PyArray_RegisterDataType(descr_) < 0)
+      throw py::Exception();
+
+    auto const npy_object = PyArray_DescrFromType(NPY_OBJECT);
+
+    if (PyArray_RegisterCastFunc(
+          npy_object, descr_->type_num, 
+          (PyArray_VectorUnaryFunc*) cast_from_object) < 0)
+      throw py::Exception();
+    if (PyArray_RegisterCanCast(
+          npy_object, descr_->type_num, NPY_OBJECT_SCALAR) < 0)
       throw py::Exception();
   }
 
@@ -167,6 +196,8 @@ void
 DateDtype<PYDATE>::add(
   Module* const module)
 {
+  auto const np_module = Module::ImportModule("numpy");
+
   // Build or get the dtype.
   auto const dtype = DateDtype<PYDATE>::get();
 
@@ -177,10 +208,10 @@ DateDtype<PYDATE>::add(
 
   create_or_get_ufunc(module, "get_day", 1, 1)->add_loop_1(
     dtype->type_num, NPY_UINT8, 
-    ufunc_loop_1<Date, uint8_t, ora::date::nex::get_day<Date>>);
+    ufunc_loop_1<Date, npy_bool, ora::date::nex::get_day<Date>>);
   create_or_get_ufunc(module, "get_month", 1, 1)->add_loop_1(
     dtype->type_num, NPY_UINT8, 
-    ufunc_loop_1<Date, uint8_t, ora::date::nex::get_month<Date>>);
+    ufunc_loop_1<Date, npy_bool, ora::date::nex::get_month<Date>>);
   create_or_get_ufunc(module, "get_ordinal_date", 1, 1)->add_loop_1(
     dtype, get_ordinal_date_dtype(),
     ufunc_loop_1<Date, ora::OrdinalDate, get_ordinal_date_<Date>>);
@@ -189,7 +220,7 @@ DateDtype<PYDATE>::add(
     ufunc_loop_1<Date, ora::WeekDate, get_week_date_<Date>>);
   create_or_get_ufunc(module, "get_weekday", 1, 1)->add_loop_1(
     dtype->type_num, NPY_UINT8,
-    ufunc_loop_1<Date, uint8_t, ora::date::nex::get_weekday<Date>>);
+    ufunc_loop_1<Date, npy_bool, ora::date::nex::get_weekday<Date>>);
   create_or_get_ufunc(module, "get_year", 1, 1)->add_loop_1(
     dtype->type_num, NPY_INT16, 
     ufunc_loop_1<Date, int16_t, ora::date::nex::get_year<Date>>);
@@ -199,6 +230,25 @@ DateDtype<PYDATE>::add(
   create_or_get_ufunc(module, "get_ymdi", 1, 1)->add_loop_1(
     dtype->type_num, NPY_INT32, 
     ufunc_loop_1<Date, int32_t, ora::date::nex::get_ymdi<Date>>);
+  create_or_get_ufunc(module, "is_valid", 1, 1)->add_loop_1(
+    dtype->type_num, NPY_BOOL,
+    ufunc_loop_1<Date, npy_bool, is_valid>);
+
+  create_or_get_ufunc(np_module, "equal", 2, 1)->add_loop_2(
+    dtype->type_num, dtype->type_num, NPY_BOOL,
+    ufunc_loop_2<Date, Date, npy_bool, equal>);
+  create_or_get_ufunc(np_module, "not_equal", 2, 1)->add_loop_2(
+    dtype->type_num, dtype->type_num, NPY_BOOL,
+    ufunc_loop_2<Date, Date, npy_bool, not_equal>);
+  create_or_get_ufunc(np_module, "add", 2, 1)->add_loop_2(
+    dtype->type_num, NPY_INT64, dtype->type_num,
+    ufunc_loop_2<Date, int64_t, Date, add>);
+  create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
+    dtype->type_num, NPY_INT64, dtype->type_num,
+    ufunc_loop_2<Date, int64_t, Date, subtract_before>);
+  create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
+    dtype->type_num, dtype->type_num, NPY_INT32,
+    ufunc_loop_2<Date, Date, int32_t, subtract_between>);
 }
 
 
@@ -320,6 +370,24 @@ DateDtype<PYDATE>::compare(
 }
 
 
+template<class PYDATE>
+void
+DateDtype<PYDATE>::cast_from_object(
+  Object* const* from,
+  Date* to,
+  npy_intp num,
+  void* /* unused */,
+  void* /* unused */)
+{
+  if (PRINT_ARR_FUNCS)
+    std::cerr << "cast_from_object\n";
+  for (; num > 0; --num, ++from, ++to) {
+    auto const date = maybe_date<Date>(*from);
+    *to = date ? *date : Date::INVALID;
+  }
+}
+
+
 //------------------------------------------------------------------------------
 
 template<class PYDATE>
@@ -427,7 +495,6 @@ template<class PYDATE>
 PyArray_Descr*
 DateDtype<PYDATE>::descr_
   = nullptr;
-
 
 //------------------------------------------------------------------------------
 

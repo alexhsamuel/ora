@@ -1,7 +1,10 @@
 #pragma once
 
-#define PY_ARRAY_UNIQUE_SYMBOL ora_numpy
+#define PY_ARRAY_UNIQUE_SYMBOL ora_PyArray_API
+#define PY_UFUNC_UNIQUE_SYMBOL ora_PyUFunc_API
+#define NO_IMPORT
 #define NO_IMPORT_ARRAY
+#define NO_IMPORT_UFUNC
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 
 #include <Python.h>
@@ -73,6 +76,7 @@ public:
    */
   void add_loop_1(int arg0_type, int ret0_type, PyUFuncGenericFunction);
   void add_loop_1(PyArray_Descr*, PyArray_Descr*, PyUFuncGenericFunction);
+
   void add_loop_2(int arg0_type, int arg1_type, int ret0_type, PyUFuncGenericFunction);
   void add_loop_2(PyArray_Descr*, PyArray_Descr*, PyArray_Descr*, PyUFuncGenericFunction);
 
@@ -256,6 +260,68 @@ ufunc_loop_2(
     arg0 = step(arg0, arg0_step);
     arg1 = step(arg1, arg1_step);
     ret0 = step(ret0, ret0_step);
+  }
+}
+
+
+//------------------------------------------------------------------------------
+
+template<class TYPE>
+void
+generic_copyswap(
+  TYPE* const dst,
+  TYPE const* const src,
+  int const swap,
+  PyArrayObject* const arr)
+{
+  if (swap)
+    copy_swapped<sizeof(TYPE)>(src, dst);
+  else
+    copy<sizeof(TYPE)>(src, dst);
+}
+
+
+template<class TYPE>
+void
+generic_copyswapn(
+  TYPE* const dst, 
+  npy_intp const dst_stride, 
+  TYPE const* const src, 
+  npy_intp const src_stride, 
+  npy_intp const n, 
+  int const swap, 
+  PyArrayObject* const arr)
+{
+  if (src_stride == 0) {
+    // Special case: swapped or unswapped fill.
+    TYPE val;
+    if (swap) 
+      copy_swapped<sizeof(TYPE)>(src, &val);
+    else
+      val = *src;
+
+    char* d = (char*) dst;
+    for (npy_intp i = 0; i < n; ++i) {
+      *(TYPE*) d = val;
+      d += dst_stride;
+    }
+  }
+
+  else {
+    char const* s = (char const*) src;
+    char* d = (char*) dst;
+    if (swap) 
+      for (npy_intp i = 0; i < n; ++i) {
+        copy_swapped<sizeof(TYPE)>(s, d);
+        s += src_stride;
+        d += dst_stride;
+      }
+    else 
+      for (npy_intp i = 0; i < n; ++i) {
+        copy<sizeof(TYPE)>(s, d);
+        s += src_stride;
+        d += dst_stride;
+      }
   }
 }
 

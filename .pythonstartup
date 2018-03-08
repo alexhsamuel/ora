@@ -1,12 +1,12 @@
 # -*- python -*-
 
 import ora
-import ora.numpy
 from   ora import *
 from   datetime import *
 import math
 import numpy as np
 import pytz
+import sys
 
 try:
     from supdoc import *
@@ -21,25 +21,29 @@ bd = 1973/Dec/3
 t = now()
 d, y = t @ z
 dt = pytz.UTC.localize(datetime(1973, 12, 3, 12, 30))
-
-da = np.array([
-    Date.MIN,
-    Date.MIN + 1,
-    bd,
-    2016/Feb/28,
-    2016/Feb/29,
-    2016/Mar/ 1,
-    2017/Feb/28,
-    2017/Mar/ 1,
-    Date.MAX - 10000,
-    Date.MAX -  1000,
-    Date.MAX -   100,
-    Date.MAX -    10,
-    Date.MAX -     1,
-    Date.MAX,
-    Date.MISSING,
-    Date.INVALID,
-], dtype=Date.dtype)
-    
 z = TimeZone("US/Eastern")
+
+try:
+    import ora.np
+except ImportError:
+    print("No Ora NumPy support.", file=sys.stderr)
+else:
+    da = np.array([
+        Date.MIN,
+        Date.MIN + 1,
+        bd,
+        2016/Feb/28,
+        2016/Feb/29,
+        2016/Mar/ 1,
+        2017/Feb/28,
+        2017/Mar/ 1,
+        Date.MAX - 10000,
+        Date.MAX -  1000,
+        Date.MAX -   100,
+        Date.MAX -    10,
+        Date.MAX -     1,
+        Date.MAX,
+        Date.MISSING,
+        Date.INVALID,
+    ], dtype=Date.dtype)
 

@@ -294,6 +294,7 @@ days_after(
   int const days)
   noexcept
 {
+  // FIXME: Check for overflows.
   return 
       date.is_valid()
     ? from_offset<DATE>(date.get_offset() + days)
@@ -311,6 +312,7 @@ days_before(
   int const days)
   noexcept
 {
+  // FIXME: Check for overflows.
   return nex::days_after(date, -days);
 }  
 
