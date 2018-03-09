@@ -1,5 +1,6 @@
 # Miscellaneous Work List
 
+1. Change `Time` to use _signed_ int64 around UNIX epoch.
 1. When parsing fractional seconds, work in terms of dayticks.
 1. One too many digits of second precision?
 1. Supress trailing zeros in fractional seconds.
