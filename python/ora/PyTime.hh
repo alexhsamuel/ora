@@ -157,7 +157,7 @@ public:
    *
    * Should only be called once; this is not checked.
    */
-  static void add_to(Module& module, string const& name);
+  static void add_to(Module* module, string const& name, Module* np_module);
 
   static Type type_;
 
@@ -260,11 +260,12 @@ private:
 template<class TIME>
 void
 PyTime<TIME>::add_to(
-  Module& module,
-  string const& name)
+  Module* module,
+  string const& name,
+  Module* np_module)
 {
   // Construct the type struct.
-  type_ = build_type(string{module.GetName()} + "." + name);
+  type_ = build_type(string{module->GetName()} + "." + name);
 #ifdef ORA_NUMPY
   type_.tp_base = &PyGenericArrType_Type;
 #endif
@@ -272,7 +273,7 @@ PyTime<TIME>::add_to(
   type_.Ready();
 
 #ifdef ORA_NUMPY
-  TimeDtype<PyTime<TIME>>::set_up_dtype();
+  TimeDtype<PyTime<TIME>>::set_up_dtype(np_module);
 #endif
 
   PyTimeAPI::add(&type_, std::make_unique<API>());
@@ -300,7 +301,7 @@ PyTime<TIME>::add_to(
   dict->SetItemString("RESOLUTION"  , Float::FromDouble(1.0 / Time::DENOMINATOR));
 
   // Add the type to the module.
-  module.add(&type_);
+  module->add(&type_);
 }
 
 

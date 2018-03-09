@@ -35,6 +35,14 @@ public:
     { return take_not_null<Array>(PyArray_FromAny(obj, dtype, dims_min, dims_max, requirements, context)); }
   static ref<Array> FromAny(PyObject* const obj, int const dtype, int const dims_min, int const dims_max, int const requirements, PyObject* const context=nullptr)
     { return FromAny(obj, PyArray_DescrFromType(dtype), dims_min, dims_max, requirements, context); }
+  static void RegisterCanCast(PyArray_Descr* const from, int const to, NPY_SCALARKIND const scalar)
+    { check_zero(PyArray_RegisterCanCast(from, to, scalar)); }
+  static void RegisterCanCast(int const from, int const to, NPY_SCALARKIND const scalar)
+    { check_zero(PyArray_RegisterCanCast(PyArray_DescrFromType(from), to, scalar)); }
+  static void RegisterCastFunc(PyArray_Descr* const from, int const to, PyArray_VectorUnaryFunc* const f)
+    { check_zero(PyArray_RegisterCastFunc(from, to, f)); }
+  static void RegisterCastFunc(int const from, int const to, PyArray_VectorUnaryFunc* const f)
+    { check_zero(PyArray_RegisterCastFunc(PyArray_DescrFromType(from), to, f)); }
   static ref<Array> SimpleNew(int const nd, npy_intp* const dims, int const typenum)
     { return take_not_null<Array>(PyArray_SimpleNew(nd, dims, typenum)); }
   static ref<Array> SimpleNew1D(npy_intp const size, int const typenum)
@@ -56,6 +64,34 @@ private:
 
 };
 
+
+template<class FROM, class TO, TO (*FUNC)(FROM)>
+void
+cast_func(
+  FROM const* from,
+  TO* to,
+  npy_intp num,
+  void* /* unused */,
+  void* /* unused */)
+{
+  for (; num > 0; --num, ++from, ++to)
+    *to = FUNC(*from);
+}
+
+
+//------------------------------------------------------------------------------
+
+// Compile-time mapping from C++ integer types to numpy type numbers.
+template<class INT> struct IntType 
+  { static int constexpr type_num = -1; };
+template<> struct IntType<int32_t> 
+  { static int constexpr type_num = NPY_INT32; };
+template<> struct IntType<uint32_t>
+  { static int constexpr type_num = NPY_UINT32; };
+template<> struct IntType<int64_t>
+  { static int constexpr type_num = NPY_INT64; };
+template<> struct IntType<uint64_t>
+  { static int constexpr type_num = NPY_UINT64; };
 
 //------------------------------------------------------------------------------
 

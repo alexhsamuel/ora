@@ -24,8 +24,9 @@ class TimeDtype
 public:
 
   using Time = typename PYTIME::Time;
+  using Offset = typename Time::Offset;
 
-  static void set_up_dtype();
+  static void set_up_dtype(Module*);
 
 private:
 
@@ -47,9 +48,11 @@ private:
 
 template<class PYTIME>
 void
-TimeDtype<PYTIME>::set_up_dtype()
+TimeDtype<PYTIME>::set_up_dtype(
+  Module* module)
 {
   assert(descr_ == nullptr);
+  assert(module != nullptr);
 
   // Deliberately 'leak' this instance, as it has process lifetime.
   auto arr_funcs = new PyArray_ArrFuncs;
@@ -82,28 +85,34 @@ TimeDtype<PYTIME>::set_up_dtype()
 
   if (PyArray_RegisterDataType(descr_) < 0)
     throw py::Exception();
+  int const type_num = descr_->type_num;
 
   // Set the dtype as an attribute to the scalar type.
   assert(PYTIME::type_.tp_dict != nullptr);
   ((Dict*) PYTIME::type_.tp_dict)->SetItemString("dtype", (Object*) descr_);
 
-  auto const npy_object = PyArray_DescrFromType(NPY_OBJECT);
   auto const np_module = Module::ImportModule("numpy");
 
-  if (PyArray_RegisterCastFunc(
-        npy_object, descr_->type_num, 
-        (PyArray_VectorUnaryFunc*) cast_from_object) < 0)
-    throw py::Exception();
-  if (PyArray_RegisterCanCast(
-        npy_object, descr_->type_num, NPY_OBJECT_SCALAR) < 0)
-    throw py::Exception();
+  int constexpr int_type_num = IntType<Offset>::type_num;
+
+  // Cast from object to time.
+  Array::RegisterCastFunc(
+    NPY_OBJECT, type_num, (PyArray_VectorUnaryFunc*) cast_from_object);
+  Array::RegisterCanCast(NPY_OBJECT, type_num, NPY_OBJECT_SCALAR);
 
   create_or_get_ufunc(np_module, "equal", 2, 1)->add_loop_2(
-    descr_->type_num, descr_->type_num, NPY_BOOL,
+    type_num, type_num, NPY_BOOL,
     ufunc_loop_2<Time, Time, npy_bool, equal>);
   create_or_get_ufunc(np_module, "not_equal", 2, 1)->add_loop_2(
-    descr_->type_num, descr_->type_num, NPY_BOOL,
+    type_num, type_num, NPY_BOOL,
     ufunc_loop_2<Time, Time, npy_bool, not_equal>);
+
+  if (int_type_num != -1) {
+    create_or_get_ufunc(module, "to_offset", 1, 1)->add_loop_1(
+      type_num, int_type_num,
+      ufunc_loop_1<Time, Offset, ora::time::nex::get_offset<Time>>);
+  }
+
 }
 
 

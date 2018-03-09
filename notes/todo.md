@@ -2,6 +2,7 @@
 
 1. Change `Time` to use _signed_ int64 around UNIX epoch.
 1. When parsing fractional seconds, work in terms of dayticks.
+1. Make the Python default Time, Date, Daytime types setable.
 1. One too many digits of second precision?
 1. Supress trailing zeros in fractional seconds.
 1. Add `EPOCH` class attributes.
@@ -98,7 +99,11 @@
      - [ ] formatting
      - [ ] specialized arrfuncs (template)
    - time type and ufuncs
-     - [ ] casts
+     - [ ] casts (which?)
+     - [x] to_offset
+     - [ ] from_offset
+     - [ ] `offset_dtype` attribute
+     - [ ] to_offset ??
      - [ ] arithmetic (template)
      - [ ] comparison (template)
      - [ ] is_valid (template)
