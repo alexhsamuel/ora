@@ -272,7 +272,7 @@ PyTime<TIME>::add_to(
   type_.Ready();
 
 #ifdef ORA_NUMPY
-  TimeDtype<PyTime<TIME>>::set_up_dtype();
+  TimeDtype<PyTime<TIME>>::set_up_dtype(module);
 #endif
 
   PyTimeAPI::add(&type_, std::make_unique<API>());
