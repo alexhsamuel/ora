@@ -32,6 +32,16 @@ from_timespec(
 }
 
 
+template<class TIME=Time>
+inline typename TIME::Offset
+get_offset(
+  TIME const time)
+  noexcept
+{
+  return time.offset_;
+}
+
+
 template<class TIME>
 inline EpochTime
 get_epoch_time(
@@ -54,7 +64,7 @@ equal(
   TIME const time1)
   noexcept
 {
-  return time0.offset_ == time1.offset_;
+  return nex::get_offset(time0) == nex::get_offset(time1);
 }
 
 

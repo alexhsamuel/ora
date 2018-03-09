@@ -33,6 +33,14 @@ from_timespec(
 
 //------------------------------------------------------------------------------
 
+template<class TIME>
+inline typename TIME::Offset
+get_offset(
+  TIME const time)
+{
+  return time.get_offset();
+}
+
 /*
  * Returns the closest UNIX epoch time.
  *
