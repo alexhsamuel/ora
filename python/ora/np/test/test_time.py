@@ -6,6 +6,7 @@ pytest.importorskip("ora.np")
 
 #-------------------------------------------------------------------------------
 
+# FIXME: Combine.
 TIME_TYPES = (SmallTime, Unix32Time, Unix64Time, Time, NsTime, HiTime, Time128)
 
 @pytest.mark.parametrize("Time", TIME_TYPES)
@@ -30,7 +31,5 @@ def test_setitem(Time):
     assert not (arr == Time.INVALID).all()
     arr[2 : 4] = now(Time)
     assert arr[3] == arr[2]
-
-
 
 

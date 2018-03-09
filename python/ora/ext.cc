@@ -41,7 +41,7 @@ namespace py {
 extern Methods<Module>& add_functions(Methods<Module>&);
 
 #ifdef ORA_NUMPY
-extern ref<Object> build_np_module();
+extern ref<Module> build_np_module();
 #endif
 
 namespace {
@@ -89,13 +89,20 @@ PyInit_ext(void)
     PyDaytime<ora::daytime::Daytime32>  ::add_to(mod, "Daytime32");
     PyDaytime<ora::daytime::UsecDaytime>::add_to(mod, "UsecDaytime");
 
-    PyTime<ora::time::Time>             ::add_to(mod, "Time");
-    PyTime<ora::time::HiTime>           ::add_to(mod, "HiTime");
-    PyTime<ora::time::SmallTime>        ::add_to(mod, "SmallTime");
-    PyTime<ora::time::NsTime>           ::add_to(mod, "NsTime");
-    PyTime<ora::time::Unix32Time>       ::add_to(mod, "Unix32Time");
-    PyTime<ora::time::Unix64Time>       ::add_to(mod, "Unix64Time");
-    PyTime<ora::time::Time128>          ::add_to(mod, "Time128");
+#ifdef ORA_NUMPY
+    ref<Module> np_mod = build_np_module();
+    mod->AddObject("np", np_mod);
+#else
+    ref<Module> np_mod;
+#endif
+
+    PyTime<ora::time::Time>             ::add_to(mod, "Time", np_mod);
+    PyTime<ora::time::HiTime>           ::add_to(mod, "HiTime", np_mod);
+    PyTime<ora::time::SmallTime>        ::add_to(mod, "SmallTime", np_mod);
+    PyTime<ora::time::NsTime>           ::add_to(mod, "NsTime", np_mod);
+    PyTime<ora::time::Unix32Time>       ::add_to(mod, "Unix32Time", np_mod);
+    PyTime<ora::time::Unix64Time>       ::add_to(mod, "Unix64Time", np_mod);
+    PyTime<ora::time::Time128>          ::add_to(mod, "Time128", np_mod);
 
     PyTimeZone                          ::add_to(mod, "TimeZone");
     PyLocal                             ::add_to(mod, "Local");
@@ -134,10 +141,6 @@ PyInit_ext(void)
     TranslateException<ora::lib::fs::FileNotFoundError>::to(PyExc_FileNotFoundError);
     TranslateException<ora::lib::RuntimeError>::to(PyExc_RuntimeError);
     TranslateException<FormatError>::to(PyExc_RuntimeError);
-
-#ifdef ORA_NUMPY
-    mod->AddObject("np", build_np_module());
-#endif
 
     return mod.release();
   }

@@ -138,7 +138,7 @@ functions
 namespace ora {
 namespace py {
 
-ref<Object>
+ref<Module>
 build_np_module()
 {
   // Put everything in a submodule `np` (even though this is not a package).
@@ -155,7 +155,7 @@ build_np_module()
   mod->AddObject("WEEK_DATE_DTYPE",     (Object*) get_week_date_dtype());
   mod->AddObject("YMD_DTYPE",           (Object*) get_ymd_dtype());
 
-  return std::move(mod);
+  return mod;
 }
 
 

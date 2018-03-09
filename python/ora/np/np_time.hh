@@ -26,7 +26,7 @@ public:
   using Time = typename PYTIME::Time;
   using Offset = typename Time::Offset;
 
-  static void set_up_dtype(Module&);
+  static void set_up_dtype(Module*);
 
 private:
 
@@ -49,9 +49,10 @@ private:
 template<class PYTIME>
 void
 TimeDtype<PYTIME>::set_up_dtype(
-  Module& module)
+  Module* module)
 {
   assert(descr_ == nullptr);
+  assert(module != nullptr);
 
   // Deliberately 'leak' this instance, as it has process lifetime.
   auto arr_funcs = new PyArray_ArrFuncs;
@@ -107,10 +108,7 @@ TimeDtype<PYTIME>::set_up_dtype(
     ufunc_loop_2<Time, Time, npy_bool, not_equal>);
 
   if (int_type_num != -1) {
-    // create_or_get_ufunc(&module, "from_offset", 1, 1)->add_loop_1(
-    //   int_type_num, type_num,
-    //   ufunc_loop_1<Offset, Time, ora::time::nex::from_offset<Time>>);
-    create_or_get_ufunc(&module, "to_offset", 1, 1)->add_loop_1(
+    create_or_get_ufunc(module, "to_offset", 1, 1)->add_loop_1(
       type_num, int_type_num,
       ufunc_loop_1<Time, Offset, ora::time::nex::get_offset<Time>>);
   }
