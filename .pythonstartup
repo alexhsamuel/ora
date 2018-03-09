@@ -28,6 +28,7 @@ try:
 except ImportError:
     print("No Ora NumPy support.", file=sys.stderr)
 else:
+    ta = np.array([Time.MIN, now(), Time.MAX, Time.MISSING, Time.INVALID])
     da = np.array([
         Date.MIN,
         Date.MIN + 1,
