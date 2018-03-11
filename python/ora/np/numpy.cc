@@ -5,7 +5,9 @@
 #include "py.hh"
 #include "np_date.hh"
 #include "np_daytime.hh"
+#include "np_time.hh"
 #include "numpy.hh"
+#include "PyTime.hh"
 
 using namespace ora::lib;
 using namespace ora::py;
@@ -120,6 +122,26 @@ date_from_ymdi(
 }
 
 
+// FIXME: Put in a time source file.
+ref<Object>
+from_offset(
+  Module*,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* arg_names[] = {"offset", "dtype", nullptr};
+  PyObject* offset_arg;
+  // FIXME: Use a flexible conversion to dtype.
+  PyArray_Descr* dtype = TimeDtype<PyTimeDefault>::get_descr();
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "O|$O!", arg_names,
+    &offset_arg, &PyArrayDescr_Type, &dtype);
+  auto offset = Array::FromAny(offset_arg, NPY_INT64, 1, 1, NPY_ARRAY_BEHAVED);
+
+  return TimeAPI::get(dtype)->from_offset(offset);
+}
+
+
 // FIXME: Use a 'date' namespace.
 auto
 functions 
@@ -128,6 +150,7 @@ functions
     .add<date_from_week_date>       ("date_from_week_date")
     .add<date_from_ymd>             ("date_from_ymd")
     .add<date_from_ymdi>            ("date_from_ymdi")
+    .add<from_offset>               ("from_offset")
   ;
   
 

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Python.h>
 
 #include "numpy.hh"
@@ -18,6 +20,25 @@ template<class TIME> inline TIME convert_to_time(Object*);
 
 //------------------------------------------------------------------------------
 
+/*
+ * Dispatch for non-ufunc functions to time type-specific implementation.
+ */
+class TimeAPI
+{
+public:
+
+  virtual ~TimeAPI() {}
+  virtual ref<Object> from_offset(Array*) = 0;
+
+  static TimeAPI* get(PyArray_Descr* descr) {
+    assert(descr->c_metadata != nullptr);
+    return reinterpret_cast<TimeAPI*>(descr->c_metadata); 
+  }
+    
+};
+
+
+// FIXME: We should just subclass PyArray_Descr!
 template<class PYTIME>
 class TimeDtype
 {
@@ -27,6 +48,7 @@ public:
   using Offset = typename Time::Offset;
 
   static void set_up_dtype(Module*);
+  static PyArray_Descr* get_descr() { return descr_; }  // FIXME: Subclass!
 
 private:
 
@@ -40,6 +62,16 @@ private:
     { return ora::time::nex::equal(time0, time1) ? NPY_TRUE : NPY_FALSE; }
   static npy_bool not_equal(Time const time0, Time const time1)
     { return ora::time::nex::equal(time0, time1) ? NPY_FALSE : NPY_TRUE; }
+
+  class API
+  : public TimeAPI
+  {
+  public:
+
+    virtual ~API() = default;
+    virtual ref<Object> from_offset(Array*) override;
+
+  };
 
   static PyArray_Descr* descr_;
 
@@ -80,7 +112,7 @@ TimeDtype<PYTIME>::set_up_dtype(
   descr_->names         = nullptr;
   descr_->f             = arr_funcs;
   descr_->metadata      = nullptr;
-  descr_->c_metadata    = nullptr;
+  descr_->c_metadata    = (NpyAuxData*) new API();
   descr_->hash          = -1;
 
   if (PyArray_RegisterDataType(descr_) < 0)
@@ -174,6 +206,53 @@ TimeDtype<PYTIME>::cast_from_object(
     auto const time = maybe_time<Time>(*from);
     *to = time.first ? time.second : Time::INVALID;
   }
+}
+
+
+//------------------------------------------------------------------------------
+// API implementation
+
+template<class PYTIME>
+ref<Object>
+TimeDtype<PYTIME>::API::from_offset(
+  Array* const offset)
+{
+  size_t constexpr nargs = 2;
+  PyArrayObject* op[nargs] = {(PyArrayObject*) offset, nullptr};
+  // Tell the iterator to allocate the output automatically.
+  npy_uint32 op_flags[nargs] 
+    = {NPY_ITER_READONLY, NPY_ITER_WRITEONLY | NPY_ITER_ALLOCATE};
+  PyArray_Descr* op_dtypes[nargs] = {Descr::from(NPY_INT64), descr_};
+
+  // Construct the iterator.  No inner iteration; we handle the inner loop 
+  // explicit.  (FIXME?)
+  auto const iter = NpyIter_MultiNew(
+    nargs, op, NPY_ITER_EXTERNAL_LOOP, NPY_KEEPORDER, NPY_UNSAFE_CASTING, 
+    op_flags, op_dtypes);
+  if (iter == nullptr)
+    throw Exception();
+
+  auto const next = NpyIter_GetIterNext(iter, NULL);
+  auto const inner_stride = NpyIter_GetInnerStrideArray(iter)[0];
+  auto const item_size = NpyIter_GetDescrArray(iter)[1]->elsize;
+
+  auto const& inner_size = *NpyIter_GetInnerLoopSizePtr(iter);
+  auto const data_ptrs = NpyIter_GetDataPtrArray(iter);
+
+  do {
+    // Note: Since dst is newly allocated, it is tightly packed.
+    auto size   = inner_size;
+    auto src    = data_ptrs[0];
+    auto dst    = data_ptrs[1];
+    for (; size > 0; --size, src += inner_stride, dst += item_size)
+      *reinterpret_cast<Time*>(dst) 
+        = ora::time::nex::from_offset(*reinterpret_cast<int64_t*>(src));
+  } while (next(iter));
+
+  // Get the result from the iterator object array.
+  auto ret = ref<Array>::of((Array*) NpyIter_GetOperandArray(iter)[1]);
+  check_succeed(NpyIter_Deallocate(iter));
+  return std::move(ret);
 }
 
 

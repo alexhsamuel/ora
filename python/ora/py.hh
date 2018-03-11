@@ -144,7 +144,9 @@ inline void check_true(int value)
 /**
  * Raises 'Exception' if 'value' is null; otherwise, returns it.
  */
-inline Object* check_not_null(PyObject* obj)
+inline Object* 
+check_not_null(
+  PyObject* obj)
 {
   if (obj == nullptr)
     throw Exception();
@@ -153,7 +155,9 @@ inline Object* check_not_null(PyObject* obj)
 }
 
 
-inline Type* check_not_null(PyTypeObject* type)
+inline Type* 
+check_not_null(
+  PyTypeObject* type)
 {
   if (type == nullptr)
     throw Exception();
@@ -173,9 +177,20 @@ cast(PyObject* obj)
 }
 
 
-inline PyObject* incref(PyObject* obj)
+inline PyObject* 
+incref(
+  PyObject* obj)
 {
   Py_INCREF(obj);
+  return obj;
+}
+
+
+inline PyObject*
+xincref(
+  PyObject* obj)
+{
+  Py_XINCREF(obj);
   return obj;
 }
 
