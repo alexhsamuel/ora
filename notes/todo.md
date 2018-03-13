@@ -1,6 +1,8 @@
 # Miscellaneous Work List
 
 1. Move doc_t into generated docstring.cc, or elsewhere.
+1. Make Python Date like Time.
+1. Make Python Daytime like Time.
 1. Change `Time` to use _signed_ int64 around UNIX epoch.
 1. When parsing fractional seconds, work in terms of dayticks.
 1. Make the Python default Time, Date, Daytime types setable.
