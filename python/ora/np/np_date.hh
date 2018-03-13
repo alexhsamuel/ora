@@ -200,6 +200,7 @@ DateDtype<PYDATE>::add(
 
   // Build or get the dtype.
   auto const dtype = DateDtype<PYDATE>::get();
+  assert(dtype != nullptr);
 
   // Add the dtype as a class attribute.
   auto const dict = (Dict*) dtype->typeobj->tp_dict;

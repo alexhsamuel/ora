@@ -47,7 +47,7 @@ public:
   using Time = typename PYTIME::Time;
   using Offset = typename Time::Offset;
 
-  static void set_up_dtype(Module*);
+  static void set_up(Module*);
   static Descr* get_descr()
     { return descr_; }
 
@@ -81,7 +81,7 @@ private:
 
 template<class PYTIME>
 void
-TimeDtype<PYTIME>::set_up_dtype(
+TimeDtype<PYTIME>::set_up(
   Module* module)
 {
   assert(descr_ == nullptr);

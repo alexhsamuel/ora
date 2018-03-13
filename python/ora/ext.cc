@@ -26,6 +26,7 @@
 #include "PyLocal.hh"
 #include "PyTime.hh"
 #include "PyTimeZone.hh"
+#include "np/np_time.hh"
 
 using namespace ora::lib;
 using namespace ora::py;
@@ -55,6 +56,24 @@ module_def{
 };
 
 
+template<class TIME>
+void
+add_time(
+  char const* name,
+  Module* const mod,
+  Module* const np_mod)
+{
+  // If we have numpy, make this type a subtype of numpy.generic.  This is
+  // necessary for some numpy operations to work.
+  auto const base = np_mod == nullptr ? nullptr : (Type*) &PyGenericArrType_Type;
+
+  Type* type = PyTime<TIME>::set_up("ora."s + name, base);
+  mod->AddObject(name, (Object*) type);
+  if (np_mod != nullptr)
+    TimeDtype<PyTime<TIME>>::set_up(np_mod);
+}
+
+
 }  // anonymous namespace
 
 }  // namespace py
@@ -66,14 +85,19 @@ PyMODINIT_FUNC
 PyInit_ext(void)
 {
   try {
+    auto mod = Module::Create(&module_def);
+
     // Import numpy.
     // FIXME: Handle if numpy is missing.
     if (_import_array() < 0) 
       throw ImportError("failed to import numpy.core.multiarray"); 
     if (_import_umath() < 0) 
       throw ImportError("failed to import numpy.core.umath");
+    bool const np = true;
 
-    auto mod = Module::Create(&module_def);
+    // FIXME: Split up date, time, daytime into separate functions in separate
+    // compilation units, as these are where the big template instantiations
+    // happen.
 
     PyDate<ora::date::Date>             ::add_to(mod, "Date");
     PyDate<ora::date::Date16>           ::add_to(mod, "Date16");
@@ -82,16 +106,20 @@ PyInit_ext(void)
     PyDaytime<ora::daytime::Daytime32>  ::add_to(mod, "Daytime32");
     PyDaytime<ora::daytime::UsecDaytime>::add_to(mod, "UsecDaytime");
 
-    ref<Module> np_mod = build_np_module();
-    mod->AddObject("np", np_mod);
+    // FIXME: Move this up, once the add_to() above don't do numpy things.
+    ref<Module> np_mod;
+    if (np) {
+      np_mod = build_np_module();
+      mod->AddObject("np", np_mod);
+    }
 
-    PyTime<ora::time::Time>             ::add_to(mod, "Time", np_mod);
-    PyTime<ora::time::HiTime>           ::add_to(mod, "HiTime", np_mod);
-    PyTime<ora::time::SmallTime>        ::add_to(mod, "SmallTime", np_mod);
-    PyTime<ora::time::NsTime>           ::add_to(mod, "NsTime", np_mod);
-    PyTime<ora::time::Unix32Time>       ::add_to(mod, "Unix32Time", np_mod);
-    PyTime<ora::time::Unix64Time>       ::add_to(mod, "Unix64Time", np_mod);
-    PyTime<ora::time::Time128>          ::add_to(mod, "Time128", np_mod);
+    add_time<ora::time::Time>       ("Time"      , mod, np_mod);
+    add_time<ora::time::HiTime>     ("HiTime"    , mod, np_mod);
+    add_time<ora::time::SmallTime>  ("SmallTime" , mod, np_mod);
+    add_time<ora::time::NsTime>     ("NsTime"    , mod, np_mod);
+    add_time<ora::time::Unix32Time> ("Unix32Time", mod, np_mod);
+    add_time<ora::time::Unix64Time> ("Unix64Time", mod, np_mod);
+    add_time<ora::time::Time128>    ("Time128"   , mod, np_mod);
 
     PyTimeZone                          ::add_to(mod, "TimeZone");
     PyLocal                             ::add_to(mod, "Local");

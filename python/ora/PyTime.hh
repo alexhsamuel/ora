@@ -18,8 +18,6 @@
 #include "PyTimeZone.hh"
 #include "util.hh"
 
-#include "np/np_time.hh"
-
 namespace ora {
 namespace py {
 
@@ -151,11 +149,12 @@ public:
   using Time = TIME;
 
   /** 
-   * Readies the Python type and adds it to `module` as `name`.  
+   * Sets up the Python type.
    *
-   * Should only be called once; this is not checked.
+   * `base` is the base class to use, or nullptr for none.  Should only be
+   * called once; this is not checked.
    */
-  static void add_to(Module* module, string const& name, Module* np_module);
+  static Type* set_up(string const& name, Type* base=nullptr);
 
   static Type type_;
 
@@ -248,7 +247,7 @@ private:
   /** Date format used to generate the repr.  */
   static unique_ptr<ora::time::TimeFormat> repr_format_;
 
-  static Type build_type(string const& type_name);
+  static Type build_type(string const& type_name, Type* base);
 
 };
 
@@ -256,24 +255,11 @@ private:
 //------------------------------------------------------------------------------
 
 template<class TIME>
-void
-PyTime<TIME>::add_to(
-  Module* module,
+Type*
+PyTime<TIME>::set_up(
   string const& name,
-  Module* np_module)
+  Type* const base)
 {
-  // Construct the type struct.
-  type_ = build_type(string{module->GetName()} + "." + name);
-  // FIXME: Make the conditional on successfully importing numpy.
-  type_.tp_base = &PyGenericArrType_Type;
-  // Hand it to Python.
-  type_.Ready();
-
-  // FIXME: Make the conditional on successfully importing numpy.
-  TimeDtype<PyTime<TIME>>::set_up_dtype(np_module);
-
-  PyTimeAPI::add(&type_, std::make_unique<API>());
-
   // Choose precision for seconds that captures actual precision of the time
   // class (up to 1 fs).
   precision_
@@ -286,7 +272,15 @@ PyTime<TIME>::add_to(
     name + ".INVALID",
     name + ".MISSING");
 
-  // Add in static data members.
+  // Construct the type struct.
+  type_ = build_type(name, base);
+  // Hand it to Python.
+  type_.Ready();
+
+  // Set up the API.
+  PyTimeAPI::add(&type_, std::make_unique<API>());
+
+  // Add class attributes.
   Dict* const dict = (Dict*) type_.tp_dict;
   assert(dict != nullptr);
   dict->SetItemString("DENOMINATOR" , Long::from(Time::DENOMINATOR));
@@ -296,8 +290,7 @@ PyTime<TIME>::add_to(
   dict->SetItemString("MISSING"     , create(Time::MISSING));
   dict->SetItemString("RESOLUTION"  , Float::FromDouble(1.0 / Time::DENOMINATOR));
 
-  // Add the type to the module.
-  module->add(&type_);
+  return &type_;
 }
 
 
@@ -741,7 +734,8 @@ PyTime<TIME>::precision_;
 template<class TIME>
 Type
 PyTime<TIME>::build_type(
-  string const& type_name)
+  string const& type_name,
+  Type* const base)
 {
   // Customize the type docstring with this class's name and parameters.
   auto const doc_len    = strlen(docstring::pytime::type) + 64;
@@ -786,7 +780,7 @@ PyTime<TIME>::build_type(
     (PyMethodDef*)        tp_methods_,                    // tp_methods
     (PyMemberDef*)        nullptr,                        // tp_members
     (PyGetSetDef*)        tp_getsets_,                    // tp_getset
-    (_typeobject*)        nullptr,                        // tp_base
+    (_typeobject*)        base,                           // tp_base
     (PyObject*)           nullptr,                        // tp_dict
     (descrgetfunc)        nullptr,                        // tp_descr_get
     (descrsetfunc)        nullptr,                        // tp_descr_set
