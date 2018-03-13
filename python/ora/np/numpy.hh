@@ -24,6 +24,28 @@ using namespace ora::lib;
 
 //------------------------------------------------------------------------------
 
+inline void
+check_succeed(
+  npy_intp status)
+{
+  if (status != NPY_SUCCEED)
+    throw Exception();
+}
+
+
+//------------------------------------------------------------------------------
+
+class Descr
+: public PyArray_Descr
+{
+public:
+
+  static Descr* from(int const typenum)
+    { return (Descr*) PyArray_DescrFromType(typenum); }
+  
+};
+
+
 class Array
 : public Object
 {
@@ -43,6 +65,8 @@ public:
     { check_zero(PyArray_RegisterCastFunc(from, to, f)); }
   static void RegisterCastFunc(int const from, int const to, PyArray_VectorUnaryFunc* const f)
     { check_zero(PyArray_RegisterCastFunc(PyArray_DescrFromType(from), to, f)); }
+  static ref<Array> NewLikeArray(PyArrayObject* prototype, NPY_ORDER order=NPY_CORDER, PyArray_Descr* descr=nullptr, bool subok=true)
+    { return take_not_null<Array>(PyArray_NewLikeArray(prototype, order, (PyArray_Descr*) xincref((PyObject*) descr), subok ? 1 : 0)); }
   static ref<Array> SimpleNew(int const nd, npy_intp* const dims, int const typenum)
     { return take_not_null<Array>(PyArray_SimpleNew(nd, dims, typenum)); }
   static ref<Array> SimpleNew1D(npy_intp const size, int const typenum)
