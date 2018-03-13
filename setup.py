@@ -93,12 +93,16 @@ setup(
                 "python/ora",
                 *get_numpy_include_dirs(),
             ],
-            sources           =glob("python/ora/*.cc"),
+            sources           =[
+                *glob("python/ora/*.cc"),
+                *glob("python/ora/np/*.cc"),
+            ],
             library_dirs      =["cxx/src",],
             libraries         =["ora",],
             depends           =[
-                *glob("python/ora/*.hh"),
                 *glob("cxx/include/*.hh"),
+                *glob("python/ora/*.hh"),
+                *glob("python/ora/np/*.hh"),
             ]
         ),
     ],
