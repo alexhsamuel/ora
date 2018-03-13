@@ -122,7 +122,6 @@ date_from_ymdi(
 }
 
 
-// FIXME: Put in a time source file.
 ref<Object>
 from_offset(
   Module*,
@@ -141,7 +140,6 @@ from_offset(
 }
 
 
-// FIXME: Use a 'date' namespace.
 auto
 functions 
   = Methods<Module>()

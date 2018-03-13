@@ -220,19 +220,18 @@ TimeDtype<PYTIME>::API::from_offset(
   size_t constexpr nargs = 2;
   PyArrayObject* op[nargs] = {(PyArrayObject*) offset, nullptr};
   // Tell the iterator to allocate the output automatically.
-  npy_uint32 op_flags[nargs] 
+  npy_uint32 flags[nargs] 
     = {NPY_ITER_READONLY, NPY_ITER_WRITEONLY | NPY_ITER_ALLOCATE};
-  PyArray_Descr* op_dtypes[nargs] = {Descr::from(NPY_INT64), descr_};
+  PyArray_Descr* dtypes[nargs] = {Descr::from(NPY_INT64), descr_};
 
-  // Construct the iterator.  No inner iteration; we handle the inner loop 
-  // explicit.  (FIXME?)
+  // Construct the iterator.  We'll handle the inner loop explicitly.
   auto const iter = NpyIter_MultiNew(
     nargs, op, NPY_ITER_EXTERNAL_LOOP, NPY_KEEPORDER, NPY_UNSAFE_CASTING, 
-    op_flags, op_dtypes);
+    flags, dtypes);
   if (iter == nullptr)
     throw Exception();
 
-  auto const next = NpyIter_GetIterNext(iter, NULL);
+  auto const next = NpyIter_GetIterNext(iter, nullptr);
   auto const inner_stride = NpyIter_GetInnerStrideArray(iter)[0];
   auto const item_size = NpyIter_GetDescrArray(iter)[1]->elsize;
 
@@ -241,10 +240,11 @@ TimeDtype<PYTIME>::API::from_offset(
 
   do {
     // Note: Since dst is newly allocated, it is tightly packed.
-    auto size   = inner_size;
-    auto src    = data_ptrs[0];
-    auto dst    = data_ptrs[1];
-    for (; size > 0; --size, src += inner_stride, dst += item_size)
+    auto src = data_ptrs[0];
+    auto dst = data_ptrs[1];
+    for (auto size = inner_size; 
+         size > 0; 
+         --size, src += inner_stride, dst += item_size)
       *reinterpret_cast<Time*>(dst) 
         = ora::time::nex::from_offset<Time>(*reinterpret_cast<int64_t*>(src));
   } while (next(iter));
