@@ -136,6 +136,7 @@ from_offset(
     &offset_arg, &PyArray_DescrConverter, &dtype);
   auto offset = Array::FromAny(offset_arg, NPY_INT64, 0, 0, NPY_ARRAY_BEHAVED);
 
+  // FIXME: Handle dtype == nullptr in TimeAPI::get().
   return TimeAPI::get(dtype)->from_offset(offset);
 }
 

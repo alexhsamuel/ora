@@ -48,7 +48,8 @@ public:
   using Offset = typename Time::Offset;
 
   static void set_up_dtype(Module*);
-  static Descr* get_descr() { return descr_; }  // FIXME: Subclass!
+  static Descr* get_descr()
+    { return descr_; }
 
 private:
 
