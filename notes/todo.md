@@ -130,8 +130,6 @@
 1. Travis builds with/without numpy.
 1. Either dtypes need to initialize to INVALID, or underlying types must handle
    any bit pattern, so that `np.empty()` doesn't blow things up.
-1. Remove `ORA_NUMPY` entirely.  Built with numpy support, but install the
-   array base class only if numpy is available.
 
 
 # Small fixes

@@ -18,9 +18,7 @@
 #include "PyTimeZone.hh"
 #include "util.hh"
 
-#ifdef ORA_NUMPY
-# include "np/np_time.hh"
-#endif
+#include "np/np_time.hh"
 
 namespace ora {
 namespace py {
@@ -266,15 +264,13 @@ PyTime<TIME>::add_to(
 {
   // Construct the type struct.
   type_ = build_type(string{module->GetName()} + "." + name);
-#ifdef ORA_NUMPY
+  // FIXME: Make the conditional on successfully importing numpy.
   type_.tp_base = &PyGenericArrType_Type;
-#endif
   // Hand it to Python.
   type_.Ready();
 
-#ifdef ORA_NUMPY
+  // FIXME: Make the conditional on successfully importing numpy.
   TimeDtype<PyTime<TIME>>::set_up_dtype(np_module);
-#endif
 
   PyTimeAPI::add(&type_, std::make_unique<API>());
 

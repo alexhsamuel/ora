@@ -55,8 +55,6 @@ PYTHON	    	= python3
 PYTEST	    	= py.test
 PYTHON_CONFIG	= python3-config
 
-ORA_NUMPY      ?= no
-
 # Directories
 PY_DIR	    	= $(TOP)/python
 PY_PKGDIR   	= $(PY_DIR)/ora
@@ -159,11 +157,8 @@ PY_CXXFLAGS    += -DNDEBUG  # FIXME: Remove.
 PY_DOCSTR       = $(wildcard $(PY_PKGDIR)/*.docstrings)
 
 # Building with NumPy support
-ifeq ($(ORA_NUMPY),yes)
-  PY_INCDIRS   += $(shell $(PYTHON) -c 'from numpy.distutils.misc_util import get_numpy_include_dirs as g; print(" ".join(g()));')
-  PY_SRCS      += $(wildcard $(PY_PKGDIR)/np/*.cc)
-  PY_CPPFLAGS  += -DORA_NUMPY
-endif
+PY_INCDIRS     += $(shell $(PYTHON) -c 'from numpy.distutils.misc_util import get_numpy_include_dirs as g; print(" ".join(g()));')
+PY_SRCS        += $(wildcard $(PY_PKGDIR)/np/*.cc)
 
 # Outputs
 DEPS           += $(PY_SRCS:%.cc=%.cc.d)

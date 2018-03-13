@@ -11,27 +11,13 @@ Docs at `readthedocs <http://ora.readthedocs.io/en/latest/>`_.
 #-------------------------------------------------------------------------------
 
 from   glob import glob
+from   numpy.distutils.misc_util import get_numpy_include_dirs
 import os
 from   setuptools import setup, Extension
 import setuptools.command.build_ext
 import setuptools.command.install
 import subprocess
 import sys
-
-#-------------------------------------------------------------------------------
-
-# FIXME: We should just require numpy to build, no?
-
-try:
-    import numpy
-except ImportError:
-    have_numpy = False
-    numpy_include_dirs = []
-    print("no numpy found; building without")
-else:
-    have_numpy = True
-    from numpy.distutils.misc_util import get_numpy_include_dirs
-    numpy_include_dirs = get_numpy_include_dirs()
 
 #-------------------------------------------------------------------------------
 
@@ -84,7 +70,7 @@ setup(
 
     python_requires='>=3.6',
     install_requires=[
-        "numpy",  # FIXME: Relax this.
+        "numpy",  # Required to install, but not to use.
     ],
 
     package_dir     ={"": "python"},
@@ -101,7 +87,7 @@ setup(
                 "-std=c++14", 
                 "-fdiagnostics-color=always", 
             ],
-            include_dirs      =["cxx/include"] + numpy_include_dirs,
+            include_dirs      =["cxx/include"] + get_numpy_include_dirs(),
             sources           =glob("python/ora/*.cc"),
             library_dirs      =["cxx/src",],
             libraries         =["ora",],
