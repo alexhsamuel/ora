@@ -50,6 +50,7 @@ def enumerate_data_files(dir):
     for dir, _, files in os.walk(dir):
         yield dir, [ os.path.join(dir, f) for f in files ]
 
+
 setup(
     name            ="ora",
     version         ="0.2.4",
@@ -87,11 +88,18 @@ setup(
                 "-std=c++14", 
                 "-fdiagnostics-color=always", 
             ],
-            include_dirs      =["cxx/include"] + get_numpy_include_dirs(),
+            include_dirs      =[
+                "cxx/include",
+                "python/ora",
+                *get_numpy_include_dirs(),
+            ],
             sources           =glob("python/ora/*.cc"),
             library_dirs      =["cxx/src",],
             libraries         =["ora",],
-            depends           =glob("python/ora/*.hh") + glob("cxx/include/*.hh"),
+            depends           =[
+                *glob("python/ora/*.hh"),
+                *glob("cxx/include/*.hh"),
+            ]
         ),
     ],
 
