@@ -75,7 +75,7 @@ setup(
     ],
 
     package_dir     ={"": "python"},
-    packages        =["ora"],
+    packages        =["ora", "ora.np"],
     package_data    ={
         ""      : ["test/*"],
         "ora"   : ["zoneinfo/*", "zoneinfo/*/*"],
