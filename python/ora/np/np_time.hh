@@ -246,7 +246,7 @@ TimeDtype<PYTIME>::API::from_offset(
     auto dst    = data_ptrs[1];
     for (; size > 0; --size, src += inner_stride, dst += item_size)
       *reinterpret_cast<Time*>(dst) 
-        = ora::time::nex::from_offset(*reinterpret_cast<int64_t*>(src));
+        = ora::time::nex::from_offset<Time>(*reinterpret_cast<int64_t*>(src));
   } while (next(iter));
 
   // Get the result from the iterator object array.
