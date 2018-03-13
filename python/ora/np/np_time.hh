@@ -48,7 +48,7 @@ public:
   using Offset = typename Time::Offset;
 
   static void set_up_dtype(Module*);
-  static PyArray_Descr* get_descr() { return descr_; }  // FIXME: Subclass!
+  static Descr* get_descr() { return descr_; }  // FIXME: Subclass!
 
 private:
 
@@ -73,7 +73,7 @@ private:
 
   };
 
-  static PyArray_Descr* descr_;
+  static Descr* descr_;
 
 };
 
@@ -96,7 +96,7 @@ TimeDtype<PYTIME>::set_up_dtype(
   arr_funcs->compare    = (PyArray_CompareFunc*) compare;
   // FIMXE: Additional methods.
 
-  descr_ = PyObject_New(PyArray_Descr, &PyArrayDescr_Type);
+  descr_ = (Descr*) PyObject_New(PyArray_Descr, &PyArrayDescr_Type);
   descr_->typeobj       = incref(&PYTIME::type_);
   descr_->kind          = 'V';
   descr_->type          = 'j';  // FIXME?
@@ -259,7 +259,7 @@ TimeDtype<PYTIME>::API::from_offset(
 //------------------------------------------------------------------------------
 
 template<class PYTIME>
-PyArray_Descr*
+Descr*
 TimeDtype<PYTIME>::descr_
   = nullptr;
 

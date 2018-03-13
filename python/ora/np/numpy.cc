@@ -130,7 +130,7 @@ from_offset(
 {
   static char const* arg_names[] = {"offset", "dtype", nullptr};
   PyObject* offset_arg;
-  Descr* dtype;
+  Descr* dtype = TimeDtype<PyTimeDefault>::get_descr();
   Arg::ParseTupleAndKeywords(
     args, kw_args, "O|$O&", arg_names,
     &offset_arg, &PyArray_DescrConverter, &dtype);
