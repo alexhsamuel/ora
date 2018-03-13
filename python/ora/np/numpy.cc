@@ -136,7 +136,7 @@ from_offset(
   Arg::ParseTupleAndKeywords(
     args, kw_args, "O|$O!", arg_names,
     &offset_arg, &PyArrayDescr_Type, &dtype);
-  auto offset = Array::FromAny(offset_arg, NPY_INT64, 1, 1, NPY_ARRAY_BEHAVED);
+  auto offset = Array::FromAny(offset_arg, NPY_INT64, 0, 0, NPY_ARRAY_BEHAVED);
 
   return TimeAPI::get(dtype)->from_offset(offset);
 }
