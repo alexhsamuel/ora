@@ -42,7 +42,7 @@ public:
 
   static Descr* from(int const typenum)
     { return (Descr*) PyArray_DescrFromType(typenum); }
-
+  
 };
 
 

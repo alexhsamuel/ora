@@ -6,7 +6,7 @@ import ora.np
 
 def test_from_offset():
     offset = (1 << np.arange(30)).reshape(3, 5, 2)
-    time = ora.np.from_offset(offset, dtype=Unix32Time.dtype)
+    time = ora.np.from_offset(offset, dtype=Unix32Time)
     assert time.shape == (3, 5, 2)
     assert time.dtype == Unix32Time.dtype
     assert time[0][0][0] == Unix32Time.from_offset(1)

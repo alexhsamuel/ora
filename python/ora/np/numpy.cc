@@ -131,11 +131,10 @@ from_offset(
 {
   static char const* arg_names[] = {"offset", "dtype", nullptr};
   PyObject* offset_arg;
-  // FIXME: Use a flexible conversion to dtype.
-  PyArray_Descr* dtype = TimeDtype<PyTimeDefault>::get_descr();
+  Descr* dtype;
   Arg::ParseTupleAndKeywords(
-    args, kw_args, "O|$O!", arg_names,
-    &offset_arg, &PyArrayDescr_Type, &dtype);
+    args, kw_args, "O|$O&", arg_names,
+    &offset_arg, &PyArray_DescrConverter, &dtype);
   auto offset = Array::FromAny(offset_arg, NPY_INT64, 0, 0, NPY_ARRAY_BEHAVED);
 
   return TimeAPI::get(dtype)->from_offset(offset);
