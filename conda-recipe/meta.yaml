@@ -18,7 +18,6 @@ requirements:
     - setuptools
   run:
     - libgcc
-    - numpy
     - python 3.6.*
 
 build:
@@ -26,6 +25,7 @@ build:
 
 test:
   requires:
+    - numpy
     - pytest
     - pytz
   imports:

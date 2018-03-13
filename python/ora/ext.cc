@@ -1,4 +1,3 @@
-#ifdef ORA_NUMPY
 // In this, and only this, compilation unit, we need to #include the numpy
 // headers without NO_IMPORT_ARRAY #defined.  In all other compilation units,
 // this macro is defined, to make sure a single shared copy of the API is used.
@@ -6,17 +5,16 @@
 // See http://docs.scipy.org/doc/numpy/reference/c-api.array.html#importing-the-api.
 //
 // FIXME: Encapsulate this so that no human ever ever has to deal with it again.
-# define PY_ARRAY_UNIQUE_SYMBOL ora_PyArray_API
-# define PY_UFUNC_UNIQUE_SYMBOL ora_PyUFunc_API
-# define NPY_NO_DEPRECATED_API NPY_API_VERSION
+#define PY_ARRAY_UNIQUE_SYMBOL ora_PyArray_API
+#define PY_UFUNC_UNIQUE_SYMBOL ora_PyUFunc_API
+#define NPY_NO_DEPRECATED_API NPY_API_VERSION
 
-# include <numpy/arrayobject.h>
-# include <numpy/npy_math.h>
-# include <numpy/ufuncobject.h>
-# include <numpy/npy_3kcompat.h>
+#include <numpy/arrayobject.h>
+#include <numpy/npy_math.h>
+#include <numpy/ufuncobject.h>
+#include <numpy/npy_3kcompat.h>
 
-# include "np/numpy.hh"
-#endif
+#include "np/numpy.hh"
 
 //------------------------------------------------------------------------------
 
@@ -39,10 +37,7 @@ namespace py {
 
 /* Adds functions from functions.cc.  */
 extern Methods<Module>& add_functions(Methods<Module>&);
-
-#ifdef ORA_NUMPY
 extern ref<Module> build_np_module();
-#endif
 
 namespace {
 
@@ -71,14 +66,12 @@ PyMODINIT_FUNC
 PyInit_ext(void)
 {
   try {
-#ifdef ORA_NUMPY
     // Import numpy.
     // FIXME: Handle if numpy is missing.
     if (_import_array() < 0) 
       throw ImportError("failed to import numpy.core.multiarray"); 
     if (_import_umath() < 0) 
       throw ImportError("failed to import numpy.core.umath");
-#endif
 
     auto mod = Module::Create(&module_def);
 
@@ -89,12 +82,8 @@ PyInit_ext(void)
     PyDaytime<ora::daytime::Daytime32>  ::add_to(mod, "Daytime32");
     PyDaytime<ora::daytime::UsecDaytime>::add_to(mod, "UsecDaytime");
 
-#ifdef ORA_NUMPY
     ref<Module> np_mod = build_np_module();
     mod->AddObject("np", np_mod);
-#else
-    ref<Module> np_mod;
-#endif
 
     PyTime<ora::time::Time>             ::add_to(mod, "Time", np_mod);
     PyTime<ora::time::HiTime>           ::add_to(mod, "HiTime", np_mod);

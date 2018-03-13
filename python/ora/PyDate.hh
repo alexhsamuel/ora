@@ -14,9 +14,7 @@
 #include "ora.hh"
 #include "py.hh"
 
-#ifdef ORA_NUMPY
-# include "np/numpy.hh"
-#endif
+#include "np/numpy.hh"
 
 namespace ora {
 namespace py {
@@ -281,9 +279,8 @@ PyDate<DATE>::add_to(
 {
   // Construct the type struct.
   type_ = build_type(string{module.GetName()} + "." + name);
-#ifdef ORA_NUMPY
+  // FIXME: Make the conditional on successfully importing numpy.
   type_.tp_base = &PyGenericArrType_Type;
-#endif
   // Hand it to Python.
   type_.Ready();
 

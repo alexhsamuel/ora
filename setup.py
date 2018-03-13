@@ -11,27 +11,13 @@ Docs at `readthedocs <http://ora.readthedocs.io/en/latest/>`_.
 #-------------------------------------------------------------------------------
 
 from   glob import glob
+from   numpy.distutils.misc_util import get_numpy_include_dirs
 import os
 from   setuptools import setup, Extension
 import setuptools.command.build_ext
 import setuptools.command.install
 import subprocess
 import sys
-
-#-------------------------------------------------------------------------------
-
-# FIXME: We should just require numpy to build, no?
-
-try:
-    import numpy
-except ImportError:
-    have_numpy = False
-    numpy_include_dirs = []
-    print("no numpy found; building without")
-else:
-    have_numpy = True
-    from numpy.distutils.misc_util import get_numpy_include_dirs
-    numpy_include_dirs = get_numpy_include_dirs()
 
 #-------------------------------------------------------------------------------
 
@@ -64,6 +50,7 @@ def enumerate_data_files(dir):
     for dir, _, files in os.walk(dir):
         yield dir, [ os.path.join(dir, f) for f in files ]
 
+
 setup(
     name            ="ora",
     version         ="0.2.4",
@@ -84,7 +71,7 @@ setup(
 
     python_requires='>=3.6',
     install_requires=[
-        "numpy",  # FIXME: Relax this.
+        "numpy",  # Required to install, but not to use.
     ],
 
     package_dir     ={"": "python"},
@@ -101,11 +88,22 @@ setup(
                 "-std=c++14", 
                 "-fdiagnostics-color=always", 
             ],
-            include_dirs      =["cxx/include"] + numpy_include_dirs,
-            sources           =glob("python/ora/*.cc"),
+            include_dirs      =[
+                "cxx/include",
+                "python/ora",
+                *get_numpy_include_dirs(),
+            ],
+            sources           =[
+                *glob("python/ora/*.cc"),
+                *glob("python/ora/np/*.cc"),
+            ],
             library_dirs      =["cxx/src",],
             libraries         =["ora",],
-            depends           =glob("python/ora/*.hh") + glob("cxx/include/*.hh"),
+            depends           =[
+                *glob("cxx/include/*.hh"),
+                *glob("python/ora/*.hh"),
+                *glob("python/ora/np/*.hh"),
+            ]
         ),
     ],
 
