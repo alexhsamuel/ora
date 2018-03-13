@@ -2,9 +2,8 @@
 
 #include <Python.h>
 
-#include "py.hh"
-
 #include "PyDate.hh"
+#include "py.hh"
 
 namespace ora {
 namespace py {
@@ -53,33 +52,6 @@ get_week_date_type()
     static PyStructSequence_Desc desc{
       (char*) "WeekDate",                                   // name
       nullptr,                                              // doc
-      fields,                                               // fields
-      3                                                     // n_in_sequence
-    };
-
-    StructSequenceType::InitType(&type, &desc);
-  }
-
-  return &type;
-}
-
-
-StructSequenceType*
-get_ymd_date_type()
-{
-  static StructSequenceType type;
-
-  if (type.tp_name == nullptr) {
-    // Lazy one-time initialization.
-    static PyStructSequence_Field fields[] = {
-      {(char*) "year"       , nullptr},
-      {(char*) "month"      , nullptr},
-      {(char*) "day"        , nullptr},
-      {nullptr, nullptr}
-    };
-    static PyStructSequence_Desc desc{
-      (char*) "YmdDate",                                    // name
-      (char*) docstring::ymddate::type,                     // doc
       fields,                                               // fields
       3                                                     // n_in_sequence
     };
@@ -186,11 +158,6 @@ namespace pydate {
 #include "PyDate.docstrings.cc.inc"
 
 }  // namespace pydate
-namespace ymddate {
-
-#include "YmdDate.docstrings.cc.inc"
-
-}  // namespace ymddate
 }  // namespace docstring
 
 //------------------------------------------------------------------------------

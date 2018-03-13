@@ -11,10 +11,10 @@
 #include <Python.h>
 #include <datetime.h>
 
+#include "np/numpy.hh"
 #include "ora.hh"
 #include "py.hh"
-
-#include "np/numpy.hh"
+#include "types.hh"
 
 namespace ora {
 namespace py {
@@ -30,7 +30,6 @@ using std::unique_ptr;
 // Declarations
 //------------------------------------------------------------------------------
 
-extern StructSequenceType* get_ymd_date_type();
 extern ref<Object> make_ordinal_date(ora::OrdinalDate);
 extern ref<Object> make_week_date(ora::WeekDate);
 extern ref<Object> make_ymd_date(ora::YmdDate);
@@ -137,12 +136,6 @@ namespace pydate {
 #include "PyDate.docstrings.hh.inc"
 
 }  // namespace docstring
-
-namespace ymddate {
-
-#include "YmdDate.docstrings.hh.inc"
-
-}  // namespace ymddate
 
 }  // namespace pydate
 

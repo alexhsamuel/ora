@@ -21,12 +21,9 @@
 #include <Python.h>
 #include <datetime.h>
 
-#include "PyDate.hh"
-#include "PyDaytime.hh"
 #include "PyLocal.hh"
-#include "PyTime.hh"
 #include "PyTimeZone.hh"
-#include "np/np_time.hh"
+#include "types.hh"
 
 using namespace ora::lib;
 using namespace ora::py;
@@ -35,6 +32,13 @@ using namespace ora::py;
 
 namespace ora {
 namespace py {
+
+/* Adds date types.  */
+extern void set_up_dates(Module*, Module*);
+/* Adds daytime types.  */
+extern void set_up_daytimes(Module*, Module*);
+/* Adds time types.  */
+extern void set_up_times(Module*, Module*);
 
 /* Adds functions from functions.cc.  */
 extern Methods<Module>& add_functions(Methods<Module>&);
@@ -54,24 +58,6 @@ module_def{
   -1,
   add_functions(methods)
 };
-
-
-template<class TIME>
-void
-add_time(
-  char const* name,
-  Module* const mod,
-  Module* const np_mod)
-{
-  // If we have numpy, make this type a subtype of numpy.generic.  This is
-  // necessary for some numpy operations to work.
-  auto const base = np_mod == nullptr ? nullptr : (Type*) &PyGenericArrType_Type;
-
-  Type* type = PyTime<TIME>::set_up("ora."s + name, base);
-  mod->AddObject(name, (Object*) type);
-  if (np_mod != nullptr)
-    TimeDtype<PyTime<TIME>>::set_up(np_mod);
-}
 
 
 }  // anonymous namespace
@@ -95,34 +81,20 @@ PyInit_ext(void)
       throw ImportError("failed to import numpy.core.umath");
     bool const np = true;
 
-    // FIXME: Split up date, time, daytime into separate functions in separate
-    // compilation units, as these are where the big template instantiations
-    // happen.
+    set_up_dates(mod, nullptr);
+    set_up_daytimes(mod, nullptr);
 
-    PyDate<ora::date::Date>             ::add_to(mod, "Date");
-    PyDate<ora::date::Date16>           ::add_to(mod, "Date16");
-
-    PyDaytime<ora::daytime::Daytime>    ::add_to(mod, "Daytime");
-    PyDaytime<ora::daytime::Daytime32>  ::add_to(mod, "Daytime32");
-    PyDaytime<ora::daytime::UsecDaytime>::add_to(mod, "UsecDaytime");
-
-    // FIXME: Move this up, once the add_to() above don't do numpy things.
+    // FIXME: Move this up, once build_np_module() doesn't require types.
     ref<Module> np_mod;
     if (np) {
       np_mod = build_np_module();
       mod->AddObject("np", np_mod);
     }
 
-    add_time<ora::time::Time>       ("Time"      , mod, np_mod);
-    add_time<ora::time::HiTime>     ("HiTime"    , mod, np_mod);
-    add_time<ora::time::SmallTime>  ("SmallTime" , mod, np_mod);
-    add_time<ora::time::NsTime>     ("NsTime"    , mod, np_mod);
-    add_time<ora::time::Unix32Time> ("Unix32Time", mod, np_mod);
-    add_time<ora::time::Unix64Time> ("Unix64Time", mod, np_mod);
-    add_time<ora::time::Time128>    ("Time128"   , mod, np_mod);
+    set_up_times(mod, np_mod);
 
-    PyTimeZone                          ::add_to(mod, "TimeZone");
-    PyLocal                             ::add_to(mod, "Local");
+    PyTimeZone  ::add_to(mod, "TimeZone");
+    PyLocal     ::add_to(mod, "Local");
 
     StructSequenceType* const ymd_date_type = get_ymd_date_type();
     mod->AddObject(ymd_date_type->tp_name, (PyObject*) ymd_date_type);

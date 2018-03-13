@@ -11,6 +11,7 @@
 
 #include "ora.hh"
 #include "py.hh"
+#include "types.hh"
 
 namespace ora {
 namespace py {
@@ -25,9 +26,6 @@ using std::unique_ptr;
 //------------------------------------------------------------------------------
 // Declarations
 //------------------------------------------------------------------------------
-
-extern StructSequenceType* get_hms_daytime_type();
-extern ref<Object> make_hms_daytime(ora::HmsDaytime);
 
 /**
  * Attempts to convert various kinds of Python daytime object to 'DAYTIME'.
