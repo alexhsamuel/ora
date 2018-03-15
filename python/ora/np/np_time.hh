@@ -119,9 +119,18 @@ TimeDtype<PYTIME>::set_up(
     throw py::Exception();
   int const type_num = descr_->type_num;
 
+  auto const type_dict = (Dict*) PYTIME::type_.tp_dict;
+
   // Set the dtype as an attribute to the scalar type.
   assert(PYTIME::type_.tp_dict != nullptr);
-  ((Dict*) PYTIME::type_.tp_dict)->SetItemString("dtype", (Object*) descr_);
+  type_dict->SetItemString("dtype", (Object*) descr_);
+
+  // Set the offset dtype as an attribute as well.
+  auto const offset_type_num = IntType<typename PYTIME::Time::Offset>::type_num;
+  // There may be no offset dtype available, e.g. 128-bit integer types.
+  if (offset_type_num != -1)
+    type_dict->SetItemString(
+      "offset_dtype", (Object*) Descr::from(offset_type_num));
 
   auto const np_module = Module::ImportModule("numpy");
 
@@ -267,3 +276,4 @@ TimeDtype<PYTIME>::descr_
 
 }  // namespace py
 }  // namespace ora
+

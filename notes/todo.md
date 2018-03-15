@@ -102,9 +102,8 @@
    - time type and ufuncs
      - [ ] casts (which?)
      - [x] to_offset
-     - [ ] from_offset
-     - [ ] `offset_dtype` attribute
-     - [ ] to_offset ??
+     - [x] from_offset
+     - [x] `offset_dtype` attribute
      - [ ] arithmetic (template)
      - [ ] comparison (template)
      - [ ] is_valid (template)

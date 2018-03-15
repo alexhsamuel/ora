@@ -3,7 +3,6 @@ import enum
 import os
 from   pathlib import Path
 import re
-import sys
 import warnings
 
 from   .ext import *
@@ -22,6 +21,7 @@ __all__ = (
     "MonthOfYear",
     "NsTime",
     "SmallTime",
+    "TIME_TYPES",
     "Time",
     "Time128",
     "Unix32Time",
@@ -62,6 +62,17 @@ __all__ = (
     )
 
 #-------------------------------------------------------------------------------
+
+TIME_TYPES = frozenset((
+    HiTime,
+    NsTime,
+    SmallTime,
+    Time,
+    Time,
+    Unix32Time,
+    Unix64Time,
+))
+    
 
 # Set the location of the time zone database.  If ZONEINFO is set in the 
 # environment, use it; otherwise, use our own copy of the database.
