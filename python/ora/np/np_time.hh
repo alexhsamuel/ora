@@ -38,7 +38,6 @@ public:
 };
 
 
-// FIXME: We should just subclass PyArray_Descr!
 template<class PYTIME>
 class TimeDtype
 {
@@ -58,6 +57,15 @@ private:
   static int            compare(Time const*, Time const*, PyArrayObject*);
 
   static void           cast_from_object(Object* const*, Time*, npy_intp, void*, void*);
+
+  static Time add(Time const time, float64_t const seconds)
+    { return ora::time::nex::seconds_after(time, seconds); }
+  static Time add(float64_t const seconds, Time const time)
+    { return ora::time::nex::seconds_after(time, seconds); }
+  static Time subtract(Time const time, float64_t const seconds)
+    { return ora::time::nex::seconds_before(time, seconds); }
+  static float64_t subtract(Time const time0, Time const time1)
+    { return ora::time::nex::seconds_between(time1, time0); }
 
   static npy_bool equal(Time const time0, Time const time1) 
     { return ora::time::nex::equal(time0, time1) ? NPY_TRUE : NPY_FALSE; }
@@ -120,9 +128,18 @@ TimeDtype<PYTIME>::set_up(
     throw py::Exception();
   int const type_num = descr_->type_num;
 
+  auto const type_dict = (Dict*) PYTIME::type_.tp_dict;
+
   // Set the dtype as an attribute to the scalar type.
   assert(PYTIME::type_.tp_dict != nullptr);
-  ((Dict*) PYTIME::type_.tp_dict)->SetItemString("dtype", (Object*) descr_);
+  type_dict->SetItemString("dtype", (Object*) descr_);
+
+  // Set the offset dtype as an attribute as well.
+  auto const offset_type_num = IntType<typename PYTIME::Time::Offset>::type_num;
+  // There may be no offset dtype available, e.g. 128-bit integer types.
+  if (offset_type_num != -1)
+    type_dict->SetItemString(
+      "offset_dtype", (Object*) Descr::from(offset_type_num));
 
   auto const np_module = Module::ImportModule("numpy");
 
@@ -133,12 +150,28 @@ TimeDtype<PYTIME>::set_up(
     NPY_OBJECT, type_num, (PyArray_VectorUnaryFunc*) cast_from_object);
   Array::RegisterCanCast(NPY_OBJECT, type_num, NPY_OBJECT_SCALAR);
 
+  // Comparisons.
   create_or_get_ufunc(np_module, "equal", 2, 1)->add_loop_2(
     type_num, type_num, NPY_BOOL,
     ufunc_loop_2<Time, Time, npy_bool, equal>);
   create_or_get_ufunc(np_module, "not_equal", 2, 1)->add_loop_2(
     type_num, type_num, NPY_BOOL,
     ufunc_loop_2<Time, Time, npy_bool, not_equal>);
+  // FIXME: Inequality comparisons.
+
+  // Arithmetic by seconds.
+  create_or_get_ufunc(np_module, "add", 2, 1)->add_loop_2(
+    type_num, NPY_FLOAT64, type_num,
+    ufunc_loop_2<Time, float64_t, Time, add>);
+  create_or_get_ufunc(np_module, "add", 2, 1)->add_loop_2(
+    NPY_FLOAT64, type_num, type_num,
+    ufunc_loop_2<float64_t, Time, Time, add>);
+  create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
+    type_num, NPY_FLOAT64, type_num,
+    ufunc_loop_2<Time, float64_t, Time, subtract>);
+  create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
+    type_num, type_num, NPY_FLOAT64, 
+    ufunc_loop_2<Time, Time, float64_t, subtract>);
 
   if (int_type_num != -1) {
     create_or_get_ufunc(module, "to_offset", 1, 1)->add_loop_1(
@@ -268,3 +301,4 @@ TimeDtype<PYTIME>::descr_
 
 }  // namespace py
 }  // namespace ora
+

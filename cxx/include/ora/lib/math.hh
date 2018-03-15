@@ -9,6 +9,12 @@ namespace lib {
 
 //------------------------------------------------------------------------------
 
+using float32_t = float;
+using float64_t = double;
+
+static_assert(sizeof(float32_t) == 4, "float32_t isn't 32 bits");
+static_assert(sizeof(float64_t) == 8, "float64_t isn't 64 bits");
+
 using int128_t = __int128;
 using uint128_t = unsigned __int128;
 
