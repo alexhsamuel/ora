@@ -217,7 +217,7 @@ UFunc::add_loop_2(
   check_zero(
     PyUFunc_RegisterLoopForType(
       (PyUFuncObject*) this,
-      arg0_type,
+      arg0_type >= NPY_USERDEF ? arg0_type : arg1_type,
       fn,
       arg_types,
       nullptr));

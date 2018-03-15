@@ -58,6 +58,15 @@ private:
 
   static void           cast_from_object(Object* const*, Time*, npy_intp, void*, void*);
 
+  static Time add(Time const time, float64_t const seconds)
+    { return ora::time::nex::seconds_after(time, seconds); }
+  static Time add(float64_t const seconds, Time const time)
+    { return ora::time::nex::seconds_after(time, seconds); }
+  static Time subtract(Time const time, float64_t const seconds)
+    { return ora::time::nex::seconds_before(time, seconds); }
+  static float64_t subtract(Time const time0, Time const time1)
+    { return ora::time::nex::seconds_between(time1, time0); }
+
   static npy_bool equal(Time const time0, Time const time1) 
     { return ora::time::nex::equal(time0, time1) ? NPY_TRUE : NPY_FALSE; }
   static npy_bool not_equal(Time const time0, Time const time1)
@@ -141,12 +150,28 @@ TimeDtype<PYTIME>::set_up(
     NPY_OBJECT, type_num, (PyArray_VectorUnaryFunc*) cast_from_object);
   Array::RegisterCanCast(NPY_OBJECT, type_num, NPY_OBJECT_SCALAR);
 
+  // Comparisons.
   create_or_get_ufunc(np_module, "equal", 2, 1)->add_loop_2(
     type_num, type_num, NPY_BOOL,
     ufunc_loop_2<Time, Time, npy_bool, equal>);
   create_or_get_ufunc(np_module, "not_equal", 2, 1)->add_loop_2(
     type_num, type_num, NPY_BOOL,
     ufunc_loop_2<Time, Time, npy_bool, not_equal>);
+  // FIXME: Inequality comparisons.
+
+  // Arithmetic by seconds.
+  create_or_get_ufunc(np_module, "add", 2, 1)->add_loop_2(
+    type_num, NPY_FLOAT64, type_num,
+    ufunc_loop_2<Time, float64_t, Time, add>);
+  create_or_get_ufunc(np_module, "add", 2, 1)->add_loop_2(
+    NPY_FLOAT64, type_num, type_num,
+    ufunc_loop_2<float64_t, Time, Time, add>);
+  create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
+    type_num, NPY_FLOAT64, type_num,
+    ufunc_loop_2<Time, float64_t, Time, subtract>);
+  create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
+    type_num, type_num, NPY_FLOAT64, 
+    ufunc_loop_2<Time, Time, float64_t, subtract>);
 
   if (int_type_num != -1) {
     create_or_get_ufunc(module, "to_offset", 1, 1)->add_loop_1(

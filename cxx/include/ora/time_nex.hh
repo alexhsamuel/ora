@@ -103,6 +103,66 @@ compare(
 }
 
 
+//------------------------------------------------------------------------------
+// Arithmetic
+//------------------------------------------------------------------------------
+
+template<class TIME>
+inline TIME
+seconds_after(
+  TIME const time,
+  double const seconds)
+  noexcept
+{
+  // FIXME: Check for overflows.
+  using Offset = typename TIME::Offset;
+  return
+      time.is_valid()
+    // FIXME: Check for overflow.
+    ? from_offset<TIME>(
+        time.get_offset() + (Offset) round(seconds * TIME::DENOMINATOR))
+    : TIME::INVALID;
+}
+
+
+template<class TIME>
+inline TIME
+seconds_before(
+  TIME const time,
+  double const seconds)
+  noexcept
+{
+  // FIXME: Check for overflows.
+  using Offset = typename TIME::Offset;
+  return
+      time.is_valid()
+    // FIXME: Check for overflow.
+    ? from_offset<TIME>(
+        time.get_offset() - (Offset) round(seconds * TIME::DENOMINATOR))
+    : TIME::INVALID;
+}
+
+
+template<class TIME>
+inline double
+seconds_between(
+  TIME const time0,
+  TIME const time1)
+  noexcept
+{
+  if (! (time0.is_valid() && time1.is_valid()))
+    return std::numeric_limits<double>::quiet_NaN();
+
+  auto const off0 = time0.get_offset();
+  auto const off1 = time1.get_offset();
+  // Needs to work for unsigned offsets.
+  return
+      off1 >= off0
+    ?   (off1 - off0) * TIME::RESOLUTION
+    : -((off0 - off1) * TIME::RESOLUTION);
+}
+
+
 }  // namespace nex
 
 //------------------------------------------------------------------------------
