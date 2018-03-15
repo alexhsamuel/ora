@@ -38,7 +38,6 @@ public:
 };
 
 
-// FIXME: We should just subclass PyArray_Descr!
 template<class PYTIME>
 class TimeDtype
 {
