@@ -121,18 +121,20 @@ inline TIME
 seconds_shift(
   TIME const time,
   double const seconds,
-  bool const plus)
+  bool const forward)
 {
   using Offset = typename TIME::Offset;
 
   ensure_valid(time);
+  if (std::isnan(seconds) || std::isinf(seconds))
+    throw TimeRangeError();
 
   ora::num::Checked c;
   auto const offset = c.convert<Offset>(round(seconds * TIME::DENOMINATOR));
   if (c)
     // FIXME: Check for addition/subtraction overflow.
     return from_offset<TIME>(
-      plus ? (time.get_offset() + offset) : (time.get_offset() - offset));
+      forward ? (time.get_offset() + offset) : (time.get_offset() - offset));
   else
     throw TimeRangeError();
 }

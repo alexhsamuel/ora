@@ -5,6 +5,13 @@ import pytest
 
 pytest.importorskip("ora.np")
 
+OFFSETS = (
+    -5e9, -60, -1, -0.25, 
+    0, 
+    0.015625, 0.25, 1, 60, 86400, 4e7, 5e9, 
+    float("inf"), float("nan")
+)
+
 #-------------------------------------------------------------------------------
 
 def get_array(Time):
@@ -13,8 +20,8 @@ def get_array(Time):
     """
     arr = np.array([
         Time.MIN,
-        Time(1973, 12,  3, 10, 32, 15.5, UTC),
         Time(1970,  1,  1,  0,  0,  0  , UTC),
+        Time(1973, 12,  3, 10, 32, 15.5, UTC),
         Time(1999, 12, 31, 23, 59, 59  , UTC),
         Time(2000,  1,  1,  0,  0,  0  , UTC),
         Time(2018,  3, 17, 14,  7, 21  , UTC),
@@ -55,31 +62,44 @@ def test_offset_dtype():
     assert ora.Unix32Time.offset_dtype == np.dtype("int32")
 
 
-OFFSETS = (
-    -5e9, -60, -1, -0.25, 
-    0, 
-    0.015625, 0.25, 1, 60, 86400, 4e7, 5e9, 
-    float("inf"), float("nan")
-)
-
 @pytest.mark.parametrize("Time", ora.TIME_TYPES)
-def test_time_add(Time):
+@pytest.mark.parametrize("offset", OFFSETS)
+def test_add(Time, offset):
     arr0 = get_array(Time)
 
-    for offset in OFFSETS:
-        if offset < Time.RESOLUTION:
-            continue
+    if abs(offset) < Time.RESOLUTION:
+        return
 
-        arr1 = arr0 + offset
-        arr2 = offset + arr0
-        for t0, t1, t2 in zip(arr0, arr1, arr2):
-            assert t1 == t2  # commutativity
-            if t0.valid:
-                try:
-                    assert t1 == t0 + offset
-                except OverflowError:
-                    assert t1 == Time.INVALID
-            else:
+    arr1 = arr0 + offset
+    arr2 = offset + arr0
+    for t0, t1, t2 in zip(arr0, arr1, arr2):
+        assert t1 == t2  # commutativity
+        if t0.valid:
+            try:
+                assert t1 == t0 + offset
+            except OverflowError:
                 assert t1 == Time.INVALID
+        else:
+            assert t1 == Time.INVALID
+
+
+@pytest.mark.parametrize("Time", ora.TIME_TYPES)
+@pytest.mark.parametrize("offset", OFFSETS)
+def test_sub(Time, offset):
+    arr0 = get_array(Time)
+
+    if abs(offset) < Time.RESOLUTION:
+        return
+
+    arr1 = arr0 - offset
+    for t0, t1 in zip(arr0, arr1):
+        if t0.valid:
+            try:
+                assert t1 == t0 - offset
+            except OverflowError:
+                assert t1 == Time.INVALID
+        else:
+            assert t1 == Time.INVALID
+
 
 

@@ -110,6 +110,30 @@ compare(
 // Arithmetic
 //------------------------------------------------------------------------------
 
+namespace {
+
+template<class TIME>
+inline TIME
+seconds_shift(
+  TIME const time,
+  double const seconds,
+  bool const forward)
+{
+  using Offset = typename TIME::Offset;
+
+  if (time.is_valid() && !std::isnan(seconds) && !std::isinf(seconds)) {
+    ora::num::Checked c;
+    auto const offset = c.convert<Offset>(round(seconds * TIME::DENOMINATOR));
+    if (c)
+      return from_offset<TIME>(
+        forward ? (time.get_offset() + offset) : (time.get_offset() - offset));
+  }
+  return TIME::INVALID;
+}
+
+
+}  // anonymous namespace
+
 template<class TIME>
 inline TIME
 seconds_after(
@@ -117,15 +141,7 @@ seconds_after(
   double const seconds)
   noexcept
 {
-  using Offset = typename TIME::Offset;
-
-  if (time.is_valid()) {
-    ora::num::Checked c;
-    auto const offset = c.convert<Offset>(round(seconds * TIME::DENOMINATOR));
-    if (c)
-      return from_offset<TIME>(time.get_offset() + offset);
-  }
-  return TIME::INVALID;
+  return seconds_shift<TIME>(time, std::abs(seconds), seconds > 0);
 }
 
 
@@ -136,14 +152,7 @@ seconds_before(
   double const seconds)
   noexcept
 {
-  // FIXME: Check for overflows.
-  using Offset = typename TIME::Offset;
-  return
-      time.is_valid()
-    // FIXME: Check for overflow.
-    ? from_offset<TIME>(
-        time.get_offset() - (Offset) round(seconds * TIME::DENOMINATOR))
-    : TIME::INVALID;
+  return seconds_shift<TIME>(time, std::abs(seconds), seconds < 0);
 }
 
 
