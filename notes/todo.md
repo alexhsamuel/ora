@@ -1,5 +1,6 @@
 # Miscellaneous Work List
 
+1. Remove seconds decimal point in repr of time types with no subsecond resolution.
 1. Move doc_t into generated docstring.cc, or elsewhere.
 1. Make Python Date like Time.
 1. Make Python Daytime like Time.
