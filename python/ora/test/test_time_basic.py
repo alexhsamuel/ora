@@ -284,3 +284,42 @@ def test_time_min_max_str(Time):
     assert Time("MAX") == Time.MAX
 
 
+@pytest.mark.parametrize("Time", TIME_TYPES)
+def test_add(Time):
+    t0 = Time(2018, 3, 17, 12, 17, 14, UTC)
+    assert t0 + 0     == t0
+
+    assert t0 +     60      == Time(2018, 3, 17, 12, 18, 14   , UTC)
+    assert t0 +  86400      == Time(2018, 3, 18, 12, 17, 14   , UTC)
+    assert t0 +    -60      == Time(2018, 3, 17, 12, 16, 14   , UTC)
+    assert t0 + -86400      == Time(2018, 3, 16, 12, 17, 14   , UTC)
+
+    if Time.RESOLUTION >= 0.25:
+        return
+
+    assert t0 +      0.25   == Time(2018, 3, 17, 12, 17, 14.25, UTC)
+    assert t0 +      0.5    == Time(2018, 3, 17, 12, 17, 14.5 , UTC)
+    assert t0 +     -0.25   == Time(2018, 3, 17, 12, 17, 13.75, UTC)
+    assert t0 +     -0.5    == Time(2018, 3, 17, 12, 17, 13.5 , UTC)
+
+
+@pytest.mark.parametrize("Time", TIME_TYPES)
+def test_add_overfow(Time):
+    t0 = Time(2018, 3, 17, 12, 17, 14.5, UTC)
+
+    with pytest.raises(OverflowError): 
+        t0 + 8000 * 365 * 86400
+
+    with pytest.raises(OverflowError):
+        t0 + 1e20
+
+    with pytest.raises(OverflowError):
+        t0 + -1e20
+
+    with pytest.raises(OverflowError):
+        t0 + float("inf")
+
+    with pytest.raises(OverflowError):  # FIXME: Wrong exception?
+        t0 + float("nan")
+
+    

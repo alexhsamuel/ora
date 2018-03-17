@@ -1,6 +1,9 @@
 #pragma once
 
+#include <cfenv>
+
 #include "ora/lib/math.hh"
+#include "ora/lib/num.hh"
 #include "ora/time_math.hh"
 #include "ora/time_type.hh"
 
@@ -114,14 +117,15 @@ seconds_after(
   double const seconds)
   noexcept
 {
-  // FIXME: Check for overflows.
   using Offset = typename TIME::Offset;
-  return
-      time.is_valid()
-    // FIXME: Check for overflow.
-    ? from_offset<TIME>(
-        time.get_offset() + (Offset) round(seconds * TIME::DENOMINATOR))
-    : TIME::INVALID;
+
+  if (time.is_valid()) {
+    ora::num::Checked c;
+    auto const offset = c.convert<Offset>(round(seconds * TIME::DENOMINATOR));
+    if (c)
+      return from_offset<TIME>(time.get_offset() + offset);
+  }
+  return TIME::INVALID;
 }
 
 
