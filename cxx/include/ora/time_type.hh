@@ -198,7 +198,7 @@ public:
  * If `time` is invalid, throws `InvalidTimeError`.
  */
 template<class TIME>
-void
+inline void
 ensure_valid(
   TIME const time)
 {
