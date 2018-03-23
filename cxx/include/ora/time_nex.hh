@@ -132,6 +132,25 @@ seconds_shift(
 }
 
 
+template<class TIME>
+inline TIME
+seconds_shift(
+  TIME const time,
+  int64_t const seconds,
+  bool const forward)
+{
+  using Offset = typename TIME::Offset;
+
+  if (time.is_valid()) {
+    auto const offset = rescale_int<Offset, 1, TIME::DENOMINATOR>(seconds);
+    return from_offset<TIME>(
+      forward ? (time.get_offset() + offset) : (time.get_offset() - offset));
+  }
+  else
+    return TIME::INVALID;
+}
+
+
 }  // anonymous namespace
 
 template<class TIME>
@@ -147,9 +166,31 @@ seconds_after(
 
 template<class TIME>
 inline TIME
+seconds_after(
+  TIME const time,
+  int64_t const seconds)
+  noexcept
+{
+  return seconds_shift<TIME>(time, std::abs(seconds), seconds > 0);
+}
+
+
+template<class TIME>
+inline TIME
 seconds_before(
   TIME const time,
   double const seconds)
+  noexcept
+{
+  return seconds_shift<TIME>(time, std::abs(seconds), seconds < 0);
+}
+
+
+template<class TIME>
+inline TIME
+seconds_before(
+  TIME const time,
+  int64_t const seconds)
   noexcept
 {
   return seconds_shift<TIME>(time, std::abs(seconds), seconds < 0);

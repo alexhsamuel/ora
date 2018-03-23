@@ -62,7 +62,13 @@ private:
     { return ora::time::nex::seconds_after(time, seconds); }
   static Time add(float64_t const seconds, Time const time)
     { return ora::time::nex::seconds_after(time, seconds); }
+  static Time add(Time const time, int64_t const seconds)
+    { return ora::time::nex::seconds_after(time, seconds); }
+  static Time add(int64_t const seconds, Time const time)
+    { return ora::time::nex::seconds_after(time, seconds); }
   static Time subtract(Time const time, float64_t const seconds)
+    { return ora::time::nex::seconds_before(time, seconds); }
+  static Time subtract(Time const time, int64_t const seconds)
     { return ora::time::nex::seconds_before(time, seconds); }
   static float64_t subtract(Time const time0, Time const time1)
     { return ora::time::nex::seconds_between(time1, time0); }
@@ -166,6 +172,9 @@ TimeDtype<PYTIME>::set_up(
   create_or_get_ufunc(np_module, "add", 2, 1)->add_loop_2(
     NPY_FLOAT64, type_num, type_num,
     ufunc_loop_2<float64_t, Time, Time, add>);
+  create_or_get_ufunc(np_module, "add", 2, 1)->add_loop_2(
+    type_num, NPY_INT64, type_num,
+    ufunc_loop_2<Time, int64_t, Time, add>);
   create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
     type_num, NPY_FLOAT64, type_num,
     ufunc_loop_2<Time, float64_t, Time, subtract>);
