@@ -182,6 +182,7 @@ TimeDtype<PYTIME>::set_up(
     type_num, type_num, NPY_FLOAT64, 
     ufunc_loop_2<Time, Time, float64_t, subtract>);
 
+  // Conversion to offset.
   if (int_type_num != -1) {
     create_or_get_ufunc(module, "to_offset", 1, 1)->add_loop_1(
       type_num, int_type_num,

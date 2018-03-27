@@ -111,6 +111,7 @@ public:
   // API methods.
   virtual ora::Datenum              get_datenum(Object* date) const = 0;
   virtual ref<Object>               from_datenum(ora::Datenum) const = 0;
+  virtual void                      from_datenum(ora::Datenum, void*) const = 0;
   virtual ref<Object>               from_parts(FullDate) const =0 ;
   virtual bool                      is_invalid(Object* time) const = 0;
   virtual bool                      is_missing(Object* time) const = 0;
@@ -196,6 +197,8 @@ private:
       { return ((PyDate*) date)->date_.get_datenum(); }
     virtual ref<Object> from_datenum(ora::Datenum const datenum) const
       { return PyDate::create(ora::date::from_datenum<Date>(datenum)); }
+    virtual void from_datenum(ora::Datenum const datenum, void* const date_ptr) const
+      { *reinterpret_cast<Date*>(date_ptr) = ora::date::nex::from_datenum<Date>(datenum); }
     virtual ref<Object> from_parts(ora::FullDate const parts) const
       { return PyDate::create(ora::date::from_datenum(parts_to_datenum(parts))); }
     virtual bool is_invalid(Object* const date) const

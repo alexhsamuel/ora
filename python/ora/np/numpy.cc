@@ -141,6 +141,90 @@ from_offset(
 }
 
 
+ref<Object>
+to_local(
+  Module*,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  // FIXME: Accept Date, Daytime type arguments.
+  static char const* arg_names[] = {"time", "time_zone", nullptr};
+  Object* time_arg;
+  Object* tz_arg;
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "OO", arg_names, &time_arg, &tz_arg);
+
+  // FIXME: Accept other time types.
+  auto const time_descr = TimeDtype<PyTimeDefault>::get_descr();
+  auto const time_arr
+    = Array::FromAny(time_arg, time_descr->type_num, 0, 0, NPY_ARRAY_BEHAVED);
+  auto const time_api = PyTimeAPI::get(&PyTimeDefault::type_);  // FIXME
+
+  auto const tz = convert_to_time_zone(tz_arg);
+
+
+  auto const date_descr = DateDtype<PyDateDefault>::get();
+  auto date_arr = Array::NewLikeArray(time_arr, NPY_CORDER, date_descr);
+  auto const date_api = PyDateAPI::get(&PyDateDefault::type_);  // FIXME
+
+  auto const daytime_descr = DaytimeDtype<PyDaytimeDefault>::get();
+  auto daytime_arr = Array::NewLikeArray(time_arr, NPY_CORDER, daytime_descr);
+  auto const daytime_api = PyDaytimeAPI::get(&PyDaytimeDefault::type_);  // FIXME
+
+
+  size_t constexpr nargs = 3;
+  PyArrayObject* op[nargs] = {
+    (PyArrayObject*) (Array*) time_arr, 
+    (PyArrayObject*) (Array*) date_arr, 
+    (PyArrayObject*) (Array*) daytime_arr,
+  };
+  npy_uint32 flags[nargs] = {
+    NPY_ITER_READONLY, 
+    NPY_ITER_WRITEONLY,
+    NPY_ITER_WRITEONLY,
+  };
+  PyArray_Descr* dtypes[nargs] = {time_descr, date_descr, daytime_descr};
+
+  // Construct the iterator.  We'll handle the inner loop explicitly.
+  auto const iter = NpyIter_MultiNew(
+    nargs, op, NPY_ITER_EXTERNAL_LOOP, NPY_KEEPORDER, NPY_UNSAFE_CASTING, 
+    flags, dtypes);
+  if (iter == nullptr)
+    throw Exception();
+
+  auto const next           = NpyIter_GetIterNext(iter, nullptr);
+  auto const& inner_stride  = NpyIter_GetInnerStrideArray(iter);
+
+  auto const& inner_size    = *NpyIter_GetInnerLoopSizePtr(iter);
+  auto const data_ptrs      = NpyIter_GetDataPtrArray(iter);
+
+  do {
+    auto t_ptr = data_ptrs[0];
+    auto d_ptr = data_ptrs[1];
+    auto y_ptr = data_ptrs[2];
+
+    auto const t_stride = inner_stride[0];
+    auto const d_stride = inner_stride[1];
+    auto const y_stride = inner_stride[2];
+
+    for (auto size = inner_size;
+         size > 0;
+         --size,
+         t_ptr += t_stride,
+         d_ptr += d_stride,
+         y_ptr += y_stride) {
+      auto const ldd = time_api->to_local_datenum_daytick(t_ptr, *tz);
+      date_api->from_datenum(ldd.datenum, d_ptr);
+      daytime_api->from_daytick(ldd.daytick, y_ptr);
+    }
+  } while (next(iter));
+
+  check_succeed(NpyIter_Deallocate(iter));
+
+  return Tuple::builder << std::move(date_arr) << std::move(daytime_arr);
+}
+
+
 auto
 functions 
   = Methods<Module>()
@@ -149,6 +233,7 @@ functions
     .add<date_from_ymd>             ("date_from_ymd")
     .add<date_from_ymdi>            ("date_from_ymdi")
     .add<from_offset>               ("from_offset")
+    .add<to_local>                  ("to_local")
   ;
   
 
