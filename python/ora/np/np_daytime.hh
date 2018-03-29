@@ -14,6 +14,36 @@ using namespace py::np;
 
 //------------------------------------------------------------------------------
 
+class DaytimeAPI
+{
+private:
+
+  static uint64_t constexpr MAGIC = 0x737865c3443a5a50;
+  uint64_t const magic_;
+
+public:
+
+  DaytimeAPI() : magic_(MAGIC) {}
+  virtual ~DaytimeAPI() {}
+
+  virtual void                      from_daytick(ora::Daytick, void*) const = 0;
+
+  static DaytimeAPI*
+  from(
+    PyArray_Descr* const dtype)
+  {
+    // Make an attempt to confirm that this is one of our dtypes.
+    if (dtype->kind == 'V' && dtype->type == 'j') {
+      auto const api = reinterpret_cast<DaytimeAPI*>(dtype->c_metadata);
+      if (api != nullptr && api->magic_ == MAGIC)
+        return api;
+    }
+    throw TypeError("not an ora daytime dtype");
+  }
+
+};
+
+
 template<class PYDAYTIME>
 class DaytimeDtype
 {
@@ -39,6 +69,25 @@ private:
   static Object*        getitem(Daytime const*, PyArrayObject*);
   static int            setitem(Object*, Daytime*, PyArrayObject*);
   static int            compare(Daytime const*, Daytime const*, PyArrayObject*);
+
+  class API
+  : public DaytimeAPI
+  {
+  public:
+
+    virtual ~API() {}
+
+    virtual void 
+    from_daytick(
+      ora::Daytick daytick, 
+      void* daytime_ptr) 
+      const override
+    { 
+      *reinterpret_cast<Daytime*>(daytime_ptr) 
+        = ora::daytime::nex::from_daytick<Daytime>(daytick); 
+    }
+
+  };
 
   static PyArray_Descr* descr_;
 
@@ -72,7 +121,7 @@ DaytimeDtype<PYDAYTIME>::get()
     descr_->names           = nullptr;
     descr_->f               = arr_funcs;
     descr_->metadata        = nullptr;
-    descr_->c_metadata      = nullptr;  // FIXME: (NpyAuxData*) new API();
+    descr_->c_metadata      = (NpyAuxData*) new API();
     descr_->hash            = -1;
 
     if (PyArray_RegisterDataType(descr_) < 0)

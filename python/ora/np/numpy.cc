@@ -149,13 +149,18 @@ to_local(
   Dict* const kw_args)
 {
   // FIXME: Accept Date, Daytime type arguments.
-  static char const* arg_names[] = {"time", "time_zone", "Date", nullptr};
+  static char const* arg_names[] 
+    = {"time", "time_zone", "Date", "Daytime", nullptr};
   Object* time_arg;
   Object* tz_arg;
   PyArray_Descr* date_descr = DateDtype<PyDateDefault>::get();
+  PyArray_Descr* daytime_descr = DaytimeDtype<PyDaytimeDefault>::get();
   Arg::ParseTupleAndKeywords(
-    args, kw_args, "OO|$O&", arg_names, 
-    &time_arg, &tz_arg, &PyArray_DescrConverter2, &date_descr);
+    args, kw_args, "OO|$O&O&", arg_names, 
+    &time_arg, &tz_arg, 
+    &PyArray_DescrConverter2, &date_descr,
+    &PyArray_DescrConverter2, &daytime_descr
+    );
 
   // FIXME: Accept other time types.
   auto const time_descr = TimeDtype<PyTimeDefault>::get_descr();
@@ -171,9 +176,11 @@ to_local(
   // Allocate the output date array.
   auto date_arr = Array::NewLikeArray(time_arr, NPY_CORDER, date_descr);
 
-  auto const daytime_descr = DaytimeDtype<PyDaytimeDefault>::get();
+  // Get the daytime dtype API for this daytime type.  This also confirms the
+  // dtype is a daytime dtype.
+  auto const daytime_api = DaytimeAPI::from(daytime_descr);
+  // Allocate the output daytime array.
   auto daytime_arr = Array::NewLikeArray(time_arr, NPY_CORDER, daytime_descr);
-  auto const daytime_api = PyDaytimeAPI::get(&PyDaytimeDefault::type_);  // FIXME
 
 
   size_t constexpr nargs = 3;
