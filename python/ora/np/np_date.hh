@@ -25,14 +25,34 @@ PRINT_ARR_FUNCS
 
 class DateDtypeAPI
 {
+private:
+
+  static uint64_t constexpr MAGIC = 0x231841de2fe33131;
+  uint64_t const magic_;
+
 public:
 
+  DateDtypeAPI() : magic_(MAGIC) {}
   virtual ~DateDtypeAPI() {}
   // FIXME: Add date_from_iso_date().
+  virtual void        from_datenum(ora::Datenum, void*) const = 0;
   virtual ref<Object> function_date_from_ordinal_date(Array*, Array*) = 0;
   virtual ref<Object> function_date_from_week_date(Array*, Array*, Array*) = 0;
   virtual ref<Object> function_date_from_ymd(Array*, Array*, Array*) = 0;
   virtual ref<Object> function_date_from_ymdi(Array*) = 0;
+
+  static DateDtypeAPI*
+  from(
+    PyArray_Descr* const dtype)
+  {
+    // Make an attempt to confirm that this is one of our dtypes.
+    if (dtype->kind == 'V' && dtype->type == 'j') {
+      auto const api = reinterpret_cast<DateDtypeAPI*>(dtype->c_metadata);
+      if (api != nullptr && api->magic_ == MAGIC)
+        return api;
+    }
+    throw TypeError("not an ora date dtype");
+  }
 
 };
 
@@ -87,6 +107,10 @@ private:
   public:
 
     virtual ~API() {}
+
+    virtual void from_datenum(ora::Datenum const datenum, void* const date_ptr) const override
+      { *reinterpret_cast<Date*>(date_ptr) = ora::date::nex::from_datenum<Date>(datenum); }
+
     virtual ref<Object> function_date_from_ordinal_date(Array*, Array*) override;
     virtual ref<Object> function_date_from_week_date(Array*, Array*, Array*) override;
     virtual ref<Object> function_date_from_ymd(Array*, Array*, Array*) override;
