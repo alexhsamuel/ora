@@ -1,11 +1,12 @@
 # Miscellaneous Work List
 
+1. `ora.np.from_local()`.
+1. Document `ora.np`.
 1. Remove seconds decimal point in repr of time types with no subsecond resolution.
-1. Deal with FE_INVALID in time add/sub.
 1. Move doc_t into generated docstring.cc, or elsewhere.
+1. Base Python `Time`, `Date`, `Daytime` classes, as markers only.  Move APIs.
 1. Make Python Date like Time.
 1. Make Python Daytime like Time.
-1. Change `Time` to use _signed_ int64 around UNIX epoch.
 1. When parsing fractional seconds, work in terms of dayticks.
 1. Make the Python default Time, Date, Daytime types setable.
 1. One too many digits of second precision?
@@ -73,6 +74,9 @@
    only, not for componentwise formatting!  Rounding has to apply to all
    components at the same time.)
 
+   - Deal with FE_INVALID in time add/sub.
+   - Change `Time` to use _signed_ int64 around UNIX epoch?
+
 1. `print(t @ z)` should show time zone offset.
    - Add time zone offset (and name/abbr?) to `LocalTime`.
    - Sync up C++ LoalDatenumDaytick, LocalTime, TimeParts.
@@ -116,7 +120,7 @@
      - [ ] specialized arrfuncs (template)
    - localization ufuncs
      - [ ] `from_local`
-     - [ ] `to_local`
+     - [x] `to_local`
 
 1. Investigate 'safe integer' math packages for offset arithmetic.
    - https://github.com/dcleblanc/SafeInt
