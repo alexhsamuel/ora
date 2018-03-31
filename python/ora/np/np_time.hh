@@ -120,18 +120,8 @@ private:
 
     virtual ref<Object> from_offset(Array*) override;
 
-    virtual LocalDatenumDaytick 
-    to_local_datenum_daytick(
-      void const* const time_ptr, 
-      ora::TimeZone const& tz) 
-      const override
-    { 
-      auto const time = *reinterpret_cast<Time const*>(time_ptr);
-      return 
-          time.is_valid() 
-        ? ora::time::to_local_datenum_daytick(time, tz) 
-        : LocalDatenumDaytick{};
-    }
+    virtual LocalDatenumDaytick to_local_datenum_daytick(void const* const time_ptr, ora::TimeZone const& tz) const override
+      { return ora::nex::to_local_datenum_daytick(*reinterpret_cast<Time const*>(time_ptr), tz); }
 
   };
 
