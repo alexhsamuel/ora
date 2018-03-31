@@ -23,16 +23,30 @@ PRINT_ARR_FUNCS
   = false;
 
 
-class DateDtypeAPI
+class DateAPI
 {
 private:
 
   static uint64_t constexpr MAGIC = 0x231841de2fe33131;
   uint64_t const magic_ = MAGIC;
 
+  static DateAPI*
+  get(
+    PyArray_Descr* const dtype)
+  {
+    // Make an attempt to confirm that this is one of our dtypes.
+    if (dtype->kind == 'V' && dtype->type == 'j') {
+      auto const api = reinterpret_cast<DateAPI*>(dtype->c_metadata);
+      if (api != nullptr && api->magic_ == MAGIC)
+        return api;
+    }
+    return nullptr;
+  }
+
+
 public:
 
-  virtual ~DateDtypeAPI() {}
+  virtual ~DateAPI() {}
 
   // FIXME: Add date_from_iso_date().
 
@@ -42,22 +56,28 @@ public:
    */
   virtual bool        from_datenum(ora::Datenum, void*) const = 0;
 
+  /*
+   * Returns the datenum for a date at an address.
+   */
+  virtual Datenum     get_datenum(void*) const = 0;
+
   virtual ref<Object> function_date_from_ordinal_date(Array*, Array*) = 0;
   virtual ref<Object> function_date_from_week_date(Array*, Array*, Array*) = 0;
   virtual ref<Object> function_date_from_ymd(Array*, Array*, Array*) = 0;
   virtual ref<Object> function_date_from_ymdi(Array*) = 0;
 
-  static DateDtypeAPI*
+  static bool check(PyArray_Descr* const descr)
+    { return get(descr) != nullptr; }
+
+  static DateAPI*
   from(
     PyArray_Descr* const dtype)
   {
-    // Make an attempt to confirm that this is one of our dtypes.
-    if (dtype->kind == 'V' && dtype->type == 'j') {
-      auto const api = reinterpret_cast<DateDtypeAPI*>(dtype->c_metadata);
-      if (api != nullptr && api->magic_ == MAGIC)
-        return api;
-    }
-    throw TypeError("not an ora date dtype");
+    auto const api = get(dtype);
+    if (api == nullptr)
+      throw TypeError("not an ora date dtype");
+    else
+      return api;
   }
 
 };
@@ -108,7 +128,7 @@ private:
     { return ora::date::nex::days_between(date0, date1); }
 
   class API
-  : public DateDtypeAPI
+  : public DateAPI
   {
   public:
 
@@ -124,6 +144,9 @@ private:
       *reinterpret_cast<Date*>(date_ptr) = date;
       return date.is_valid();
     }
+
+    virtual Datenum get_datenum(void* const date_ptr) const override
+      { return ora::date::nex::get_datenum(*reinterpret_cast<Date*>(date_ptr)); }
 
     virtual ref<Object> function_date_from_ordinal_date(Array*, Array*) override;
     virtual ref<Object> function_date_from_week_date(Array*, Array*, Array*) override;
@@ -534,6 +557,26 @@ template<class PYDATE>
 PyArray_Descr*
 DateDtype<PYDATE>::descr_
   = nullptr;
+
+//------------------------------------------------------------------------------
+// Accessories
+
+inline ref<Array>
+to_date_array(
+  Object* const arg)
+{
+  if (Array::Check(arg)) {
+    // It's an array.  Check its dtype.
+    Array* const arr = reinterpret_cast<Array*>(arg);
+    if (DateAPI::check(arr->descr()))
+      return ref<Array>::of(arr);
+  }
+
+  // Convert to an array of the default time dtype.
+  auto const def = DateDtype<PyDateDefault>::get();
+  return Array::FromAny(arg, def, 0, 0, NPY_ARRAY_BEHAVED);
+}
+
 
 //------------------------------------------------------------------------------
 

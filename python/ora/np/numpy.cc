@@ -30,7 +30,7 @@ date_from_ordinal_date(
     &year_arg, &ordinal_arg, &PyArrayDescr_Type, &dtype);
 
   // FIXME: Encapsulate this.
-  auto const api = (DateDtypeAPI*) dtype->c_metadata;
+  auto const api = (DateAPI*) dtype->c_metadata;
   assert(api != nullptr);
 
   return api->function_date_from_ordinal_date(
@@ -58,7 +58,7 @@ date_from_week_date(
     &week_year_arg, &week_arg, &weekday_arg, &PyArrayDescr_Type, &dtype);
 
   // FIXME: Encapsulate this.
-  auto const api = (DateDtypeAPI*) dtype->c_metadata;
+  auto const api = (DateAPI*) dtype->c_metadata;
   assert(api != nullptr);
 
   return api->function_date_from_week_date(
@@ -87,7 +87,7 @@ date_from_ymd(
     &year_arg, &month_arg, &day_arg, &PyArrayDescr_Type, &dtype);
 
   // FIXME: Encapsulate this.
-  auto const api = (DateDtypeAPI*) dtype->c_metadata;
+  auto const api = (DateAPI*) dtype->c_metadata;
   assert(api != nullptr);
 
   return api->function_date_from_ymd(
@@ -114,7 +114,7 @@ date_from_ymdi(
 
   // OK, we have an aligned 1D int32 array.
   // FIXME: Encapsulate this, and check that it is an ora date dtype.
-  auto const api = (DateDtypeAPI*) dtype->c_metadata;
+  auto const api = (DateAPI*) dtype->c_metadata;
   assert(api != nullptr);
 
   return api->function_date_from_ymdi(ymdi_arr);
@@ -142,12 +142,99 @@ from_offset(
 
 
 ref<Object>
+from_local(
+  Module*,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  // FIXME: Accept a 'first' argument.
+  static char const* arg_names[] 
+    = {"date", "daytime", "time_zone", "Time", nullptr};
+  Object* date_arg;
+  Object* daytime_arg;
+  Object* tz_arg;
+  bool first = true;
+  PyArray_Descr* time_descr = TimeDtype<PyTimeDefault>::get_descr();
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "OOO|$O&", arg_names, 
+    &date_arg, &daytime_arg, &tz_arg, 
+    &PyArray_DescrConverter2, &time_descr
+    );
+
+  auto const date_arr       = to_date_array(date_arg);
+  auto const date_descr     = date_arr->descr();
+  auto const date_api       = DateAPI::from(date_descr);
+
+  auto const daytime_arr    = to_daytime_array(daytime_arg);
+  auto const daytime_descr  = daytime_arr->descr();
+  auto const daytime_api    = DaytimeAPI::from(daytime_descr);
+
+  auto const tz             = convert_to_time_zone(tz_arg);
+
+  // Get the time dtype API for the time type.  This also confirms the dtype
+  // is a time dtype.
+  auto const time_api       = TimeAPI::from(time_descr);
+
+  size_t constexpr nargs = 3;
+  PyArrayObject* op[nargs] = {
+    (PyArrayObject*) (Array*) date_arr, 
+    (PyArrayObject*) (Array*) daytime_arr,
+    nullptr,
+  };
+  npy_uint32 flags[nargs] = {
+    NPY_ITER_READONLY, 
+    NPY_ITER_READONLY,
+    NPY_ITER_WRITEONLY | NPY_ITER_ALLOCATE,
+  };
+  PyArray_Descr* dtypes[nargs] = {date_descr, daytime_descr, time_descr};
+
+  // Construct the iterator.  We'll handle the inner loop explicitly.
+  auto const iter = NpyIter_MultiNew(
+    nargs, op, NPY_ITER_EXTERNAL_LOOP, NPY_KEEPORDER, NPY_UNSAFE_CASTING, 
+    flags, dtypes);
+  if (iter == nullptr)
+    throw Exception();
+
+  auto const next           = NpyIter_GetIterNext(iter, nullptr);
+  auto const& inner_stride  = NpyIter_GetInnerStrideArray(iter);
+
+  auto const& inner_size    = *NpyIter_GetInnerLoopSizePtr(iter);
+  auto const data_ptrs      = NpyIter_GetDataPtrArray(iter);
+
+  do {
+    auto d_ptr = data_ptrs[0];
+    auto y_ptr = data_ptrs[1];
+    auto t_ptr = data_ptrs[2];
+
+    auto const d_stride = inner_stride[0];
+    auto const y_stride = inner_stride[1];
+    auto const t_stride = inner_stride[2];
+
+    for (auto size = inner_size;
+         size > 0;
+         --size,
+         d_ptr += d_stride,
+         y_ptr += y_stride,
+         t_ptr += t_stride) {
+      auto const datenum = date_api->get_datenum(d_ptr);
+      auto const daytick = daytime_api->get_daytick(y_ptr);
+      time_api->from_local(datenum, daytick, *tz, first, t_ptr);
+    }
+  } while (next(iter));
+
+  // Get the result from the iterator object array.
+  auto ret = ref<Array>::of((Array*) NpyIter_GetOperandArray(iter)[2]);
+  check_succeed(NpyIter_Deallocate(iter));
+  return std::move(ret);
+}
+
+
+ref<Object>
 to_local(
   Module*,
   Tuple* const args,
   Dict* const kw_args)
 {
-  // FIXME: Accept Date, Daytime type arguments.
   static char const* arg_names[] 
     = {"time", "time_zone", "Date", "Daytime", nullptr};
   Object* time_arg;
@@ -169,7 +256,7 @@ to_local(
 
   // Get the date dtype API for this date type.  This also confirms the dtype
   // is a date dtype.
-  auto const date_api = DateDtypeAPI::from(date_descr);
+  auto const date_api = DateAPI::from(date_descr);
   // Allocate the output date array.
   auto date_arr = Array::NewLikeArray(time_arr, NPY_CORDER, date_descr);
 
@@ -243,6 +330,7 @@ functions
     .add<date_from_week_date>       ("date_from_week_date")
     .add<date_from_ymd>             ("date_from_ymd")
     .add<date_from_ymdi>            ("date_from_ymdi")
+    .add<from_local>                ("from_local")
     .add<from_offset>               ("from_offset")
     .add<to_local>                  ("to_local")
   ;

@@ -49,13 +49,10 @@ public:
   virtual ~TimeAPI() {}
   virtual ref<Object> from_offset(Array*) = 0;
   virtual LocalDatenumDaytick to_local_datenum_daytick(void const* time_ptr, ora::TimeZone const& tz) const = 0;
+  virtual void from_local(Datenum, Daytick, TimeZone const&, bool, void*) const = 0;
 
-  static bool
-  check(
-    PyArray_Descr* const descr)
-  {
-    return get(descr) != nullptr;
-  }
+  static bool check(PyArray_Descr* const descr)
+    { return get(descr) != nullptr; }
 
   static TimeAPI*
   from(
@@ -122,6 +119,19 @@ private:
 
     virtual LocalDatenumDaytick to_local_datenum_daytick(void const* const time_ptr, ora::TimeZone const& tz) const override
       { return ora::nex::to_local_datenum_daytick(*reinterpret_cast<Time const*>(time_ptr), tz); }
+
+    virtual void 
+    from_local(
+      Datenum const datenum,
+      Daytick const daytick,
+      TimeZone const& time_zone,
+      bool const first,
+      void* time_ptr)
+      const override
+    {
+      *reinterpret_cast<Time*>(time_ptr)
+        = ora::nex::from_local<Time>(datenum, daytick, time_zone, first);
+    }
 
   };
 

@@ -86,6 +86,16 @@ from_ssm(
 //------------------------------------------------------------------------------
 
 template<class DAYTIME>
+inline Daytick
+get_daytick(
+  DAYTIME const daytime)
+  noexcept
+{
+  return daytime.is_valid() ? daytime.get_daytick() : DAYTICK_INVALID;
+}
+
+
+template<class DAYTIME>
 inline HmsDaytime 
 get_hms(
   DAYTIME const daytime)  

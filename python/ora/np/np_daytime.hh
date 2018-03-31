@@ -21,14 +21,8 @@ private:
   static uint64_t constexpr MAGIC = 0x737865c3443a5a50;
   uint64_t const magic_ = MAGIC;
 
-public:
-
-  virtual ~DaytimeAPI() {}
-
-  virtual void                      from_daytick(ora::Daytick, void*) const = 0;
-
   static DaytimeAPI*
-  from(
+  get(
     PyArray_Descr* const dtype)
   {
     // Make an attempt to confirm that this is one of our dtypes.
@@ -37,7 +31,35 @@ public:
       if (api != nullptr && api->magic_ == MAGIC)
         return api;
     }
-    throw TypeError("not an ora daytime dtype");
+    return nullptr;
+  }
+
+public:
+
+  virtual ~DaytimeAPI() {}
+
+  /*
+   * Converts a daytick to a daytime, and stores it at an address. 
+   */
+  virtual void          from_daytick(ora::Daytick, void*) const = 0;
+
+  /*
+   * Returns the daytick for a daytime at an address.
+   */
+  virtual Daytick       get_daytick(void*) const = 0;
+
+  static bool check(PyArray_Descr* const descr)
+    { return get(descr) != nullptr; }
+
+  static DaytimeAPI*
+  from(
+    PyArray_Descr* const dtype)
+  {
+    auto const api = get(dtype);
+    if (api == nullptr)
+      throw TypeError("not an ora daytime dtype");
+    else
+      return api;
   }
 
 };
@@ -85,6 +107,9 @@ private:
       *reinterpret_cast<Daytime*>(daytime_ptr) 
         = ora::daytime::nex::from_daytick<Daytime>(daytick); 
     }
+
+    virtual Daytick get_daytick(void* const daytime_ptr) const override
+      { return ora::daytime::nex::get_daytick(*reinterpret_cast<Daytime*>(daytime_ptr)); }
 
   };
 
@@ -269,6 +294,32 @@ template<class PYDAYTIME>
 PyArray_Descr*
 DaytimeDtype<PYDAYTIME>::descr_
   = nullptr;
+
+//------------------------------------------------------------------------------
+// Accessories
+
+/*
+ * Attempts to convert `arg` to a aytime array.
+ *
+ * If it isn't one already, attempts to convert it using the default daytime
+ * dtype.
+ */
+inline ref<Array>
+to_daytime_array(
+  Object* const arg)
+{
+  if (Array::Check(arg)) {
+    // It's an array.  Check its dtype.
+    Array* const arr = reinterpret_cast<Array*>(arg);
+    if (DaytimeAPI::check(arr->descr()))
+      return ref<Array>::of(arr);
+  }
+
+  // Convert to an array of the default time dtype.
+  auto const def = DaytimeDtype<PyDaytimeDefault>::get();
+  return Array::FromAny(arg, def, 0, 0, NPY_ARRAY_BEHAVED);
+}
+
 
 //------------------------------------------------------------------------------
 
