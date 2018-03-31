@@ -95,6 +95,7 @@
      - [ ] to/from ordinal date
      - [ ] to/from week date
      - [ ] to/from ymdi
+     - [ ] range functions
      - [ ] parsing
      - [ ] formatting
      - [ ] specialized arrfuncs (template)
