@@ -224,8 +224,11 @@ to_local(
          t_ptr += t_stride,
          d_ptr += d_stride,
          y_ptr += y_stride) {
-      auto const ldd = time_api->to_local_datenum_daytick(t_ptr, *tz);
-      date_api->from_datenum(ldd.datenum, d_ptr);
+      auto ldd = time_api->to_local_datenum_daytick(t_ptr, *tz);
+      // Convert to date, daytime.  If the date is invalid, make the daytime
+      // invalid too.
+      if (!date_api->from_datenum(ldd.datenum, d_ptr))
+        ldd.daytick = ora::DAYTICK_INVALID;
       daytime_api->from_daytick(ldd.daytick, y_ptr);
     }
   } while (next(iter));

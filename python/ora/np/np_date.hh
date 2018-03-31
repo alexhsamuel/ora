@@ -35,7 +35,13 @@ public:
   DateDtypeAPI() : magic_(MAGIC) {}
   virtual ~DateDtypeAPI() {}
   // FIXME: Add date_from_iso_date().
-  virtual void        from_datenum(ora::Datenum, void*) const = 0;
+
+  /*
+   * Converts a datenum to a date, and stores it at an address.  Returns true
+   * if the date is valid.
+   */
+  virtual bool        from_datenum(ora::Datenum, void*) const = 0;
+
   virtual ref<Object> function_date_from_ordinal_date(Array*, Array*) = 0;
   virtual ref<Object> function_date_from_week_date(Array*, Array*, Array*) = 0;
   virtual ref<Object> function_date_from_ymd(Array*, Array*, Array*) = 0;
@@ -108,8 +114,16 @@ private:
 
     virtual ~API() {}
 
-    virtual void from_datenum(ora::Datenum const datenum, void* const date_ptr) const override
-      { *reinterpret_cast<Date*>(date_ptr) = ora::date::nex::from_datenum<Date>(datenum); }
+    virtual bool 
+    from_datenum(
+      ora::Datenum const datenum, 
+      void* const date_ptr) 
+      const override
+    { 
+      auto const date = ora::date::nex::from_datenum<Date>(datenum);
+      *reinterpret_cast<Date*>(date_ptr) = date;
+      return date.is_valid();
+    }
 
     virtual ref<Object> function_date_from_ordinal_date(Array*, Array*) override;
     virtual ref<Object> function_date_from_week_date(Array*, Array*, Array*) override;
