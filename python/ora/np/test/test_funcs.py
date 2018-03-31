@@ -31,9 +31,8 @@ def get_array(Time):
         (Time, None, None, UTC),
         (Time, Date, Daytime, "America/New_York"),
         (Time, ora.Date16, ora.Daytime32, "Asia/Tokyo"),
-      # FIXME: Not implemented yet.
-      # (ora.Unix32Time, ora.Date16, ora.Daytime32, "Asia/Tokyo"),
-      # (ora.Time128, ora.Date, ora.Daytime, "Europe/London"),
+        (ora.Unix32Time, ora.Date16, ora.Daytime32, "Asia/Tokyo"),
+        (ora.Time128, ora.Date, ora.Daytime, "Europe/London"),
     ]
 )
 def test_to_local(Time, Date, Daytime, time_zone):

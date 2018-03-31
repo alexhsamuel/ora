@@ -28,12 +28,12 @@ class DateDtypeAPI
 private:
 
   static uint64_t constexpr MAGIC = 0x231841de2fe33131;
-  uint64_t const magic_;
+  uint64_t const magic_ = MAGIC;
 
 public:
 
-  DateDtypeAPI() : magic_(MAGIC) {}
   virtual ~DateDtypeAPI() {}
+
   // FIXME: Add date_from_iso_date().
 
   /*

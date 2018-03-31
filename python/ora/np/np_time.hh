@@ -6,6 +6,7 @@
 #include "ora/lib/mem.hh"
 #include "ora.hh"
 #include "py.hh"
+#include "PyTime.hh"
 
 namespace ora {
 namespace py {
@@ -25,16 +26,48 @@ template<class TIME> inline TIME convert_to_time(Object*);
  */
 class TimeAPI
 {
+private:
+
+  static uint64_t constexpr MAGIC = 0xf17c597caa2e0c48;
+  uint64_t const magic_ = MAGIC;
+
+  static TimeAPI*
+  get(
+    PyArray_Descr* const dtype)
+  {
+    // Make an attempt to confirm that this is one of our dtypes.
+    if (dtype->kind == 'V' && dtype->type == 'j') {
+      auto const api = reinterpret_cast<TimeAPI*>(dtype->c_metadata);
+      if (api != nullptr && api->magic_ == MAGIC)
+        return api;
+    }
+    return nullptr;
+  }
+
 public:
 
   virtual ~TimeAPI() {}
   virtual ref<Object> from_offset(Array*) = 0;
+  virtual LocalDatenumDaytick to_local_datenum_daytick(void const* time_ptr, ora::TimeZone const& tz) const = 0;
 
-  static TimeAPI* get(PyArray_Descr* descr) {
-    assert(descr->c_metadata != nullptr);
-    return reinterpret_cast<TimeAPI*>(descr->c_metadata); 
+  static bool
+  check(
+    PyArray_Descr* const descr)
+  {
+    return get(descr) != nullptr;
   }
-    
+
+  static TimeAPI*
+  from(
+    PyArray_Descr* const descr)
+  {
+    auto const api = get(descr);
+    if (api == nullptr)
+      throw TypeError("not an ora time dtype");
+    else
+      return api;
+  }
+
 };
 
 
@@ -84,7 +117,21 @@ private:
   public:
 
     virtual ~API() = default;
+
     virtual ref<Object> from_offset(Array*) override;
+
+    virtual LocalDatenumDaytick 
+    to_local_datenum_daytick(
+      void const* const time_ptr, 
+      ora::TimeZone const& tz) 
+      const override
+    { 
+      auto const time = *reinterpret_cast<Time const*>(time_ptr);
+      return 
+          time.is_valid() 
+        ? ora::time::to_local_datenum_daytick(time, tz) 
+        : LocalDatenumDaytick{};
+    }
 
   };
 
@@ -306,6 +353,31 @@ template<class PYTIME>
 Descr*
 TimeDtype<PYTIME>::descr_
   = nullptr;
+
+//------------------------------------------------------------------------------
+// Accessories
+
+/*
+ * Attempts to convert `arg` to a time array.
+ *
+ * If it isn't one already, attempts to convert it using the default time dtype.
+ */
+inline ref<Array>
+to_time_array(
+  Object* const arg)
+{
+  if (Array::Check(arg)) {
+    // It's an array.  Check its dtype.
+    Array* const arr = reinterpret_cast<Array*>(arg);
+    if (TimeAPI::check(arr->descr()))
+      return ref<Array>::of(arr);
+  }
+
+  // Convert to an array of the default time dtype.
+  auto const def = TimeDtype<PyTimeDefault>::get_descr();
+  return Array::FromAny(arg, def, 0, 0, NPY_ARRAY_BEHAVED);
+}
+
 
 //------------------------------------------------------------------------------
 

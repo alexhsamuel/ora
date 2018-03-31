@@ -7,7 +7,6 @@
 #include "np_daytime.hh"
 #include "np_time.hh"
 #include "numpy.hh"
-#include "PyTime.hh"
 
 using namespace ora::lib;
 using namespace ora::py;
@@ -138,7 +137,7 @@ from_offset(
   auto offset = Array::FromAny(offset_arg, NPY_INT64, 0, 0, NPY_ARRAY_BEHAVED);
 
   // FIXME: Handle dtype == nullptr in TimeAPI::get().
-  return TimeAPI::get(dtype)->from_offset(offset);
+  return TimeAPI::from(dtype)->from_offset(offset);
 }
 
 
@@ -162,11 +161,9 @@ to_local(
     &PyArray_DescrConverter2, &daytime_descr
     );
 
-  // FIXME: Accept other time types.
-  auto const time_descr = TimeDtype<PyTimeDefault>::get_descr();
-  auto const time_arr
-    = Array::FromAny(time_arg, time_descr->type_num, 0, 0, NPY_ARRAY_BEHAVED);
-  auto const time_api = PyTimeAPI::get(&PyTimeDefault::type_);  // FIXME
+  auto const time_arr   = to_time_array(time_arg);
+  auto const time_descr = time_arr->descr();
+  auto const time_api   = TimeAPI::from(time_descr);
 
   auto const tz = convert_to_time_zone(tz_arg);
 

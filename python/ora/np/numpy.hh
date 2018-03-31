@@ -72,6 +72,8 @@ public:
   static ref<Array> SimpleNew1D(npy_intp const size, int const typenum)
     { return SimpleNew(1, const_cast<npy_intp*>(&size), typenum); }
 
+  PyArray_Descr* descr()
+    { return PyArray_DESCR(array_this()); }
   npy_intp size()
     { return PyArray_SIZE(array_this()); }
   template<class T> T const* get_const_ptr()

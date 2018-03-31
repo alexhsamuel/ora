@@ -19,11 +19,10 @@ class DaytimeAPI
 private:
 
   static uint64_t constexpr MAGIC = 0x737865c3443a5a50;
-  uint64_t const magic_;
+  uint64_t const magic_ = MAGIC;
 
 public:
 
-  DaytimeAPI() : magic_(MAGIC) {}
   virtual ~DaytimeAPI() {}
 
   virtual void                      from_daytick(ora::Daytick, void*) const = 0;

@@ -111,8 +111,6 @@ public:
   virtual bool                      is_missing(Object* time) const = 0;
   virtual ref<Object>               now() const = 0;
   virtual ora::LocalDatenumDaytick  to_local_datenum_daytick(Object* time, ora::TimeZone const& tz) const = 0;
-  // FIXME: Move to numpy API.
-  virtual LocalDatenumDaytick       to_local_datenum_daytick(void const* time_ptr, ora::TimeZone const& tz) const = 0;
 
 private:
 
@@ -207,15 +205,6 @@ public:
 
     virtual ora::LocalDatenumDaytick to_local_datenum_daytick(Object* const time, ora::TimeZone const& tz) const
       { return ora::time::to_local_datenum_daytick(((PyTime*) time)->time_, tz); }
-
-    virtual LocalDatenumDaytick to_local_datenum_daytick(void const* const time_ptr, ora::TimeZone const& tz) const
-    { 
-      auto const time = *reinterpret_cast<Time const*>(time_ptr);
-      return 
-          time.is_valid() 
-        ? ora::time::to_local_datenum_daytick(time, tz) 
-        : LocalDatenumDaytick{};
-    }
 
   };
 
