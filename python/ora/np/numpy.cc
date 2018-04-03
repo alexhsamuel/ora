@@ -161,6 +161,9 @@ from_local(
     &PyArray_DescrConverter2, &time_descr
     );
 
+  if (time_descr == nullptr)
+    throw TypeError("not an ora time dtype");
+
   auto const date_arr       = to_date_array(date_arg);
   auto const date_descr     = date_arr->descr();
   auto const date_api       = DateAPI::from(date_descr);
@@ -247,6 +250,11 @@ to_local(
     &PyArray_DescrConverter2, &date_descr,
     &PyArray_DescrConverter2, &daytime_descr
     );
+
+  if (date_descr == nullptr)
+    throw TypeError("not an ora date dtype");
+  if (daytime_descr == nullptr)
+    throw TypeError("not an ora daytime dtype");
 
   auto const time_arr   = to_time_array(time_arg);
   auto const time_descr = time_arr->descr();
