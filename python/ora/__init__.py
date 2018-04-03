@@ -12,22 +12,24 @@ __version__ = "0.2.4"
 __all__ = (
     "Date",
     "Date16",
+
     "Daytime",
     "Daytime32",
+    "UsecDaytime",
+
     "HiTime",
-    "HmsDaytime",
-    "MIDNIGHT",
-    "Month",
-    "MonthOfYear",
     "NsTime",
     "SmallTime",
-    "TIME_TYPES",
     "Time",
     "Time128",
     "Unix32Time",
     "Unix64Time",
+    "TIME_TYPES",
+
+    "HmsDaytime",
+    "Month",
+    "MonthOfYear",
     "TimeZone",
-    "UTC",
     "Weekday",
     "YmdDate",
 
@@ -51,6 +53,9 @@ __all__ = (
     "to_local",
     "to_weekday",
     "today",
+
+    "MIDNIGHT",
+    "UTC",
 
     "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun",
 
@@ -280,6 +285,7 @@ def get_zoneinfo_version():
         raise RuntimeError("unexpected zoneinfo version: {}".format(version))
     else:
         return version
+
 
 
 
