@@ -1,6 +1,7 @@
 #include <Python.h>
 
 #include "ora/lib/mem.hh"
+#include "ora.hh"
 #include "py.hh"
 #include "np_types.hh"
 #include "numpy.hh"
@@ -91,6 +92,19 @@ private:
   static int            setitem(Object*, Daytime*, PyArrayObject*);
   static int            compare(Daytime const*, Daytime const*, PyArrayObject*);
 
+  static npy_bool equal(Daytime const daytime0, Daytime const daytime1) 
+    { return ora::daytime::nex::equal(daytime0, daytime1) ? NPY_TRUE : NPY_FALSE; }
+  static npy_bool not_equal(Daytime const daytime0, Daytime const daytime1)
+    { return ora::daytime::nex::equal(daytime0, daytime1) ? NPY_FALSE : NPY_TRUE; }
+
+  // Wrap days_after and days_before to accept int64 args.
+  static Daytime add(Daytime const daytime, double const seconds)
+    { return ora::daytime::nex::seconds_after(daytime, seconds); }
+  static Daytime subtract_before(Daytime const daytime, double const seconds)
+    { return ora::daytime::nex::seconds_before(daytime, seconds); }
+  static double subtract_between(Daytime const daytime1, Daytime const daytime0) 
+    { return ora::daytime::nex::seconds_between(daytime0, daytime1); }
+
   class API
   : public DaytimeAPI
   {
@@ -161,6 +175,8 @@ void
 DaytimeDtype<PYDAYTIME>::add(
   Module* const module)
 {
+  auto const np_module = Module::ImportModule("numpy");
+
   // Build or get the dtype.
   auto const dtype = DaytimeDtype<PYDAYTIME>::get();
 
@@ -171,6 +187,23 @@ DaytimeDtype<PYDAYTIME>::add(
 
   // Add ufuncs.
   // FIXME
+
+  // Add ufunc loops.
+  create_or_get_ufunc(np_module, "equal", 2, 1)->add_loop_2(
+    dtype->type_num, dtype->type_num, NPY_BOOL,
+    ufunc_loop_2<Daytime, Daytime, npy_bool, equal>);
+  create_or_get_ufunc(np_module, "not_equal", 2, 1)->add_loop_2(
+    dtype->type_num, dtype->type_num, NPY_BOOL,
+    ufunc_loop_2<Daytime, Daytime, npy_bool, not_equal>);
+  create_or_get_ufunc(np_module, "add", 2, 1)->add_loop_2(
+    dtype->type_num, NPY_FLOAT64, dtype->type_num,
+    ufunc_loop_2<Daytime, double, Daytime, add>);
+  create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
+    dtype->type_num, NPY_FLOAT64, dtype->type_num,
+    ufunc_loop_2<Daytime, double, Daytime, subtract_before>);
+  create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
+    dtype->type_num, dtype->type_num, NPY_FLOAT64,
+    ufunc_loop_2<Daytime, Daytime, double, subtract_between>);
 }
 
 

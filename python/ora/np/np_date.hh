@@ -111,10 +111,11 @@ private:
 
   static void           cast_from_object(Object* const*, Date*, npy_intp, void*, void*);
 
-  static npy_bool equal(Date const date0, Date const date1) 
-    { return ora::date::nex::equal(date0, date1) ? NPY_TRUE : NPY_FALSE; }
   static npy_bool is_valid(Date const date)
     { return date.is_valid() ? NPY_TRUE : NPY_FALSE; }
+
+  static npy_bool equal(Date const date0, Date const date1) 
+    { return ora::date::nex::equal(date0, date1) ? NPY_TRUE : NPY_FALSE; }
   static npy_bool not_equal(Date const date0, Date const date1)
     { return ora::date::nex::equal(date0, date1) ? NPY_FALSE : NPY_TRUE; }
 
@@ -123,7 +124,6 @@ private:
     { return ora::date::nex::days_after(date, (int32_t) days); }
   static Date subtract_before(Date const date, int64_t const days)
     { return ora::date::nex::days_before(date, (int32_t) days); }
-
   static int32_t subtract_between(Date const date1, Date const date0) 
     { return ora::date::nex::days_between(date0, date1); }
 
@@ -296,6 +296,7 @@ DateDtype<PYDATE>::add(
     dtype->type_num, NPY_BOOL,
     ufunc_loop_1<Date, npy_bool, is_valid>);
 
+  // Add ufunc loops.
   create_or_get_ufunc(np_module, "equal", 2, 1)->add_loop_2(
     dtype->type_num, dtype->type_num, NPY_BOOL,
     ufunc_loop_2<Date, Date, npy_bool, equal>);

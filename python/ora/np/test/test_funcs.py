@@ -61,3 +61,43 @@ def test_to_local(Time, Date, Daytime, time_zone):
         assert daytime[i] == y
 
 
+@pytest.mark.parametrize(
+    "Time, Date, Daytime, time_zone", 
+    [
+        (None, Date, Daytime, UTC),
+        (Time, Date, Daytime, "America/New_York"),
+        (Time, ora.Date16, ora.Daytime32, "Asia/Tokyo"),
+        (ora.Unix32Time, ora.Date16, ora.Daytime32, "Asia/Tokyo"),
+        (ora.Time128, ora.Date, ora.Daytime, "Europe/London"),
+    ]
+)
+def test_from_local(Time, Date, Daytime, time_zone):
+    date = Date(2018, 4, 1) + np.arange(0, 64, 8)
+    date[-2] = Date.INVALID
+    date[-1] = Date.MISSING
+    assert date.dtype == Date.dtype
+
+    daytime = (Daytime(0, 0, 0) + np.arange(0, 80000, 1000)).astype(Daytime)
+    daytime[-2] = Daytime.INVALID
+    daytime[-1] = Daytime.MISSING
+    daytime = daytime.reshape((10, 8))
+    assert daytime.dtype == Daytime.dtype
+
+    if Time is None:
+        time = ora.np.from_local(date, daytime, time_zone)
+        Time = ora.Time
+    else:
+        time = ora.np.from_local(date, daytime, time_zone, Time=Time)
+    print(date.shape, daytime.shape, time.shape)
+    assert time.dtype == Time.dtype
+    assert time.shape == (10, 8)
+    for r in range(10):
+        for c in range(8):
+            try:
+                t = ora.from_local((date[c], daytime[r, c]), time_zone, Time=Time)
+            except ValueError:
+                t = Time.INVALID
+            assert time[r, c] == t
+
+    
+
