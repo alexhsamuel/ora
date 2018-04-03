@@ -9,6 +9,7 @@
 #include <Python.h>
 #include <datetime.h>
 
+#include "np/numpy.hh"
 #include "ora.hh"
 #include "py.hh"
 #include "types.hh"
@@ -188,6 +189,8 @@ private:
   // Number methods.
   static ref<Object> nb_add     (PyDaytime* self, Object* other, bool right);
   static ref<Object> nb_subtract(PyDaytime* self, Object* other, bool right);
+  static ref<Object> nb_int     (PyDaytime* self);
+  static ref<Object> nb_float   (PyDaytime* self);
   static PyNumberMethods tp_as_number_;
 
   // Methods.
@@ -228,6 +231,8 @@ PyDaytime<DAYTIME>::add_to(
 {
   // Construct the type struct.
   type_ = build_type(string{module.GetName()} + "." + name);
+  // FIXME: Make the conditional on successfully importing numpy.
+  type_.tp_base = &PyGenericArrType_Type;
   // Hand it to Python.
   type_.Ready();
 
@@ -423,6 +428,24 @@ PyDaytime<DAYTIME>::nb_subtract(
 
 
 template<class DAYTIME>
+inline ref<Object>
+PyDaytime<DAYTIME>::nb_int(
+  PyDaytime* const self)
+{
+  throw TypeError("int() argument cannot be a daytime");
+}
+
+
+template<class DAYTIME>
+inline ref<Object>
+PyDaytime<DAYTIME>::nb_float(
+  PyDaytime* const self)
+{
+  throw TypeError("float() argument cannot be a daytime");
+}
+
+
+template<class DAYTIME>
 PyNumberMethods
 PyDaytime<DAYTIME>::tp_as_number_ = {
   (binaryfunc)  wrap<PyDaytime, nb_add>,        // nb_add
@@ -441,9 +464,9 @@ PyDaytime<DAYTIME>::tp_as_number_ = {
   (binaryfunc)  nullptr,                        // nb_and
   (binaryfunc)  nullptr,                        // nb_xor
   (binaryfunc)  nullptr,                        // nb_or
-  (unaryfunc)   nullptr,                        // nb_int
+  (unaryfunc)   wrap<PyDaytime, nb_int>,        // nb_int
   (void*)       nullptr,                        // nb_reserved
-  (unaryfunc)   nullptr,                        // nb_float
+  (unaryfunc)   wrap<PyDaytime, nb_float>,      // nb_float
   (binaryfunc)  nullptr,                        // nb_inplace_add
   (binaryfunc)  nullptr,                        // nb_inplace_subtract
   (binaryfunc)  nullptr,                        // nb_inplace_multiply

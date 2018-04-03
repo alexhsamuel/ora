@@ -351,8 +351,10 @@ build_np_module()
 
   DateDtype<PyDate<ora::date::Date>>::add(mod);
   DateDtype<PyDate<ora::date::Date16>>::add(mod);
+
   DaytimeDtype<PyDaytime<ora::daytime::Daytime>>::add(mod);
   DaytimeDtype<PyDaytime<ora::daytime::Daytime32>>::add(mod);
+  DaytimeDtype<PyDaytime<ora::daytime::UsecDaytime>>::add(mod);
 
   mod->AddFunctions(functions);
 
