@@ -114,11 +114,6 @@ private:
   static npy_bool is_valid(Date const date)
     { return date.is_valid() ? NPY_TRUE : NPY_FALSE; }
 
-  static npy_bool equal(Date const date0, Date const date1) 
-    { return ora::date::nex::equal(date0, date1) ? NPY_TRUE : NPY_FALSE; }
-  static npy_bool not_equal(Date const date0, Date const date1)
-    { return ora::date::nex::equal(date0, date1) ? NPY_FALSE : NPY_TRUE; }
-
   // Wrap days_after and days_before to accept int64 args.
   static Date add(Date const date, int64_t const days)
     { return ora::date::nex::days_after(date, (int32_t) days); }
@@ -296,13 +291,10 @@ DateDtype<PYDATE>::add(
     dtype->type_num, NPY_BOOL,
     ufunc_loop_1<Date, npy_bool, is_valid>);
 
+  Comparisons<Date, ora::date::nex::equal, ora::date::nex::before>
+    ::register_loops(dtype->type_num);
+
   // Add ufunc loops.
-  create_or_get_ufunc(np_module, "equal", 2, 1)->add_loop_2(
-    dtype->type_num, dtype->type_num, NPY_BOOL,
-    ufunc_loop_2<Date, Date, npy_bool, equal>);
-  create_or_get_ufunc(np_module, "not_equal", 2, 1)->add_loop_2(
-    dtype->type_num, dtype->type_num, NPY_BOOL,
-    ufunc_loop_2<Date, Date, npy_bool, not_equal>);
   create_or_get_ufunc(np_module, "add", 2, 1)->add_loop_2(
     dtype->type_num, NPY_INT64, dtype->type_num,
     ufunc_loop_2<Date, int64_t, Date, add>);

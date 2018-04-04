@@ -87,7 +87,7 @@
    - date type and ufuncs
      - [ ] casts
      - [ ] arithmetic (template)
-     - [ ] comparisons (template)
+     - [x] comparisons (template)
      - [ ] is_valid (template)
      - [ ] weekday
      - [ ] to/from ymd date
@@ -101,7 +101,7 @@
    - daytime type and ufuncs
      - [ ] casts
      - [ ] arithmetic (template)
-     - [ ] comparisons (template)
+     - [x] comparisons (template)
      - [ ] is_valid (template)
      - [ ] to/from hms
      - [ ] parsing

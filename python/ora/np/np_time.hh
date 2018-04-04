@@ -198,7 +198,6 @@ TimeDtype<PYTIME>::set_up(
     NPY_OBJECT, type_num, (PyArray_VectorUnaryFunc*) cast_from_object);
   Array::RegisterCanCast(NPY_OBJECT, type_num, NPY_OBJECT_SCALAR);
 
-  // Comparisons.
   Comparisons<Time, ora::time::nex::equal, ora::time::nex::before>
     ::register_loops(type_num);
 
