@@ -1,6 +1,5 @@
 # Miscellaneous Work List
 
-1. `ora.np.from_local()`.
 1. Document `ora.np`.
 1. Remove seconds decimal point in repr of time types with no subsecond resolution.
 1. Move doc_t into generated docstring.cc, or elsewhere.
@@ -114,13 +113,13 @@
      - [x] from_offset
      - [x] `offset_dtype` attribute
      - [ ] arithmetic (template)
-     - [ ] comparison (template)
+     - [x] comparison (template)
      - [ ] is_valid (template)
      - [ ] parsing
      - [ ] formatting
      - [ ] specialized arrfuncs (template)
    - localization ufuncs
-     - [ ] `from_local`
+     - [x] `from_local`
      - [x] `to_local`
 
 1. Investigate 'safe integer' math packages for offset arithmetic.

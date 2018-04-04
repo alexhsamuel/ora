@@ -328,6 +328,67 @@ ufunc_loop_2(
 
 //------------------------------------------------------------------------------
 
+/*
+ * Registers comparison ufunc loops.
+ */
+template<class TYPE, bool (*EQUAL)(TYPE, TYPE), bool (*LESS)(TYPE, TYPE)>
+class Comparisons
+{
+public:
+
+  static void
+  register_loops(
+    npy_intp const type_num)
+  {
+    auto const np_module = Module::ImportModule("numpy");
+
+    create_or_get_ufunc(np_module, "equal", 2, 1)->add_loop_2(
+      type_num, type_num, NPY_BOOL,
+      ufunc_loop_2<TYPE, TYPE, npy_bool, equal>);
+    create_or_get_ufunc(np_module, "not_equal", 2, 1)->add_loop_2(
+      type_num, type_num, NPY_BOOL,
+      ufunc_loop_2<TYPE, TYPE, npy_bool, not_equal>);
+    create_or_get_ufunc(np_module, "less", 2, 1)->add_loop_2(
+      type_num, type_num, NPY_BOOL,
+      ufunc_loop_2<TYPE, TYPE, npy_bool, less>);
+    create_or_get_ufunc(np_module, "less_equal", 2, 1)->add_loop_2(
+      type_num, type_num, NPY_BOOL,
+      ufunc_loop_2<TYPE, TYPE, npy_bool, less_equal>);
+    create_or_get_ufunc(np_module, "greater", 2, 1)->add_loop_2(
+      type_num, type_num, NPY_BOOL,
+      ufunc_loop_2<TYPE, TYPE, npy_bool, greater>);
+    create_or_get_ufunc(np_module, "greater_equal", 2, 1)->add_loop_2(
+      type_num, type_num, NPY_BOOL,
+      ufunc_loop_2<TYPE, TYPE, npy_bool, greater_equal>);
+  }
+
+private:
+
+  Comparisons() = delete;
+
+  static npy_bool equal(TYPE const a, TYPE const b)
+    { return EQUAL(a, b) ? NPY_TRUE : NPY_FALSE; }
+
+  static npy_bool not_equal(TYPE const a, TYPE const b)
+    { return EQUAL(a, b) ? NPY_FALSE : NPY_TRUE; }
+
+  static npy_bool less(TYPE const a, TYPE const b)
+    { return LESS(a, b) ? NPY_TRUE : NPY_FALSE; }
+
+  static npy_bool less_equal(TYPE const a, TYPE const b)
+    { return EQUAL(a, b) || LESS(a, b) ? NPY_TRUE : NPY_FALSE; }
+
+  static npy_bool greater(TYPE const a, TYPE const b)
+    { return EQUAL(a, b) || LESS(a, b) ? NPY_FALSE : NPY_TRUE; }
+
+  static npy_bool greater_equal(TYPE const a, TYPE const b)
+    { return LESS(a, b) ? NPY_FALSE : NPY_TRUE; }
+
+};
+
+
+//------------------------------------------------------------------------------
+
 template<class TYPE>
 void
 generic_copyswap(

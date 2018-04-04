@@ -204,13 +204,8 @@ TimeDtype<PYTIME>::set_up(
   Array::RegisterCanCast(NPY_OBJECT, type_num, NPY_OBJECT_SCALAR);
 
   // Comparisons.
-  create_or_get_ufunc(np_module, "equal", 2, 1)->add_loop_2(
-    type_num, type_num, NPY_BOOL,
-    ufunc_loop_2<Time, Time, npy_bool, equal>);
-  create_or_get_ufunc(np_module, "not_equal", 2, 1)->add_loop_2(
-    type_num, type_num, NPY_BOOL,
-    ufunc_loop_2<Time, Time, npy_bool, not_equal>);
-  // FIXME: Inequality comparisons.
+  Comparisons<Time, ora::time::nex::equal, ora::time::nex::before>
+    ::register_loops(type_num);
 
   // Arithmetic by seconds.
   create_or_get_ufunc(np_module, "add", 2, 1)->add_loop_2(

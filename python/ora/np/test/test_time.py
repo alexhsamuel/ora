@@ -102,4 +102,39 @@ def test_sub(Time, offset):
             assert t1 == Time.INVALID
 
 
+@pytest.mark.parametrize("Time", ora.TIME_TYPES)
+def test_equal(Time):
+    arr = get_array(Time)
+    assert ((arr == arr[2]).astype(int) == [0, 0, 1, 0, 0, 0, 0, 0, 0]).all()
+
+
+@pytest.mark.parametrize("Time", ora.TIME_TYPES)
+def test_not_equal(Time):
+    arr = get_array(Time)
+    assert ((arr != arr[2]).astype(int) == [1, 1, 0, 1, 1, 1, 1, 1, 1]).all()
+
+
+@pytest.mark.parametrize("Time", ora.TIME_TYPES)
+def test_less(Time):
+    arr = get_array(Time)
+    assert ((arr < arr[2]).astype(int) == [1, 1, 0, 0, 0, 0, 0, 1, 1]).all()
+
+
+@pytest.mark.parametrize("Time", ora.TIME_TYPES)
+def test_less_equal(Time):
+    arr = get_array(Time)
+    assert ((arr <= arr[2]).astype(int) == [1, 1, 1, 0, 0, 0, 0, 1, 1]).all()
+
+
+@pytest.mark.parametrize("Time", ora.TIME_TYPES)
+def test_greater(Time):
+    arr = get_array(Time)
+    assert ((arr > arr[2]).astype(int) == [0, 0, 0, 1, 1, 1, 1, 0, 0]).all()
+
+
+@pytest.mark.parametrize("Time", ora.TIME_TYPES)
+def test_greater_equal(Time):
+    arr = get_array(Time)
+    assert ((arr >= arr[2]).astype(int) == [0, 0, 1, 1, 1, 1, 1, 0, 0]).all()
+
 
