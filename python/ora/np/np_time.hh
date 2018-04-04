@@ -103,11 +103,6 @@ private:
   static float64_t subtract(Time const time0, Time const time1)
     { return ora::time::nex::seconds_between(time1, time0); }
 
-  static npy_bool equal(Time const time0, Time const time1) 
-    { return ora::time::nex::equal(time0, time1) ? NPY_TRUE : NPY_FALSE; }
-  static npy_bool not_equal(Time const time0, Time const time1)
-    { return ora::time::nex::equal(time0, time1) ? NPY_FALSE : NPY_TRUE; }
-
   class API
   : public TimeAPI
   {
