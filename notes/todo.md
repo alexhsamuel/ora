@@ -86,7 +86,7 @@
 1. Initial numpy support
    - date type and ufuncs
      - [ ] casts
-     - [ ] arithmetic (template)
+     - [x] arithmetic
      - [x] comparisons (template)
      - [ ] is_valid (template)
      - [ ] weekday
@@ -100,7 +100,7 @@
      - [ ] specialized arrfuncs (template)
    - daytime type and ufuncs
      - [ ] casts
-     - [ ] arithmetic (template)
+     - [x] arithmetic
      - [x] comparisons (template)
      - [ ] is_valid (template)
      - [ ] to/from hms
@@ -112,7 +112,7 @@
      - [x] to_offset
      - [x] from_offset
      - [x] `offset_dtype` attribute
-     - [ ] arithmetic (template)
+     - [x] arithmetic
      - [x] comparison (template)
      - [ ] is_valid (template)
      - [ ] parsing
