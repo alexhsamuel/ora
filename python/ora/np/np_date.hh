@@ -304,6 +304,10 @@ DateDtype<PYDATE>::add(
   create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
     dtype->type_num, dtype->type_num, NPY_INT32,
     ufunc_loop_2<Date, Date, int32_t, subtract_between>);
+
+  create_or_get_ufunc(module, "is_valid", 1, 1)->add_loop_1(
+    dtype->type_num, NPY_BOOL,
+    ufunc_loop_1<Date, bool, ora::date::nex::is_valid>);
 }
 
 

@@ -36,6 +36,16 @@ from_timespec(
 
 
 template<class TIME=Time>
+inline bool
+is_valid(
+  TIME const time)
+  noexcept
+{
+  return time.is_valid();
+}
+
+
+template<class TIME=Time>
 inline typename TIME::Offset
 get_offset(
   TIME const time)

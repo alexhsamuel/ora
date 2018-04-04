@@ -140,6 +140,16 @@ from_ymdi(
 //------------------------------------------------------------------------------
 
 template<class DATE>
+inline bool
+is_valid(
+  DATE const date)
+  noexcept
+{
+  return date.is_valid();
+}
+
+
+template<class DATE>
 inline Datenum
 get_datenum(
   DATE const date)

@@ -225,6 +225,9 @@ TimeDtype<PYTIME>::set_up(
       ufunc_loop_1<Time, Offset, ora::time::nex::get_offset<Time>>);
   }
 
+  create_or_get_ufunc(module, "is_valid", 1, 1)->add_loop_1(
+      type_num, NPY_BOOL,
+      ufunc_loop_1<Time, bool, ora::time::nex::is_valid>);
 }
 
 

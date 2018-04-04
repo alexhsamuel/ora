@@ -7,8 +7,6 @@ import pytest
 import ora
 from   ora import *
 
-pytest.importorskip("ora.np")
-
 #-------------------------------------------------------------------------------
 
 valid_dates = (
@@ -38,6 +36,28 @@ dates = valid_dates + (
 
 arr = np.array(dates)
 
+
+def get_array(Date):
+    return np.array([
+        Date.MIN,
+        Date.MIN + 1,
+        Date(1973,  1,  1),
+        Date(1973, 12, 31),
+        Date(1999, 12, 31),
+        Date(2000,  1,  1),
+        Date(2004,  2, 28),
+        Date(2004,  2, 29),
+        Date(2004,  3,  1),
+        Date.MAX - 10000,
+        Date.MAX -  1000,
+        Date.MAX -   100,
+        Date.MAX -    10,
+        Date.MAX -     1,
+        Date.MAX,
+        Date.MISSING,
+        Date.INVALID,
+    ])
+    
 
 def test_dtype():
     assert hasattr(Date, "dtype")
@@ -163,5 +183,12 @@ def test_subtract_diff():
     sub = arr - 5
     dif = arr - sub
     assert (~ora.np.is_valid(sub) | (dif == 5)).all()
+
+
+@pytest.mark.parametrize("Date", DATE_TYPES)
+def test_is_valid(Date):
+    arr = get_array(Date)
+    iv = ora.np.is_valid(arr)
+    assert iv[: -2].all() & ~iv[-2 :].any()
 
 

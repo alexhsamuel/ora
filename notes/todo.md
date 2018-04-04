@@ -88,7 +88,7 @@
      - [ ] casts
      - [x] arithmetic
      - [x] comparisons (template)
-     - [ ] is_valid (template)
+     - [x] is_valid
      - [ ] weekday
      - [ ] to/from ymd date
      - [ ] to/from ordinal date
@@ -102,7 +102,7 @@
      - [ ] casts
      - [x] arithmetic
      - [x] comparisons (template)
-     - [ ] is_valid (template)
+     - [x] is_valid
      - [ ] to/from hms
      - [ ] parsing
      - [ ] formatting
@@ -114,7 +114,7 @@
      - [x] `offset_dtype` attribute
      - [x] arithmetic
      - [x] comparison (template)
-     - [ ] is_valid (template)
+     - [x] is_valid
      - [ ] parsing
      - [ ] formatting
      - [ ] specialized arrfuncs (template)

@@ -138,3 +138,9 @@ def test_greater_equal(Time):
     assert ((arr >= arr[2]).astype(int) == [0, 0, 1, 1, 1, 1, 1, 0, 0]).all()
 
 
+@pytest.mark.parametrize("Time", ora.TIME_TYPES)
+def test_is_valid(Time):
+    arr = get_array(Time)
+    assert (ora.np.is_valid(arr).astype(int) == [1, 1, 1, 1, 1, 1, 1, 0, 0]).all()
+
+

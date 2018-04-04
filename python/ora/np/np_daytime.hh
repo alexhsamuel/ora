@@ -196,6 +196,10 @@ DaytimeDtype<PYDAYTIME>::add(
   create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
     dtype->type_num, dtype->type_num, NPY_FLOAT64,
     ufunc_loop_2<Daytime, Daytime, double, subtract_between>);
+
+  create_or_get_ufunc(module, "is_valid", 1, 1)->add_loop_1(
+    dtype->type_num, NPY_BOOL,
+    ufunc_loop_1<Daytime, bool, ora::daytime::nex::is_valid>);
 }
 
 

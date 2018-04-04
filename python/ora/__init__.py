@@ -12,10 +12,12 @@ __version__ = "0.2.4"
 __all__ = (
     "Date",
     "Date16",
+    "DATE_TYPES",
 
     "Daytime",
     "Daytime32",
     "UsecDaytime",
+    "DAYTIME_TYPES",
 
     "HiTime",
     "NsTime",
@@ -76,6 +78,17 @@ TIME_TYPES = frozenset((
     Time,
     Unix32Time,
     Unix64Time,
+))
+    
+DATE_TYPES = frozenset((
+    Date,
+    Date16,
+))
+    
+DAYTIME_TYPES = frozenset((
+    Daytime, 
+    Daytime32, 
+    UsecDaytime,
 ))
     
 
