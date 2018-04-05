@@ -102,21 +102,24 @@ def test_date_from_ordinal_date0(Date):
 def test_date_from_ordinal_date1():
     year, ordinal = zip(*( (d.year, d.ordinal) for d in valid_dates ))
     arr = ora.np.date_from_ordinal_date(year, ordinal)
-
-    # Should be:
-    # assert (arr == np.array(valid_dates)).all()
-    assert (arr == np.array(valid_dates, dtype=Date.dtype)).all()
+    assert (arr == np.array(valid_dates)).all()
 
 
-def test_eq():
+@pytest.mark.parametrize("Date", DATE_TYPES)
+def test_eq(Date):
+    arr = get_array(Date)
     assert (arr == arr).all()
 
 
-def test_ne():
+@pytest.mark.parametrize("Date", DATE_TYPES)
+def test_ne(Date):
+    arr = get_array(Date)
     assert not (arr != arr).any()
 
 
-def test_is_valid():
+@pytest.mark.parametrize("Date", DATE_TYPES)
+def test_is_valid(Date):
+    arr = get_array(Date)
     v = ora.np.is_valid(arr)
     assert (v == np.array([ d.valid for d in dates ])).all()
 
@@ -166,6 +169,8 @@ def test_subtract_shift():
     
 
 def test_subtract_diff():
+    arr = get_array(Date)
+
     dif = arr - arr
     assert (~ora.np.is_valid(arr) | (dif == 0)).all()
 
