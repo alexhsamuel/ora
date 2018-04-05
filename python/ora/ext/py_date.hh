@@ -144,7 +144,7 @@ using doc_t = char const* const;
 
 namespace pydate {
 
-#include "PyDate.docstrings.hh.inc"
+#include "py_date.docstrings.hh.inc"
 
 }  // namespace docstring
 

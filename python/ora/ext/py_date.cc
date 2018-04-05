@@ -2,7 +2,7 @@
 
 #include <Python.h>
 
-#include "PyDate.hh"
+#include "py_date.hh"
 #include "py.hh"
 
 namespace ora {
@@ -155,7 +155,7 @@ template class PyDate<ora::date::Date16>;
 namespace docstring {
 namespace pydate {
 
-#include "PyDate.docstrings.cc.inc"
+#include "py_date.docstrings.cc.inc"
 
 }  // namespace pydate
 }  // namespace docstring

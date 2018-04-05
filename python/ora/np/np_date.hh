@@ -6,7 +6,7 @@
 #include "py.hh"
 #include "np_types.hh"
 #include "numpy.hh"
-#include "PyDate.hh"
+#include "py_date.hh"
 
 // FIXME: Check GIL flags.
 

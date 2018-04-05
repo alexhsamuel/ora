@@ -11,11 +11,11 @@
 #include "ora/lib/math.hh"
 #include "ora.hh"
 #include "py.hh"
-#include "PyDate.hh"
-#include "PyDaytime.hh"
-#include "PyLocal.hh"
-#include "PyTime.hh"
-#include "PyTimeZone.hh"
+#include "py_date.hh"
+#include "py_daytime.hh"
+#include "py_local.hh"
+#include "py_time.hh"
+#include "py_time_zone.hh"
 #include "util.hh"
 
 namespace ora {
@@ -129,7 +129,7 @@ using doct_t = char const* const;
 
 namespace pytime {
 
-#include "PyTime.docstrings.hh.inc"
+#include "py_time.docstrings.hh.inc"
 
 }  // namespace docstring
 

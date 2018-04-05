@@ -1,5 +1,5 @@
 #include "py.hh"
-#include "PyDate.hh"
+#include "py_daytime.hh"
 
 //------------------------------------------------------------------------------
 
@@ -7,12 +7,13 @@ namespace ora {
 namespace py {
 
 void
-set_up_dates(
+set_up_daytimes(
   Module* const mod, 
   Module* const np_mod)
 {
-  PyDate<ora::date::Date>             ::add_to(*mod, "Date");
-  PyDate<ora::date::Date16>           ::add_to(*mod, "Date16");
+  PyDaytime<ora::daytime::Daytime>    ::add_to(*mod, "Daytime");
+  PyDaytime<ora::daytime::Daytime32>  ::add_to(*mod, "Daytime32");
+  PyDaytime<ora::daytime::UsecDaytime>::add_to(*mod, "UsecDaytime");
 }
 
 

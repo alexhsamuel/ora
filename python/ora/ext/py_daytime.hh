@@ -106,7 +106,7 @@ using doc_t = char const* const;
 
 namespace pydaytime {
 
-#include "PyDaytime.docstrings.hh.inc"
+#include "py_daytime.docstrings.hh.inc"
 
 }  // namespace pydaytime
 

@@ -5,7 +5,7 @@
 #include "py.hh"
 #include "np_types.hh"
 #include "numpy.hh"
-#include "PyDaytime.hh"
+#include "py_daytime.hh"
 
 namespace ora {
 namespace py {

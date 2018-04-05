@@ -95,6 +95,7 @@ setup(
             ],
             sources           =[
                 *glob("python/ora/*.cc"),
+                *glob("python/ora/ext/*.cc"),
                 *glob("python/ora/np/*.cc"),
             ],
             library_dirs      =["cxx/src",],

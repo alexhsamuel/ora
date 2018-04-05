@@ -1,5 +1,5 @@
 #include "py.hh"
-#include "PyTime.hh"
+#include "py_time.hh"
 #include "np/np_time.hh"
 
 //------------------------------------------------------------------------------

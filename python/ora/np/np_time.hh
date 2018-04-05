@@ -6,7 +6,7 @@
 #include "ora/lib/mem.hh"
 #include "ora.hh"
 #include "py.hh"
-#include "PyTime.hh"
+#include "py_time.hh"
 
 namespace ora {
 namespace py {
