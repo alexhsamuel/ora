@@ -205,48 +205,6 @@ DateDtype<PYDATE>::get()
 }
 
 
-// FIXME: Remove these once Month, Day, Ordinal, Week are 1-indexed.
-namespace {
-
-template<class DATE>
-inline ora::OrdinalDate
-get_ordinal_date_(
-  DATE const date)
-{
-  if (date.is_valid()) 
-    return get_ordinal_date(date);
-  else
-    return ora::OrdinalDate{};
-}
-
-
-template<class DATE>
-inline ora::WeekDate
-get_week_date_(
-  DATE const date)
-{
-  if (date.is_valid()) 
-    return get_week_date(date);
-  else
-    return ora::WeekDate{};
-}
-
-
-template<class DATE>
-inline ora::YmdDate
-get_ymd_(
-  DATE const date)
-{
-  if (date.is_valid()) 
-    return get_ymd(date);
-  else
-    return ora::YmdDate{};
-}
-
-
-}  // anonymous namespace
-
-
 template<class PYDATE>
 void
 DateDtype<PYDATE>::add(
@@ -271,10 +229,10 @@ DateDtype<PYDATE>::add(
     ufunc_loop_1<Date, npy_bool, ora::date::nex::get_month<Date>>);
   create_or_get_ufunc(module, "get_ordinal_date", 1, 1)->add_loop_1(
     dtype, get_ordinal_date_dtype(),
-    ufunc_loop_1<Date, ora::OrdinalDate, get_ordinal_date_<Date>>);
+    ufunc_loop_1<Date, ora::OrdinalDate, ora::date::nex::get_ordinal_date<Date>>);
   create_or_get_ufunc(module, "get_week_date", 1, 1)->add_loop_1(
     dtype, get_week_date_dtype(),
-    ufunc_loop_1<Date, ora::WeekDate, get_week_date_<Date>>);
+    ufunc_loop_1<Date, ora::WeekDate, ora::date::nex::get_week_date<Date>>);
   create_or_get_ufunc(module, "get_weekday", 1, 1)->add_loop_1(
     dtype->type_num, NPY_UINT8,
     ufunc_loop_1<Date, npy_bool, ora::date::nex::get_weekday<Date>>);
@@ -283,7 +241,7 @@ DateDtype<PYDATE>::add(
     ufunc_loop_1<Date, int16_t, ora::date::nex::get_year<Date>>);
   create_or_get_ufunc(module, "get_ymd", 1, 1)->add_loop_1(
     dtype, get_ymd_dtype(),
-    ufunc_loop_1<Date, ora::YmdDate, get_ymd_<Date>>);
+    ufunc_loop_1<Date, ora::YmdDate, ora::date::nex::get_ymd<Date>>);
   create_or_get_ufunc(module, "get_ymdi", 1, 1)->add_loop_1(
     dtype->type_num, NPY_INT32, 
     ufunc_loop_1<Date, int32_t, ora::date::nex::get_ymdi<Date>>);
