@@ -21,17 +21,16 @@ date_from_ordinal_date(
   Tuple* const args,
   Dict* const kw_args)
 {
-  static char const* arg_names[] = {"year", "ordinal", nullptr};
+  static char const* arg_names[] = {"year", "ordinal", "Date", nullptr};
   PyObject* year_arg;
   PyObject* ordinal_arg;
-  PyArray_Descr* dtype = DateDtype<PyDateDefault>::get();
+  PyArray_Descr* descr = DateDtype<PyDateDefault>::get();
   Arg::ParseTupleAndKeywords(
-    args, kw_args, "OO|$O!", arg_names,
-    &year_arg, &ordinal_arg, &PyArrayDescr_Type, &dtype);
-
-  // FIXME: Encapsulate this.
-  auto const api = (DateAPI*) dtype->c_metadata;
-  assert(api != nullptr);
+    args, kw_args, "OO|$O&", arg_names,
+    &year_arg, &ordinal_arg, &PyArray_DescrConverter2, &descr);
+  if (descr == nullptr)
+    throw TypeError("not an ora date dtype");
+  auto const api = DateAPI::from(descr);
 
   return api->function_date_from_ordinal_date(
     Array::FromAny(

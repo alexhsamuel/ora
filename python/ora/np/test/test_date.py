@@ -60,38 +60,25 @@ def get_array(Date):
     
 
 def test_dtype():
-    assert hasattr(Date, "dtype")
     assert Date.dtype.itemsize == 4
-    assert hasattr(Date16, "dtype")
     assert Date16.dtype.itemsize == 2
 
 
-def test_arr_with_dtype():
-    arr = np.array(dates, dtype=Date.dtype)
+@pytest.mark.parametrize("Date", DATE_TYPES)
+def test_arr(Date):
+    arr = get_array(Date)
     assert arr.dtype is Date.dtype
-    assert len(arr) == len(dates)
-
-    for i in range(len(arr)):
-        assert arr[i] == dates[i]
-        assert dates[i] == arr[i]
 
 
-def test_arr():
-    assert arr.dtype is Date.dtype
-    assert len(arr) == len(dates)
-
-    for i in range(len(arr)):
-        assert arr[i] == dates[i]
-        assert dates[i] == arr[i]
-
-
-def test_get_ordinal_date():
-    od_arr  = ora.np.get_ordinal_date(arr)
+@pytest.mark.parametrize("Date", DATE_TYPES)
+def test_get_ordinal_date(Date):
+    arr = get_array(Date)
+    od_arr = ora.np.get_ordinal_date(arr)
 
     assert od_arr.dtype == ora.np.ORDINAL_DATE_DTYPE
     assert od_arr.dtype.names == ("year", "ordinal", )
     
-    for d, (y, o) in zip(dates, od_arr):
+    for d, (y, o) in zip(arr, od_arr):
         if d.valid:
             assert y == d.year
             assert o == d.ordinal
@@ -100,13 +87,15 @@ def test_get_ordinal_date():
             assert o == ora.ORDINAL_INVALID
 
 
-def test_date_from_ordinal_date0():
-    year    = np.array([ d.year for d in valid_dates ], dtype="int16")
-    ordinal = np.array([ d.ordinal for d in valid_dates ], dtype="uint16")
-    arr     = ora.np.date_from_ordinal_date(year, ordinal)
+@pytest.mark.parametrize("Date", DATE_TYPES)
+def test_date_from_ordinal_date0(Date):
+    dates   = get_array(Date)[: -2]
+    year    = np.array([ d.year for d in dates ], dtype="int16")
+    ordinal = np.array([ d.ordinal for d in dates ], dtype="uint16")
+    arr     = ora.np.date_from_ordinal_date(year, ordinal, Date=Date)
 
-    assert len(arr) == len(valid_dates)
-    for d0, d1 in zip(valid_dates, arr):
+    assert len(arr) == len(dates)
+    for d0, d1 in zip(dates, arr):
         assert d0 == d1
 
 
