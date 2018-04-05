@@ -148,7 +148,7 @@ $(CXX_TST_OKS): export ZONEINFO = $(ABSTOP)/$(ZONEINFO_DIR)
 # Python building extension code
 
 # Sources
-PY_INCDIRS      = $(PY_PKGDIR)/ext $(PY_PKGDIR)
+PY_INCDIRS      = $(PY_PKGDIR)/ext 
 PY_SRCS         = $(wildcard $(PY_PKGDIR)/ext/*.cc) 
 PY_CPPFLAGS    += $(PY_INCDIRS:%=-I%)
 PY_CPPFLAGS    += $(shell $(PYTHON_CONFIG) --includes)
@@ -158,7 +158,6 @@ PY_DOCSTR       = $(wildcard $(PY_PKGDIR)/ext/*.docstrings)
 
 # Building with NumPy support
 PY_INCDIRS     += $(shell $(PYTHON) -c 'from numpy.distutils.misc_util import get_numpy_include_dirs as g; print(" ".join(g()));')
-PY_SRCS        += $(wildcard $(PY_PKGDIR)/np/*.cc)
 
 # Outputs
 DEPS           += $(PY_SRCS:%.cc=%.cc.d)
