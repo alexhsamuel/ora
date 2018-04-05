@@ -14,15 +14,15 @@
 #include <numpy/ufuncobject.h>
 #include <numpy/npy_3kcompat.h>
 
-#include "np/numpy.hh"
+#include "np.hh"
 
 //------------------------------------------------------------------------------
 
 #include <Python.h>
 #include <datetime.h>
 
-#include "PyLocal.hh"
-#include "PyTimeZone.hh"
+#include "py_local.hh"
+#include "py_time_zone.hh"
 #include "types.hh"
 
 using namespace ora::lib;

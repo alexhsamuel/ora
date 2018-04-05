@@ -1,4 +1,4 @@
-#include "numpy.hh"
+#include "np.hh"
 #include "np_types.hh"
 
 namespace ora {

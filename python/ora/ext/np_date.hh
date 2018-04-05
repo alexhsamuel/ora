@@ -1,12 +1,12 @@
 #include <algorithm>
 #include <Python.h>
 
-#include "ora/lib/mem.hh"
-#include "ora.hh"
-#include "py.hh"
+#include "np.hh"
 #include "np_types.hh"
-#include "numpy.hh"
-#include "PyDate.hh"
+#include "ora.hh"
+#include "ora/lib/mem.hh"
+#include "py.hh"
+#include "py_date.hh"
 
 // FIXME: Check GIL flags.
 

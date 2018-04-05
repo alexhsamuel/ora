@@ -11,7 +11,7 @@
 #include <Python.h>
 #include <datetime.h>
 
-#include "np/numpy.hh"
+#include "np.hh"
 #include "ora.hh"
 #include "py.hh"
 #include "types.hh"
@@ -144,7 +144,7 @@ using doc_t = char const* const;
 
 namespace pydate {
 
-#include "PyDate.docstrings.hh.inc"
+#include "py_date.docstrings.hh.inc"
 
 }  // namespace docstring
 
