@@ -3,8 +3,8 @@
 #include "ora/lib/mem.hh"
 #include "ora.hh"
 #include "py.hh"
+#include "np.hh"
 #include "np_types.hh"
-#include "numpy.hh"
 #include "py_daytime.hh"
 
 namespace ora {

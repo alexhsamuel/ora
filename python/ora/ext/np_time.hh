@@ -2,9 +2,9 @@
 
 #include <Python.h>
 
-#include "numpy.hh"
-#include "ora/lib/mem.hh"
+#include "np.hh"
 #include "ora.hh"
+#include "ora/lib/mem.hh"
 #include "py.hh"
 #include "py_time.hh"
 

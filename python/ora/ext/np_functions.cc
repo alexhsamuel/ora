@@ -2,11 +2,11 @@
 
 #include <Python.h>
 
-#include "py.hh"
 #include "np_date.hh"
 #include "np_daytime.hh"
 #include "np_time.hh"
-#include "numpy.hh"
+#include "np.hh"
+#include "py.hh"
 
 using namespace ora::lib;
 using namespace ora::py;

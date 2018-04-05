@@ -14,7 +14,7 @@
 #include <numpy/ufuncobject.h>
 #include <numpy/npy_3kcompat.h>
 
-#include "np/numpy.hh"
+#include "np.hh"
 
 //------------------------------------------------------------------------------
 

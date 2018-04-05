@@ -9,7 +9,7 @@
 #include <Python.h>
 #include <datetime.h>
 
-#include "np/numpy.hh"
+#include "np.hh"
 #include "ora.hh"
 #include "py.hh"
 #include "types.hh"
