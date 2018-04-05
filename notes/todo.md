@@ -90,10 +90,10 @@
      - [x] comparisons (template)
      - [x] is_valid
      - [ ] weekday
-     - [ ] to/from ymd date
-     - [ ] to/from ordinal date
-     - [ ] to/from week date
-     - [ ] to/from ymdi
+     - [x] to/from ymd date
+     - [x] to/from ordinal date
+     - [x] to/from week date
+     - [x] to/from ymdi
      - [ ] range functions
      - [ ] parsing
      - [ ] formatting
