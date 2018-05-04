@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ora/exceptions.hh"
+#include "ora/calendar.hh"
 #include "ora/date_functions.hh"
 #include "ora/date_nex.hh"
 #include "ora/date_type.hh"

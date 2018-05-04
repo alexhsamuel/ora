@@ -6,13 +6,15 @@
 #include <string>
 #include <vector>
 
+#include "ora/date_functions.hh"
+#include "ora/date_type.hh"
+#include "ora/date_nex.hh"
 #include "ora/lib/filename.hh"
-#include "ora.hh"
 
 namespace ora {
 
 using namespace ora::lib;
-using ora::Date;
+using ora::date::Date;
 
 //------------------------------------------------------------------------------
 // Declarations
@@ -93,10 +95,11 @@ public:
 
 //------------------------------------------------------------------------------
 
-// Implements before(), after(), shift() from contains().
-
-// FIXME: Rename: it's not a mixin.
-class CalendarMixin
+/*
+ * Calendar base that implements before(), after(), and shift() using
+ * contains().  This may not be efficient for sparse calendars.
+ */
+class SimpleCalendar
 : public Calendar
 {
 public:
@@ -125,7 +128,6 @@ public:
     ssize_t shift) 
     const override
   {
-    // FIXME: Avoid virtual calls to contains()?
     while (shift > 0 && date.is_valid())
       if (contains(++date))
         shift--;
@@ -210,7 +212,7 @@ public:
 //------------------------------------------------------------------------------
 
 class WeekdaysCalendar
-: public CalendarMixin
+: public SimpleCalendar
 {
 public:
 
@@ -243,7 +245,7 @@ private:
 
 class HolidayCalendar
   final 
-: public CalendarMixin
+: public SimpleCalendar
 {
 public:
 
@@ -315,7 +317,7 @@ private:
 //------------------------------------------------------------------------------
 
 class NegationCalendar
-: public CalendarMixin
+: public SimpleCalendar
 {
 public:
   
@@ -342,7 +344,7 @@ private:
 
 
 class UnionCalendar
-: public CalendarMixin
+: public SimpleCalendar
 {
 public:
 
@@ -372,7 +374,7 @@ private:
 
 
 class IntersectionCalendar
-: public CalendarMixin
+: public SimpleCalendar
 {
 public:
 
