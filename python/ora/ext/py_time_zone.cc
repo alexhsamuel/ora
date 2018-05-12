@@ -170,6 +170,7 @@ void
 tp_dealloc(
   PyTimeZone* const self)
 {
+  // FIXME: dtor?
   self->ob_type->tp_free(self);
 }
 

@@ -6,13 +6,15 @@
 #include <string>
 #include <vector>
 
-#include "ora/lib/filename.hh"
 #include "ora/date_functions.hh"
 #include "ora/date_type.hh"
+#include "ora/date_nex.hh"
+#include "ora/lib/filename.hh"
 
 namespace ora {
 
 using namespace ora::lib;
+using ora::date::Date;
 
 //------------------------------------------------------------------------------
 // Declarations
@@ -24,30 +26,23 @@ extern std::unique_ptr<HolidayCalendar> parse_holiday_calendar(std::istream& in)
 extern std::unique_ptr<HolidayCalendar> load_holiday_calendar(fs::Filename const& filename);
 
 //------------------------------------------------------------------------------
+// Helpers
 
-class CalendarInterval
+namespace {
+
+std::pair<Date, Date>
+common_range(
+  std::pair<Date, Date> range0,
+  std::pair<Date, Date> range1)
 {
-public:
+  return {
+    std::max(range0.first, range1.first),
+    std::min(range0.second, range1.second)
+  };
+}
 
-  constexpr 
-  CalendarInterval(
-    Calendar const& calendar, 
-    ssize_t days) 
-    : calendar_(calendar), 
-      days_(days) 
-  {
-  }
 
-  constexpr Calendar const& get_calendar() const { return calendar_; }
-  constexpr ssize_t get_days() const { return days_; }
-
-private:
-
-  Calendar const& calendar_;
-  ssize_t days_;
-
-};
-
+}  // anonymous namespace
 
 //------------------------------------------------------------------------------
 
@@ -55,66 +50,97 @@ class Calendar
 {
 public:
 
-  Calendar() : DAY(*this, 1) {}
-  Calendar(Calendar const&) = delete;
-  Calendar(Calendar&&) = delete;
-  Calendar& operator=(Calendar const&) = delete;
-  Calendar& operator=(Calendar&&) = delete;
-  virtual ~Calendar() {}
+  virtual std::pair<Date, Date> range() const = 0;
 
-  virtual inline date::Date 
-  shift(
-    date::Date date, 
-    ssize_t shift) 
-    const
+  // FIXME: CHeck range.
+  template<class DATE> bool contains(DATE date) const 
+    { return contains(Date(date)); }
+  template<class DATE> DATE before(DATE const date) const 
+    { return date.is_valid() ? DATE(before(Date(date))) : DATE::INVALID; }
+  template<class DATE> DATE after(DATE const date) const
+    { return date.is_valid() ? DATE(after(Date(date))) : DATE::INVALID; }
+  template<class DATE> DATE shift(DATE const date, ssize_t const count) const 
+    { return date.is_valid() ? DATE(shift(Date(date), count)) : DATE::INVALID; }
+
+  class Interval
   {
-    // FIXME: What if 'date' is not in the calendar?
-    // FIXME: Avoid virtual calls to contains()?
+  public:
 
-    while (shift > 0 && date.is_valid())
-      if (contains_(++date))
-        shift--;
-    while (shift < 0 && date.is_valid())
-      if (contains_(--date))
-        shift++;
-    return date;
-  }
+    constexpr Interval(Calendar const& calendar, ssize_t const days) 
+      : calendar_(calendar), days_(days) {}
 
-  virtual inline date::Date 
-  nearest(
-    date::Date date, 
-    bool forward=true) 
-    const
-  {
-    while (date.is_valid() && !contains_(date)) 
-      date += forward ? 1 : -1;
-    return date;
-  }
+    Interval(Interval const&) = default;
+    Interval& operator=(Interval&) = default;
 
-  template<class DATE> bool contains(DATE date) const { return contains_(date::Date(date)); }
-  template<class DATE> DATE shift(DATE date, ssize_t shift) const { return DATE(this->shift(date::Date(date), shift)); }
-  template<class DATE> DATE nearest(DATE date, bool forward=true) const { return DATE(nearest(date::Date(date), forward)); }
+    constexpr Calendar const& get_calendar() const { return calendar_; }
+    constexpr ssize_t get_days() const { return days_; }
 
-  template<class DATE> bool operator[](DATE date) const { return contains<DATE>(date); }
-  
-  CalendarInterval const DAY;
+  private:
 
-protected:
+    Calendar const& calendar_;
+    ssize_t days_;
 
-  virtual bool contains_(date::Date date) const = 0;
+  };
+
+
+  Interval DAY() const { return Interval(*this, 1); }
+
+  virtual bool contains(Date date) const = 0;
+  virtual Date before(Date date) const = 0;
+  virtual Date after(Date date) const = 0;
+  virtual Date shift(Date date, ssize_t shift) const = 0;
 
 };
 
 
-template<>
-inline bool 
-Calendar::contains<date::Date>(
-  date::Date date) 
-  const 
-{ 
-  return contains_(date); 
-}
+//------------------------------------------------------------------------------
 
+/*
+ * Calendar base that implements before(), after(), and shift() using
+ * contains().  This may not be efficient for sparse calendars.
+ */
+class SimpleCalendar
+: public Calendar
+{
+public:
+
+  virtual inline Date before(
+    Date date)
+    const override
+  {
+    while (date.is_valid() && !contains(date))
+      date--;
+    return date;
+  }
+
+  virtual inline Date after(
+    Date date)
+    const override
+  {
+    while (date.is_valid() && !contains(date))
+      date++;
+    return date;
+  }
+
+  virtual inline Date 
+  shift(
+    Date date, 
+    ssize_t shift) 
+    const override
+  {
+    while (shift > 0 && date.is_valid())
+      if (contains(++date))
+        shift--;
+    while (shift < 0 && date.is_valid())
+      if (contains(--date))
+        shift++;
+    return date;
+  }
+
+};
+
+
+//------------------------------------------------------------------------------
 
 template<class DATE>
 inline DATE
@@ -122,7 +148,7 @@ operator<<(
   DATE date,
   Calendar const& cal)
 {
-  return cal.nearest(date, false);
+  return cal.before(date - 1);
 }
 
 
@@ -132,7 +158,7 @@ operator>>(
   DATE date,
   Calendar const& cal)
 {
-  return cal.nearest(date, true);
+  return cal.after(date + 1);
 }
 
 
@@ -160,18 +186,25 @@ operator>>=(
 
 class AllCalendar 
   final
-  : public Calendar
+: public Calendar
 {
 public:
 
   AllCalendar() {}
-  virtual ~AllCalendar() {}
+  AllCalendar(AllCalendar const&)       = default;
+  AllCalendar(AllCalendar&&)            = default;
+  virtual ~AllCalendar()                = default;
 
-  virtual date::Date shift(date::Date date, ssize_t days) const { return date + days; }
-
-protected:
-
-  virtual bool contains_(date::Date date) const { return date.is_valid(); }
+  virtual std::pair<Date, Date> range() const override
+    { return {Date::MIN, Date::MAX}; }
+  virtual bool contains(Date const date) const override
+    { return date.is_valid(); }
+  virtual Date before(Date const date) const override
+    { return date.is_valid() ? date : Date::INVALID; }
+  virtual Date after(Date const date) const override
+    { return date.is_valid() ? date : Date::INVALID; }
+  virtual Date shift(Date const date, ssize_t const days) const override 
+    { return date + days; }
 
 };
 
@@ -179,11 +212,12 @@ protected:
 //------------------------------------------------------------------------------
 
 class WeekdaysCalendar
-  : public Calendar
+: public SimpleCalendar
 {
 public:
 
-  using Mask = std::array<bool, 7>;
+  // FIXME: This can be optimized by storing the before/after shifts from
+  // each weekday to the adjacent weekdays.
 
   WeekdaysCalendar(
     std::vector<Weekday> weekdays)
@@ -195,21 +229,14 @@ public:
 
   virtual ~WeekdaysCalendar() {}
 
-  // FIXME: Optimize shift()?
-
-protected:
-
-  virtual inline bool 
-  contains_(
-    date::Date date) 
-    const
-  {
-    return mask_[get_weekday(date)];
-  }
+  virtual std::pair<Date, Date> range() const override
+    { return {Date::MIN, Date::MAX}; }
+  virtual bool contains(Date const date) const override
+    { return mask_[get_weekday(date)]; }
 
 private:
 
-  Mask mask_;
+  std::array<bool, 7> mask_;
 
 };
 
@@ -218,35 +245,47 @@ private:
 
 class HolidayCalendar
   final 
-  : public Calendar
+: public SimpleCalendar
 {
 public:
 
   HolidayCalendar(
     date::Date const min, 
     date::Date const max)
-    : min_(min),
-      holidays_(max - min, false)
+  : min_(min),
+    holidays_(max - min, false)
   {
     assert(min.is_valid() && max.is_valid());
   }
 
   ~HolidayCalendar() {}
 
-  date::Date get_min() const { return min_; }
-  date::Date get_max() const { return min_ + holidays_.size(); }
+  virtual std::pair<Date, Date> 
+  range() 
+    const override
+  {
+    return {min_, min_ + holidays_.size()};
+  }
+
+  inline virtual bool
+  contains(
+    Date date)
+    const override
+  {
+    return holidays_[date - min_];
+  }
 
   date::Date 
   shift(
     date::Date date, 
     ssize_t shift) 
-    const
+    const override
   {
     while (shift > 0 && date.is_valid())
-      if (contains_(++date))
+      if (contains(++date))
         shift--;
     while (shift < 0 && date.is_valid())
-      if (contains_(--date))
+      if (contains(--date))
         shift++;
     return date;
   }
@@ -264,23 +303,12 @@ public:
     holidays_[index] = contained;
   }
 
-  void add(date::Date date)       { set(date, true); }
-  void remove(date::Date date)    { set(date, false); }
-
-protected:
-
-  inline bool
-  contains_(
-    date::Date date)
-    const
-  {
-    return holidays_[date - min_];
-  }
-
+  void add(Date date)       { set(date, true); }
+  void remove(Date date)    { set(date, false); }
 
 private:
 
-  date::Date min_;
+  Date min_;
   std::vector<bool> holidays_;
 
 };
@@ -289,7 +317,7 @@ private:
 //------------------------------------------------------------------------------
 
 class NegationCalendar
-  : public Calendar
+: public SimpleCalendar
 {
 public:
   
@@ -303,15 +331,10 @@ public:
   NegationCalendar& operator=(NegationCalendar&&) = delete;
   virtual ~NegationCalendar() = default;
 
-protected:
-
-  virtual inline bool
-  contains_(
-    date::Date const date)
-    const
-  {
-    return !calendar_->contains(date);
-  }
+  virtual inline std::pair<Date, Date> range() const override
+    { return calendar_->range(); }
+  virtual inline bool contains(Date const date) const override
+    { return !calendar_->contains(date); }
 
 private:
 
@@ -321,15 +344,15 @@ private:
 
 
 class UnionCalendar
-  : public Calendar
+: public SimpleCalendar
 {
 public:
 
   UnionCalendar(
     std::unique_ptr<Calendar>&& calendar0,
     std::unique_ptr<Calendar>&& calendar1)
-  : calendar0_(std::move(calendar0)),
-    calendar1_(std::move(calendar1))
+  : cal0_(std::move(calendar0)),
+    cal1_(std::move(calendar1))
   {
   }
 
@@ -337,20 +360,45 @@ public:
   UnionCalendar& operator=(UnionCalendar&&) = delete;
   virtual ~UnionCalendar() = default;
 
-protected:
-
-  virtual inline bool
-  contains_(
-    date::Date const date)
-    const
-  {
-    return calendar0_->contains(date) && calendar1_->contains(date);
-  }
+  virtual inline std::pair<Date, Date> range() const override
+    { return common_range(cal0_->range(), cal1_->range()); }
+  virtual inline bool contains(Date const date) const override
+    { return cal0_->contains(date) || cal1_->contains(date); }
 
 private:
 
-  std::unique_ptr<Calendar> calendar0_;
-  std::unique_ptr<Calendar> calendar1_;
+  std::unique_ptr<Calendar> cal0_;
+  std::unique_ptr<Calendar> cal1_;
+
+};
+
+
+class IntersectionCalendar
+: public SimpleCalendar
+{
+public:
+
+  IntersectionCalendar(
+    std::unique_ptr<Calendar>&& calendar0,
+    std::unique_ptr<Calendar>&& calendar1)
+  : cal0_(std::move(calendar0)),
+    cal1_(std::move(calendar1))
+  {
+  }
+
+  IntersectionCalendar& operator=(IntersectionCalendar const&) = delete;
+  IntersectionCalendar& operator=(IntersectionCalendar&&) = delete;
+  virtual ~IntersectionCalendar() = default;
+
+  virtual inline std::pair<Date, Date> range() const override
+    { return common_range(cal0_->range(), cal1_->range()); }
+  virtual inline bool contains(Date const date) const override
+    { return cal0_->contains(date) && cal1_->contains(date); }
+
+private:
+
+  std::unique_ptr<Calendar> cal0_;
+  std::unique_ptr<Calendar> cal1_;
 
 };
 
@@ -366,7 +414,7 @@ make_workday_calendar(
   std::vector<Weekday> weekdays,
   std::unique_ptr<Calendar>&& holidays)
 {
-  return std::make_unique<UnionCalendar>(
+  return std::make_unique<IntersectionCalendar>(
     std::make_unique<WeekdaysCalendar>(weekdays),
     std::make_unique<NegationCalendar>(std::move(holidays)));
 }
@@ -409,27 +457,27 @@ make_workday_calendar(
 
 //------------------------------------------------------------------------------
 
-inline constexpr CalendarInterval 
+inline constexpr Calendar::Interval 
 operator-(
-  CalendarInterval const& interval) 
+  Calendar::Interval const& interval) 
 { 
-  return CalendarInterval(interval.get_calendar(), -interval.get_days()); 
+  return Calendar::Interval(interval.get_calendar(), -interval.get_days()); 
 }
 
 
-inline constexpr CalendarInterval 
+inline constexpr Calendar::Interval 
 operator*(
-  CalendarInterval const& interval,
+  Calendar::Interval const& interval,
   ssize_t mult) 
 { 
-  return CalendarInterval(interval.get_calendar(), mult * interval.get_days()); 
+  return Calendar::Interval(interval.get_calendar(), mult * interval.get_days()); 
 }
 
 
-inline constexpr CalendarInterval
+inline constexpr Calendar::Interval
 operator*(
   ssize_t mult,
-  CalendarInterval const& interval)
+  Calendar::Interval const& interval)
 {
   return interval * mult;
 }
@@ -439,7 +487,7 @@ template<class DATE>
 inline DATE
 operator+(
   DATE date,
-  CalendarInterval const& interval)
+  Calendar::Interval const& interval)
 {
   return interval.get_calendar().shift(date, interval.get_days());
 }
@@ -448,7 +496,7 @@ operator+(
 template<class DATE>
 inline DATE
 operator+(
-  CalendarInterval const& interval,
+  Calendar::Interval const& interval,
   DATE date)
 {
   return date + interval;
@@ -459,7 +507,7 @@ template<class DATE>
 inline DATE
 operator-(
   DATE date,
-  CalendarInterval const& interval)
+  Calendar::Interval const& interval)
 {
   return date + -interval;
 }

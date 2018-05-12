@@ -1327,6 +1327,11 @@ InitprocPtr
 
 template<class CLASS>
 using
+ObjobjprocPtr
+  = bool (*)(CLASS* self, Object* other);
+
+template<class CLASS>
+using
 ReprfuncPtr
   = ref<Unicode> (*)(CLASS* self);
 
@@ -1474,6 +1479,34 @@ wrap(
     return -1;
   }
   return 0;
+}
+
+
+/**
+ * Wraps an objobjproc.
+ */
+template<class CLASS, ObjobjprocPtr<CLASS> FUNCTION>
+int
+wrap(
+  PyObject* self,
+  PyObject* other)
+{
+  bool result;
+  try {
+    try {
+      result = FUNCTION(static_cast<CLASS*>(self), static_cast<Object*>(other));
+    }
+    catch (Exception) {
+      return -1;
+    }
+    catch (...) {
+      ExceptionTranslator::translate();
+    }
+  }
+  catch (Exception) {
+    return -1;
+  }
+  return result ? 1 : 0;
 }
 
 

@@ -21,10 +21,10 @@ TEST(AllCalendar, contains0) {
   EXPECT_TRUE (cal.contains(2013/JUL/13));
   EXPECT_TRUE (cal.contains(2013/JUL/14));
   EXPECT_TRUE (cal.contains(2013/JUL/15));
-  EXPECT_TRUE (cal[2013/JUL/14]);
-  EXPECT_TRUE (cal[2013/JUL/15]);
-  EXPECT_TRUE (cal[Date::MIN]);
-  EXPECT_TRUE (cal[Date::MAX]);
+  EXPECT_TRUE (cal.contains(2013/JUL/14));
+  EXPECT_TRUE (cal.contains(2013/JUL/15));
+  EXPECT_TRUE (cal.contains(Date::MIN));
+  EXPECT_TRUE (cal.contains(Date::MAX));
   EXPECT_FALSE(cal.contains(Date::INVALID));
   EXPECT_FALSE(cal.contains(Date::MISSING));
 }
@@ -38,10 +38,10 @@ TEST(AllCalendar, contains1) {
   EXPECT_TRUE (cal.contains(from_ymd<Date16>(2013,  7, 13)));
   EXPECT_TRUE (cal.contains(from_ymd<Date16>(2013,  7, 14)));
   EXPECT_TRUE (cal.contains(from_ymd<Date16>(2013,  7, 15)));
-  EXPECT_TRUE (cal[from_ymd<Date16>(2013,  7, 14)]);
-  EXPECT_TRUE (cal[from_ymd<Date16>(2013,  7, 15)]);
-  EXPECT_TRUE (cal[Date16::MIN]);
-  EXPECT_TRUE (cal[Date16::MAX]);
+  EXPECT_TRUE (cal.contains(from_ymd<Date16>(2013,  7, 14)));
+  EXPECT_TRUE (cal.contains(from_ymd<Date16>(2013,  7, 15)));
+  EXPECT_TRUE (cal.contains(Date16::MIN));
+  EXPECT_TRUE (cal.contains(Date16::MAX));
   EXPECT_FALSE(cal.contains(Date16::INVALID));
   EXPECT_FALSE(cal.contains(Date16::MISSING));
 }
@@ -59,8 +59,8 @@ TEST(WeekdaysCalendar, contains) {
   EXPECT_FALSE(cal0.contains(2013/JUL/13));
   EXPECT_FALSE(cal0.contains(2013/JUL/14));
   EXPECT_TRUE (cal0.contains(2013/JUL/15));
-  EXPECT_FALSE(cal0[2013/JUL/14]);
-  EXPECT_TRUE (cal0[2013/JUL/15]);
+  EXPECT_FALSE(cal0.contains(2013/JUL/14));
+  EXPECT_TRUE (cal0.contains(2013/JUL/15));
 
   // Thursdays and Sundays.
   WeekdaysCalendar const cal1({SUNDAY, THURSDAY});
@@ -71,8 +71,8 @@ TEST(WeekdaysCalendar, contains) {
   EXPECT_FALSE(cal1.contains(2013/JUL/13));
   EXPECT_TRUE (cal1.contains(2013/JUL/14));
   EXPECT_FALSE(cal1.contains(2013/JUL/15));
-  EXPECT_TRUE (cal1[2013/JUL/14]);
-  EXPECT_FALSE(cal1[2013/JUL/15]);
+  EXPECT_TRUE (cal1.contains(2013/JUL/14));
+  EXPECT_FALSE(cal1.contains(2013/JUL/15));
 }
 
 TEST(WeekdaysCalendar, shift) {
@@ -80,40 +80,41 @@ TEST(WeekdaysCalendar, shift) {
   WeekdaysCalendar const cal({MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY});
   auto const date = 2013/JUL/11;
 
-  EXPECT_EQ(2013/JUL/11, date + cal.DAY *   0);
+  auto const day = cal.DAY();
+  EXPECT_EQ(2013/JUL/11, date + day *   0);
 
-  EXPECT_EQ(2013/JUL/12, date + cal.DAY *   1);
-  EXPECT_EQ(2013/JUL/15, date + cal.DAY *   2);
-  EXPECT_EQ(2013/JUL/16, date + cal.DAY *   3);
-  EXPECT_EQ(2013/JUL/18, date + cal.DAY *   5);
-  EXPECT_EQ(2013/JUL/25, date + cal.DAY *  10);
-  EXPECT_EQ(2013/AUG/ 1, date + cal.DAY *  15);
-  EXPECT_EQ(2013/AUG/15, date + cal.DAY *  25);
-  EXPECT_EQ(2014/JUL/10, date + cal.DAY * 260);
-  EXPECT_EQ(2014/JUL/11, date + cal.DAY * 261);
-  EXPECT_EQ(2014/JUL/11, date + 261 * cal.DAY);
+  EXPECT_EQ(2013/JUL/12, date + day *   1);
+  EXPECT_EQ(2013/JUL/15, date + day *   2);
+  EXPECT_EQ(2013/JUL/16, date + day *   3);
+  EXPECT_EQ(2013/JUL/18, date + day *   5);
+  EXPECT_EQ(2013/JUL/25, date + day *  10);
+  EXPECT_EQ(2013/AUG/ 1, date + day *  15);
+  EXPECT_EQ(2013/AUG/15, date + day *  25);
+  EXPECT_EQ(2014/JUL/10, date + day * 260);
+  EXPECT_EQ(2014/JUL/11, date + day * 261);
+  EXPECT_EQ(2014/JUL/11, date + 261 * day);
 
-  EXPECT_EQ(2013/JUL/10, date + cal.DAY *  -1);
-  EXPECT_EQ(2013/JUL/ 9, date + cal.DAY *  -2);
-  EXPECT_EQ(2013/JUL/ 5, date + cal.DAY *  -4);
-  EXPECT_EQ(2013/JUN/28, date + cal.DAY *  -9);
-  EXPECT_EQ(2013/JUN/28, date - 9 * cal.DAY);
+  EXPECT_EQ(2013/JUL/10, date + day *  -1);
+  EXPECT_EQ(2013/JUL/ 9, date + day *  -2);
+  EXPECT_EQ(2013/JUL/ 5, date + day *  -4);
+  EXPECT_EQ(2013/JUN/28, date + day *  -9);
+  EXPECT_EQ(2013/JUN/28, date - 9 * day);
 
-  EXPECT_THROW((9900/JAN/ 1 + 600000 * cal.DAY).is_invalid(), DateRangeError);
-  EXPECT_THROW((1600/DEC/ 1 - 600000 * cal.DAY).is_invalid(), DateRangeError);
+  EXPECT_THROW((9900/JAN/ 1 + 600000 * day).is_invalid(), DateRangeError);
+  EXPECT_THROW((1600/DEC/ 1 - 600000 * day).is_invalid(), DateRangeError);
 }
 
 TEST(WeekdaysCalendar, nearest) {
   // Monday through Friday.
   WeekdaysCalendar const cal({MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY});
 
-  EXPECT_EQ(2013/JUL/23, cal.nearest(2013/JUL/23, false));
-  EXPECT_EQ(2013/JUL/23, cal.nearest(2013/JUL/23, true));
-  EXPECT_EQ(2013/JUL/23, 2013/JUL/23 << cal);
-  EXPECT_EQ(2013/JUL/23, 2013/JUL/23 >> cal);
+  EXPECT_EQ(2013/JUL/23, cal.before(2013/JUL/23));
+  EXPECT_EQ(2013/JUL/23, cal.after(2013/JUL/23));
+  EXPECT_EQ(2013/JUL/22, 2013/JUL/23 << cal);
+  EXPECT_EQ(2013/JUL/24, 2013/JUL/23 >> cal);
 
-  EXPECT_EQ(2013/JUL/26, cal.nearest(2013/JUL/28, false));
-  EXPECT_EQ(2013/JUL/29, cal.nearest(2013/JUL/28, true));
+  EXPECT_EQ(2013/JUL/26, cal.before(2013/JUL/28));
+  EXPECT_EQ(2013/JUL/29, cal.after(2013/JUL/28));
   EXPECT_EQ(2013/JUL/26, 2013/JUL/28 << cal);
   EXPECT_EQ(2013/JUL/29, 2013/JUL/28 >> cal);
 
@@ -127,11 +128,11 @@ TEST(WeekdaysCalendar, nearest) {
 
 TEST(HolidayCalendar, load) {
   auto const cal = load_holiday_calendar(fs::Filename("holidays.cal"));
-  EXPECT_EQ(cal->get_min(), 2010/JAN/ 1);
-  EXPECT_EQ(cal->get_max(), 2021/JAN/ 1);
-  EXPECT_FALSE((*cal)[2012/JUL/ 3]);
-  EXPECT_TRUE ((*cal)[2012/JUL/ 4]);
-  EXPECT_FALSE((*cal)[2012/JUL/ 5]);
+  EXPECT_EQ(cal->range().first, 2010/JAN/ 1);
+  EXPECT_EQ(cal->range().second, 2021/JAN/ 1);
+  EXPECT_FALSE((*cal).contains(2012/JUL/ 3));
+  EXPECT_TRUE ((*cal).contains(2012/JUL/ 4));
+  EXPECT_FALSE((*cal).contains(2012/JUL/ 5));
 }
 
 //------------------------------------------------------------------------------
@@ -143,12 +144,12 @@ TEST(WorkdayCalendar, contains) {
     load_holiday_calendar(fs::Filename("holidays.cal")));
   auto const& cal = *cal_ptr;
 
-  EXPECT_FALSE(cal[2012/JUL/ 1]);  // Sunday
-  EXPECT_TRUE (cal[2012/JUL/ 2]);
-  EXPECT_TRUE (cal[2012/JUL/ 3]);
-  EXPECT_FALSE(cal[2012/JUL/ 4]);  // holiday
-  EXPECT_TRUE (cal[2012/JUL/ 5]);
-  EXPECT_TRUE (cal[2012/JUL/ 6]);
-  EXPECT_FALSE(cal[2012/JUL/ 7]);  // Saturday
+  EXPECT_FALSE(cal.contains(2012/JUL/ 1));  // Sunday
+  EXPECT_TRUE (cal.contains(2012/JUL/ 2));
+  EXPECT_TRUE (cal.contains(2012/JUL/ 3));
+  EXPECT_FALSE(cal.contains(2012/JUL/ 4));  // holiday
+  EXPECT_TRUE (cal.contains(2012/JUL/ 5));
+  EXPECT_TRUE (cal.contains(2012/JUL/ 6));
+  EXPECT_FALSE(cal.contains(2012/JUL/ 7));  // Saturday
 }
 
