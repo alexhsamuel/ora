@@ -104,6 +104,46 @@ tp_as_sequence = {
 //------------------------------------------------------------------------------
 
 ref<Object>
+method_after(
+  PyCalendar* const self,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] = {"date", nullptr};
+  Object* date_arg;
+  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &date_arg);
+
+  auto const date = convert_to_date<Date>(date_arg);
+  auto const result = self->cal_->after(date);
+  auto api = PyDateAPI::get(date_arg);
+  if (api == nullptr)
+    // FIXME: Make a shortcut.
+    api = PyDateAPI::get(&PyDate<Date>::type_);
+  return api->from_datenum(result.get_datenum());
+}
+
+
+ref<Object>
+method_before(
+  PyCalendar* const self,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] = {"date", nullptr};
+  Object* date_arg;
+  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &date_arg);
+
+  auto const date = convert_to_date<Date>(date_arg);
+  auto const result = self->cal_->before(date);
+  auto api = PyDateAPI::get(date_arg);
+  if (api == nullptr)
+    // FIXME: Make a shortcut.
+    api = PyDateAPI::get(&PyDate<Date>::type_);
+  return api->from_datenum(result.get_datenum());
+}
+
+
+ref<Object>
 method_contains(
   PyCalendar* const self,
   Tuple* const args,
@@ -113,7 +153,7 @@ method_contains(
   Object* date_arg;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &date_arg);
 
-  auto date = convert_to_date<Date>(date_arg);
+  auto const date = convert_to_date<Date>(date_arg);
   return Bool::from(self->cal_->contains(date));
 }
 
@@ -121,6 +161,8 @@ method_contains(
 Methods<PyCalendar>
 tp_methods_
   = Methods<PyCalendar>()
+    .template add<method_after>                     ("after")
+    .template add<method_before>                    ("before")
     .template add<method_contains>                  ("contains")
   ;
 
