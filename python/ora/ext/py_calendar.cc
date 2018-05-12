@@ -71,12 +71,57 @@ tp_init(
 
 
 //------------------------------------------------------------------------------
+// Sequence
+//------------------------------------------------------------------------------
+
+bool
+sq_contains(
+  PyCalendar* const self,
+  Object* const obj)
+{
+  auto date = convert_to_date<Date>(obj);
+  return self->cal_->contains(date);
+}
+
+
+PySequenceMethods const 
+tp_as_sequence = {
+  (lenfunc)         nullptr,                            // sq_length
+  (binaryfunc)      nullptr,                            // sq_concat
+  (ssizeargfunc)    nullptr,                            // sq_repeat
+  (ssizeargfunc)    nullptr,                            // sq_item
+  (void*)           nullptr,                            // was_sq_slice
+  (ssizeobjargproc) nullptr,                            // sq_ass_item
+  (void*)           nullptr,                            // was_sq_ass_slice
+  (objobjproc)      wrap<PyCalendar, sq_contains>,      // sq_contains
+  (binaryfunc)      nullptr,                            // sq_inplace_concat
+  (ssizeargfunc)    nullptr,                            // sq_inplace_repeat
+};
+
+
+//------------------------------------------------------------------------------
 // Methods
 //------------------------------------------------------------------------------
+
+ref<Object>
+method_contains(
+  PyCalendar* const self,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] = {"date", nullptr};
+  Object* date_arg;
+  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &date_arg);
+
+  auto date = convert_to_date<Date>(date_arg);
+  return Bool::from(self->cal_->contains(date));
+}
+
 
 Methods<PyCalendar>
 tp_methods_
   = Methods<PyCalendar>()
+    .template add<method_contains>                  ("contains")
   ;
 
 
@@ -109,7 +154,7 @@ PyCalendar::build_type()
                           nullptr,                        // tp_reserved
     (reprfunc)            wrap<PyCalendar, tp_repr>,      // tp_repr
     (PyNumberMethods*)    nullptr,                        // tp_as_number
-    (PySequenceMethods*)  nullptr,                        // tp_as_sequence
+    (PySequenceMethods*)  &tp_as_sequence,                // tp_as_sequence
     (PyMappingMethods*)   nullptr,                        // tp_as_mapping
     (hashfunc)            nullptr,                        // tp_hash
     (ternaryfunc)         nullptr,                        // tp_call

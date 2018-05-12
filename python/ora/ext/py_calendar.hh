@@ -4,6 +4,7 @@
 
 #include "ora.hh"
 #include "py.hh"
+#include "py_date.hh"
 
 namespace ora {
 namespace py {
