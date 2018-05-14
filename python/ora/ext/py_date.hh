@@ -91,8 +91,12 @@ public:
   /*
    * Registers a virtual API for a Python type.
    */
-  static void add(PyTypeObject* const type, std::unique_ptr<PyDateAPI>&& api)
-    { apis_.emplace(type, std::move(api)); }
+  static PyDateAPI* add(
+    PyTypeObject* const type, 
+    std::unique_ptr<PyDateAPI>&& api)
+  {
+    return apis_.emplace(type, std::move(api)).first->second.get();
+  }
 
   /*
    * Returns the API for a Python object, or nullptr if it isn't a PyDate.
@@ -271,6 +275,7 @@ private:
 public:
 
   static Type type_;
+  static PyDateAPI const* api_;
 
 };
 
@@ -289,7 +294,7 @@ PyDate<DATE>::add_to(
   type_.Ready();
 
   // Set up the API.
-  PyDateAPI::add(&type_, std::make_unique<API>());
+  api_ = PyDateAPI::add(&type_, std::make_unique<API>());
 
   // Build the repr format.
   repr_format_ = make_unique<ora::date::DateFormat>(
@@ -1003,6 +1008,11 @@ PyDate<DATE>::build_type(
 template<class DATE>
 Type
 PyDate<DATE>::type_;
+
+
+template<class DATE>
+PyDateAPI const*
+PyDate<DATE>::api_;
 
 
 //------------------------------------------------------------------------------

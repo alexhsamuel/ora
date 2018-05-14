@@ -117,8 +117,7 @@ method_after(
   auto const result = self->cal_->after(date);
   auto api = PyDateAPI::get(date_arg);
   if (api == nullptr)
-    // FIXME: Make a shortcut.
-    api = PyDateAPI::get(&PyDate<Date>::type_);
+    api = PyDate<Date>::api_;
   return api->from_datenum(result.get_datenum());
 }
 
@@ -137,8 +136,7 @@ method_before(
   auto const result = self->cal_->before(date);
   auto api = PyDateAPI::get(date_arg);
   if (api == nullptr)
-    // FIXME: Make a shortcut.
-    api = PyDateAPI::get(&PyDate<Date>::type_);
+    api = PyDate<Date>::api_;
   return api->from_datenum(result.get_datenum());
 }
 
