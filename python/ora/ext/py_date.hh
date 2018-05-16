@@ -37,6 +37,8 @@ extern ref<Object> make_ymd_date(ora::YmdDate);
 extern ref<Object> get_month_obj(int month);
 extern ref<Object> get_weekday_obj(int weekday);
 
+extern Weekday convert_to_weekday(Object*);
+
 /*
  * Attempts to convert various kinds of Python date objects to Date.
  *

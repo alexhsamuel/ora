@@ -17,6 +17,7 @@ namespace py {
 using std::experimental::optional;
 
 class Float;
+class Iter;
 class Long;
 class Object;
 class Tuple;
@@ -391,6 +392,8 @@ public:
   static bool Check(PyObject* obj)
     { return true; }
   ref<Object> GetAttrString(char const* const name, bool check=true);
+  ref<Iter> GetIter()
+    { return take_not_null<Iter>(PyObject_GetIter(this)); }
   bool IsInstance(PyObject* type)
     { return (bool) PyObject_IsInstance(this, type); }
   bool IsInstance(PyTypeObject* type)
@@ -537,6 +540,32 @@ inline std::ostream& operator<<(std::ostream& os, ref<T>& ref)
 
 extern ref<Object> const
 None;
+
+
+//------------------------------------------------------------------------------
+
+class Iter
+: public Object
+{
+public:
+
+  static bool Check(PyObject* const obj)
+    { return PyIter_Check(obj); }
+
+  /*
+   * Returns the next item, or if the iterator is exhausted, nullptr.
+   */
+  Object* 
+  Next()
+  { 
+    auto const next = PyIter_Next(this);
+    if (next == nullptr && PyErr_Occurred())
+      // Exception occurred (not StopIteration) while retrieving the next item.
+      throw Exception();
+    return static_cast<Object*>(next);
+  }
+
+};
 
 
 //------------------------------------------------------------------------------

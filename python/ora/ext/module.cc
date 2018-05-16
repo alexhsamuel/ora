@@ -45,6 +45,9 @@ extern void set_up_times(Module*, Module*);
 extern Methods<Module>& add_functions(Methods<Module>&);
 extern ref<Module> build_np_module();
 
+/* Adds functions from py_cal_functions.cc.  */
+extern Methods<Module>& add_cal_functions(Methods<Module>&);
+
 namespace {
 
 Methods<Module> 
@@ -57,7 +60,7 @@ module_def{
   "ora.ext",
   nullptr,
   -1,
-  add_functions(methods)
+  add_cal_functions(add_functions(methods))
 };
 
 

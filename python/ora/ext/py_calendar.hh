@@ -24,12 +24,12 @@ public:
 
   static ref<PyCalendar>
   create(
-    Cal_ptr const cal,
+    Cal_ptr&& cal,
     PyTypeObject* type=&type_)
   {
     auto self = ref<PyCalendar>::take(
       check_not_null(PyCalendar::type_.tp_alloc(type, 0)));
-    new(self) PyCalendar(cal);
+    new(self) PyCalendar(std::move(cal));
     return self;
   }
 

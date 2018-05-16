@@ -2,6 +2,7 @@
 
 #include <Python.h>
 
+#include "ora/format.hh"
 #include "py_date.hh"
 #include "py.hh"
 
@@ -9,6 +10,22 @@ namespace ora {
 namespace py {
 
 //------------------------------------------------------------------------------
+
+Weekday
+convert_to_weekday(
+  Object* obj)
+{
+  static auto weekday_type = import("ora", "Weekday");
+  ref<Tuple> args = Tuple::builder << ref<Object>::of(obj);
+  // FIXME
+  auto weekday = ref<Object>::take(PyObject_CallObject(weekday_type, args));
+  if (weekday != nullptr)
+     return weekday->long_value();
+
+  auto str = weekday->Str()->as_utf8_string();
+  return parse_weekday_name(str);
+}
+
 
 StructSequenceType*
 get_ordinal_date_type()
