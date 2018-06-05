@@ -41,6 +41,7 @@ get_line(
 // Functions
 //------------------------------------------------------------------------------
 
+// FIXME: Use parse_holday_calendar(LineIter&, LineIter&).
 std::unique_ptr<HolidayCalendar>
 parse_holiday_calendar(
   std::istream& in)

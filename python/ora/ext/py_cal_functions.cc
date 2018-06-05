@@ -9,6 +9,22 @@ namespace ora {
 namespace py {
 
 ref<Object>
+parse_holiday_calendar(
+  Module* /* module */,
+  Tuple* const args,
+  Dict* kw_args)
+{
+  static char const* const arg_names[] = {"lines", nullptr};
+  Object* lines;
+  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &lines);
+
+  return PyCalendar::create(
+    ora::parse_holiday_calendar(LineIterator{lines}, LineIterator{}));
+}
+
+
+
+ref<Object>
 weekday_calendar(
   Module* /* module */,
   Tuple* const args,
@@ -32,6 +48,7 @@ add_cal_functions(
   Methods<Module>& methods)
 {
   return methods
+    .add<parse_holiday_calendar>    ("parse_holiday_calendar",  nullptr)
     .add<weekday_calendar>          ("weekday_calendar",        nullptr)
     ;
 }

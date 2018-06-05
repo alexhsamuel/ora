@@ -2,6 +2,7 @@
 
 #include <array>
 #include <iostream>
+#include <iterator>
 #include <memory>
 #include <string>
 #include <vector>
@@ -10,6 +11,7 @@
 #include "ora/date_type.hh"
 #include "ora/date_nex.hh"
 #include "ora/lib/filename.hh"
+#include "ora/lib/string.hh"
 
 namespace ora {
 
@@ -312,6 +314,57 @@ private:
   std::vector<bool> holidays_;
 
 };
+
+
+template<class LineIter>
+std::unique_ptr<HolidayCalendar>
+parse_holiday_calendar(
+  LineIter&& lines,
+  LineIter&& end)
+{
+  std::vector<Date> dates;
+  Date min = Date::MISSING;
+  Date max = Date::MISSING;
+  Date date_min = Date::MISSING;
+  Date date_max = Date::MISSING;
+
+  for (; lines != end; ++lines) {
+    auto line = strip(*lines);
+    // Skip blank and comment lines.
+    if (line.size() == 0 || line[0] == '#')
+      continue;
+    StringPair parts = split1(line);
+    // FIXME: Handle exceptions.
+    if (parts.first == "MIN") 
+      min = date::from_iso_date<Date>(parts.second);
+    else if (parts.first == "MAX")
+      max = date::from_iso_date<Date>(parts.second);
+    else {
+      auto const date = date::from_iso_date<Date>(parts.first);
+      dates.push_back(date);
+      // Keep track of the min and max dates we've seen.
+      if (!date::nex::before(date_min, date))
+        date_min = date;
+      if (!date::nex::before(date, date_max))
+        date_max = date + 1;
+    }
+  }
+
+  // Infer missing min or max from the range of given dates.
+  if (min.is_missing()) 
+    min = dates.size() > 0 ? date_min : Date::MIN;
+  assert(!min.is_missing());
+  if (max.is_missing()) 
+    max = dates.size() > 0 ? date_max : Date::MIN;
+  assert(!max.is_missing());
+
+  // Now construct the calendar.
+  assert(min <= max);
+  auto cal = std::make_unique<HolidayCalendar>(min, max);
+  for (auto const date : dates)
+    cal->add(date);
+  return cal;
+}
 
 
 //------------------------------------------------------------------------------
