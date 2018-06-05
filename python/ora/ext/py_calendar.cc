@@ -169,10 +169,26 @@ tp_methods_
 // Getsets
 //------------------------------------------------------------------------------
 
+ref<Object>
+get_range(
+  PyCalendar* const self,
+  void* /* closure */)
+{
+  auto const range = self->cal_->range();
+  auto start = PyDate<Date>::create(range.first);
+  return ref<Object>::take(PySlice_New(
+    PyDate<Date>::create(range.first), 
+    PyDate<Date>::create(range.second), 
+    nullptr
+  ));
+}
+
+
 GetSets<PyCalendar>
 tp_getsets_ 
   = GetSets<PyCalendar>()
-  ;
+     .template add_get<get_range>               ("range")
+ ;
 
 
 }  // anonymous namespace
