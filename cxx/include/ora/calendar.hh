@@ -52,9 +52,11 @@ class Calendar
 {
 public:
 
+  virtual std::unique_ptr<Calendar> clone() const = 0;
+
   virtual std::pair<Date, Date> range() const = 0;
 
-  // FIXME: CHeck range.
+  // FIXME: Check range.
   template<class DATE> bool contains(DATE date) const 
     { return contains(Date(date)); }
   template<class DATE> DATE before(DATE const date) const 
@@ -197,6 +199,8 @@ public:
   AllCalendar(AllCalendar&&)            = default;
   virtual ~AllCalendar()                = default;
 
+  virtual std::unique_ptr<Calendar> clone() const override
+    { return std::make_unique<AllCalendar>(*this); }
   virtual std::pair<Date, Date> range() const override
     { return {Date::MIN, Date::MAX}; }
   virtual bool contains(Date const date) const override
@@ -231,6 +235,8 @@ public:
 
   virtual ~WeekdaysCalendar() {}
 
+  virtual std::unique_ptr<Calendar> clone() const override
+    { return std::make_unique<WeekdaysCalendar>(*this); }
   virtual std::pair<Date, Date> range() const override
     { return {Date::MIN, Date::MAX}; }
   virtual bool contains(Date const date) const override
@@ -261,6 +267,9 @@ public:
   }
 
   ~HolidayCalendar() {}
+
+  virtual std::unique_ptr<Calendar> clone() const override
+    { return std::make_unique<HolidayCalendar>(*this); }
 
   virtual std::pair<Date, Date> 
   range() 
@@ -380,10 +389,18 @@ public:
   {
   }
   
+  NegationCalendar(
+    NegationCalendar const& calendar)
+  : calendar_(calendar.calendar_->clone())
+  {
+  }
+
   NegationCalendar& operator=(NegationCalendar const&) = delete;
   NegationCalendar& operator=(NegationCalendar&&) = delete;
   virtual ~NegationCalendar() = default;
 
+  virtual std::unique_ptr<Calendar> clone() const override
+    { return std::make_unique<NegationCalendar>(*this); }
   virtual inline std::pair<Date, Date> range() const override
     { return calendar_->range(); }
   virtual inline bool contains(Date const date) const override
@@ -409,10 +426,19 @@ public:
   {
   }
 
+  UnionCalendar(
+    UnionCalendar const& calendar)
+  : cal0_(calendar.cal0_->clone())
+  , cal1_(calendar.cal1_->clone())
+  {
+  }
+
   UnionCalendar& operator=(UnionCalendar const&) = delete;
   UnionCalendar& operator=(UnionCalendar&&) = delete;
   virtual ~UnionCalendar() = default;
 
+  virtual std::unique_ptr<Calendar> clone() const override
+    { return std::make_unique<UnionCalendar>(*this); }
   virtual inline std::pair<Date, Date> range() const override
     { return common_range(cal0_->range(), cal1_->range()); }
   virtual inline bool contains(Date const date) const override
@@ -439,10 +465,19 @@ public:
   {
   }
 
+  IntersectionCalendar(
+    IntersectionCalendar const& calendar)
+  : cal0_(calendar.cal0_->clone())
+  , cal1_(calendar.cal1_->clone())
+  {
+  }
+
   IntersectionCalendar& operator=(IntersectionCalendar const&) = delete;
   IntersectionCalendar& operator=(IntersectionCalendar&&) = delete;
   virtual ~IntersectionCalendar() = default;
 
+  virtual std::unique_ptr<Calendar> clone() const override
+    { return std::make_unique<IntersectionCalendar>(*this); }
   virtual inline std::pair<Date, Date> range() const override
     { return common_range(cal0_->range(), cal1_->range()); }
   virtual inline bool contains(Date const date) const override

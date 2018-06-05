@@ -71,7 +71,61 @@ tp_init(
 
 
 //------------------------------------------------------------------------------
-// Sequence
+// Number methods
+//------------------------------------------------------------------------------
+
+ref<Object>
+nb_invert(
+  PyCalendar* self)
+{
+  return PyCalendar::create(
+    std::make_unique<ora::NegationCalendar>(self->cal_->clone()));
+}
+
+
+PyNumberMethods
+tp_as_number = {
+  (binaryfunc)  nullptr,                        // nb_add
+  (binaryfunc)  nullptr,                        // nb_subtract
+  (binaryfunc)  nullptr,                        // nb_multiply
+  (binaryfunc)  nullptr,                        // nb_remainder
+  (binaryfunc)  nullptr,                        // nb_divmod
+  (ternaryfunc) nullptr,                        // nb_power
+  (unaryfunc)   nullptr,                        // nb_negative
+  (unaryfunc)   nullptr,                        // nb_positive
+  (unaryfunc)   nullptr,                        // nb_absolute
+  (inquiry)     nullptr,                        // nb_bool
+  (unaryfunc)   wrap<PyCalendar, nb_invert>,    // nb_invert
+  (binaryfunc)  nullptr,                        // nb_lshift
+  (binaryfunc)  nullptr,                        // nb_rshift
+  (binaryfunc)  nullptr,                        // nb_and
+  (binaryfunc)  nullptr,                        // nb_xor
+  (binaryfunc)  nullptr,                        // nb_or
+  (unaryfunc)   nullptr,                        // nb_int
+  (void*)       nullptr,                        // nb_reserved
+  (unaryfunc)   nullptr,                        // nb_float
+  (binaryfunc)  nullptr,                        // nb_inplace_add
+  (binaryfunc)  nullptr,                        // nb_inplace_subtract
+  (binaryfunc)  nullptr,                        // nb_inplace_multiply
+  (binaryfunc)  nullptr,                        // nb_inplace_remainder
+  (ternaryfunc) nullptr,                        // nb_inplace_power
+  (binaryfunc)  nullptr,                        // nb_inplace_lshift
+  (binaryfunc)  nullptr,                        // nb_inplace_rshift
+  (binaryfunc)  nullptr,                        // nb_inplace_and
+  (binaryfunc)  nullptr,                        // nb_inplace_xor
+  (binaryfunc)  nullptr,                        // nb_inplace_or
+  (binaryfunc)  nullptr,                        // nb_floor_divide
+  (binaryfunc)  nullptr,                        // nb_true_divide
+  (binaryfunc)  nullptr,                        // nb_inplace_floor_divide
+  (binaryfunc)  nullptr,                        // nb_inplace_true_divide
+  (unaryfunc)   nullptr,                        // nb_index
+  (binaryfunc)  nullptr,                        // nb_matrix_multiply
+  (binaryfunc)  nullptr,                        // nb_inplace_matrix_multiply
+};
+
+
+//------------------------------------------------------------------------------
+// Sequence methods
 //------------------------------------------------------------------------------
 
 bool
@@ -209,7 +263,7 @@ PyCalendar::build_type()
     (setattrfunc)         nullptr,                        // tp_setattr
                           nullptr,                        // tp_reserved
     (reprfunc)            wrap<PyCalendar, tp_repr>,      // tp_repr
-    (PyNumberMethods*)    nullptr,                        // tp_as_number
+    (PyNumberMethods*)    &tp_as_number,                  // tp_as_number
     (PySequenceMethods*)  &tp_as_sequence,                // tp_as_sequence
     (PyMappingMethods*)   nullptr,                        // tp_as_mapping
     (hashfunc)            nullptr,                        // tp_hash
