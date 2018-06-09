@@ -260,11 +260,17 @@ public:
 
   DenseCalendar(
     date::Date const min, 
-    date::Date const max)
+    date::Date const max,
+    std::vector<Date> const& dates)
   : min_(min),
     dates_(max - min, false)
   {
     assert(min.is_valid() && max.is_valid());
+    for (auto date : dates) {
+      if (date < min || max <= date)
+        throw ValueError("date out of calendar range");
+      dates_[date - min_] = true;
+    }
   }
 
   DenseCalendar(DenseCalendar const&)       = default;
@@ -306,22 +312,6 @@ public:
         shift++;
     return date;
   }
-
-  // Mutators
-
-  inline void
-  set(
-    date::Date const date,
-    bool const contained)
-  {
-    ssize_t const index = date - min_;
-    if (!(0 <= index && index < (ssize_t) dates_.size()))
-      throw ValueError("date out of calendar range");
-    dates_[index] = contained;
-  }
-
-  void add(Date date)       { set(date, true); }
-  void remove(Date date)    { set(date, false); }
 
 private:
 
@@ -375,10 +365,7 @@ parse_dense_calendar(
 
   // Now construct the calendar.
   assert(min <= max);
-  auto cal = std::make_unique<DenseCalendar>(min, max);
-  for (auto const date : dates)
-    cal->add(date);
-  return cal;
+  return std::make_unique<DenseCalendar>(min, max, dates);
 }
 
 

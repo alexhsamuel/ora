@@ -84,10 +84,7 @@ parse_dense_calendar(
 
   // Now construct the calendar.
   assert(min <= max);
-  auto cal = std::make_unique<DenseCalendar>(min, max);
-  for (auto const date : dates)
-    cal->add(date);
-  return cal;
+  return std::make_unique<DenseCalendar>(min, max, dates);
 }
 
 
