@@ -124,10 +124,10 @@ TEST(WeekdaysCalendar, nearest) {
 }
 
 //------------------------------------------------------------------------------
-// Class HolidayCalendar.
+// Class DenseCalendar.
 
-TEST(HolidayCalendar, load) {
-  auto const cal = load_holiday_calendar(fs::Filename("holidays.cal"));
+TEST(DenseCalendar, load) {
+  auto const cal = load_dense_calendar(fs::Filename("holidays.cal"));
   EXPECT_EQ(cal->range().first, 2010/JAN/ 1);
   EXPECT_EQ(cal->range().second, 2021/JAN/ 1);
   EXPECT_FALSE((*cal).contains(2012/JUL/ 3));
@@ -141,7 +141,7 @@ TEST(HolidayCalendar, load) {
 TEST(WorkdayCalendar, contains) {
   auto const cal_ptr = make_workday_calendar(
     {MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY},
-    load_holiday_calendar(fs::Filename("holidays.cal")));
+    load_dense_calendar(fs::Filename("holidays.cal")));
   auto const& cal = *cal_ptr;
 
   EXPECT_FALSE(cal.contains(2012/JUL/ 1));  // Sunday

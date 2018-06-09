@@ -42,8 +42,8 @@ get_line(
 //------------------------------------------------------------------------------
 
 // FIXME: Use parse_holday_calendar(LineIter&, LineIter&).
-std::unique_ptr<HolidayCalendar>
-parse_holiday_calendar(
+std::unique_ptr<DenseCalendar>
+parse_dense_calendar(
   std::istream& in)
 {
   std::vector<Date> dates;
@@ -84,19 +84,19 @@ parse_holiday_calendar(
 
   // Now construct the calendar.
   assert(min <= max);
-  auto cal = std::make_unique<HolidayCalendar>(min, max);
+  auto cal = std::make_unique<DenseCalendar>(min, max);
   for (auto const date : dates)
     cal->add(date);
   return cal;
 }
 
 
-std::unique_ptr<HolidayCalendar>
-load_holiday_calendar(
+std::unique_ptr<DenseCalendar>
+load_dense_calendar(
   fs::Filename const& filename)
 {
   std::ifstream in((char const*) filename);
-  return parse_holiday_calendar(in);
+  return parse_dense_calendar(in);
 }
 
 

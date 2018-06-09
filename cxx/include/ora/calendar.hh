@@ -22,10 +22,10 @@ using ora::date::Date;
 // Declarations
 
 class Calendar;
-class HolidayCalendar;
+class DenseCalendar;
 
-extern std::unique_ptr<HolidayCalendar> parse_holiday_calendar(std::istream& in);
-extern std::unique_ptr<HolidayCalendar> load_holiday_calendar(fs::Filename const& filename);
+extern std::unique_ptr<DenseCalendar> parse_dense_calendar(std::istream& in);
+extern std::unique_ptr<DenseCalendar> load_dense_calendar(fs::Filename const& filename);
 
 //------------------------------------------------------------------------------
 // Helpers
@@ -252,36 +252,36 @@ private:
 
 //------------------------------------------------------------------------------
 
-class HolidayCalendar
+class DenseCalendar
   final 
 : public SimpleCalendar
 {
 public:
 
-  HolidayCalendar(
+  DenseCalendar(
     date::Date const min, 
     date::Date const max)
   : min_(min),
-    holidays_(max - min, false)
+    dates_(max - min, false)
   {
     assert(min.is_valid() && max.is_valid());
   }
 
-  HolidayCalendar(HolidayCalendar const&)       = default;
-  ~HolidayCalendar()                            = default;
+  DenseCalendar(DenseCalendar const&)       = default;
+  ~DenseCalendar()                            = default;
 
   virtual std::unique_ptr<Calendar> 
   clone() 
     const override
   { 
-    return std::make_unique<HolidayCalendar>(*this); 
+    return std::make_unique<DenseCalendar>(*this); 
   }
 
   virtual std::pair<Date, Date> 
   range() 
     const override
   {
-    return {min_, min_ + holidays_.size()};
+    return {min_, min_ + dates_.size()};
   }
 
   inline virtual bool
@@ -289,7 +289,7 @@ public:
     Date date)
     const override
   {
-    return holidays_[date - min_];
+    return dates_[date - min_];
   }
 
   date::Date 
@@ -315,9 +315,9 @@ public:
     bool const contained)
   {
     ssize_t const index = date - min_;
-    if (!(0 <= index && index < (ssize_t) holidays_.size()))
+    if (!(0 <= index && index < (ssize_t) dates_.size()))
       throw ValueError("date out of calendar range");
-    holidays_[index] = contained;
+    dates_[index] = contained;
   }
 
   void add(Date date)       { set(date, true); }
@@ -326,14 +326,14 @@ public:
 private:
 
   Date min_;
-  std::vector<bool> holidays_;
+  std::vector<bool> dates_;
 
 };
 
 
 template<class LineIter>
-std::unique_ptr<HolidayCalendar>
-parse_holiday_calendar(
+std::unique_ptr<DenseCalendar>
+parse_dense_calendar(
   LineIter&& lines,
   LineIter&& end)
 {
@@ -375,7 +375,7 @@ parse_holiday_calendar(
 
   // Now construct the calendar.
   assert(min <= max);
-  auto cal = std::make_unique<HolidayCalendar>(min, max);
+  auto cal = std::make_unique<DenseCalendar>(min, max);
   for (auto const date : dates)
     cal->add(date);
   return cal;
