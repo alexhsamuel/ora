@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+#include "ora/lib/file.hh"
 #include "ora/lib/string.hh"
 #include "ora/calendar.hh"
 
@@ -17,67 +18,6 @@ using date::Date;
 
 namespace {
 
-// FIXME: Elsewhere.
-class LineIterator
-: public std::iterator<std::input_iterator_tag, std::string>
-{
-public:
-
-  /*
-   * Constructs the end iterator.
-   */
-  LineIterator() : in_(nullptr), eol_('\n'), end_(true) {}
-
-  LineIterator(
-    std::istream* const in, 
-    char const eol='\n') 
-  : in_(in)
-  , eol_(eol) 
-  {
-    advance();
-  }
-
-  LineIterator&
-  operator++()
-  {
-    advance();
-    return *this;
-  }
-
-  std::string operator*() const { return line_; }
-  bool operator==(LineIterator const& i) const { return end_ && i.end_; }
-  bool operator!=(LineIterator const& i) const { return !operator==(i); }
-
-private:
-
-  void
-  advance()
-  {
-    if (end_)
-      return;
-
-    line_.clear();
-    char buffer[1024];
-    do {
-      in_->getline(buffer, sizeof(buffer), eol_);
-      line_ += buffer;
-      if (in_->eof() || in_->bad()) {
-        // End of file or failure, so mark the iterator as ended.
-        end_ = true;
-        break;
-      }
-      // Keep going to EOL.
-    } while (in_->fail());
-  }
-
-  std::istream* const in_;
-  char const eol_;
-  bool end_ = false;
-  std::string line_;
-
-};
-
-
 }  // anonymous namespace
 
 
@@ -85,6 +25,7 @@ Calendar
 load_calendar(
   fs::Filename const& filename)
 {
+  using ora::lib::fs::LineIterator;
   std::ifstream in((char const*) filename);
   return parse_calendar(LineIterator(&in), LineIterator());
 }
