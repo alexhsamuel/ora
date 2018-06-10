@@ -72,7 +72,7 @@ ref<Object>
 nb_invert(
   PyCalendar* self)
 {
-  return PyCalendar::create(!*self->cal_);
+  return PyCalendar::create(std::make_unique<Calendar>(!*self->cal_));
 }
 
 
@@ -222,7 +222,7 @@ get_range(
   void* /* closure */)
 {
   auto const range = self->cal_->range();
-  auto start = PyDate<Date>::create(range.first);
+  auto start = PyDate<Date>::create(range.min);
   // FIXME: slice?  Really?
   return ref<Object>::take(PySlice_New(
     PyDate<Date>::create(range.min), 

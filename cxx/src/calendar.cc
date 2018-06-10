@@ -25,6 +25,20 @@ using date::Date;
 // }
 
 
+std::unique_ptr<Calendar>
+make_weekday_calendar(
+  Range<Date> const range,
+  bool const mask[7])
+{
+  std::vector<bool> dates;
+  auto const length = range.max - range.min;
+  dates.reserve(length);
+  for (auto i = 0; i < length; ++i)
+    dates.push_back(mask[get_weekday(range.min + i)]);
+  return std::make_unique<Calendar>(range.min, std::move(dates));
+}
+
+
 //------------------------------------------------------------------------------
 
 }  // namespace ora

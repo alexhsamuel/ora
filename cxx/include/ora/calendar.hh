@@ -21,9 +21,11 @@ using ora::date::Date;
 //------------------------------------------------------------------------------
 // Declarations
 
+template<class T> struct Range;
 class Calendar;
 
 extern std::unique_ptr<Calendar> load_calendar(fs::Filename const& filename);
+extern std::unique_ptr<Calendar> make_weekday_calendar(Range<Date>, bool const[7]);
 
 //------------------------------------------------------------------------------
 // Helpers
@@ -64,6 +66,14 @@ class Calendar
 public:
 
   Calendar(
+    date::Date const min,
+    std::vector<bool>&& dates)
+  : min_(min)
+  , dates_(std::move(dates))
+  {
+  }
+
+  Calendar(
     Range<Date> range,
     std::vector<Date> const& dates)
   : min_(range.min)
@@ -78,6 +88,7 @@ public:
   }
 
   Calendar(Calendar const&)                 = default;
+  Calendar(Calendar&&)                      = default;
   ~Calendar()                               = default;
 
   Range<Date>
@@ -164,14 +175,6 @@ public:
   Interval DAY() const { return Interval(*this, 1); }
 
 private:
-
-  Calendar(
-    date::Date const min,
-    std::vector<bool>&& dates)
-  : min_(min)
-  , dates_(std::move(dates))
-  {
-  }
 
   friend Calendar operator!(Calendar const&);
   friend Calendar operator&(Calendar const&, Calendar const&);
@@ -355,6 +358,7 @@ operator>>=(
 
 
 //------------------------------------------------------------------------------
+// Interval functions
 
 inline constexpr
 Calendar::Interval 
