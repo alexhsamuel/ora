@@ -50,7 +50,7 @@ extern Weekday convert_to_weekday(Object*);
  *  - objects with a 'datenum' attribute
  *  - objects with a 'toordinal()' method
  */
-template<class DATE> optional<DATE> maybe_date(Object*);
+template<class DATE=Date> optional<DATE> maybe_date(Object*);
 
 /*
  * Converts various kinds of Python objects to Date.
@@ -58,22 +58,22 @@ template<class DATE> optional<DATE> maybe_date(Object*);
  * If 'obj' can be converted unambiguously to a date, returns it.  Otherwise,
  * raises a Python exception.
  */
-template<class DATE> DATE convert_to_date(Object*);
+template<class DATE=Date> DATE convert_to_date(Object*);
 
 /*
  * Helper for converting a 2-element sequence of ordinal date parts.
  */
-template<class DATE> inline DATE ordinal_date_to_date(Sequence*);
+template<class DATE=Date> inline DATE ordinal_date_to_date(Sequence*);
 
 /*
  * Helper for converting a 3-element sequence of week date parts.
  */
-template<class DATE> inline DATE week_date_to_date(Sequence*);
+template<class DATE=Date> inline DATE week_date_to_date(Sequence*);
 
 /*
  * Helper for converting a 3-element sequence of date parts.
  */
-template<class DATE> inline DATE ymd_to_date(Sequence*);
+template<class DATE=Date> inline DATE ymd_to_date(Sequence*);
 
 //------------------------------------------------------------------------------
 // Virtual API

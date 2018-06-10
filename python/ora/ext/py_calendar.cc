@@ -58,15 +58,9 @@ tp_init(
 {
   Arg::ParseTuple(args, "");
 
-  // FIXME: How the fuck do we construct these?
-  std::vector<Weekday> weekdays;
-  weekdays.push_back(MONDAY);
-  weekdays.push_back(TUESDAY);
-  weekdays.push_back(WEDNESDAY);
-  weekdays.push_back(THURSDAY);
-  weekdays.push_back(FRIDAY);
-  Cal_ptr cal = std::make_shared<WeekdaysCalendar>(weekdays);
-  new(self) PyCalendar(std::move(cal));
+  // FIXME
+  throw NotImplementedError("Calendar.__init__");
+  // new(self) PyCalendar(std::move(cal));
 }
 
 
@@ -78,8 +72,7 @@ ref<Object>
 nb_invert(
   PyCalendar* self)
 {
-  return PyCalendar::create(
-    std::make_unique<ora::NegationCalendar>(self->cal_->clone()));
+  return PyCalendar::create(!*self->cal_);
 }
 
 
@@ -133,7 +126,7 @@ sq_contains(
   PyCalendar* const self,
   Object* const obj)
 {
-  auto date = convert_to_date<Date>(obj);
+  auto date = convert_to_date(obj);
   return self->cal_->contains(date);
 }
 
@@ -167,7 +160,7 @@ method_after(
   Object* date_arg;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &date_arg);
 
-  auto const date = convert_to_date<Date>(date_arg);
+  auto const date = convert_to_date(date_arg);
   auto const result = self->cal_->after(date);
   auto api = PyDateAPI::get(date_arg);
   if (api == nullptr)
@@ -186,7 +179,7 @@ method_before(
   Object* date_arg;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &date_arg);
 
-  auto const date = convert_to_date<Date>(date_arg);
+  auto const date = convert_to_date(date_arg);
   auto const result = self->cal_->before(date);
   auto api = PyDateAPI::get(date_arg);
   if (api == nullptr)
@@ -205,7 +198,7 @@ method_contains(
   Object* date_arg;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &date_arg);
 
-  auto const date = convert_to_date<Date>(date_arg);
+  auto const date = convert_to_date(date_arg);
   return Bool::from(self->cal_->contains(date));
 }
 
@@ -230,9 +223,10 @@ get_range(
 {
   auto const range = self->cal_->range();
   auto start = PyDate<Date>::create(range.first);
+  // FIXME: slice?  Really?
   return ref<Object>::take(PySlice_New(
-    PyDate<Date>::create(range.first), 
-    PyDate<Date>::create(range.second), 
+    PyDate<Date>::create(range.min), 
+    PyDate<Date>::create(range.max), 
     nullptr
   ));
 }

@@ -9,7 +9,7 @@ namespace ora {
 namespace py {
 
 ref<Object>
-parse_dense_calendar(
+parse_calendar(
   Module* /* module */,
   Tuple* const args,
   Dict* kw_args)
@@ -19,7 +19,7 @@ parse_dense_calendar(
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &lines);
 
   return PyCalendar::create(
-    ora::parse_dense_calendar(LineIterator{lines}, LineIterator{}));
+    ora::parse_calendar(LineIterator{lines}, LineIterator{}));
 }
 
 
@@ -48,7 +48,7 @@ add_cal_functions(
   Methods<Module>& methods)
 {
   return methods
-    .add<parse_dense_calendar>      ("parse_dense_calendar",  nullptr)
+    .add<parse_calendar>            ("parse_calendar",          nullptr)
     .add<weekday_calendar>          ("weekday_calendar",        nullptr)
     ;
 }
