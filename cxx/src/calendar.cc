@@ -16,11 +16,6 @@ using date::Date;
 // Functions
 //------------------------------------------------------------------------------
 
-namespace {
-
-}  // anonymous namespace
-
-
 Calendar
 load_calendar(
   fs::Filename const& filename)
