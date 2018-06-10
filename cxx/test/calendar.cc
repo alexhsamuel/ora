@@ -25,8 +25,8 @@ TEST(AllCalendar, contains0) {
   EXPECT_TRUE (cal.contains(2013/JUL/15));
   EXPECT_TRUE (cal.contains(Date::MIN));
   EXPECT_TRUE (cal.contains(Date::MAX));
-  EXPECT_FALSE(cal.contains(Date::INVALID));
-  EXPECT_FALSE(cal.contains(Date::MISSING));
+  EXPECT_THROW(cal.contains(Date::INVALID), CalendarRangeError);
+  EXPECT_THROW(cal.contains(Date::MISSING), CalendarRangeError);
 }
 
 TEST(AllCalendar, contains1) {
@@ -42,8 +42,8 @@ TEST(AllCalendar, contains1) {
   EXPECT_TRUE (cal.contains(from_ymd<Date16>(2013,  7, 15)));
   EXPECT_TRUE (cal.contains(Date16::MIN));
   EXPECT_TRUE (cal.contains(Date16::MAX));
-  EXPECT_FALSE(cal.contains(Date16::INVALID));
-  EXPECT_FALSE(cal.contains(Date16::MISSING));
+  EXPECT_THROW(cal.contains(Date16::INVALID), CalendarRangeError);
+  EXPECT_THROW(cal.contains(Date16::MISSING), CalendarRangeError);
 }
 
 //------------------------------------------------------------------------------
