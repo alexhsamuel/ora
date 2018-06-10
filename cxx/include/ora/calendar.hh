@@ -114,7 +114,7 @@ public:
   {
     if (!date.is_valid())
       return false;
-    else if (date < min_ || date - min_ > dates_.size())
+    else if (date < min_ || date - min_ >= dates_.size())
       throw CalendarRangeError();
     else
       return dates_[date - min_];
