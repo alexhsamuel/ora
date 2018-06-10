@@ -52,6 +52,23 @@ parse_calendar(
 
 
 ref<Object>
+make_const_calendar(
+  Module* /* module */,
+  Tuple* const args,
+  Dict* kw_args)
+{
+  static char const* const arg_names[] = {"range", "contains", nullptr};
+  Object* range_arg;
+  int contains;
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "Op", arg_names, &range_arg, &contains);
+  auto const range = parse_range(range_arg);
+
+  return PyCalendar::create(make_const_calendar(range, contains != 0));
+}
+
+
+ref<Object>
 make_weekday_calendar(
   Module* /* module */,
   Tuple* const args,
@@ -62,7 +79,6 @@ make_weekday_calendar(
   Object* weekdays_arg;
   Arg::ParseTupleAndKeywords(
     args, kw_args, "OO", arg_names, &range_arg, &weekdays_arg);
-
   auto const range = parse_range(range_arg);
 
   auto const weekdays_iter = weekdays_arg->GetIter();
@@ -80,6 +96,7 @@ add_cal_functions(
 {
   return methods
     .add<parse_calendar>            ("parse_calendar",          nullptr)
+    .add<make_const_calendar>       ("make_const_calendar",     nullptr)
     .add<make_weekday_calendar>     ("make_weekday_calendar",   nullptr)
     ;
 }
