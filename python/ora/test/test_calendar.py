@@ -9,8 +9,7 @@ WEEKDAYS = {ora.Mon, ora.Tue, ora.Wed, ora.Thu, ora.Fri}
 @pytest.mark.parametrize("Date", ora.DATE_TYPES)
 def test_weekday_cal(Date):
     date_range = Date(2018, 1, 1), Date(2018, 12, 31)
-
-    weekday_cal = ora.weekday_calendar(date_range, WEEKDAYS)
+    weekday_cal = ora.make_weekday_calendar(date_range, WEEKDAYS)
 
     assert Date.INVALID not in weekday_cal
     assert Date.MISSING not in weekday_cal
@@ -23,7 +22,8 @@ def test_weekday_cal(Date):
 @pytest.mark.parametrize("Date", ora.DATE_TYPES)
 def test_weekday_cal_range(Date):
     date_range = Date(2018, 1, 1), Date(2018, 12, 31)
-    weekday_cal = ora.weekday_calendar(date_range, WEEKDAYS)
+    weekday_cal = ora.make_weekday_calendar(date_range, WEEKDAYS)
+
     assert weekday_cal.range.start == date_range[0]
     assert weekday_cal.range.stop  == date_range[1] + 1  # FIXME: Don't use slice.
 

@@ -52,7 +52,7 @@ parse_calendar(
 
 
 ref<Object>
-weekday_calendar(
+make_weekday_calendar(
   Module* /* module */,
   Tuple* const args,
   Dict* kw_args)
@@ -80,7 +80,7 @@ add_cal_functions(
 {
   return methods
     .add<parse_calendar>            ("parse_calendar",          nullptr)
-    .add<weekday_calendar>          ("weekday_calendar",        nullptr)
+    .add<make_weekday_calendar>     ("make_weekday_calendar",   nullptr)
     ;
 }
 
