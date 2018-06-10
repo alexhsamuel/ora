@@ -12,12 +12,34 @@ using namespace std::string_literals;
 // Exceptions
 //------------------------------------------------------------------------------
 
+class CalendarError
+: public Error
+{
+public:
+
+  using Error::Error;
+  virtual ~CalendarError() = default;
+
+};
+
+
+class CalendarRangeError
+: public CalendarError
+{
+public:
+
+  CalendarRangeError() : CalendarError("date not in calendar range") {}
+  virtual ~CalendarRangeError() = default;
+
+};
+
+
 class DateError
   : public Error
 {
 public:
 
-  DateError(std::string const& message) : Error(message) {}
+  using Error::Error;
   virtual ~DateError() = default;
 
 };
@@ -28,7 +50,7 @@ class DateFormatError
 {
 public:
 
-  DateFormatError(std::string const& message): DateError(message) {}
+  using DateError::DateError;
   virtual ~DateFormatError() = default;
 
 };
@@ -61,7 +83,7 @@ class DaytimeError
 {
 public:
 
-  DaytimeError(std::string const& message) : Error(message) {}
+  using Error::Error;
   virtual ~DaytimeError() = default;
 
 };
@@ -83,7 +105,7 @@ class DaytimeFormatError
 {
 public:
 
-  DaytimeFormatError(std::string const& message): DaytimeError(message) {}
+  using DaytimeError::DaytimeError;
   virtual ~DaytimeFormatError() = default;
 
 };
@@ -94,7 +116,7 @@ class TimeError
 {
 public:
 
-  TimeError(std::string const& message) : Error(message) {}
+  using Error::Error;
   virtual ~TimeError() = default;
 
 };

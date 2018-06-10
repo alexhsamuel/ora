@@ -27,8 +27,6 @@ PyCalendar::add_to(
 
 namespace {
 
-using Cal_ptr = PyCalendar::Cal_ptr;
-
 void
 tp_dealloc(
   PyCalendar* const self)
@@ -58,15 +56,9 @@ tp_init(
 {
   Arg::ParseTuple(args, "");
 
-  // FIXME: How the fuck do we construct these?
-  std::vector<Weekday> weekdays;
-  weekdays.push_back(MONDAY);
-  weekdays.push_back(TUESDAY);
-  weekdays.push_back(WEDNESDAY);
-  weekdays.push_back(THURSDAY);
-  weekdays.push_back(FRIDAY);
-  Cal_ptr cal = std::make_shared<WeekdaysCalendar>(weekdays);
-  new(self) PyCalendar(std::move(cal));
+  // FIXME
+  throw NotImplementedError("Calendar.__init__");
+  // new(self) PyCalendar(std::move(cal));
 }
 
 
@@ -78,8 +70,7 @@ ref<Object>
 nb_invert(
   PyCalendar* self)
 {
-  return PyCalendar::create(
-    std::make_unique<ora::NegationCalendar>(self->cal_->clone()));
+  return PyCalendar::create(!self->cal_);
 }
 
 
@@ -133,8 +124,8 @@ sq_contains(
   PyCalendar* const self,
   Object* const obj)
 {
-  auto date = convert_to_date<Date>(obj);
-  return self->cal_->contains(date);
+  auto date = convert_to_date(obj);
+  return self->cal_.contains(date);
 }
 
 
@@ -167,8 +158,8 @@ method_after(
   Object* date_arg;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &date_arg);
 
-  auto const date = convert_to_date<Date>(date_arg);
-  auto const result = self->cal_->after(date);
+  auto const date = convert_to_date(date_arg);
+  auto const result = self->cal_.after(date);
   auto api = PyDateAPI::get(date_arg);
   if (api == nullptr)
     api = PyDate<Date>::api_;
@@ -186,8 +177,8 @@ method_before(
   Object* date_arg;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &date_arg);
 
-  auto const date = convert_to_date<Date>(date_arg);
-  auto const result = self->cal_->before(date);
+  auto const date = convert_to_date(date_arg);
+  auto const result = self->cal_.before(date);
   auto api = PyDateAPI::get(date_arg);
   if (api == nullptr)
     api = PyDate<Date>::api_;
@@ -205,8 +196,29 @@ method_contains(
   Object* date_arg;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &date_arg);
 
-  auto const date = convert_to_date<Date>(date_arg);
-  return Bool::from(self->cal_->contains(date));
+  auto const date = convert_to_date(date_arg);
+  return Bool::from(self->cal_.contains(date));
+}
+
+
+ref<Object>
+method_shift(
+  PyCalendar* const self,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] = {"date", "shift", nullptr};
+  Object* date_arg;
+  int shift;
+  Arg::ParseTupleAndKeywords(args, kw_args, "Oi", arg_names, &date_arg, &shift);
+
+  auto const date = convert_to_date(date_arg);
+  auto const result = self->cal_.shift(date, shift);
+
+  auto api = PyDateAPI::get(date_arg);
+  if (api == nullptr)
+    api = PyDate<Date>::api_;
+  return api->from_datenum(result.get_datenum());
 }
 
 
@@ -216,6 +228,7 @@ tp_methods_
     .template add<method_after>                     ("after")
     .template add<method_before>                    ("before")
     .template add<method_contains>                  ("contains")
+    .template add<method_shift>                     ("shift")
   ;
 
 
@@ -228,11 +241,12 @@ get_range(
   PyCalendar* const self,
   void* /* closure */)
 {
-  auto const range = self->cal_->range();
-  auto start = PyDate<Date>::create(range.first);
+  auto const range = self->cal_.range();
+  auto start = PyDate<Date>::create(range.min);
+  // FIXME: slice?  Really?
   return ref<Object>::take(PySlice_New(
-    PyDate<Date>::create(range.first), 
-    PyDate<Date>::create(range.second), 
+    PyDate<Date>::create(range.min), 
+    PyDate<Date>::create(range.max), 
     nullptr
   ));
 }

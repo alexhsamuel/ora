@@ -13,7 +13,7 @@ using namespace ora::ez;
 // Class AllCalendar.
 
 TEST(AllCalendar, contains0) {
-  AllCalendar const cal;
+  auto const cal = make_const_calendar({Date::MIN, Date::MAX}, true);
   EXPECT_TRUE (cal.contains(1970/JAN/ 1));
   EXPECT_TRUE (cal.contains(1973/DEC/ 3));
   EXPECT_TRUE (cal.contains(2013/JUL/11));
@@ -30,7 +30,7 @@ TEST(AllCalendar, contains0) {
 }
 
 TEST(AllCalendar, contains1) {
-  AllCalendar const cal;
+  auto const cal = make_const_calendar({Date::MIN, Date::MAX}, true);
   EXPECT_TRUE (cal.contains(from_ymd<Date16>(1970,  1,  1)));
   EXPECT_TRUE (cal.contains(from_ymd<Date16>(1973, 12,  3)));
   EXPECT_TRUE (cal.contains(from_ymd<Date16>(2013,  7, 11)));
@@ -51,7 +51,9 @@ TEST(AllCalendar, contains1) {
 
 TEST(WeekdaysCalendar, contains) {
   // Monday through Friday.
-  WeekdaysCalendar const cal0({MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY});
+  auto const cal0 = make_weekday_calendar(
+    {Date::MIN, Date::MAX}, 
+    (bool const[]){true, true, true, true, true, false, false});
   EXPECT_TRUE (cal0.contains(1970/JAN/ 1));
   EXPECT_TRUE (cal0.contains(1973/DEC/ 3));
   EXPECT_TRUE (cal0.contains(2013/JUL/11));
@@ -63,7 +65,9 @@ TEST(WeekdaysCalendar, contains) {
   EXPECT_TRUE (cal0.contains(2013/JUL/15));
 
   // Thursdays and Sundays.
-  WeekdaysCalendar const cal1({SUNDAY, THURSDAY});
+  auto const cal1 = make_weekday_calendar(
+    {Date::MIN, Date::MAX}, 
+    (bool const[]){false, false, false, true, false, false, true});
   EXPECT_TRUE (cal1.contains(1970/JAN/ 1));
   EXPECT_FALSE(cal1.contains(1973/DEC/ 3));
   EXPECT_TRUE (cal1.contains(2013/JUL/11));
@@ -77,7 +81,9 @@ TEST(WeekdaysCalendar, contains) {
 
 TEST(WeekdaysCalendar, shift) {
   // Monday through Friday.
-  WeekdaysCalendar const cal({MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY});
+  auto const cal = make_weekday_calendar(
+    {Date::MIN, Date::MAX}, 
+    (bool const[]){true, true, true, true, true, false, false});
   auto const date = 2013/JUL/11;
 
   auto const day = cal.DAY();
@@ -106,7 +112,9 @@ TEST(WeekdaysCalendar, shift) {
 
 TEST(WeekdaysCalendar, nearest) {
   // Monday through Friday.
-  WeekdaysCalendar const cal({MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY});
+  auto const cal = make_weekday_calendar(
+    {Date::MIN, Date::MAX}, 
+    (bool const[]){true, true, true, true, true, false, false});
 
   EXPECT_EQ(2013/JUL/23, cal.before(2013/JUL/23));
   EXPECT_EQ(2013/JUL/23, cal.after(2013/JUL/23));
@@ -124,32 +132,14 @@ TEST(WeekdaysCalendar, nearest) {
 }
 
 //------------------------------------------------------------------------------
-// Class DenseCalendar.
+// Calendar files
 
-TEST(DenseCalendar, load) {
-  auto const cal = load_dense_calendar(fs::Filename("holidays.cal"));
-  EXPECT_EQ(cal->range().first, 2010/JAN/ 1);
-  EXPECT_EQ(cal->range().second, 2021/JAN/ 1);
-  EXPECT_FALSE((*cal).contains(2012/JUL/ 3));
-  EXPECT_TRUE ((*cal).contains(2012/JUL/ 4));
-  EXPECT_FALSE((*cal).contains(2012/JUL/ 5));
-}
-
-//------------------------------------------------------------------------------
-// Class WorkdayCalendar.
-
-TEST(WorkdayCalendar, contains) {
-  auto const cal_ptr = make_workday_calendar(
-    {MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY},
-    load_dense_calendar(fs::Filename("holidays.cal")));
-  auto const& cal = *cal_ptr;
-
-  EXPECT_FALSE(cal.contains(2012/JUL/ 1));  // Sunday
-  EXPECT_TRUE (cal.contains(2012/JUL/ 2));
-  EXPECT_TRUE (cal.contains(2012/JUL/ 3));
-  EXPECT_FALSE(cal.contains(2012/JUL/ 4));  // holiday
-  EXPECT_TRUE (cal.contains(2012/JUL/ 5));
-  EXPECT_TRUE (cal.contains(2012/JUL/ 6));
-  EXPECT_FALSE(cal.contains(2012/JUL/ 7));  // Saturday
+TEST(Calendar, load) {
+  auto const cal = load_calendar(fs::Filename("holidays.cal"));
+  EXPECT_EQ(cal.range().min, 2010/JAN/ 1);
+  EXPECT_EQ(cal.range().max, 2021/JAN/ 1);
+  EXPECT_FALSE(cal.contains(2012/JUL/ 3));
+  EXPECT_TRUE (cal.contains(2012/JUL/ 4));
+  EXPECT_FALSE(cal.contains(2012/JUL/ 5));
 }
 

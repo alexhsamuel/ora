@@ -10,6 +10,7 @@
 #include "ora/date_functions.hh"
 #include "ora/date_type.hh"
 #include "ora/date_nex.hh"
+#include "ora/lib/file.hh"
 #include "ora/lib/filename.hh"
 #include "ora/lib/string.hh"
 
@@ -21,30 +22,51 @@ using ora::date::Date;
 //------------------------------------------------------------------------------
 // Declarations
 
+template<class T> struct Range;
 class Calendar;
-class DenseCalendar;
 
-extern std::unique_ptr<DenseCalendar> parse_dense_calendar(std::istream& in);
-extern std::unique_ptr<DenseCalendar> load_dense_calendar(fs::Filename const& filename);
+extern Calendar parse_calendar(ora::lib::Iter<std::string>&);
+extern Calendar load_calendar(fs::Filename const& filename);
+extern Calendar make_const_calendar(Range<Date>, bool);
+extern Calendar make_weekday_calendar(Range<Date>, bool const[7]);
 
 //------------------------------------------------------------------------------
 // Helpers
 
-namespace {
-
-std::pair<Date, Date>
-common_range(
-  std::pair<Date, Date> range0,
-  std::pair<Date, Date> range1)
+/*
+ * Inclusive (min, max) range.
+ */
+template<class T>
+struct Range
 {
-  return {
-    std::max(range0.first, range1.first),
-    std::min(range0.second, range1.second)
-  };
+  Range(
+    T const mn, 
+    T const mx) 
+  : min(mn)
+  , max(mx) 
+  { 
+    assert(min <= max); 
+  }
+
+  bool contains(T const val) const { return min <= val && val <= max; }
+
+  T min;
+  T max;
+
+};
+
+
+template<class T>
+inline Range<T>
+operator&(
+  Range<T> range0,
+  Range<T> range1)
+{
+  auto const min = std::min(range0.min, range1.min);
+  auto const max = std::max(range0.max, range1.max);
+  return {min, std::max(min, max)};
 }
 
-
-}  // anonymous namespace
 
 //------------------------------------------------------------------------------
 
@@ -52,9 +74,84 @@ class Calendar
 {
 public:
 
-  virtual std::unique_ptr<Calendar> clone() const = 0;
+  Calendar(
+    date::Date const min,
+    std::vector<bool>&& dates)
+  : min_(min)
+  , dates_(std::move(dates))
+  {
+  }
 
-  virtual std::pair<Date, Date> range() const = 0;
+  Calendar(
+    Range<Date> range,
+    std::vector<Date> const& dates)
+  : min_(range.min)
+  , dates_(range.max - range.min, false)
+  {
+    assert(range.min.is_valid() && range.max.is_valid());
+    for (auto date : dates) {
+      if (date < range.min || range.max < date)
+        throw ValueError("date out of calendar range");
+      dates_[date - min_] = true;
+    }
+  }
+
+  Calendar(Calendar const&)                 = default;
+  Calendar(Calendar&&)                      = default;
+  ~Calendar()                               = default;
+
+  Range<Date>
+  range() 
+    const
+  {
+    return {min_, min_ + dates_.size()};
+  }
+
+  bool
+  contains(
+    Date date)
+    const
+  {
+    if (!date.is_valid() || date < min_ || date - min_ >= dates_.size())
+      throw CalendarRangeError();
+    else
+      return dates_[date - min_];
+  }
+
+  Date 
+  before(
+    Date date)
+    const
+  {
+    while (!contains(date))
+      date--;
+    return date;
+  }
+
+  Date 
+  after(
+    Date date)
+    const
+  {
+    while (!contains(date))
+      date++;
+    return date;
+  }
+
+  date::Date 
+  shift(
+    date::Date date, 
+    ssize_t shift) 
+    const
+  {
+    while (shift > 0 && date.is_valid())
+      if (contains(++date))
+        shift--;
+    while (shift < 0 && date.is_valid())
+      if (contains(--date))
+        shift++;
+    return date;
+  }
 
   // FIXME: Check range.
   template<class DATE> bool contains(DATE date) const 
@@ -89,62 +186,66 @@ public:
 
   Interval DAY() const { return Interval(*this, 1); }
 
-  virtual bool contains(Date date) const = 0;
-  virtual Date before(Date date) const = 0;
-  virtual Date after(Date date) const = 0;
-  virtual Date shift(Date date, ssize_t shift) const = 0;
+private:
+
+  friend Calendar operator!(Calendar const&);
+  friend Calendar operator&(Calendar const&, Calendar const&);
+  friend Calendar operator|(Calendar const&, Calendar const&);
+
+  Date min_;
+  std::vector<bool> dates_;
 
 };
 
 
-//------------------------------------------------------------------------------
-
-/*
- * Calendar base that implements before(), after(), and shift() using
- * contains().  This may not be efficient for sparse calendars.
- */
-class SimpleCalendar
-: public Calendar
+inline Calendar
+operator!(
+  Calendar const& cal)
 {
-public:
+  auto dates = cal.dates_;
+  dates.flip();
+  return {cal.min_, std::move(dates)};
+}
 
-  virtual inline Date before(
-    Date date)
-    const override
-  {
-    while (date.is_valid() && !contains(date))
-      date--;
-    return date;
-  }
 
-  virtual inline Date after(
-    Date date)
-    const override
-  {
-    while (date.is_valid() && !contains(date))
-      date++;
-    return date;
-  }
+inline Calendar
+operator&(
+  Calendar const& cal0,
+  Calendar const& cal1)
+{
+  auto const range  = cal0.range() & cal1.range();
+  auto const length = range.max - range.min;
+  auto const off0   = range.min - cal0.min_;
+  auto const off1   = range.min - cal1.min_;
 
-  virtual inline Date 
-  shift(
-    Date date, 
-    ssize_t shift) 
-    const override
-  {
-    while (shift > 0 && date.is_valid())
-      if (contains(++date))
-        shift--;
-    while (shift < 0 && date.is_valid())
-      if (contains(--date))
-        shift++;
-    return date;
-  }
+  auto dates = std::vector<bool>(length);
+  for (auto i = 0; i < length; ++i)
+    dates[i] = cal0.dates_[off0 + i] && cal1.dates_[off1 + i];
 
-};
+  return {range.min, std::move(dates)};
+}
+
+
+inline Calendar
+operator|(
+  Calendar const& cal0,
+  Calendar const& cal1)
+{
+  auto const range  = cal0.range() & cal1.range();
+  auto const length = range.max - range.min;
+  auto const off0   = range.min - cal0.min_;
+  auto const off1   = range.min - cal1.min_;
+
+  auto dates = std::vector<bool>(length);
+  for (auto i = 0; i < length; ++i)
+    dates[i] = cal0.dates_[off0 + i] || cal1.dates_[off1 + i];
+
+  return {range.min, std::move(dates)};
+}
 
 
 //------------------------------------------------------------------------------
+// Functions.
 
 template<class DATE>
 inline DATE
@@ -187,359 +288,10 @@ operator>>=(
 
 
 //------------------------------------------------------------------------------
+// Interval functions
 
-class AllCalendar 
-  final
-: public Calendar
-{
-public:
-
-  AllCalendar() {}
-  AllCalendar(AllCalendar const&)       = default;
-  AllCalendar(AllCalendar&&)            = default;
-  virtual ~AllCalendar()                = default;
-
-  virtual std::unique_ptr<Calendar> clone() const override
-    { return std::make_unique<AllCalendar>(*this); }
-  virtual std::pair<Date, Date> range() const override
-    { return {Date::MIN, Date::MAX}; }
-  virtual bool contains(Date const date) const override
-    { return date.is_valid(); }
-  virtual Date before(Date const date) const override
-    { return date.is_valid() ? date : Date::INVALID; }
-  virtual Date after(Date const date) const override
-    { return date.is_valid() ? date : Date::INVALID; }
-  virtual Date shift(Date const date, ssize_t const days) const override 
-    { return date + days; }
-
-};
-
-
-//------------------------------------------------------------------------------
-
-class WeekdaysCalendar
-: public SimpleCalendar
-{
-public:
-
-  // FIXME: This can be optimized by storing the before/after shifts from
-  // each weekday to the adjacent weekdays.
-
-  WeekdaysCalendar(
-    std::vector<Weekday> weekdays)
-  {
-    mask_.fill(false);
-    for (auto const weekday : weekdays)
-      mask_[weekday] = true;
-  }
-
-  WeekdaysCalendar(WeekdaysCalendar const&)     = default;
-  virtual ~WeekdaysCalendar()                   = default;
-
-  virtual std::unique_ptr<Calendar> clone() const override
-    { return std::make_unique<WeekdaysCalendar>(*this); }
-  virtual std::pair<Date, Date> range() const override
-    { return {Date::MIN, Date::MAX}; }
-  virtual bool contains(Date const date) const override
-    { return mask_[get_weekday(date)]; }
-
-private:
-
-  std::array<bool, 7> mask_;
-
-};
-
-
-//------------------------------------------------------------------------------
-
-class DenseCalendar
-  final 
-: public SimpleCalendar
-{
-public:
-
-  DenseCalendar(
-    date::Date const min, 
-    date::Date const max,
-    std::vector<Date> const& dates)
-  : min_(min),
-    dates_(max - min, false)
-  {
-    assert(min.is_valid() && max.is_valid());
-    for (auto date : dates) {
-      if (date < min || max <= date)
-        throw ValueError("date out of calendar range");
-      dates_[date - min_] = true;
-    }
-  }
-
-  DenseCalendar(DenseCalendar const&)       = default;
-  ~DenseCalendar()                            = default;
-
-  virtual std::unique_ptr<Calendar> 
-  clone() 
-    const override
-  { 
-    return std::make_unique<DenseCalendar>(*this); 
-  }
-
-  virtual std::pair<Date, Date> 
-  range() 
-    const override
-  {
-    return {min_, min_ + dates_.size()};
-  }
-
-  inline virtual bool
-  contains(
-    Date date)
-    const override
-  {
-    return dates_[date - min_];
-  }
-
-  date::Date 
-  shift(
-    date::Date date, 
-    ssize_t shift) 
-    const override
-  {
-    while (shift > 0 && date.is_valid())
-      if (contains(++date))
-        shift--;
-    while (shift < 0 && date.is_valid())
-      if (contains(--date))
-        shift++;
-    return date;
-  }
-
-private:
-
-  Date min_;
-  std::vector<bool> dates_;
-
-};
-
-
-template<class LineIter>
-std::unique_ptr<DenseCalendar>
-parse_dense_calendar(
-  LineIter&& lines,
-  LineIter&& end)
-{
-  std::vector<Date> dates;
-  Date min = Date::MISSING;
-  Date max = Date::MISSING;
-  Date date_min = Date::MISSING;
-  Date date_max = Date::MISSING;
-
-  for (; lines != end; ++lines) {
-    auto line = strip(*lines);
-    // Skip blank and comment lines.
-    if (line.size() == 0 || line[0] == '#')
-      continue;
-    StringPair parts = split1(line);
-    // FIXME: Handle exceptions.
-    if (parts.first == "MIN") 
-      min = date::from_iso_date<Date>(parts.second);
-    else if (parts.first == "MAX")
-      max = date::from_iso_date<Date>(parts.second);
-    else {
-      auto const date = date::from_iso_date<Date>(parts.first);
-      dates.push_back(date);
-      // Keep track of the min and max dates we've seen.
-      if (!date::nex::before(date_min, date))
-        date_min = date;
-      if (!date::nex::before(date, date_max))
-        date_max = date + 1;
-    }
-  }
-
-  // Infer missing min or max from the range of given dates.
-  if (min.is_missing()) 
-    min = dates.size() > 0 ? date_min : Date::MIN;
-  assert(!min.is_missing());
-  if (max.is_missing()) 
-    max = dates.size() > 0 ? date_max : Date::MIN;
-  assert(!max.is_missing());
-
-  // Now construct the calendar.
-  assert(min <= max);
-  return std::make_unique<DenseCalendar>(min, max, dates);
-}
-
-
-//------------------------------------------------------------------------------
-
-class NegationCalendar
-: public SimpleCalendar
-{
-public:
-  
-  NegationCalendar(
-    std::unique_ptr<Calendar>&& calendar)
-  : calendar_(std::move(calendar))
-  {
-  }
-  
-  NegationCalendar(
-    NegationCalendar const& calendar)
-  : calendar_(calendar.calendar_->clone())
-  {
-  }
-
-  NegationCalendar& operator=(NegationCalendar const&) = delete;
-  NegationCalendar& operator=(NegationCalendar&&) = delete;
-  virtual ~NegationCalendar() = default;
-
-  virtual std::unique_ptr<Calendar> 
-  clone() 
-    const override
-  { 
-    return std::make_unique<NegationCalendar>(calendar_->clone());
-  }
-
-  virtual inline std::pair<Date, Date> range() const override
-    { return calendar_->range(); }
-  virtual inline bool contains(Date const date) const override
-    { return !calendar_->contains(date); }
-
-private:
-
-  std::unique_ptr<Calendar> const calendar_;
-
-};
-
-
-class UnionCalendar
-: public SimpleCalendar
-{
-public:
-
-  UnionCalendar(
-    std::unique_ptr<Calendar>&& calendar0,
-    std::unique_ptr<Calendar>&& calendar1)
-  : cal0_(std::move(calendar0)),
-    cal1_(std::move(calendar1))
-  {
-  }
-
-  UnionCalendar& operator=(UnionCalendar const&) = delete;
-  UnionCalendar& operator=(UnionCalendar&&) = delete;
-  virtual ~UnionCalendar() = default;
-
-  virtual std::unique_ptr<Calendar> 
-  clone() 
-    const override
-  { 
-    return std::make_unique<UnionCalendar>(cal0_->clone(), cal1_->clone());
-  }
-
-  virtual inline std::pair<Date, Date> range() const override
-    { return common_range(cal0_->range(), cal1_->range()); }
-  virtual inline bool contains(Date const date) const override
-    { return cal0_->contains(date) || cal1_->contains(date); }
-
-private:
-
-  std::unique_ptr<Calendar> cal0_;
-  std::unique_ptr<Calendar> cal1_;
-
-};
-
-
-class IntersectionCalendar
-: public SimpleCalendar
-{
-public:
-
-  IntersectionCalendar(
-    std::unique_ptr<Calendar>&& calendar0,
-    std::unique_ptr<Calendar>&& calendar1)
-  : cal0_(std::move(calendar0)),
-    cal1_(std::move(calendar1))
-  {
-  }
-
-  IntersectionCalendar& operator=(IntersectionCalendar const&) = delete;
-  IntersectionCalendar& operator=(IntersectionCalendar&&) = delete;
-  virtual ~IntersectionCalendar() = default;
-
-  virtual std::unique_ptr<Calendar> 
-  clone() 
-    const override
-  { 
-    return std::make_unique<IntersectionCalendar>(cal0_->clone(), cal1_->clone());
-  }
-
-  virtual inline std::pair<Date, Date> range() const override
-    { return common_range(cal0_->range(), cal1_->range()); }
-  virtual inline bool contains(Date const date) const override
-    { return cal0_->contains(date) && cal1_->contains(date); }
-
-private:
-
-  std::unique_ptr<Calendar> cal0_;
-  std::unique_ptr<Calendar> cal1_;
-
-};
-
-
-/*
- * Creates a working calendar, including workdays but with holidays removed.
- *
- * Returns a new calendar which contains all weekdays specified by `weekdays`
- * but with all days in `holidays` removed.
- */
-inline std::unique_ptr<Calendar>
-make_workday_calendar(
-  std::vector<Weekday> weekdays,
-  std::unique_ptr<Calendar>&& holidays)
-{
-  return std::make_unique<IntersectionCalendar>(
-    std::make_unique<WeekdaysCalendar>(weekdays),
-    std::make_unique<NegationCalendar>(std::move(holidays)));
-}
-
-
-//------------------------------------------------------------------------------
-// Functions.
-
-/*
-  Holiday calendar file format:
-    - Line-oriented text, delimited by NL.
-    - Leading and trailing whitespace on each line stripped.
-    - Blank lines ignored.
-    - Lines beginning with # ignored as comment lines.
-    - All dates specified as ISO dates, 'YYYY-MM-DD'
-    - Range optionally specified with lines 'MIN <date>' and 'MAX <date>'.
-    - Every other line consists of a holiday date followed by whitespace;
-      the rest of the line is ignored.
-    - If range min or max is not specified, it is inferred from the dates.
-
-  Example:
-
-      # U.S. holidays for the year 2010.
-
-      MIN 2010-01-01
-      MAX 2011-01-01
-
-      2010-01-01 New Year's Day
-      2010-01-18 Birthday of Martin Luther King, Jr.
-      2010-02-15 Washington's Birthday
-      2010-05-31 Memorial Day
-      2010-07-05 Independence Day
-      2010-09-06 Labor Day
-      2010-10-11 Columbus Day
-      2010-11-11 Veterans Day
-      2010-11-25 Thanksgiving Day
-      2010-12-24 Christmas Day
-      2010-12-31 New Year's Day
-*/
-
-//------------------------------------------------------------------------------
-
-inline constexpr Calendar::Interval 
+inline constexpr
+Calendar::Interval 
 operator-(
   Calendar::Interval const& interval) 
 { 
@@ -547,7 +299,8 @@ operator-(
 }
 
 
-inline constexpr Calendar::Interval 
+inline constexpr
+Calendar::Interval 
 operator*(
   Calendar::Interval const& interval,
   ssize_t mult) 
@@ -556,7 +309,8 @@ operator*(
 }
 
 
-inline constexpr Calendar::Interval
+inline constexpr
+Calendar::Interval
 operator*(
   ssize_t mult,
   Calendar::Interval const& interval)

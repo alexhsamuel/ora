@@ -16,15 +16,13 @@ class PyCalendar
 {
 public:
 
-  using Cal_ptr = std::shared_ptr<Calendar>;
-
   static Type type_;
   static Type build_type();
   static void add_to(Module& module);
 
   static ref<PyCalendar>
   create(
-    Cal_ptr&& cal,
+    Calendar&& cal,
     PyTypeObject* type=&type_)
   {
     auto self = ref<PyCalendar>::take(
@@ -40,10 +38,9 @@ public:
     return static_cast<Object*>(object)->IsInstance((PyObject*) &type_);
   }
 
-  PyCalendar(Cal_ptr const& cal) : cal_(cal) {}
-  PyCalendar(Cal_ptr&& cal) : cal_(std::move(cal)) {}
+  PyCalendar(Calendar&& cal) : cal_(std::move(cal)) {}
 
-  Cal_ptr cal_;
+  Calendar const cal_;
 
 };
 
