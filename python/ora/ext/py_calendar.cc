@@ -201,12 +201,34 @@ method_contains(
 }
 
 
+ref<Object>
+method_shift(
+  PyCalendar* const self,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] = {"date", "shift", nullptr};
+  Object* date_arg;
+  int shift;
+  Arg::ParseTupleAndKeywords(args, kw_args, "Oi", arg_names, &date_arg, &shift);
+
+  auto const date = convert_to_date(date_arg);
+  auto const result = self->cal_.shift(date, shift);
+
+  auto api = PyDateAPI::get(date_arg);
+  if (api == nullptr)
+    api = PyDate<Date>::api_;
+  return api->from_datenum(result.get_datenum());
+}
+
+
 Methods<PyCalendar>
 tp_methods_
   = Methods<PyCalendar>()
     .template add<method_after>                     ("after")
     .template add<method_before>                    ("before")
     .template add<method_contains>                  ("contains")
+    .template add<method_shift>                     ("shift")
   ;
 
 

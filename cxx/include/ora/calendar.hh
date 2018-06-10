@@ -112,9 +112,7 @@ public:
     Date date)
     const
   {
-    if (!date.is_valid())
-      return false;
-    else if (date < min_ || date - min_ >= dates_.size())
+    if (!date.is_valid() || date < min_ || date - min_ >= dates_.size())
       throw CalendarRangeError();
     else
       return dates_[date - min_];
@@ -125,7 +123,7 @@ public:
     Date date)
     const
   {
-    while (date.is_valid() && !contains(date))
+    while (!contains(date))
       date--;
     return date;
   }
@@ -135,7 +133,7 @@ public:
     Date date)
     const
   {
-    while (date.is_valid() && !contains(date))
+    while (!contains(date))
       date++;
     return date;
   }
