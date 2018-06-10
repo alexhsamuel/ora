@@ -1927,10 +1927,9 @@ class LineIterator
 public:
 
   /*
-   * Constructs tne end iterator.
+   * Constructs the end iterator.
    */
-  LineIterator() : end_(true) 
-    {}
+  LineIterator() : end_(true) {}
 
   LineIterator(
     PyObject* lines) 
@@ -1947,17 +1946,14 @@ public:
     return *this;
   }
 
-  std::string operator*() const 
-    { return line_; }
-
-  bool operator==(LineIterator const& i) const
-    { return end_ && i.end_; }
-  bool operator!=(LineIterator const& i) const
-    { return !operator==(i); }
+  std::string operator*() const { return line_; }
+  bool operator==(LineIterator const& i) const { return end_ && i.end_; }
+  bool operator!=(LineIterator const& i) const { return !operator==(i); }
 
 private:
 
-  void advance()
+  void 
+  advance()
   {
     if (!end_) {
       auto next = lines_->Next();
