@@ -24,8 +24,9 @@ using ora::date::Date;
 template<class T> struct Range;
 class Calendar;
 
-extern std::unique_ptr<Calendar> load_calendar(fs::Filename const& filename);
-extern std::unique_ptr<Calendar> make_weekday_calendar(Range<Date>, bool const[7]);
+extern Calendar load_calendar(fs::Filename const& filename);
+extern Calendar make_const_calendar(Range<Date>, bool);
+extern Calendar make_weekday_calendar(Range<Date>, bool const[7]);
 
 //------------------------------------------------------------------------------
 // Helpers
@@ -81,7 +82,7 @@ public:
   {
     assert(range.min.is_valid() && range.max.is_valid());
     for (auto date : dates) {
-      if (date < range.min || range.max <= date)
+      if (date < range.min || range.max < date)
         throw ValueError("date out of calendar range");
       dates_[date - min_] = true;
     }
@@ -268,7 +269,7 @@ operator|(
 */
 
 template<class LineIter>
-std::unique_ptr<Calendar>
+Calendar
 parse_calendar(
   LineIter&& lines,
   LineIter&& end)
@@ -310,7 +311,7 @@ parse_calendar(
   assert(range.min <= range.max);
 
   // Now construct the calendar.
-  return std::make_unique<Calendar>(range, dates);
+  return {range, dates};
 }
 
 

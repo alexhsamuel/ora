@@ -27,8 +27,6 @@ PyCalendar::add_to(
 
 namespace {
 
-using Cal_ptr = PyCalendar::Cal_ptr;
-
 void
 tp_dealloc(
   PyCalendar* const self)
@@ -72,7 +70,7 @@ ref<Object>
 nb_invert(
   PyCalendar* self)
 {
-  return PyCalendar::create(std::make_unique<Calendar>(!*self->cal_));
+  return PyCalendar::create(!self->cal_);
 }
 
 
@@ -127,7 +125,7 @@ sq_contains(
   Object* const obj)
 {
   auto date = convert_to_date(obj);
-  return self->cal_->contains(date);
+  return self->cal_.contains(date);
 }
 
 
@@ -161,7 +159,7 @@ method_after(
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &date_arg);
 
   auto const date = convert_to_date(date_arg);
-  auto const result = self->cal_->after(date);
+  auto const result = self->cal_.after(date);
   auto api = PyDateAPI::get(date_arg);
   if (api == nullptr)
     api = PyDate<Date>::api_;
@@ -180,7 +178,7 @@ method_before(
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &date_arg);
 
   auto const date = convert_to_date(date_arg);
-  auto const result = self->cal_->before(date);
+  auto const result = self->cal_.before(date);
   auto api = PyDateAPI::get(date_arg);
   if (api == nullptr)
     api = PyDate<Date>::api_;
@@ -199,7 +197,7 @@ method_contains(
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &date_arg);
 
   auto const date = convert_to_date(date_arg);
-  return Bool::from(self->cal_->contains(date));
+  return Bool::from(self->cal_.contains(date));
 }
 
 
@@ -221,7 +219,7 @@ get_range(
   PyCalendar* const self,
   void* /* closure */)
 {
-  auto const range = self->cal_->range();
+  auto const range = self->cal_.range();
   auto start = PyDate<Date>::create(range.min);
   // FIXME: slice?  Really?
   return ref<Object>::take(PySlice_New(
