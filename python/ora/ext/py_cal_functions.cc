@@ -35,6 +35,38 @@ parse_range(
 
 //------------------------------------------------------------------------------
 
+// FIXME: Elsewhere.
+/*
+ * Adapter from a Python line iterator to a simple string iterator.
+ */
+class LineIter
+: public ora::lib::Iter<std::string>
+{
+public:
+
+  LineIter(Object* lines) : lines_(lines->GetIter()) {}
+
+  virtual ~LineIter() = default;
+
+  virtual optional<std::string>
+  next()
+    override
+  {
+    auto const next = lines_->Next();
+    if (next == nullptr)
+      return {};
+    else
+      return next->Str()->as_utf8_string();
+  }
+
+private:
+
+  ref<ora::py::Iter> lines_;
+
+};
+
+
+
 ref<Object>
 parse_calendar(
   Module* /* module */,
@@ -45,8 +77,8 @@ parse_calendar(
   Object* lines;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &lines);
 
-  return PyCalendar::create(
-    ora::parse_calendar(LineIterator{lines}, LineIterator{}));
+  LineIter line_iter(lines);
+  return PyCalendar::create(ora::parse_calendar(line_iter));
 }
 
 

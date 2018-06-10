@@ -10,6 +10,7 @@
 #include "ora/date_functions.hh"
 #include "ora/date_type.hh"
 #include "ora/date_nex.hh"
+#include "ora/lib/file.hh"
 #include "ora/lib/filename.hh"
 #include "ora/lib/string.hh"
 
@@ -24,6 +25,7 @@ using ora::date::Date;
 template<class T> struct Range;
 class Calendar;
 
+extern Calendar parse_calendar(ora::lib::Iter<std::string>&);
 extern Calendar load_calendar(fs::Filename const& filename);
 extern Calendar make_const_calendar(Range<Date>, bool);
 extern Calendar make_weekday_calendar(Range<Date>, bool const[7]);
@@ -230,88 +232,6 @@ operator|(
     dates[i] = cal0.dates_[off0 + i] || cal1.dates_[off1 + i];
 
   return {range.min, std::move(dates)};
-}
-
-
-//------------------------------------------------------------------------------
-// Calendar file
-
-/*
-  Holiday calendar file format:
-    - Line-oriented text, delimited by NL.
-    - Leading and trailing whitespace on each line stripped.
-    - Blank lines ignored.
-    - Lines beginning with # ignored as comment lines.
-    - All dates specified as ISO dates, 'YYYY-MM-DD'
-    - Range optionally specified with lines 'MIN <date>' and 'MAX <date>'.
-    - Every other line consists of a holiday date followed by whitespace;
-      the rest of the line is ignored.
-    - If range min or max is not specified, it is inferred from the dates.
-
-  Example:
-
-      # U.S. holidays for the year 2010.
-
-      MIN 2010-01-01
-      MAX 2011-01-01
-
-      2010-01-01 New Year's Day
-      2010-01-18 Birthday of Martin Luther King, Jr.
-      2010-02-15 Washington's Birthday
-      2010-05-31 Memorial Day
-      2010-07-05 Independence Day
-      2010-09-06 Labor Day
-      2010-10-11 Columbus Day
-      2010-11-11 Veterans Day
-      2010-11-25 Thanksgiving Day
-      2010-12-24 Christmas Day
-      2010-12-31 New Year's Day
-*/
-
-template<class LineIter>
-Calendar
-parse_calendar(
-  LineIter&& lines,
-  LineIter&& end)
-{
-  std::vector<Date> dates;
-  auto range = Range<Date>{Date::MISSING, Date::MISSING};
-  auto date_range = Range<Date>{Date::MISSING, Date::MISSING};
-
-  for (; lines != end; ++lines) {
-    auto line = strip(*lines);
-    // Skip blank and comment lines.
-    if (line.size() == 0 || line[0] == '#')
-      continue;
-    StringPair parts = split1(line);
-    // FIXME: Handle exceptions.
-    if (parts.first == "MIN") 
-      range.min = date::from_iso_date<Date>(parts.second);
-    else if (parts.first == "MAX")
-      range.max = date::from_iso_date<Date>(parts.second);
-    else {
-      auto const date = date::from_iso_date<Date>(parts.first);
-      dates.push_back(date);
-      // Keep track of the min and max dates we've seen.
-      if (!date::nex::before(date_range.min, date))
-        date_range.min = date;
-      if (!date::nex::before(date, date_range.max))
-        date_range.max = date + 1;
-    }
-  }
-
-  // Infer missing min or max from the range of given dates.
-  if (range.min.is_missing()) 
-    range.min = dates.size() > 0 ? date_range.min : Date::MIN;
-  if (range.max.is_missing()) 
-    range.max = dates.size() > 0 ? date_range.max : Date::MIN;
-  // FIXME: Exceptions instead.
-  assert(!range.min.is_missing());
-  assert(!range.max.is_missing());
-  assert(range.min <= range.max);
-
-  // Now construct the calendar.
-  return {range, dates};
 }
 
 

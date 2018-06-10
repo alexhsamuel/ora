@@ -1918,60 +1918,6 @@ import(const char* module_name, const char* name)
 }
 
 
-/*
- * Proxy for a Python line iterator to C++ string input iterator.
- */
-class LineIterator
-: public std::iterator<std::input_iterator_tag, std::string> 
-{
-public:
-
-  /*
-   * Constructs the end iterator.
-   */
-  LineIterator() : end_(true) {}
-
-  LineIterator(
-    PyObject* lines) 
-  : lines_(((Object*) lines)->GetIter())
-  , end_(false) 
-  {
-    advance();
-  }
-
-  LineIterator&
-  operator++() 
-  {
-    advance();
-    return *this;
-  }
-
-  std::string operator*() const { return line_; }
-  bool operator==(LineIterator const& i) const { return end_ && i.end_; }
-  bool operator!=(LineIterator const& i) const { return !operator==(i); }
-
-private:
-
-  void 
-  advance()
-  {
-    if (!end_) {
-      auto next = lines_->Next();
-      if (next == nullptr)
-        end_ = true;
-      else
-        line_ = next->Str()->as_utf8_string();
-    }
-  }
-
-  ref<Iter> lines_;
-  bool end_ = false;
-  std::string line_;
-
-};
-
-
-
 //------------------------------------------------------------------------------
 
 }  // namespace py
