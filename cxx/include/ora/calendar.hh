@@ -33,6 +33,9 @@ extern Calendar make_weekday_calendar(Range<Date>, bool const[7]);
 //------------------------------------------------------------------------------
 // Helpers
 
+/*
+ * Inclusive (min, max) range.
+ */
 template<class T>
 struct Range
 {
@@ -45,8 +48,11 @@ struct Range
     assert(min <= max); 
   }
 
+  bool contains(T const val) const { return min <= val && val <= max; }
+
   T min;
   T max;
+
 };
 
 
@@ -106,7 +112,12 @@ public:
     Date date)
     const
   {
-    return date.is_valid() && dates_[date - min_];
+    if (!date.is_valid())
+      return false;
+    else if (date < min_ || date - min_ > dates_.size())
+      throw CalendarRangeError();
+    else
+      return dates_[date - min_];
   }
 
   Date 

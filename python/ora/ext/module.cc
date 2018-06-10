@@ -132,6 +132,7 @@ PyInit_ext(void)
     TranslateException<ora::NonexistentDateDaytime>::to(PyExc_RuntimeError);
     TranslateException<ora::TimeRangeError>::to(PyExc_OverflowError);
     TranslateException<ora::TimeFormatError>::to(PyExc_ValueError);
+    TranslateException<ora::CalendarRangeError>::to(PyExc_ValueError);
     TranslateException<ora::lib::fs::FileNotFoundError>::to(PyExc_FileNotFoundError);
     TranslateException<ora::lib::RuntimeError>::to(PyExc_RuntimeError);
     TranslateException<FormatError>::to(PyExc_RuntimeError);
