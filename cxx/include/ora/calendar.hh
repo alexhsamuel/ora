@@ -104,7 +104,7 @@ public:
     Date date)
     const
   {
-    return dates_[date - min_];
+    return date.is_valid() && dates_[date - min_];
   }
 
   Date 

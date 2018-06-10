@@ -58,15 +58,16 @@ private:
 
     line_.clear();
     char buffer[1024];
-    while (line_.back() != eol_) {
+    do {
       in_->getline(buffer, sizeof(buffer), eol_);
       line_ += buffer;
-      if (in_->eof() || in_->failbit) {
+      if (in_->eof() || in_->bad()) {
         // End of file or failure, so mark the iterator as ended.
         end_ = true;
         break;
       }
-    }
+      // Keep going to EOL.
+    } while (in_->fail());
   }
 
   std::istream* const in_;
