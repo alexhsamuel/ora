@@ -80,8 +80,7 @@ def test_weekday_cal_range(Date):
     date_range = Date(2018, 1, 1), Date(2018, 12, 31)
     cal = ora.make_weekday_calendar(date_range, WEEKDAYS)
 
-    assert cal.range.start == date_range[0]
-    assert cal.range.stop  == date_range[1] + 1  # FIXME: Don't use slice.
+    assert cal.range == (date_range[0], date_range[1] + 1)
 
     with pytest.raises(ValueError):
         Date.MISSING in cal
