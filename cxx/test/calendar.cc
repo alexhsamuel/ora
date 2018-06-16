@@ -24,7 +24,8 @@ TEST(AllCalendar, contains0) {
   EXPECT_TRUE (cal.contains(2013/JUL/14));
   EXPECT_TRUE (cal.contains(2013/JUL/15));
   EXPECT_TRUE (cal.contains(Date::MIN));
-  EXPECT_TRUE (cal.contains(Date::MAX));
+  EXPECT_TRUE (cal.contains(Date::MAX - 1));
+  EXPECT_THROW(cal.contains(Date::MAX), CalendarRangeError);
   EXPECT_THROW(cal.contains(Date::INVALID), CalendarRangeError);
   EXPECT_THROW(cal.contains(Date::MISSING), CalendarRangeError);
 }
@@ -105,9 +106,6 @@ TEST(WeekdaysCalendar, shift) {
   EXPECT_EQ(2013/JUL/ 5, date + day *  -4);
   EXPECT_EQ(2013/JUN/28, date + day *  -9);
   EXPECT_EQ(2013/JUN/28, date - 9 * day);
-
-  EXPECT_THROW((9900/JAN/ 1 + 600000 * day).is_invalid(), DateRangeError);
-  EXPECT_THROW((1600/DEC/ 1 - 600000 * day).is_invalid(), DateRangeError);
 }
 
 TEST(WeekdaysCalendar, nearest) {
@@ -136,8 +134,8 @@ TEST(WeekdaysCalendar, nearest) {
 
 TEST(Calendar, load) {
   auto const cal = load_calendar(fs::Filename("holidays.cal"));
-  EXPECT_EQ(cal.range().min, 2010/JAN/ 1);
-  EXPECT_EQ(cal.range().max, 2021/JAN/ 1);
+  EXPECT_EQ(cal.range().start, 2010/JAN/ 1);
+  EXPECT_EQ(cal.range().stop, 2021/JAN/ 1);
   EXPECT_FALSE(cal.contains(2012/JUL/ 3));
   EXPECT_TRUE (cal.contains(2012/JUL/ 4));
   EXPECT_FALSE(cal.contains(2012/JUL/ 5));

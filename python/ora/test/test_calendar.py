@@ -10,7 +10,7 @@ WEEKDAYS = {ora.Mon, ora.Tue, ora.Wed, ora.Thu, ora.Fri}
 
 @pytest.mark.parametrize("Date", ora.DATE_TYPES)
 def test_all_cal(Date):
-    date_range = Date(2018, 1, 1), Date(2018, 12, 31)
+    date_range = Date(2018, 1, 1), Date(2019, 1, 1)
     cal = ora.make_const_calendar(date_range, True)
 
     for i in range(365):
@@ -24,7 +24,7 @@ def test_all_cal(Date):
 
 @pytest.mark.parametrize("Date", ora.DATE_TYPES)
 def test_none_cal(Date):
-    date_range = Date(2018, 1, 1), Date(2018, 12, 31)
+    date_range = Date(2018, 1, 1), Date(2019, 1, 1)
     cal = ora.make_const_calendar(date_range, False)
 
     for i in range(365):
@@ -42,7 +42,7 @@ def test_none_cal(Date):
 
 @pytest.mark.parametrize("Date", ora.DATE_TYPES)
 def test_weekday_cal_contains(Date):
-    date_range = Date(2018, 1, 1), Date(2018, 12, 31)
+    date_range = Date(2018, 1, 1), Date(2019, 1, 3)
     cal = ora.make_weekday_calendar(date_range, WEEKDAYS)
 
     for i in range(365):
@@ -53,7 +53,7 @@ def test_weekday_cal_contains(Date):
 
 @pytest.mark.parametrize("Date", ora.DATE_TYPES)
 def test_weekday_cal_before_after(Date):
-    date_range = Date(2018, 1, 1), Date(2018, 12, 31)
+    date_range = Date(2018, 1, 1), Date(2019, 1, 1)
     cal = ora.make_weekday_calendar(date_range, WEEKDAYS)
 
     for i in range(363):
@@ -79,10 +79,10 @@ def test_weekday_cal_before_after(Date):
 
 @pytest.mark.parametrize("Date", ora.DATE_TYPES)
 def test_weekday_cal_range(Date):
-    date_range = Date(2018, 1, 1), Date(2018, 12, 31)
+    date_range = Date(2018, 1, 1), Date(2019, 1, 1)
     cal = ora.make_weekday_calendar(date_range, WEEKDAYS)
 
-    assert cal.range == (date_range[0], date_range[1] + 1)
+    assert cal.range == date_range
 
     with pytest.raises(ValueError):
         Date.MISSING in cal
@@ -102,7 +102,7 @@ def test_weekday_cal_range(Date):
 
 @pytest.mark.parametrize("Date", ora.DATE_TYPES)
 def test_weekday_cal_shift(Date):
-    date_range = Date(2018, 1, 1), Date(2018, 12, 31)
+    date_range = Date(2018, 1, 1), Date(2019, 1, 1)
     cal = ora.make_weekday_calendar(date_range, WEEKDAYS)
 
     assert cal.shift(20180222, 20) == Date(2018, 3, 22)
@@ -117,5 +117,25 @@ def test_load_calendar_file():
     for i in range(30):
         d = 2018/Jun/1 + i
         assert (d in cal) == (d in CAL_DATES)
+
+
+def test_load_business_calendar():
+    cal = ora.load_business_calendar(Path(__file__).parent / "june18.cal")
+    assert cal.range == (2018/Jun/1, 2018/Jul/1)
+
+    assert 2018/Jun/ 1 not in cal  # holiday
+    assert 2018/Jun/ 2 not in cal  # Sat
+    assert 2018/Jun/ 3 not in cal  # Sun and holiday
+    assert 2018/Jun/ 4     in cal
+    assert 2018/Jun/ 8     in cal
+    assert 2018/Jun/ 9 not in cal  # Sat
+    assert 2018/Jun/12     in cal
+    assert 2018/Jun/13 not in cal  # holiday
+    assert 2018/Jun/14     in cal
+    assert 2018/Jun/24 not in cal  # Sun
+    assert 2018/Jun/25 not in cal  # holiday
+    assert 2018/Jun/26 not in cal  # holiday
+    assert 2018/Jun/27     in cal
+    assert 2018/Jun/30 not in cal  # Sat
 
 

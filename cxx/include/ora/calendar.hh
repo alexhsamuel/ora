@@ -40,18 +40,18 @@ template<class T>
 struct Range
 {
   Range(
-    T const mn, 
-    T const mx) 
-  : min(mn)
-  , max(mx) 
+    T const start_, 
+    T const stop_) 
+  : start(start_)
+  , stop(stop_) 
   { 
-    assert(min <= max); 
   }
 
-  bool contains(T const val) const { return min <= val && val <= max; }
+  int length() const { return stop - start; }
+  bool contains(T const val) const { return start <= val && val < stop; }
 
-  T min;
-  T max;
+  T start;
+  T stop;
 
 };
 
@@ -62,9 +62,9 @@ operator&(
   Range<T> range0,
   Range<T> range1)
 {
-  auto const min = std::min(range0.min, range1.min);
-  auto const max = std::max(range0.max, range1.max);
-  return {min, std::max(min, max)};
+  auto const start = std::min(range0.start, range1.start);
+  auto const stop = std::max(range0.stop, range1.stop);
+  return {start, std::max(start, stop)};
 }
 
 
@@ -75,9 +75,9 @@ class Calendar
 public:
 
   Calendar(
-    date::Date const min,
+    date::Date const start,
     std::vector<bool>&& dates)
-  : min_(min)
+  : start_(start)
   , dates_(std::move(dates))
   {
   }
@@ -85,14 +85,14 @@ public:
   Calendar(
     Range<Date> range,
     std::vector<Date> const& dates)
-  : min_(range.min)
-  , dates_(range.max - range.min, false)
+  : start_(range.start)
+  , dates_(range.stop - range.start, false)
   {
-    assert(range.min.is_valid() && range.max.is_valid());
+    assert(range.start.is_valid() && range.stop.is_valid());
     for (auto date : dates) {
-      if (date < range.min || range.max < date)
+      if (!range.contains(date))
         throw ValueError("date out of calendar range");
-      dates_[date - min_] = true;
+      dates_[date - start_] = true;
     }
   }
 
@@ -104,7 +104,7 @@ public:
   range() 
     const
   {
-    return {min_, min_ + dates_.size()};
+    return {start_, start_ + dates_.size()};
   }
 
   bool
@@ -112,10 +112,10 @@ public:
     Date date)
     const
   {
-    if (!date.is_valid() || date < min_ || date - min_ >= dates_.size())
+    if (!date.is_valid() || date < start_ || date - start_ >= dates_.size())
       throw CalendarRangeError();
     else
-      return dates_[date - min_];
+      return dates_[date - start_];
   }
 
   Date 
@@ -192,7 +192,7 @@ private:
   friend Calendar operator&(Calendar const&, Calendar const&);
   friend Calendar operator|(Calendar const&, Calendar const&);
 
-  Date min_;
+  Date start_;
   std::vector<bool> dates_;
 
 };
@@ -204,7 +204,7 @@ operator!(
 {
   auto dates = cal.dates_;
   dates.flip();
-  return {cal.min_, std::move(dates)};
+  return {cal.start_, std::move(dates)};
 }
 
 
@@ -214,15 +214,15 @@ operator&(
   Calendar const& cal1)
 {
   auto const range  = cal0.range() & cal1.range();
-  auto const length = range.max - range.min;
-  auto const off0   = range.min - cal0.min_;
-  auto const off1   = range.min - cal1.min_;
+  auto const length = range.length();
+  auto const off0   = range.start - cal0.start_;
+  auto const off1   = range.start - cal1.start_;
 
   auto dates = std::vector<bool>(length);
   for (auto i = 0; i < length; ++i)
     dates[i] = cal0.dates_[off0 + i] && cal1.dates_[off1 + i];
 
-  return {range.min, std::move(dates)};
+  return {range.start, std::move(dates)};
 }
 
 
@@ -232,15 +232,15 @@ operator|(
   Calendar const& cal1)
 {
   auto const range  = cal0.range() & cal1.range();
-  auto const length = range.max - range.min;
-  auto const off0   = range.min - cal0.min_;
-  auto const off1   = range.min - cal1.min_;
+  auto const length = range.length();
+  auto const off0   = range.start - cal0.start_;
+  auto const off1   = range.start - cal1.start_;
 
   auto dates = std::vector<bool>(length);
   for (auto i = 0; i < length; ++i)
     dates[i] = cal0.dates_[off0 + i] || cal1.dates_[off1 + i];
 
-  return {range.min, std::move(dates)};
+  return {range.start, std::move(dates)};
 }
 
 

@@ -21,8 +21,8 @@ make_const_calendar(
   Range<Date> const range,
   bool const contains)
 {
-  auto dates = std::vector<bool>(range.max - range.min + 1, contains);
-  return {range.min, std::move(dates)};
+  auto dates = std::vector<bool>(range.length(), contains);
+  return {range.start, std::move(dates)};
 }
 
 
@@ -32,11 +32,11 @@ make_weekday_calendar(
   bool const mask[7])
 {
   auto dates = std::vector<bool>();
-  auto const length = range.max - range.min + 1;
+  auto const length = range.length();
   dates.reserve(length);
   for (auto i = 0; i < length; ++i)
-    dates.push_back(mask[get_weekday(range.min + i)]);
-  return {range.min, std::move(dates)};
+    dates.push_back(mask[get_weekday(range.start + i)]);
+  return {range.start, std::move(dates)};
 }
 
 
@@ -81,7 +81,6 @@ parse_calendar(
 {
   std::vector<Date> dates;
   auto range = Range<Date>{Date::MISSING, Date::MISSING};
-  auto date_range = Range<Date>{Date::MISSING, Date::MISSING};
 
   for (auto line_iter = lines.next(); line_iter; line_iter = lines.next()) {
     auto line = strip(*line_iter);
@@ -90,30 +89,28 @@ parse_calendar(
       continue;
     StringPair parts = split1(line);
     // FIXME: Handle exceptions.
-    if (parts.first == "MIN") 
-      range.min = date::from_iso_date<Date>(parts.second);
-    else if (parts.first == "MAX")
-      range.max = date::from_iso_date<Date>(parts.second);
-    else {
-      auto const date = date::from_iso_date<Date>(parts.first);
-      dates.push_back(date);
-      // Keep track of the min and max dates we've seen.
-      if (!date::nex::before(date_range.min, date))
-        date_range.min = date;
-      if (!date::nex::before(date, date_range.max))
-        date_range.max = date + 1;
-    }
+    if (parts.first == "START") 
+      range.start = date::from_iso_date<Date>(parts.second);
+    else if (parts.first == "STOP")
+      range.stop = date::from_iso_date<Date>(parts.second);
+    else
+      dates.push_back(date::from_iso_date<Date>(parts.first));
   }
 
   // Infer missing min or max from the range of given dates.
-  if (range.min.is_missing()) 
-    range.min = dates.size() > 0 ? date_range.min : Date::MIN;
-  if (range.max.is_missing()) 
-    range.max = dates.size() > 0 ? date_range.max : Date::MIN;
+  if (range.start.is_missing())
+    range.start = 
+      dates.size() == 0 ? Date::MIN 
+      : *std::min_element(dates.begin(), dates.end());
+  if (range.stop.is_missing())
+    range.stop =
+      dates.size() == 0 ? Date::MAX
+      : *std::max_element(dates.begin(), dates.end()) + 1;
+
   // FIXME: Exceptions instead.
-  assert(!range.min.is_missing());
-  assert(!range.max.is_missing());
-  assert(range.min <= range.max);
+  assert(!range.start.is_missing());
+  assert(!range.stop.is_missing());
+  assert(range.start <= range.stop);
 
   // Now construct the calendar.
   return {range, dates};

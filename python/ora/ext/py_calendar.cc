@@ -272,10 +272,9 @@ get_range(
   void* /* closure */)
 {
   auto const range = self->cal_.range();
-  auto start = PyDate<Date>::create(range.min);
   return ref<Tuple>(Tuple::builder
-     << PyDate<Date>::create(range.min)
-     << PyDate<Date>::create(range.max));
+     << PyDate<Date>::create(range.start)
+     << PyDate<Date>::create(range.stop));
 }
 
 
