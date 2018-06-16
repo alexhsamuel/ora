@@ -191,7 +191,7 @@
 
 ## PyCalendar
 
-- Python wrapper for weekday/holiday calendar
+- str/repr
 - calendar repo dir and get function, like time zones
 
 # Infrastructure / tech debt

@@ -54,11 +54,19 @@ tp_init(
   Tuple* const args,
   Dict* const kw_args)
 {
-  Arg::ParseTuple(args, "");
+  static char const* const arg_names[] = {"range", "dates", nullptr};
+  Object* range_arg;
+  Object* dates_arg;
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "OO", arg_names, &range_arg, &dates_arg);
+  auto const range = parse_range(range_arg);
 
-  // FIXME
-  throw NotImplementedError("Calendar.__init__");
-  // new(self) PyCalendar(std::move(cal));
+  auto dates_iter = dates_arg->GetIter();
+  auto dates = std::vector<Date>();
+  while (auto date_obj = dates_iter->Next())
+    dates.push_back(convert_to_date(date_obj));
+
+  new(self) PyCalendar(Calendar(range, dates));
 }
 
 

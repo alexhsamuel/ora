@@ -6,6 +6,7 @@ import re
 import warnings
 
 from   .ext import *
+from   .util import Range
 
 __version__ = "0.2.4"
 

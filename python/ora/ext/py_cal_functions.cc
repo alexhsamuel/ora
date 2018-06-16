@@ -7,49 +7,6 @@ namespace ora {
 namespace py {
 
 //------------------------------------------------------------------------------
-// Helpers
-
-namespace {
-
-Range<Date>
-parse_range(
-  Object* arg)
-{
-  if (Sequence::Check(arg)) {
-    auto seq = cast<Sequence>(arg);
-    if (seq->Length() == 2) {
-      auto min = convert_to_date(seq->GetItem(0));
-      auto max = convert_to_date(seq->GetItem(1));
-      if (min <= max)
-        return {min, max};
-      else
-        throw ValueError("range max cannot precede min");
-    }
-  }
-
-  throw TypeError("not a date range");
-}
-
-
-}  // anonymous namespace
-
-//------------------------------------------------------------------------------
-
-ref<Object>
-parse_calendar(
-  Module* /* module */,
-  Tuple* const args,
-  Dict* kw_args)
-{
-  static char const* const arg_names[] = {"lines", nullptr};
-  Object* lines;
-  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &lines);
-
-  auto line_iter = LineIter(lines);
-  return PyCalendar::create(ora::parse_calendar(line_iter));
-}
-
-
 
 ref<Object>
 make_const_calendar(
@@ -90,14 +47,30 @@ make_weekday_calendar(
 }
 
 
+ref<Object>
+parse_calendar(
+  Module* /* module */,
+  Tuple* const args,
+  Dict* kw_args)
+{
+  static char const* const arg_names[] = {"lines", nullptr};
+  Object* lines;
+  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &lines);
+
+  auto line_iter = LineIter(lines);
+  return PyCalendar::create(ora::parse_calendar(line_iter));
+}
+
+
 Methods<Module>&
 add_cal_functions(
   Methods<Module>& methods)
 {
+  // FIXME: Docstrings.
   return methods
-    .add<parse_calendar>            ("parse_calendar",          nullptr)
     .add<make_const_calendar>       ("make_const_calendar",     nullptr)
     .add<make_weekday_calendar>     ("make_weekday_calendar",   nullptr)
+    .add<parse_calendar>            ("parse_calendar",          nullptr)
     ;
 }
 

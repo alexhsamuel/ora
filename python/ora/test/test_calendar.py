@@ -2,11 +2,25 @@ from   pathlib import Path
 import pytest
 
 import ora
-from   ora import Jun, Jul
+from   ora import Jan, Feb, Jun, Jul
 
 #-------------------------------------------------------------------------------
 
 WEEKDAYS = {ora.Mon, ora.Tue, ora.Wed, ora.Thu, ora.Fri}
+
+@pytest.mark.parametrize("Date", ora.DATE_TYPES)
+def test_cal(Date):
+    start, stop = 2018/Jan/1, 2018/Feb/1
+    cal = ora.Calendar(
+        (start, stop),
+        (2018/Jan/2, 20180105, "2018-01-13", "2018-01-14")
+    )
+
+    for date in ora.Range(start, stop):
+        assert (date in cal) == (
+            date in {2018/Jan/2, 2018/Jan/5, 2018/Jan/13, 2018/Jan/14}
+        )
+
 
 @pytest.mark.parametrize("Date", ora.DATE_TYPES)
 def test_all_cal(Date):
@@ -98,7 +112,7 @@ def test_weekday_cal_range(Date):
         cal.before(Date(2017, 12, 31))
     with pytest.raises(ValueError):
         cal.after(Date(2019,  1,  1))
-        
+
 
 @pytest.mark.parametrize("Date", ora.DATE_TYPES)
 def test_weekday_cal_shift(Date):

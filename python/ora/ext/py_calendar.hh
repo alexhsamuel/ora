@@ -11,6 +11,28 @@ namespace py {
 
 //------------------------------------------------------------------------------
 
+inline Range<Date>
+parse_range(
+  Object* arg)
+{
+  if (Sequence::Check(arg)) {
+    auto seq = cast<Sequence>(arg);
+    if (seq->Length() == 2) {
+      auto min = convert_to_date(seq->GetItem(0));
+      auto max = convert_to_date(seq->GetItem(1));
+      if (min <= max)
+        return {min, max};
+      else
+        throw ValueError("range max cannot precede min");
+    }
+  }
+
+  throw TypeError("not a date range");
+}
+
+
+//------------------------------------------------------------------------------
+
 class PyCalendar
 : public ExtensionType
 {
