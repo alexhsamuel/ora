@@ -300,5 +300,14 @@ def get_zoneinfo_version():
         return version
 
 
+def load_calendar_file(path):
+    with open(path, "r") as file:
+        return parse_calendar(file)
+
+
+def load_business_calendar(holiday_path, weekdays=(Mon, Tue, Wed, Thu, Fri)):
+    holiday_cal = load_calendar_file(holiday_path)
+    weekday_cal = make_weekday_calendar(holiday_cal.range, weekdays)
+    return weekday_cal & ~holiday_cal
 
 

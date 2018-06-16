@@ -273,12 +273,9 @@ get_range(
 {
   auto const range = self->cal_.range();
   auto start = PyDate<Date>::create(range.min);
-  // FIXME: slice?  Really?
-  return ref<Object>::take(PySlice_New(
-    PyDate<Date>::create(range.min), 
-    PyDate<Date>::create(range.max), 
-    nullptr
-  ));
+  return ref<Tuple>(Tuple::builder
+     << PyDate<Date>::create(range.min)
+     << PyDate<Date>::create(range.max));
 }
 
 
