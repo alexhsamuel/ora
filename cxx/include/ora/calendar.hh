@@ -163,15 +163,15 @@ public:
   template<class DATE> DATE shift(DATE const date, ssize_t const count) const 
     { return date.is_valid() ? DATE(shift(Date(date), count)) : DATE::INVALID; }
 
-  class Interval
+  class Day
   {
   public:
 
-    constexpr Interval(Calendar const& calendar, ssize_t const days) 
+    constexpr Day(Calendar const& calendar, ssize_t const days) 
       : calendar_(calendar), days_(days) {}
 
-    Interval(Interval const&) = default;
-    Interval& operator=(Interval&) = default;
+    Day(Day const&) = default;
+    Day& operator=(Day&) = default;
 
     constexpr Calendar const& get_calendar() const { return calendar_; }
     constexpr ssize_t get_days() const { return days_; }
@@ -184,7 +184,7 @@ public:
   };
 
 
-  Interval DAY() const { return Interval(*this, 1); }
+  Day DAY() const { return Day(*this, 1); }
 
 private:
 
@@ -291,29 +291,29 @@ operator>>=(
 // Interval functions
 
 inline constexpr
-Calendar::Interval 
+Calendar::Day 
 operator-(
-  Calendar::Interval const& interval) 
+  Calendar::Day const& interval) 
 { 
-  return Calendar::Interval(interval.get_calendar(), -interval.get_days()); 
+  return Calendar::Day(interval.get_calendar(), -interval.get_days()); 
 }
 
 
 inline constexpr
-Calendar::Interval 
+Calendar::Day 
 operator*(
-  Calendar::Interval const& interval,
+  Calendar::Day const& interval,
   ssize_t mult) 
 { 
-  return Calendar::Interval(interval.get_calendar(), mult * interval.get_days()); 
+  return Calendar::Day(interval.get_calendar(), mult * interval.get_days()); 
 }
 
 
 inline constexpr
-Calendar::Interval
+Calendar::Day
 operator*(
   ssize_t mult,
-  Calendar::Interval const& interval)
+  Calendar::Day const& interval)
 {
   return interval * mult;
 }
@@ -323,7 +323,7 @@ template<class DATE>
 inline DATE
 operator+(
   DATE date,
-  Calendar::Interval const& interval)
+  Calendar::Day const& interval)
 {
   return interval.get_calendar().shift(date, interval.get_days());
 }
@@ -332,7 +332,7 @@ operator+(
 template<class DATE>
 inline DATE
 operator+(
-  Calendar::Interval const& interval,
+  Calendar::Day const& interval,
   DATE date)
 {
   return date + interval;
@@ -343,7 +343,7 @@ template<class DATE>
 inline DATE
 operator-(
   DATE date,
-  Calendar::Interval const& interval)
+  Calendar::Day const& interval)
 {
   return date + -interval;
 }
