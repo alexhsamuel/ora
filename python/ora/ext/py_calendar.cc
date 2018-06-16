@@ -74,6 +74,36 @@ nb_invert(
 }
 
 
+ref<Object>
+nb_and(
+  PyCalendar* self,
+  Object* arg,
+  bool /* right */)
+{
+  if (PyCalendar::Check(arg)) {
+    auto other = cast<PyCalendar>(arg);
+    return PyCalendar::create(self->cal_ & other->cal_);
+  }
+  else
+    throw TypeError("not a Calendar");
+}
+
+
+ref<Object>
+nb_or(
+  PyCalendar* self,
+  Object* arg,
+  bool /* right */)
+{
+  if (PyCalendar::Check(arg)) {
+    auto other = cast<PyCalendar>(arg);
+    return PyCalendar::create(self->cal_ | other->cal_);
+  }
+  else
+    throw TypeError("not a Calendar");
+}
+
+
 PyNumberMethods
 tp_as_number = {
   (binaryfunc)  nullptr,                        // nb_add
@@ -89,8 +119,8 @@ tp_as_number = {
   (unaryfunc)   wrap<PyCalendar, nb_invert>,    // nb_invert
   (binaryfunc)  nullptr,                        // nb_lshift
   (binaryfunc)  nullptr,                        // nb_rshift
-  (binaryfunc)  nullptr,                        // nb_and
-  (binaryfunc)  nullptr,                        // nb_xor
+  (binaryfunc)  wrap<PyCalendar, nb_and>,       // nb_and
+  (binaryfunc)  wrap<PyCalendar, nb_or>,        // nb_xor
   (binaryfunc)  nullptr,                        // nb_or
   (unaryfunc)   nullptr,                        // nb_int
   (void*)       nullptr,                        // nb_reserved

@@ -55,6 +55,7 @@
 1. Adjust/clean up C++ predefined format strings.
 1. Clean up time zone structs.
 1. macOS old tzinfo format.
+1. Expose calendar contents as numpy arrays.
 
 
 # Projects
@@ -189,6 +190,9 @@
 ## PyTimeDuration
 
 ## PyCalendar
+
+- Python wrapper for weekday/holiday calendar
+- calendar repo dir and get function, like time zones
 
 # Infrastructure / tech debt
 
