@@ -19,7 +19,7 @@ using date::Date;
 
 Calendar
 make_const_calendar(
-  Range<Date> const range,
+  Interval<Date> const range,
   bool const contains)
 {
   auto dates = std::vector<bool>(range.length(), contains);
@@ -29,7 +29,7 @@ make_const_calendar(
 
 Calendar
 make_weekday_calendar(
-  Range<Date> const range,
+  Interval<Date> const range,
   bool const mask[7])
 {
   auto dates = std::vector<bool>();
@@ -51,7 +51,7 @@ make_weekday_calendar(
     - Blank lines ignored.
     - Lines beginning with # ignored as comment lines.
     - All dates specified as ISO dates, 'YYYY-MM-DD'
-    - Range optionally specified with lines 'MIN <date>' and 'MAX <date>'.
+    - Range optionally specified with lines 'START <date>' and 'STOP <date>'.
     - Every other line consists of a holiday date followed by whitespace;
       the rest of the line is ignored.
     - If range min or max is not specified, it is inferred from the dates.
@@ -81,7 +81,7 @@ parse_calendar(
   ora::lib::Iter<std::string>& lines)
 {
   std::vector<Date> dates;
-  auto range = Range<Date>{Date::MISSING, Date::MISSING};
+  auto range = Interval<Date>{Date::MISSING, Date::MISSING};
 
   for (auto line_iter = lines.next(); line_iter; line_iter = lines.next()) {
     auto line = strip(*line_iter);

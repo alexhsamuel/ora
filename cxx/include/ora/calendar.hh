@@ -22,24 +22,24 @@ using ora::date::Date;
 //------------------------------------------------------------------------------
 // Declarations
 
-template<class T> struct Range;
+template<class T> struct Interval;
 class Calendar;
 
 extern Calendar parse_calendar(ora::lib::Iter<std::string>&);
 extern Calendar load_calendar(fs::Filename const& filename);
-extern Calendar make_const_calendar(Range<Date>, bool);
-extern Calendar make_weekday_calendar(Range<Date>, bool const[7]);
+extern Calendar make_const_calendar(Interval<Date>, bool);
+extern Calendar make_weekday_calendar(Interval<Date>, bool const[7]);
 
 //------------------------------------------------------------------------------
 // Helpers
 
 /*
- * Inclusive (min, max) range.
+ * Inclusive (min, max) interval.
  */
 template<class T>
-struct Range
+struct Interval
 {
-  Range(
+  Interval(
     T const start_, 
     T const stop_) 
   : start(start_)
@@ -57,13 +57,13 @@ struct Range
 
 
 template<class T>
-inline Range<T>
+inline Interval<T>
 operator&(
-  Range<T> range0,
-  Range<T> range1)
+  Interval<T> interval0,
+  Interval<T> interval1)
 {
-  auto const start = std::min(range0.start, range1.start);
-  auto const stop = std::max(range0.stop, range1.stop);
+  auto const start = std::min(interval0.start, interval1.start);
+  auto const stop = std::max(interval0.stop, interval1.stop);
   return {start, std::max(start, stop)};
 }
 
@@ -83,7 +83,7 @@ public:
   }
 
   Calendar(
-    Range<Date> range,
+    Interval<Date> range,
     std::vector<Date> const& dates)
   : start_(range.start)
   , dates_(range.stop - range.start, false)
@@ -100,7 +100,7 @@ public:
   Calendar(Calendar&&)                      = default;
   ~Calendar()                               = default;
 
-  Range<Date>
+  Interval<Date>
   range() 
     const
   {

@@ -11,7 +11,7 @@ namespace py {
 
 //------------------------------------------------------------------------------
 
-inline Range<Date>
+inline Interval<Date>
 parse_range(
   Object* arg)
 {
