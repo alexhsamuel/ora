@@ -1050,6 +1050,7 @@ class LineIter
 public:
 
   LineIter(Object* lines) : lines_(lines->GetIter()) {}
+  LineIter(LineIter&&) = default;
 
   virtual ~LineIter() = default;
 

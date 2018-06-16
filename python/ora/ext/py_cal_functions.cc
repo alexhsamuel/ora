@@ -45,7 +45,7 @@ parse_calendar(
   Object* lines;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &lines);
 
-  LineIter line_iter(lines);
+  auto line_iter = LineIter(lines);
   return PyCalendar::create(ora::parse_calendar(line_iter));
 }
 
