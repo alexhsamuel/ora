@@ -1,6 +1,8 @@
+from   pathlib import Path
 import pytest
 
 import ora
+from   ora import Jun, Jul
 
 #-------------------------------------------------------------------------------
 
@@ -105,5 +107,15 @@ def test_weekday_cal_shift(Date):
 
     assert cal.shift(20180222, 20) == Date(2018, 3, 22)
     assert cal.shift(20180513, -9) == Date(2018, 5, 1)
+
+
+def test_load_calendar_file():
+    cal = ora.load_calendar_file(Path(__file__).parent / "june18.cal")
+    assert cal.range == (2018/Jun/1, 2018/Jul/1)
+
+    CAL_DATES = {2018/Jun/1, 2018/Jun/3, 2018/Jun/13, 2018/Jun/25, 2018/Jun/26}
+    for i in range(30):
+        d = 2018/Jun/1 + i
+        assert (d in cal) == (d in CAL_DATES)
 
 
