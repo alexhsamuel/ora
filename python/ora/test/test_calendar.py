@@ -22,6 +22,19 @@ def test_cal(Date):
         )
 
 
+def test_cal_name():
+    range = 2018/Jan/1, 2018/Feb/1
+    dates = (2018/Jan/2, 20180105, "2018-01-13", "2018-01-14")
+    cal = ora.Calendar(range, dates)
+    assert cal.name is None
+    assert str(cal) == "calendar"
+
+    cal = ora.Calendar(range, dates, name="test cal")
+    assert cal.name == "test cal"
+    assert str(cal) == "test cal"
+
+
+
 @pytest.mark.parametrize("Date", ora.DATE_TYPES)
 def test_all_cal(Date):
     date_range = Date(2018, 1, 1), Date(2019, 1, 1)

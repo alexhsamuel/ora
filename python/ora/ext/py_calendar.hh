@@ -60,9 +60,16 @@ public:
     return static_cast<Object*>(object)->IsInstance((PyObject*) &type_);
   }
 
-  PyCalendar(Calendar&& cal) : cal_(std::move(cal)) {}
+  PyCalendar(
+    Calendar&& cal, 
+    Object* const name=nullptr) 
+  : cal_(std::move(cal))
+  , name_(name == nullptr ? ref<Unicode>() : name->Str())
+  {
+  }
 
   Calendar const cal_;
+  ref<Unicode> name_;
 
 };
 

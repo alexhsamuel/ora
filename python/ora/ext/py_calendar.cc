@@ -42,9 +42,21 @@ tp_repr(
 {
   std::string full_name{self->ob_type->tp_name};
   std::string type_name = full_name.substr(full_name.rfind('.') + 1);
-  // FIXME
-  auto const repr = type_name + "(...)";
+  auto repr = type_name + "(";
+  if (self->name_ != nullptr)
+    repr += "name=" + self->name_->Repr()->as_utf8_string();
+  repr += ")";
   return Unicode::from(repr);
+}
+
+
+ref<Unicode>
+tp_str(
+  PyCalendar* const self)
+{
+  return 
+      self->name_ == nullptr ? Unicode::from("calendar")
+    : self->name_.inc();
 }
 
 
@@ -54,11 +66,12 @@ tp_init(
   Tuple* const args,
   Dict* const kw_args)
 {
-  static char const* const arg_names[] = {"range", "dates", nullptr};
+  static char const* const arg_names[] = {"range", "dates", "name", nullptr};
   Object* range_arg;
   Object* dates_arg;
+  Object* name_arg = nullptr;
   Arg::ParseTupleAndKeywords(
-    args, kw_args, "OO", arg_names, &range_arg, &dates_arg);
+    args, kw_args, "OO|$O", arg_names, &range_arg, &dates_arg, &name_arg);
   auto const range = parse_range(range_arg);
 
   auto dates_iter = dates_arg->GetIter();
@@ -66,7 +79,8 @@ tp_init(
   while (auto date_obj = dates_iter->Next())
     dates.push_back(convert_to_date(date_obj));
 
-  new(self) PyCalendar(Calendar(range, dates));
+  std::cerr << "name=" << name_arg->Str()->as_utf8() << "\n";
+  new(self) PyCalendar(Calendar(range, dates), name_arg);
 }
 
 
@@ -286,10 +300,36 @@ get_range(
 }
 
 
+ref<Object>
+get_name(
+  PyCalendar* const self,
+  void* /* closure */)
+{
+  if (self->name_ == nullptr)
+    return none_ref();
+  else
+    return self->name_.inc();
+}
+
+
+void
+set_name(
+  PyCalendar* const self,
+  Object* const value,
+  void* /* closure */)
+{
+  if (value == None)
+    self->name_.clear();
+  else
+    self->name_ = value->Str();
+}
+
+
 GetSets<PyCalendar>
 tp_getsets_ 
   = GetSets<PyCalendar>()
      .template add_get<get_range>               ("range")
+     .template add_getset<get_name, set_name>   ("name")
  ;
 
 
@@ -316,7 +356,7 @@ PyCalendar::build_type()
     (PyMappingMethods*)   nullptr,                        // tp_as_mapping
     (hashfunc)            nullptr,                        // tp_hash
     (ternaryfunc)         nullptr,                        // tp_call
-    (reprfunc)            nullptr,                        // tp_str
+    (reprfunc)            wrap<PyCalendar, tp_str>,       // tp_str
     (getattrofunc)        nullptr,                        // tp_getattro
     (setattrofunc)        nullptr,                        // tp_setattro
     (PyBufferProcs*)      nullptr,                        // tp_as_buffer

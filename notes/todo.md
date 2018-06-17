@@ -191,8 +191,10 @@
 
 ## PyCalendar
 
-- str/repr
+- unit tests for ~, &, |
 - calendar repo dir and get function, like time zones
+- docstrings
+
 
 # Infrastructure / tech debt
 

@@ -301,14 +301,24 @@ def get_zoneinfo_version():
         return version
 
 
-def load_calendar_file(path):
+def load_calendar_file(path, *, name=None):
+    path = Path(path)
     with open(path, "r") as file:
-        return parse_calendar(file)
+        cal = parse_calendar(file)
+    cal.name = path.stem if name is None else name
+    return cal
 
 
-def load_business_calendar(holiday_path, weekdays=(Mon, Tue, Wed, Thu, Fri)):
+def load_business_calendar(
+        holiday_path, weekdays=(Mon, Tue, Wed, Thu, Fri), *, name=None):
     holiday_cal = load_calendar_file(holiday_path)
     weekday_cal = make_weekday_calendar(holiday_cal.range, weekdays)
-    return weekday_cal & ~holiday_cal
+    cal = weekday_cal & ~holiday_cal
+    cal.name = (
+        ",".join( str(w) for w in weekdays ) + " except " + holiday_cal.name
+        if name is None
+        else name
+    )
+    return cal
 
 
