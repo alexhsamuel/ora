@@ -231,7 +231,7 @@ docstrings: 	    	$(PY_DOCSTR_CC) $(PY_DOCSTR_HH)
 
 .PHONY: test-python
 test-python: 		$(PY_EXTMOD)
-	$(PYTEST) python
+	env PYTHONPATH="$(PY_DIR):$(PYTHONPATH)" $(PYTEST) python -v
 
 # Use this target as a dependency to force another target to be rebuilt.
 .PHONY: force
