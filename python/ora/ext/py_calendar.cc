@@ -106,7 +106,22 @@ nb_and(
     return PyCalendar::create(self->cal_ & other->cal_);
   }
   else
-    throw TypeError("not a Calendar");
+    return not_implemented_ref();
+}
+
+
+ref<Object>
+nb_xor(
+  PyCalendar* self,
+  Object* arg,
+  bool /* right */)
+{
+  if (PyCalendar::Check(arg)) {
+    auto other = cast<PyCalendar>(arg);
+    return PyCalendar::create(self->cal_ ^ other->cal_);
+  }
+  else
+    return not_implemented_ref();
 }
 
 
@@ -121,7 +136,7 @@ nb_or(
     return PyCalendar::create(self->cal_ | other->cal_);
   }
   else
-    throw TypeError("not a Calendar");
+    return not_implemented_ref();
 }
 
 
@@ -141,8 +156,8 @@ tp_as_number = {
   (binaryfunc)  nullptr,                        // nb_lshift
   (binaryfunc)  nullptr,                        // nb_rshift
   (binaryfunc)  wrap<PyCalendar, nb_and>,       // nb_and
-  (binaryfunc)  wrap<PyCalendar, nb_or>,        // nb_xor
-  (binaryfunc)  nullptr,                        // nb_or
+  (binaryfunc)  wrap<PyCalendar, nb_xor>,       // nb_xor
+  (binaryfunc)  wrap<PyCalendar, nb_or>,        // nb_or
   (unaryfunc)   nullptr,                        // nb_int
   (void*)       nullptr,                        // nb_reserved
   (unaryfunc)   nullptr,                        // nb_float

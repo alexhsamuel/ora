@@ -166,3 +166,28 @@ def test_load_business_calendar():
     assert 2018/Jun/30 not in cal  # Sat
 
 
+def test_ops():
+    cal0 = ora.Calendar(
+        (20180101, 20180201),
+        [20180102, 20180105, 20180107, 20180125, 20180127]
+    )
+    cal1 = ora.Calendar(
+        cal0.range,
+        (20180102, 20180103, 20180108, 20180116, 20180123, 20180125, 20180128)
+    )
+
+    not0    = ~cal0
+    not1    = ~cal1
+    cal_or  = cal0 | cal1
+    cal_xor = cal0 ^ cal1
+    cal_and = cal0 & cal1
+
+    for date in ora.Range(*cal0.range):
+        assert (date in cal0) == (date not in not0)
+        assert (date in cal1) == (date not in not1)
+        assert (date in cal0 or date in cal1) == (date in cal_or)
+        assert ((date in cal0) ^ (date in cal1)) == (date in cal_xor)
+        assert (date in cal0 and date in cal1) == (date in cal_and)
+
+
+

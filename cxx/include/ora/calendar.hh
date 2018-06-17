@@ -193,6 +193,7 @@ private:
   friend Calendar operator!(Calendar const&);
   friend Calendar operator&(Calendar const&, Calendar const&);
   friend Calendar operator|(Calendar const&, Calendar const&);
+  friend Calendar operator^(Calendar const&, Calendar const&);
 
   Date start_;
   std::vector<bool> dates_;
@@ -241,6 +242,24 @@ operator|(
   auto dates = std::vector<bool>(length);
   for (auto i = 0; i < length; ++i)
     dates[i] = cal0.dates_[off0 + i] || cal1.dates_[off1 + i];
+
+  return {range.start, std::move(dates)};
+}
+
+
+inline Calendar
+operator^(
+  Calendar const& cal0,
+  Calendar const& cal1)
+{
+  auto const range  = cal0.range() & cal1.range();
+  auto const length = range.length();
+  auto const off0   = range.start - cal0.start_;
+  auto const off1   = range.start - cal1.start_;
+
+  auto dates = std::vector<bool>(length);
+  for (auto i = 0; i < length; ++i)
+    dates[i] = cal0.dates_[off0 + i] ^ cal1.dates_[off1 + i];
 
   return {range.start, std::move(dates)};
 }
