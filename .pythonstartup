@@ -48,3 +48,5 @@ else:
         Date.INVALID,
     ], dtype=Date.dtype)
 
+cal = ora.load_business_calendar("cxx/test/holidays.cal")
+
