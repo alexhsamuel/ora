@@ -7,6 +7,23 @@ namespace ora {
 namespace py {
 
 //------------------------------------------------------------------------------
+// Docstrings
+//------------------------------------------------------------------------------
+
+namespace docstring {
+
+using doc_t = char const* const;
+
+namespace pycalendar {
+
+#include "py_calendar.docstrings.hh.inc"
+#include "py_calendar.docstrings.cc.inc"
+
+}  // namespace docstring
+}  // namespace pydate
+
+
+//------------------------------------------------------------------------------
 
 Type
 PyCalendar::type_;
@@ -291,10 +308,10 @@ method_shift(
 Methods<PyCalendar>
 tp_methods_
   = Methods<PyCalendar>()
-    .template add<method_after>                     ("after")
-    .template add<method_before>                    ("before")
+    .template add<method_after>                     ("after",       docstring::pycalendar::after)
+    .template add<method_before>                    ("before",      docstring::pycalendar::before)
     .template add<method_contains>                  ("contains")
-    .template add<method_shift>                     ("shift")
+    .template add<method_shift>                     ("shift",       docstring::pycalendar::shift)
   ;
 
 
@@ -376,7 +393,7 @@ PyCalendar::build_type()
     (PyBufferProcs*)      nullptr,                        // tp_as_buffer
     (unsigned long)       Py_TPFLAGS_DEFAULT
                           | Py_TPFLAGS_BASETYPE,          // tp_flags
-    (char const*)         nullptr,                        // tp_doc
+    (char const*)         docstring::pycalendar::type,    // tp_doc
     (traverseproc)        nullptr,                        // tp_traverse
     (inquiry)             nullptr,                        // tp_clear
     (richcmpfunc)         nullptr,                        // tp_richcompare
