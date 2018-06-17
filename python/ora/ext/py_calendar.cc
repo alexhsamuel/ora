@@ -79,7 +79,6 @@ tp_init(
   while (auto date_obj = dates_iter->Next())
     dates.push_back(convert_to_date(date_obj));
 
-  std::cerr << "name=" << name_arg->Str()->as_utf8() << "\n";
   new(self) PyCalendar(Calendar(range, dates), name_arg);
 }
 
