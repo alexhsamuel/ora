@@ -112,7 +112,9 @@ public:
     Date date)
     const
   {
-    if (!date.is_valid() || date < start_ || date - start_ >= dates_.size())
+    if (   !date.is_valid() 
+        || date < start_ 
+        || (size_t) (date - start_) >= dates_.size())
       throw CalendarRangeError();
     else
       return dates_[date - start_];
