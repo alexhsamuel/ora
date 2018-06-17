@@ -1555,7 +1555,7 @@ wrap(
   PyObject* self,
   PyObject* other)
 {
-  bool result;
+  bool result = false;
   try {
     try {
       result = FUNCTION(static_cast<CLASS*>(self), static_cast<Object*>(other));
