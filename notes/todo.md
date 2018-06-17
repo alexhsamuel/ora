@@ -191,8 +191,10 @@
 
 ## PyCalendar
 
-- calendar repo dir and get function, like time zones
 - docstrings
+- documentation
+- calendar repo dir and get function, like time zones
+- an actual repository of calendar data?
 - ufunc versions of calendar functions
 
 
