@@ -1,5 +1,5 @@
 #include "py.hh"
-#include "PyLocal.hh"
+#include "py_local.hh"
 
 using std::string;
 using namespace std::string_literals;

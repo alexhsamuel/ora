@@ -1,5 +1,7 @@
 #pragma once
 
+#include "math.hh"
+
 namespace ora {
 namespace lib {
 
@@ -69,6 +71,16 @@ copy<8>(
 }
 
 
+template<>
+inline void
+copy<16>(
+  void const* const src,
+  void* const dst)
+{
+  *(uint128_t*) dst = *(uint128_t const*) src;
+}
+
+
 template<unsigned char SIZE>
 void
 copy_swapped(
@@ -113,6 +125,19 @@ copy_swapped<8>(
   void* const dst)
 {
   *(uint64_t*) dst = __builtin_bswap64(*(uint64_t const*) src);
+}
+
+
+template<>
+inline void
+copy_swapped<16>(
+  void const* const src,
+  void* const dst)
+{
+  uint64_t const* const s = (uint64_t*) src;
+  uint64_t* const d = (uint64_t*) dst;
+  *(d + 1) = __builtin_bswap64(*s);
+  *d = __builtin_bswap64(*(s + 1));
 }
 
 

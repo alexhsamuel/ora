@@ -2,9 +2,9 @@
 #include <string>
 
 #include "py.hh"
-#include "PyLocal.hh"
-#include "PyTime.hh"
-#include "PyTimeZone.hh"
+#include "py_local.hh"
+#include "py_time.hh"
+#include "py_time_zone.hh"
 
 namespace ora {
 namespace py {
@@ -170,6 +170,7 @@ void
 tp_dealloc(
   PyTimeZone* const self)
 {
+  // FIXME: dtor?
   self->ob_type->tp_free(self);
 }
 

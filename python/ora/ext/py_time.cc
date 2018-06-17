@@ -2,7 +2,7 @@
 
 #include "py.hh"
 
-#include "PyTime.hh"
+#include "py_time.hh"
 
 namespace ora {
 namespace py {
@@ -58,7 +58,7 @@ template class PyTime<ora::time::Time128>;
 namespace docstring {
 namespace pytime {
 
-#include "PyTime.docstrings.cc.inc"
+#include "py_time.docstrings.cc.inc"
 
 }  // namespace daytime
 }  // namespace docstring

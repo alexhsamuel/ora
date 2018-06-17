@@ -1,6 +1,9 @@
 #pragma once
 
+#include <cfenv>
+
 #include "ora/lib/math.hh"
+#include "ora/lib/num.hh"
 #include "ora/time_math.hh"
 #include "ora/time_type.hh"
 
@@ -32,6 +35,26 @@ from_timespec(
 }
 
 
+template<class TIME=Time>
+inline bool
+is_valid(
+  TIME const time)
+  noexcept
+{
+  return time.is_valid();
+}
+
+
+template<class TIME=Time>
+inline typename TIME::Offset
+get_offset(
+  TIME const time)
+  noexcept
+{
+  return time.offset_;
+}
+
+
 template<class TIME>
 inline EpochTime
 get_epoch_time(
@@ -54,7 +77,7 @@ equal(
   TIME const time1)
   noexcept
 {
-  return time0.offset_ == time1.offset_;
+  return nex::get_offset(time0) == nex::get_offset(time1);
 }
 
 
@@ -90,6 +113,117 @@ compare(
       nex::equal(time0, time1) ? 0
     : nex::before(time0, time1) ? -1
     : 1;
+}
+
+
+//------------------------------------------------------------------------------
+// Arithmetic
+//------------------------------------------------------------------------------
+
+namespace {
+
+template<class TIME>
+inline TIME
+seconds_shift(
+  TIME const time,
+  double const seconds,
+  bool const forward)
+{
+  using Offset = typename TIME::Offset;
+
+  if (time.is_valid() && !std::isnan(seconds) && !std::isinf(seconds)) {
+    ora::num::Checked c;
+    auto const offset = c.convert<Offset>(round(seconds * TIME::DENOMINATOR));
+    if (c)
+      return from_offset<TIME>(
+        forward ? (time.get_offset() + offset) : (time.get_offset() - offset));
+  }
+  return TIME::INVALID;
+}
+
+
+template<class TIME>
+inline TIME
+seconds_shift(
+  TIME const time,
+  int64_t const seconds,
+  bool const forward)
+{
+  using Offset = typename TIME::Offset;
+
+  if (time.is_valid()) {
+    auto const offset = rescale_int<Offset, 1, TIME::DENOMINATOR>(seconds);
+    return from_offset<TIME>(
+      forward ? (time.get_offset() + offset) : (time.get_offset() - offset));
+  }
+  else
+    return TIME::INVALID;
+}
+
+
+}  // anonymous namespace
+
+template<class TIME>
+inline TIME
+seconds_after(
+  TIME const time,
+  double const seconds)
+  noexcept
+{
+  return seconds_shift<TIME>(time, std::abs(seconds), seconds > 0);
+}
+
+
+template<class TIME>
+inline TIME
+seconds_after(
+  TIME const time,
+  int64_t const seconds)
+  noexcept
+{
+  return seconds_shift<TIME>(time, std::abs(seconds), seconds > 0);
+}
+
+
+template<class TIME>
+inline TIME
+seconds_before(
+  TIME const time,
+  double const seconds)
+  noexcept
+{
+  return seconds_shift<TIME>(time, std::abs(seconds), seconds < 0);
+}
+
+
+template<class TIME>
+inline TIME
+seconds_before(
+  TIME const time,
+  int64_t const seconds)
+  noexcept
+{
+  return seconds_shift<TIME>(time, std::abs(seconds), seconds < 0);
+}
+
+
+template<class TIME>
+inline double
+seconds_between(
+  TIME const time0,
+  TIME const time1)
+  noexcept
+{
+  if (! (time0.is_valid() && time1.is_valid()))
+    return std::numeric_limits<double>::quiet_NaN();
+
+  auto const off0 = time0.get_offset();
+  auto const off1 = time1.get_offset();
+  // Needs to work for unsigned offsets.
+  return
+      off1 >= off0
+    ?   (off1 - off0) * TIME::RESOLUTION
+    : -((off0 - off1) * TIME::RESOLUTION);
 }
 
 

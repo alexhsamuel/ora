@@ -2,14 +2,30 @@
 
 #include <Python.h>
 
+#include "ora/format.hh"
+#include "py_date.hh"
 #include "py.hh"
-
-#include "PyDate.hh"
 
 namespace ora {
 namespace py {
 
 //------------------------------------------------------------------------------
+
+Weekday
+convert_to_weekday(
+  Object* obj)
+{
+  static auto weekday_type = import("ora", "Weekday");
+  ref<Tuple> args = Tuple::builder << ref<Object>::of(obj);
+  // FIXME
+  auto weekday = ref<Object>::take(PyObject_CallObject(weekday_type, args));
+  if (weekday != nullptr)
+     return weekday->long_value();
+
+  auto str = weekday->Str()->as_utf8_string();
+  return parse_weekday_name(str);
+}
+
 
 StructSequenceType*
 get_ordinal_date_type()
@@ -53,33 +69,6 @@ get_week_date_type()
     static PyStructSequence_Desc desc{
       (char*) "WeekDate",                                   // name
       nullptr,                                              // doc
-      fields,                                               // fields
-      3                                                     // n_in_sequence
-    };
-
-    StructSequenceType::InitType(&type, &desc);
-  }
-
-  return &type;
-}
-
-
-StructSequenceType*
-get_ymd_date_type()
-{
-  static StructSequenceType type;
-
-  if (type.tp_name == nullptr) {
-    // Lazy one-time initialization.
-    static PyStructSequence_Field fields[] = {
-      {(char*) "year"       , nullptr},
-      {(char*) "month"      , nullptr},
-      {(char*) "day"        , nullptr},
-      {nullptr, nullptr}
-    };
-    static PyStructSequence_Desc desc{
-      (char*) "YmdDate",                                    // name
-      (char*) docstring::ymddate::type,                     // doc
       fields,                                               // fields
       3                                                     // n_in_sequence
     };
@@ -183,14 +172,9 @@ template class PyDate<ora::date::Date16>;
 namespace docstring {
 namespace pydate {
 
-#include "PyDate.docstrings.cc.inc"
+#include "py_date.docstrings.cc.inc"
 
 }  // namespace pydate
-namespace ymddate {
-
-#include "YmdDate.docstrings.cc.inc"
-
-}  // namespace ymddate
 }  // namespace docstring
 
 //------------------------------------------------------------------------------

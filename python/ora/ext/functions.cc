@@ -4,8 +4,8 @@
 
 #include "ora.hh"
 #include "py.hh"
-#include "PyDate.hh"
-#include "PyTime.hh"
+#include "py_date.hh"
+#include "py_time.hh"
 #include "util.hh"
 
 using namespace std::string_literals;

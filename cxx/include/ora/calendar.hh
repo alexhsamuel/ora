@@ -2,51 +2,70 @@
 
 #include <array>
 #include <iostream>
+#include <iterator>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "ora/lib/filename.hh"
 #include "ora/date_functions.hh"
 #include "ora/date_type.hh"
+#include "ora/date_nex.hh"
+#include "ora/lib/file.hh"
+#include "ora/lib/filename.hh"
+#include "ora/lib/string.hh"
 
 namespace ora {
 
 using namespace ora::lib;
+using ora::date::Date;
 
 //------------------------------------------------------------------------------
 // Declarations
 
+template<class T> struct Interval;
 class Calendar;
-class HolidayCalendar;
 
-extern std::unique_ptr<HolidayCalendar> parse_holiday_calendar(std::istream& in);
-extern std::unique_ptr<HolidayCalendar> load_holiday_calendar(fs::Filename const& filename);
+extern Calendar parse_calendar(ora::lib::Iter<std::string>&);
+extern Calendar load_calendar(fs::Filename const& filename);
+extern Calendar make_const_calendar(Interval<Date>, bool);
+extern Calendar make_weekday_calendar(Interval<Date>, bool const[7]);
 
 //------------------------------------------------------------------------------
+// Helpers
 
-class CalendarInterval
+/*
+ * Inclusive (min, max) interval.
+ */
+template<class T>
+struct Interval
 {
-public:
-
-  constexpr 
-  CalendarInterval(
-    Calendar const& calendar, 
-    ssize_t days) 
-    : calendar_(calendar), 
-      days_(days) 
-  {
+  Interval(
+    T const start_, 
+    T const stop_) 
+  : start(start_)
+  , stop(stop_) 
+  { 
   }
 
-  constexpr Calendar const& get_calendar() const { return calendar_; }
-  constexpr ssize_t get_days() const { return days_; }
+  int length() const { return stop - start; }
+  bool contains(T const val) const { return start <= val && val < stop; }
 
-private:
-
-  Calendar const& calendar_;
-  ssize_t days_;
+  T start;
+  T stop;
 
 };
+
+
+template<class T>
+inline Interval<T>
+operator&(
+  Interval<T> interval0,
+  Interval<T> interval1)
+{
+  auto const start = std::min(interval0.start, interval1.start);
+  auto const stop = std::max(interval0.stop, interval1.stop);
+  return {start, std::max(start, stop)};
+}
 
 
 //------------------------------------------------------------------------------
@@ -55,66 +74,178 @@ class Calendar
 {
 public:
 
-  Calendar() : DAY(*this, 1) {}
-  Calendar(Calendar const&) = delete;
-  Calendar(Calendar&&) = delete;
-  Calendar& operator=(Calendar const&) = delete;
-  Calendar& operator=(Calendar&&) = delete;
-  virtual ~Calendar() {}
+  Calendar(
+    date::Date const start,
+    std::vector<bool>&& dates)
+  : start_(start)
+  , dates_(std::move(dates))
+  {
+  }
 
-  virtual inline date::Date 
+  Calendar(
+    Interval<Date> range,
+    std::vector<Date> const& dates)
+  : start_(range.start)
+  , dates_(range.stop - range.start, false)
+  {
+    assert(range.start.is_valid() && range.stop.is_valid());
+    for (auto date : dates) {
+      if (!range.contains(date))
+        throw ValueError("date out of calendar range");
+      dates_[date - start_] = true;
+    }
+  }
+
+  Calendar(Calendar const&)                 = default;
+  Calendar(Calendar&&)                      = default;
+  ~Calendar()                               = default;
+
+  Interval<Date>
+  range() 
+    const
+  {
+    return {start_, start_ + dates_.size()};
+  }
+
+  bool
+  contains(
+    Date date)
+    const
+  {
+    if (!date.is_valid() || date < start_ || date - start_ >= dates_.size())
+      throw CalendarRangeError();
+    else
+      return dates_[date - start_];
+  }
+
+  Date 
+  before(
+    Date date)
+    const
+  {
+    while (!contains(date))
+      date--;
+    return date;
+  }
+
+  Date 
+  after(
+    Date date)
+    const
+  {
+    while (!contains(date))
+      date++;
+    return date;
+  }
+
+  date::Date 
   shift(
     date::Date date, 
     ssize_t shift) 
     const
   {
-    // FIXME: What if 'date' is not in the calendar?
-    // FIXME: Avoid virtual calls to contains()?
-
     while (shift > 0 && date.is_valid())
-      if (contains_(++date))
+      if (contains(++date))
         shift--;
     while (shift < 0 && date.is_valid())
-      if (contains_(--date))
+      if (contains(--date))
         shift++;
     return date;
   }
 
-  virtual inline date::Date 
-  nearest(
-    date::Date date, 
-    bool forward=true) 
-    const
+  // FIXME: Check range.
+  template<class DATE> bool contains(DATE date) const 
+    { return contains(Date(date)); }
+  template<class DATE> DATE before(DATE const date) const 
+    { return date.is_valid() ? DATE(before(Date(date))) : DATE::INVALID; }
+  template<class DATE> DATE after(DATE const date) const
+    { return date.is_valid() ? DATE(after(Date(date))) : DATE::INVALID; }
+  template<class DATE> DATE shift(DATE const date, ssize_t const count) const 
+    { return date.is_valid() ? DATE(shift(Date(date), count)) : DATE::INVALID; }
+
+  class Day
   {
-    while (date.is_valid() && !contains_(date)) 
-      date += forward ? 1 : -1;
-    return date;
-  }
+  public:
 
-  template<class DATE> bool contains(DATE date) const { return contains_(date::Date(date)); }
-  template<class DATE> DATE shift(DATE date, ssize_t shift) const { return DATE(this->shift(date::Date(date), shift)); }
-  template<class DATE> DATE nearest(DATE date, bool forward=true) const { return DATE(nearest(date::Date(date), forward)); }
+    constexpr Day(Calendar const& calendar, ssize_t const days) 
+      : calendar_(calendar), days_(days) {}
 
-  template<class DATE> bool operator[](DATE date) const { return contains<DATE>(date); }
-  
-  CalendarInterval const DAY;
+    Day(Day const&) = default;
+    Day& operator=(Day&) = default;
 
-protected:
+    constexpr Calendar const& get_calendar() const { return calendar_; }
+    constexpr ssize_t get_days() const { return days_; }
 
-  virtual bool contains_(date::Date date) const = 0;
+  private:
+
+    Calendar const& calendar_;
+    ssize_t days_;
+
+  };
+
+
+  Day DAY() const { return Day(*this, 1); }
+
+private:
+
+  friend Calendar operator!(Calendar const&);
+  friend Calendar operator&(Calendar const&, Calendar const&);
+  friend Calendar operator|(Calendar const&, Calendar const&);
+
+  Date start_;
+  std::vector<bool> dates_;
 
 };
 
 
-template<>
-inline bool 
-Calendar::contains<date::Date>(
-  date::Date date) 
-  const 
-{ 
-  return contains_(date); 
+inline Calendar
+operator!(
+  Calendar const& cal)
+{
+  auto dates = cal.dates_;
+  dates.flip();
+  return {cal.start_, std::move(dates)};
 }
 
+
+inline Calendar
+operator&(
+  Calendar const& cal0,
+  Calendar const& cal1)
+{
+  auto const range  = cal0.range() & cal1.range();
+  auto const length = range.length();
+  auto const off0   = range.start - cal0.start_;
+  auto const off1   = range.start - cal1.start_;
+
+  auto dates = std::vector<bool>(length);
+  for (auto i = 0; i < length; ++i)
+    dates[i] = cal0.dates_[off0 + i] && cal1.dates_[off1 + i];
+
+  return {range.start, std::move(dates)};
+}
+
+
+inline Calendar
+operator|(
+  Calendar const& cal0,
+  Calendar const& cal1)
+{
+  auto const range  = cal0.range() & cal1.range();
+  auto const length = range.length();
+  auto const off0   = range.start - cal0.start_;
+  auto const off1   = range.start - cal1.start_;
+
+  auto dates = std::vector<bool>(length);
+  for (auto i = 0; i < length; ++i)
+    dates[i] = cal0.dates_[off0 + i] || cal1.dates_[off1 + i];
+
+  return {range.start, std::move(dates)};
+}
+
+
+//------------------------------------------------------------------------------
+// Functions.
 
 template<class DATE>
 inline DATE
@@ -122,7 +253,7 @@ operator<<(
   DATE date,
   Calendar const& cal)
 {
-  return cal.nearest(date, false);
+  return cal.before(date - 1);
 }
 
 
@@ -132,7 +263,7 @@ operator>>(
   DATE date,
   Calendar const& cal)
 {
-  return cal.nearest(date, true);
+  return cal.after(date + 1);
 }
 
 
@@ -157,279 +288,32 @@ operator>>=(
 
 
 //------------------------------------------------------------------------------
+// Interval functions
 
-class AllCalendar 
-  final
-  : public Calendar
-{
-public:
-
-  AllCalendar() {}
-  virtual ~AllCalendar() {}
-
-  virtual date::Date shift(date::Date date, ssize_t days) const { return date + days; }
-
-protected:
-
-  virtual bool contains_(date::Date date) const { return date.is_valid(); }
-
-};
-
-
-//------------------------------------------------------------------------------
-
-class WeekdaysCalendar
-  : public Calendar
-{
-public:
-
-  using Mask = std::array<bool, 7>;
-
-  WeekdaysCalendar(
-    std::vector<Weekday> weekdays)
-  {
-    mask_.fill(false);
-    for (auto const weekday : weekdays)
-      mask_[weekday] = true;
-  }
-
-  virtual ~WeekdaysCalendar() {}
-
-  // FIXME: Optimize shift()?
-
-protected:
-
-  virtual inline bool 
-  contains_(
-    date::Date date) 
-    const
-  {
-    return mask_[get_weekday(date)];
-  }
-
-private:
-
-  Mask mask_;
-
-};
-
-
-//------------------------------------------------------------------------------
-
-class HolidayCalendar
-  final 
-  : public Calendar
-{
-public:
-
-  HolidayCalendar(
-    date::Date const min, 
-    date::Date const max)
-    : min_(min),
-      holidays_(max - min, false)
-  {
-    assert(min.is_valid() && max.is_valid());
-  }
-
-  ~HolidayCalendar() {}
-
-  date::Date get_min() const { return min_; }
-  date::Date get_max() const { return min_ + holidays_.size(); }
-
-  date::Date 
-  shift(
-    date::Date date, 
-    ssize_t shift) 
-    const
-  {
-    while (shift > 0 && date.is_valid())
-      if (contains_(++date))
-        shift--;
-    while (shift < 0 && date.is_valid())
-      if (contains_(--date))
-        shift++;
-    return date;
-  }
-
-  // Mutators
-
-  inline void
-  set(
-    date::Date const date,
-    bool const contained)
-  {
-    ssize_t const index = date - min_;
-    if (!(0 <= index && index < (ssize_t) holidays_.size()))
-      throw ValueError("date out of calendar range");
-    holidays_[index] = contained;
-  }
-
-  void add(date::Date date)       { set(date, true); }
-  void remove(date::Date date)    { set(date, false); }
-
-protected:
-
-  inline bool
-  contains_(
-    date::Date date)
-    const
-  {
-    return holidays_[date - min_];
-  }
-
-
-private:
-
-  date::Date min_;
-  std::vector<bool> holidays_;
-
-};
-
-
-//------------------------------------------------------------------------------
-
-class NegationCalendar
-  : public Calendar
-{
-public:
-  
-  NegationCalendar(
-    std::unique_ptr<Calendar>&& calendar)
-  : calendar_(std::move(calendar))
-  {
-  }
-  
-  NegationCalendar& operator=(NegationCalendar const&) = delete;
-  NegationCalendar& operator=(NegationCalendar&&) = delete;
-  virtual ~NegationCalendar() = default;
-
-protected:
-
-  virtual inline bool
-  contains_(
-    date::Date const date)
-    const
-  {
-    return !calendar_->contains(date);
-  }
-
-private:
-
-  std::unique_ptr<Calendar> const calendar_;
-
-};
-
-
-class UnionCalendar
-  : public Calendar
-{
-public:
-
-  UnionCalendar(
-    std::unique_ptr<Calendar>&& calendar0,
-    std::unique_ptr<Calendar>&& calendar1)
-  : calendar0_(std::move(calendar0)),
-    calendar1_(std::move(calendar1))
-  {
-  }
-
-  UnionCalendar& operator=(UnionCalendar const&) = delete;
-  UnionCalendar& operator=(UnionCalendar&&) = delete;
-  virtual ~UnionCalendar() = default;
-
-protected:
-
-  virtual inline bool
-  contains_(
-    date::Date const date)
-    const
-  {
-    return calendar0_->contains(date) && calendar1_->contains(date);
-  }
-
-private:
-
-  std::unique_ptr<Calendar> calendar0_;
-  std::unique_ptr<Calendar> calendar1_;
-
-};
-
-
-/*
- * Creates a working calendar, including workdays but with holidays removed.
- *
- * Returns a new calendar which contains all weekdays specified by `weekdays`
- * but with all days in `holidays` removed.
- */
-inline std::unique_ptr<Calendar>
-make_workday_calendar(
-  std::vector<Weekday> weekdays,
-  std::unique_ptr<Calendar>&& holidays)
-{
-  return std::make_unique<UnionCalendar>(
-    std::make_unique<WeekdaysCalendar>(weekdays),
-    std::make_unique<NegationCalendar>(std::move(holidays)));
-}
-
-
-//------------------------------------------------------------------------------
-// Functions.
-
-/*
-  Holiday calendar file format:
-    - Line-oriented text, delimited by NL.
-    - Leading and trailing whitespace on each line stripped.
-    - Blank lines ignored.
-    - Lines beginning with # ignored as comment lines.
-    - All dates specified as ISO dates, 'YYYY-MM-DD'
-    - Range optionally specified with lines 'MIN <date>' and 'MAX <date>'.
-    - Every other line consists of a holiday date followed by whitespace;
-      the rest of the line is ignored.
-    - If range min or max is not specified, it is inferred from the dates.
-
-  Example:
-
-      # U.S. holidays for the year 2010.
-
-      MIN 2010-01-01
-      MAX 2011-01-01
-
-      2010-01-01 New Year's Day
-      2010-01-18 Birthday of Martin Luther King, Jr.
-      2010-02-15 Washington's Birthday
-      2010-05-31 Memorial Day
-      2010-07-05 Independence Day
-      2010-09-06 Labor Day
-      2010-10-11 Columbus Day
-      2010-11-11 Veterans Day
-      2010-11-25 Thanksgiving Day
-      2010-12-24 Christmas Day
-      2010-12-31 New Year's Day
-*/
-
-//------------------------------------------------------------------------------
-
-inline constexpr CalendarInterval 
+inline constexpr
+Calendar::Day 
 operator-(
-  CalendarInterval const& interval) 
+  Calendar::Day const& interval) 
 { 
-  return CalendarInterval(interval.get_calendar(), -interval.get_days()); 
+  return Calendar::Day(interval.get_calendar(), -interval.get_days()); 
 }
 
 
-inline constexpr CalendarInterval 
+inline constexpr
+Calendar::Day 
 operator*(
-  CalendarInterval const& interval,
+  Calendar::Day const& interval,
   ssize_t mult) 
 { 
-  return CalendarInterval(interval.get_calendar(), mult * interval.get_days()); 
+  return Calendar::Day(interval.get_calendar(), mult * interval.get_days()); 
 }
 
 
-inline constexpr CalendarInterval
+inline constexpr
+Calendar::Day
 operator*(
   ssize_t mult,
-  CalendarInterval const& interval)
+  Calendar::Day const& interval)
 {
   return interval * mult;
 }
@@ -439,7 +323,7 @@ template<class DATE>
 inline DATE
 operator+(
   DATE date,
-  CalendarInterval const& interval)
+  Calendar::Day const& interval)
 {
   return interval.get_calendar().shift(date, interval.get_days());
 }
@@ -448,7 +332,7 @@ operator+(
 template<class DATE>
 inline DATE
 operator+(
-  CalendarInterval const& interval,
+  Calendar::Day const& interval,
   DATE date)
 {
   return date + interval;
@@ -459,7 +343,7 @@ template<class DATE>
 inline DATE
 operator-(
   DATE date,
-  CalendarInterval const& interval)
+  Calendar::Day const& interval)
 {
   return date + -interval;
 }

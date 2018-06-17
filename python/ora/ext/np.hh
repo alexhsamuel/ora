@@ -1,7 +1,10 @@
 #pragma once
 
-#define PY_ARRAY_UNIQUE_SYMBOL ora_numpy
+#define PY_ARRAY_UNIQUE_SYMBOL ora_PyArray_API
+#define PY_UFUNC_UNIQUE_SYMBOL ora_PyUFunc_API
+#define NO_IMPORT
 #define NO_IMPORT_ARRAY
+#define NO_IMPORT_UFUNC
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 
 #include <Python.h>
@@ -21,6 +24,28 @@ using namespace ora::lib;
 
 //------------------------------------------------------------------------------
 
+inline void
+check_succeed(
+  npy_intp status)
+{
+  if (status != NPY_SUCCEED)
+    throw Exception();
+}
+
+
+//------------------------------------------------------------------------------
+
+class Descr
+: public PyArray_Descr
+{
+public:
+
+  static Descr* from(int const typenum)
+    { return (Descr*) PyArray_DescrFromType(typenum); }
+  
+};
+
+
 class Array
 : public Object
 {
@@ -32,11 +57,23 @@ public:
     { return take_not_null<Array>(PyArray_FromAny(obj, dtype, dims_min, dims_max, requirements, context)); }
   static ref<Array> FromAny(PyObject* const obj, int const dtype, int const dims_min, int const dims_max, int const requirements, PyObject* const context=nullptr)
     { return FromAny(obj, PyArray_DescrFromType(dtype), dims_min, dims_max, requirements, context); }
+  static void RegisterCanCast(PyArray_Descr* const from, int const to, NPY_SCALARKIND const scalar)
+    { check_zero(PyArray_RegisterCanCast(from, to, scalar)); }
+  static void RegisterCanCast(int const from, int const to, NPY_SCALARKIND const scalar)
+    { check_zero(PyArray_RegisterCanCast(PyArray_DescrFromType(from), to, scalar)); }
+  static void RegisterCastFunc(PyArray_Descr* const from, int const to, PyArray_VectorUnaryFunc* const f)
+    { check_zero(PyArray_RegisterCastFunc(from, to, f)); }
+  static void RegisterCastFunc(int const from, int const to, PyArray_VectorUnaryFunc* const f)
+    { check_zero(PyArray_RegisterCastFunc(PyArray_DescrFromType(from), to, f)); }
+  static ref<Array> NewLikeArray(Array* prototype, NPY_ORDER order=NPY_CORDER, PyArray_Descr* descr=nullptr, bool subok=true)
+    { return take_not_null<Array>(PyArray_NewLikeArray((PyArrayObject*) prototype, order, (PyArray_Descr*) xincref((PyObject*) descr), subok ? 1 : 0)); }
   static ref<Array> SimpleNew(int const nd, npy_intp* const dims, int const typenum)
     { return take_not_null<Array>(PyArray_SimpleNew(nd, dims, typenum)); }
   static ref<Array> SimpleNew1D(npy_intp const size, int const typenum)
     { return SimpleNew(1, const_cast<npy_intp*>(&size), typenum); }
 
+  PyArray_Descr* descr()
+    { return PyArray_DESCR(array_this()); }
   npy_intp size()
     { return PyArray_SIZE(array_this()); }
   template<class T> T const* get_const_ptr()
@@ -53,6 +90,34 @@ private:
 
 };
 
+
+template<class FROM, class TO, TO (*FUNC)(FROM)>
+void
+cast_func(
+  FROM const* from,
+  TO* to,
+  npy_intp num,
+  void* /* unused */,
+  void* /* unused */)
+{
+  for (; num > 0; --num, ++from, ++to)
+    *to = FUNC(*from);
+}
+
+
+//------------------------------------------------------------------------------
+
+// Compile-time mapping from C++ integer types to numpy type numbers.
+template<class INT> struct IntType 
+  { static int constexpr type_num = -1; };
+template<> struct IntType<int32_t> 
+  { static int constexpr type_num = NPY_INT32; };
+template<> struct IntType<uint32_t>
+  { static int constexpr type_num = NPY_UINT32; };
+template<> struct IntType<int64_t>
+  { static int constexpr type_num = NPY_INT64; };
+template<> struct IntType<uint64_t>
+  { static int constexpr type_num = NPY_UINT64; };
 
 //------------------------------------------------------------------------------
 
@@ -73,6 +138,7 @@ public:
    */
   void add_loop_1(int arg0_type, int ret0_type, PyUFuncGenericFunction);
   void add_loop_1(PyArray_Descr*, PyArray_Descr*, PyUFuncGenericFunction);
+
   void add_loop_2(int arg0_type, int arg1_type, int ret0_type, PyUFuncGenericFunction);
   void add_loop_2(PyArray_Descr*, PyArray_Descr*, PyArray_Descr*, PyUFuncGenericFunction);
 
@@ -153,7 +219,7 @@ UFunc::add_loop_2(
   check_zero(
     PyUFunc_RegisterLoopForType(
       (PyUFuncObject*) this,
-      arg0_type,
+      arg0_type >= NPY_USERDEF ? arg0_type : arg1_type,
       fn,
       arg_types,
       nullptr));
@@ -256,6 +322,129 @@ ufunc_loop_2(
     arg0 = step(arg0, arg0_step);
     arg1 = step(arg1, arg1_step);
     ret0 = step(ret0, ret0_step);
+  }
+}
+
+
+//------------------------------------------------------------------------------
+
+/*
+ * Registers comparison ufunc loops.
+ */
+template<class TYPE, bool (*EQUAL)(TYPE, TYPE), bool (*LESS)(TYPE, TYPE)>
+class Comparisons
+{
+public:
+
+  static void
+  register_loops(
+    npy_intp const type_num)
+  {
+    auto const np_module = Module::ImportModule("numpy");
+
+    create_or_get_ufunc(np_module, "equal", 2, 1)->add_loop_2(
+      type_num, type_num, NPY_BOOL,
+      ufunc_loop_2<TYPE, TYPE, npy_bool, equal>);
+    create_or_get_ufunc(np_module, "not_equal", 2, 1)->add_loop_2(
+      type_num, type_num, NPY_BOOL,
+      ufunc_loop_2<TYPE, TYPE, npy_bool, not_equal>);
+    create_or_get_ufunc(np_module, "less", 2, 1)->add_loop_2(
+      type_num, type_num, NPY_BOOL,
+      ufunc_loop_2<TYPE, TYPE, npy_bool, less>);
+    create_or_get_ufunc(np_module, "less_equal", 2, 1)->add_loop_2(
+      type_num, type_num, NPY_BOOL,
+      ufunc_loop_2<TYPE, TYPE, npy_bool, less_equal>);
+    create_or_get_ufunc(np_module, "greater", 2, 1)->add_loop_2(
+      type_num, type_num, NPY_BOOL,
+      ufunc_loop_2<TYPE, TYPE, npy_bool, greater>);
+    create_or_get_ufunc(np_module, "greater_equal", 2, 1)->add_loop_2(
+      type_num, type_num, NPY_BOOL,
+      ufunc_loop_2<TYPE, TYPE, npy_bool, greater_equal>);
+  }
+
+private:
+
+  Comparisons() = delete;
+
+  static npy_bool equal(TYPE const a, TYPE const b)
+    { return EQUAL(a, b) ? NPY_TRUE : NPY_FALSE; }
+
+  static npy_bool not_equal(TYPE const a, TYPE const b)
+    { return EQUAL(a, b) ? NPY_FALSE : NPY_TRUE; }
+
+  static npy_bool less(TYPE const a, TYPE const b)
+    { return LESS(a, b) ? NPY_TRUE : NPY_FALSE; }
+
+  static npy_bool less_equal(TYPE const a, TYPE const b)
+    { return EQUAL(a, b) || LESS(a, b) ? NPY_TRUE : NPY_FALSE; }
+
+  static npy_bool greater(TYPE const a, TYPE const b)
+    { return EQUAL(a, b) || LESS(a, b) ? NPY_FALSE : NPY_TRUE; }
+
+  static npy_bool greater_equal(TYPE const a, TYPE const b)
+    { return LESS(a, b) ? NPY_FALSE : NPY_TRUE; }
+
+};
+
+
+//------------------------------------------------------------------------------
+
+template<class TYPE>
+void
+generic_copyswap(
+  TYPE* const dst,
+  TYPE const* const src,
+  int const swap,
+  PyArrayObject* const arr)
+{
+  if (swap)
+    copy_swapped<sizeof(TYPE)>(src, dst);
+  else
+    copy<sizeof(TYPE)>(src, dst);
+}
+
+
+template<class TYPE>
+void
+generic_copyswapn(
+  TYPE* const dst, 
+  npy_intp const dst_stride, 
+  TYPE const* const src, 
+  npy_intp const src_stride, 
+  npy_intp const n, 
+  int const swap, 
+  PyArrayObject* const arr)
+{
+  if (src_stride == 0) {
+    // Special case: swapped or unswapped fill.
+    TYPE val;
+    if (swap) 
+      copy_swapped<sizeof(TYPE)>(src, &val);
+    else
+      val = *src;
+
+    char* d = (char*) dst;
+    for (npy_intp i = 0; i < n; ++i) {
+      *(TYPE*) d = val;
+      d += dst_stride;
+    }
+  }
+
+  else {
+    char const* s = (char const*) src;
+    char* d = (char*) dst;
+    if (swap) 
+      for (npy_intp i = 0; i < n; ++i) {
+        copy_swapped<sizeof(TYPE)>(s, d);
+        s += src_stride;
+        d += dst_stride;
+      }
+    else 
+      for (npy_intp i = 0; i < n; ++i) {
+        copy<sizeof(TYPE)>(s, d);
+        s += src_stride;
+        d += dst_stride;
+      }
   }
 }
 

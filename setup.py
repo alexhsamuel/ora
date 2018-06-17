@@ -1,46 +1,23 @@
 """
-Ora is a coherent and high-perforamance C++ and Python 3 library for times,
-dates, time zones, and related concepts.  The central concept is a
-location-independent instant of time.  Local date and time of day
-representations are derived from this, using the (included) zoneinfo database.
-Multiple resolutions are provided for all time types.
+Ora is a freestanding time and date implementation for C++ and Python.
 
-.. code:: py
+Ora is `hosted on GitHub <http://github.com/alexhsamuel/ora>`_.  See
+the `installation instructions
+<https://github.com/alexhsamuel/ora/blob/master/README.md#installation>`_.
 
-    >>> import ora
-    >>> time = ora.now()
-    >>> print(time)
-    2017-12-26T03:47:36.41359399Z
-    >>> tz = ora.TimeZone("US/Eastern")
-    >>> (time @ tz).date
-    Date(2017, Dec, 25)
-
+Docs at `readthedocs <http://ora.readthedocs.io/en/latest/>`_.
 """
 
 #-------------------------------------------------------------------------------
 
 from   glob import glob
+from   numpy.distutils.misc_util import get_numpy_include_dirs
 import os
 from   setuptools import setup, Extension
 import setuptools.command.build_ext
 import setuptools.command.install
 import subprocess
 import sys
-
-#-------------------------------------------------------------------------------
-
-# FIXME: We should just require numpy to build, no?
-
-try:
-    import numpy
-except ImportError:
-    have_numpy = False
-    numpy_include_dirs = []
-    print("no numpy found; building without")
-else:
-    have_numpy = True
-    from numpy.distutils.misc_util import get_numpy_include_dirs
-    numpy_include_dirs = get_numpy_include_dirs()
 
 #-------------------------------------------------------------------------------
 
@@ -73,6 +50,7 @@ def enumerate_data_files(dir):
     for dir, _, files in os.walk(dir):
         yield dir, [ os.path.join(dir, f) for f in files ]
 
+
 setup(
     name            ="ora",
     version         ="0.2.4",
@@ -93,11 +71,11 @@ setup(
 
     python_requires='>=3.6',
     install_requires=[
-        "numpy",  # FIXME: Relax this.
+        "numpy",  # Required to install, but not to use.
     ],
 
     package_dir     ={"": "python"},
-    packages        =["ora"],
+    packages        =["ora", "ora.np"],
     package_data    ={
         ""      : ["test/*"],
         "ora"   : ["zoneinfo/*", "zoneinfo/*/*"],
@@ -110,11 +88,18 @@ setup(
                 "-std=c++14", 
                 "-fdiagnostics-color=always", 
             ],
-            include_dirs      =["cxx/include"] + numpy_include_dirs,
-            sources           =glob("python/ora/*.cc"),
+            include_dirs      =[
+                "cxx/include",
+                "python/ora/ext",
+                *get_numpy_include_dirs(),
+            ],
+            sources           =glob("python/ora/ext/*.cc"),
             library_dirs      =["cxx/src",],
             libraries         =["ora",],
-            depends           =glob("python/ora/*.hh") + glob("cxx/include/*.hh"),
+            depends           =[
+                *glob("cxx/include/*.hh"),
+                *glob("python/ora/ext/*.hh"),
+            ]
         ),
     ],
 

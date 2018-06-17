@@ -11,11 +11,11 @@
 #include "ora/lib/math.hh"
 #include "ora.hh"
 #include "py.hh"
-#include "PyDate.hh"
-#include "PyDaytime.hh"
-#include "PyLocal.hh"
-#include "PyTime.hh"
-#include "PyTimeZone.hh"
+#include "py_date.hh"
+#include "py_daytime.hh"
+#include "py_local.hh"
+#include "py_time.hh"
+#include "py_time_zone.hh"
 #include "util.hh"
 
 namespace ora {
@@ -129,7 +129,7 @@ using doct_t = char const* const;
 
 namespace pytime {
 
-#include "PyTime.docstrings.hh.inc"
+#include "py_time.docstrings.hh.inc"
 
 }  // namespace docstring
 
@@ -149,11 +149,12 @@ public:
   using Time = TIME;
 
   /** 
-   * Readies the Python type and adds it to `module` as `name`.  
+   * Sets up the Python type.
    *
-   * Should only be called once; this is not checked.
+   * `base` is the base class to use, or nullptr for none.  Should only be
+   * called once; this is not checked.
    */
-  static void add_to(Module& module, string const& name);
+  static Type* set_up(string const& name, Type* base=nullptr);
 
   static Type type_;
 
@@ -220,6 +221,10 @@ private:
   static ref<Object>    nb_add                  (PyTime*, Object*, bool);
   static ref<Object>    nb_matrix_multiply      (PyTime*, Object*, bool);
   static ref<Object>    nb_subtract             (PyTime*, Object*, bool);
+  static ref<Object>    nb_int                  (PyTime* self)
+    { throw TypeError("int() argument cannot be a date"); }
+  static ref<Object>    nb_float                (PyTime* self)
+    { throw TypeError("float() argument cannot be a date"); }
   static PyNumberMethods tp_as_number_;
 
   // Methods.
@@ -242,7 +247,7 @@ private:
   /** Date format used to generate the repr.  */
   static unique_ptr<ora::time::TimeFormat> repr_format_;
 
-  static Type build_type(string const& type_name);
+  static Type build_type(string const& type_name, Type* base);
 
 };
 
@@ -250,18 +255,11 @@ private:
 //------------------------------------------------------------------------------
 
 template<class TIME>
-void
-PyTime<TIME>::add_to(
-  Module& module,
-  string const& name)
+Type*
+PyTime<TIME>::set_up(
+  string const& name,
+  Type* const base)
 {
-  // Construct the type struct.
-  type_ = build_type(string{module.GetName()} + "." + name);
-  // Hand it to Python.
-  type_.Ready();
-
-  PyTimeAPI::add(&type_, std::make_unique<API>());
-
   // Choose precision for seconds that captures actual precision of the time
   // class (up to 1 fs).
   precision_
@@ -274,7 +272,15 @@ PyTime<TIME>::add_to(
     name + ".INVALID",
     name + ".MISSING");
 
-  // Add in static data members.
+  // Construct the type struct.
+  type_ = build_type(name, base);
+  // Hand it to Python.
+  type_.Ready();
+
+  // Set up the API.
+  PyTimeAPI::add(&type_, std::make_unique<API>());
+
+  // Add class attributes.
   Dict* const dict = (Dict*) type_.tp_dict;
   assert(dict != nullptr);
   dict->SetItemString("DENOMINATOR" , Long::from(Time::DENOMINATOR));
@@ -284,8 +290,7 @@ PyTime<TIME>::add_to(
   dict->SetItemString("MISSING"     , create(Time::MISSING));
   dict->SetItemString("RESOLUTION"  , Float::FromDouble(1.0 / Time::DENOMINATOR));
 
-  // Add the type to the module.
-  module.add(&type_);
+  return &type_;
 }
 
 
@@ -506,9 +511,11 @@ PyTime<TIME>::tp_as_number_ = {
   (binaryfunc)  nullptr,                        // nb_and
   (binaryfunc)  nullptr,                        // nb_xor
   (binaryfunc)  nullptr,                        // nb_or
-  (unaryfunc)   nullptr,                        // nb_int
+  // Work around a NumPy bug (https://github.com/numpy/numpy/issues/10693) by
+  // defining nb_int, nb_float that raise TypeError.
+  (unaryfunc)   wrap<PyTime, nb_int>,           // nb_int
   (void*)       nullptr,                        // nb_reserved
-  (unaryfunc)   nullptr,                        // nb_float
+  (unaryfunc)   wrap<PyTime, nb_float>,         // nb_float
   (binaryfunc)  nullptr,                        // nb_inplace_add
   (binaryfunc)  nullptr,                        // nb_inplace_subtract
   (binaryfunc)  nullptr,                        // nb_inplace_multiply
@@ -727,7 +734,8 @@ PyTime<TIME>::precision_;
 template<class TIME>
 Type
 PyTime<TIME>::build_type(
-  string const& type_name)
+  string const& type_name,
+  Type* const base)
 {
   // Customize the type docstring with this class's name and parameters.
   auto const doc_len    = strlen(docstring::pytime::type) + 64;
@@ -772,7 +780,7 @@ PyTime<TIME>::build_type(
     (PyMethodDef*)        tp_methods_,                    // tp_methods
     (PyMemberDef*)        nullptr,                        // tp_members
     (PyGetSetDef*)        tp_getsets_,                    // tp_getset
-    (_typeobject*)        nullptr,                        // tp_base
+    (_typeobject*)        base,                           // tp_base
     (PyObject*)           nullptr,                        // tp_dict
     (descrgetfunc)        nullptr,                        // tp_descr_get
     (descrsetfunc)        nullptr,                        // tp_descr_set

@@ -9,6 +9,8 @@
 
 #include <Python.h>
 
+#include "ora/lib/iter.hh"
+
 //------------------------------------------------------------------------------
 
 namespace ora {
@@ -17,6 +19,7 @@ namespace py {
 using std::experimental::optional;
 
 class Float;
+class Iter;
 class Long;
 class Object;
 class Tuple;
@@ -144,7 +147,9 @@ inline void check_true(int value)
 /**
  * Raises 'Exception' if 'value' is null; otherwise, returns it.
  */
-inline Object* check_not_null(PyObject* obj)
+inline Object* 
+check_not_null(
+  PyObject* obj)
 {
   if (obj == nullptr)
     throw Exception();
@@ -153,7 +158,9 @@ inline Object* check_not_null(PyObject* obj)
 }
 
 
-inline Type* check_not_null(PyTypeObject* type)
+inline Type* 
+check_not_null(
+  PyTypeObject* type)
 {
   if (type == nullptr)
     throw Exception();
@@ -173,9 +180,20 @@ cast(PyObject* obj)
 }
 
 
-inline PyObject* incref(PyObject* obj)
+inline PyObject* 
+incref(
+  PyObject* obj)
 {
   Py_INCREF(obj);
+  return obj;
+}
+
+
+inline PyObject*
+xincref(
+  PyObject* obj)
+{
+  Py_XINCREF(obj);
   return obj;
 }
 
@@ -376,6 +394,8 @@ public:
   static bool Check(PyObject* obj)
     { return true; }
   ref<Object> GetAttrString(char const* const name, bool check=true);
+  ref<Iter> GetIter()
+    { return take_not_null<Iter>(PyObject_GetIter(this)); }
   bool IsInstance(PyObject* type)
     { return (bool) PyObject_IsInstance(this, type); }
   bool IsInstance(PyTypeObject* type)
@@ -522,6 +542,32 @@ inline std::ostream& operator<<(std::ostream& os, ref<T>& ref)
 
 extern ref<Object> const
 None;
+
+
+//------------------------------------------------------------------------------
+
+class Iter
+: public Object
+{
+public:
+
+  static bool Check(PyObject* const obj)
+    { return PyIter_Check(obj); }
+
+  /*
+   * Returns the next item, or if the iterator is exhausted, nullptr.
+   */
+  Object* 
+  Next()
+  { 
+    auto const next = PyIter_Next(this);
+    if (next == nullptr && PyErr_Occurred())
+      // Exception occurred (not StopIteration) while retrieving the next item.
+      throw Exception();
+    return static_cast<Object*>(next);
+  }
+
+};
 
 
 //------------------------------------------------------------------------------
@@ -993,6 +1039,39 @@ operator+(
 }
 
 
+//------------------------------------------------------------------------------
+
+/*
+ * Adapter from a Python line iterator to a simple string iterator.
+ */
+class LineIter
+: public ora::lib::Iter<std::string>
+{
+public:
+
+  LineIter(Object* lines) : lines_(lines->GetIter()) {}
+  LineIter(LineIter&&) = default;
+
+  virtual ~LineIter() = default;
+
+  virtual optional<std::string>
+  next()
+    override
+  {
+    auto const next = lines_->Next();
+    if (next == nullptr)
+      return {};
+    else
+      return next->Str()->as_utf8_string();
+  }
+
+private:
+
+  ref<ora::py::Iter> lines_;
+
+};
+
+
 //==============================================================================
 
 inline void baseref::clear()
@@ -1292,6 +1371,11 @@ private:
 
 template<class CLASS>
 using
+UnaryfuncPtr
+  = ref<Object> (*)(CLASS* self);
+
+template<class CLASS>
+using
 BinaryfuncPtr
   = ref<Object> (*)(CLASS* self, Object* other, bool right);
 
@@ -1304,6 +1388,11 @@ template<class CLASS>
 using 
 InitprocPtr
   = void (*)(CLASS* self, Tuple* args, Dict* kw_args);
+
+template<class CLASS>
+using
+ObjobjprocPtr
+  = bool (*)(CLASS* self, Object* other);
 
 template<class CLASS>
 using
@@ -1334,8 +1423,38 @@ using ClassMethodPtr = ref<Object> (*)(PyTypeObject* class_, Tuple* args, Dict* 
 
 
 /**
+ * Wraps a unaryfunc.
+ */
+template<class CLASS, UnaryfuncPtr<CLASS> FUNCTION>
+PyObject*
+wrap(
+  PyObject* self)
+{
+  ref<Object> result;
+  try {
+    try {
+      result = FUNCTION(static_cast<CLASS*>(self));
+    }
+    catch (Exception) {
+      return nullptr;
+    }
+    catch (...) {
+      ExceptionTranslator::translate();
+    }
+  }
+  catch (Exception exc) {
+    return nullptr;
+  }
+  assert(result != nullptr);
+  return result.release();
+}
+
+
+/**
  * Wraps a binaryfunc.
  */
+// FIXME: This is appropriate for comparisons only.  Arbitrary binaryfuncs
+// don't need the type checks, and shouldn't return NotImplemented.
 template<class CLASS, BinaryfuncPtr<CLASS> FUNCTION>
 PyObject*
 wrap(
@@ -1424,6 +1543,34 @@ wrap(
     return -1;
   }
   return 0;
+}
+
+
+/**
+ * Wraps an objobjproc.
+ */
+template<class CLASS, ObjobjprocPtr<CLASS> FUNCTION>
+int
+wrap(
+  PyObject* self,
+  PyObject* other)
+{
+  bool result;
+  try {
+    try {
+      result = FUNCTION(static_cast<CLASS*>(self), static_cast<Object*>(other));
+    }
+    catch (Exception) {
+      return -1;
+    }
+    catch (...) {
+      ExceptionTranslator::translate();
+    }
+  }
+  catch (Exception) {
+    return -1;
+  }
+  return result ? 1 : 0;
 }
 
 

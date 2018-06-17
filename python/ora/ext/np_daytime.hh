@@ -1,10 +1,11 @@
 #include <Python.h>
 
 #include "ora/lib/mem.hh"
+#include "ora.hh"
 #include "py.hh"
+#include "np.hh"
 #include "np_types.hh"
-#include "numpy.hh"
-#include "PyDaytime.hh"
+#include "py_daytime.hh"
 
 namespace ora {
 namespace py {
@@ -13,6 +14,57 @@ using namespace py;
 using namespace py::np;
 
 //------------------------------------------------------------------------------
+
+class DaytimeAPI
+{
+private:
+
+  static uint64_t constexpr MAGIC = 0x737865c3443a5a50;
+  uint64_t const magic_ = MAGIC;
+
+  static DaytimeAPI*
+  get(
+    PyArray_Descr* const dtype)
+  {
+    // Make an attempt to confirm that this is one of our dtypes.
+    if (dtype->kind == 'V' && dtype->type == 'j') {
+      auto const api = reinterpret_cast<DaytimeAPI*>(dtype->c_metadata);
+      if (api != nullptr && api->magic_ == MAGIC)
+        return api;
+    }
+    return nullptr;
+  }
+
+public:
+
+  virtual ~DaytimeAPI() {}
+
+  /*
+   * Converts a daytick to a daytime, and stores it at an address. 
+   */
+  virtual void          from_daytick(ora::Daytick, void*) const = 0;
+
+  /*
+   * Returns the daytick for a daytime at an address.
+   */
+  virtual Daytick       get_daytick(void*) const = 0;
+
+  static bool check(PyArray_Descr* const descr)
+    { return get(descr) != nullptr; }
+
+  static DaytimeAPI*
+  from(
+    PyArray_Descr* const dtype)
+  {
+    auto const api = get(dtype);
+    if (api == nullptr)
+      throw TypeError("not an ora daytime dtype");
+    else
+      return api;
+  }
+
+};
+
 
 template<class PYDAYTIME>
 class DaytimeDtype
@@ -39,6 +91,36 @@ private:
   static Object*        getitem(Daytime const*, PyArrayObject*);
   static int            setitem(Object*, Daytime*, PyArrayObject*);
   static int            compare(Daytime const*, Daytime const*, PyArrayObject*);
+
+  // Wrap days_after and days_before to accept int64 args.
+  static Daytime add(Daytime const daytime, double const seconds)
+    { return ora::daytime::nex::seconds_after(daytime, seconds); }
+  static Daytime subtract_before(Daytime const daytime, double const seconds)
+    { return ora::daytime::nex::seconds_before(daytime, seconds); }
+  static double subtract_between(Daytime const daytime1, Daytime const daytime0) 
+    { return ora::daytime::nex::seconds_between(daytime0, daytime1); }
+
+  class API
+  : public DaytimeAPI
+  {
+  public:
+
+    virtual ~API() {}
+
+    virtual void 
+    from_daytick(
+      ora::Daytick daytick, 
+      void* daytime_ptr) 
+      const override
+    { 
+      *reinterpret_cast<Daytime*>(daytime_ptr) 
+        = ora::daytime::nex::from_daytick<Daytime>(daytick); 
+    }
+
+    virtual Daytick get_daytick(void* const daytime_ptr) const override
+      { return ora::daytime::nex::get_daytick(*reinterpret_cast<Daytime*>(daytime_ptr)); }
+
+  };
 
   static PyArray_Descr* descr_;
 
@@ -72,7 +154,7 @@ DaytimeDtype<PYDAYTIME>::get()
     descr_->names           = nullptr;
     descr_->f               = arr_funcs;
     descr_->metadata        = nullptr;
-    descr_->c_metadata      = nullptr;  // FIXME: (NpyAuxData*) new API();
+    descr_->c_metadata      = (NpyAuxData*) new API();
     descr_->hash            = -1;
 
     if (PyArray_RegisterDataType(descr_) < 0)
@@ -88,6 +170,8 @@ void
 DaytimeDtype<PYDAYTIME>::add(
   Module* const module)
 {
+  auto const np_module = Module::ImportModule("numpy");
+
   // Build or get the dtype.
   auto const dtype = DaytimeDtype<PYDAYTIME>::get();
 
@@ -98,6 +182,24 @@ DaytimeDtype<PYDAYTIME>::add(
 
   // Add ufuncs.
   // FIXME
+
+  Comparisons<Daytime, ora::daytime::nex::equal, ora::daytime::nex::before>
+    ::register_loops(dtype->type_num);
+
+  // Add ufunc loops.
+  create_or_get_ufunc(np_module, "add", 2, 1)->add_loop_2(
+    dtype->type_num, NPY_FLOAT64, dtype->type_num,
+    ufunc_loop_2<Daytime, double, Daytime, add>);
+  create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
+    dtype->type_num, NPY_FLOAT64, dtype->type_num,
+    ufunc_loop_2<Daytime, double, Daytime, subtract_before>);
+  create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
+    dtype->type_num, dtype->type_num, NPY_FLOAT64,
+    ufunc_loop_2<Daytime, Daytime, double, subtract_between>);
+
+  create_or_get_ufunc(module, "is_valid", 1, 1)->add_loop_1(
+    dtype->type_num, NPY_BOOL,
+    ufunc_loop_1<Daytime, bool, ora::daytime::nex::is_valid>);
 }
 
 
@@ -221,6 +323,32 @@ template<class PYDAYTIME>
 PyArray_Descr*
 DaytimeDtype<PYDAYTIME>::descr_
   = nullptr;
+
+//------------------------------------------------------------------------------
+// Accessories
+
+/*
+ * Attempts to convert `arg` to a aytime array.
+ *
+ * If it isn't one already, attempts to convert it using the default daytime
+ * dtype.
+ */
+inline ref<Array>
+to_daytime_array(
+  Object* const arg)
+{
+  if (Array::Check(arg)) {
+    // It's an array.  Check its dtype.
+    Array* const arr = reinterpret_cast<Array*>(arg);
+    if (DaytimeAPI::check(arr->descr()))
+      return ref<Array>::of(arr);
+  }
+
+  // Convert to an array of the default time dtype.
+  auto const def = DaytimeDtype<PyDaytimeDefault>::get();
+  return Array::FromAny(arg, def, 0, 0, NPY_ARRAY_BEHAVED);
+}
+
 
 //------------------------------------------------------------------------------
 

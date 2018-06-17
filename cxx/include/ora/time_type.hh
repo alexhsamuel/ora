@@ -46,7 +46,7 @@ using namespace ora::lib;
 
 namespace nex {
 
-template<class TIME> bool equal(TIME, TIME) noexcept;
+template<class TIME> typename TIME::Offset get_offset(TIME) noexcept;
 
 }  // namespace nex
 
@@ -176,7 +176,7 @@ private:
 
   Offset offset_ = Traits::invalid;
 
-  template<class TIME> friend bool nex::equal(TIME, TIME) noexcept;
+  friend typename TimeType::Offset nex::get_offset<TimeType>(TimeType) noexcept;
 
 public:
 
@@ -198,7 +198,7 @@ public:
  * If `time` is invalid, throws `InvalidTimeError`.
  */
 template<class TIME>
-void
+inline void
 ensure_valid(
   TIME const time)
 {

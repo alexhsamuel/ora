@@ -4,8 +4,8 @@
 
 #include <Python.h>
 
+#include "np.hh"
 #include "py.hh"
-#include "numpy.hh"
 
 namespace ora {
 namespace py {

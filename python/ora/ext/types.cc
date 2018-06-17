@@ -1,13 +1,44 @@
-#include <Python.h>
-
-#include "py.hh"
-
-#include "PyDaytime.hh"
+#include "types.hh"
 
 namespace ora {
 namespace py {
 
 //------------------------------------------------------------------------------
+
+namespace docstring {
+
+using doc_t = char const* const;
+#include "types.docstrings.cc.inc"
+
+}  // namespace docstring
+
+
+StructSequenceType*
+get_ymd_date_type()
+{
+  static StructSequenceType type;
+
+  if (type.tp_name == nullptr) {
+    // Lazy one-time initialization.
+    static PyStructSequence_Field fields[] = {
+      {(char*) "year"       , nullptr},
+      {(char*) "month"      , nullptr},
+      {(char*) "day"        , nullptr},
+      {nullptr, nullptr}
+    };
+    static PyStructSequence_Desc desc{
+      (char*) "YmdDate",                                    // name
+      (char*) docstring::YmdDate,                           // doc
+      fields,                                               // fields
+      3                                                     // n_in_sequence
+    };
+
+    StructSequenceType::InitType(&type, &desc);
+  }
+
+  return &type;
+}
+
 
 StructSequenceType*
 get_hms_daytime_type()
@@ -47,29 +78,6 @@ make_hms_daytime(
   return std::move(hms_obj);
 }
 
-
-//------------------------------------------------------------------------------
-
-std::unordered_map<PyTypeObject*, std::unique_ptr<PyDaytimeAPI>>
-PyDaytimeAPI::apis_;
-
-//------------------------------------------------------------------------------
-// Explicit template instances
-
-template class PyDaytime<ora::daytime::Daytime>;
-template class PyDaytime<ora::daytime::Daytime32>;
-template class PyDaytime<ora::daytime::UsecDaytime>;
-
-//------------------------------------------------------------------------------
-// Docstrings
-
-namespace docstring {
-namespace pydaytime {
-
-#include "PyDaytime.docstrings.cc.inc"
-
-}  // namespace pydaytime
-}  // namespace docstring
 
 //------------------------------------------------------------------------------
 

@@ -1,11 +1,30 @@
+// In this, and only this, compilation unit, we need to #include the numpy
+// headers without NO_IMPORT_ARRAY #defined.  In all other compilation units,
+// this macro is defined, to make sure a single shared copy of the API is used.
+// 
+// See http://docs.scipy.org/doc/numpy/reference/c-api.array.html#importing-the-api.
+//
+// FIXME: Encapsulate this so that no human ever ever has to deal with it again.
+#define PY_ARRAY_UNIQUE_SYMBOL ora_PyArray_API
+#define PY_UFUNC_UNIQUE_SYMBOL ora_PyUFunc_API
+#define NPY_NO_DEPRECATED_API NPY_API_VERSION
+
+#include <numpy/arrayobject.h>
+#include <numpy/npy_math.h>
+#include <numpy/ufuncobject.h>
+#include <numpy/npy_3kcompat.h>
+
+#include "np.hh"
+
+//------------------------------------------------------------------------------
+
 #include <Python.h>
 #include <datetime.h>
 
-#include "PyDate.hh"
-#include "PyDaytime.hh"
-#include "PyLocal.hh"
-#include "PyTime.hh"
-#include "PyTimeZone.hh"
+#include "py_calendar.hh"
+#include "py_local.hh"
+#include "py_time_zone.hh"
+#include "types.hh"
 
 using namespace ora::lib;
 using namespace ora::py;
@@ -15,11 +34,19 @@ using namespace ora::py;
 namespace ora {
 namespace py {
 
+/* Adds date types.  */
+extern void set_up_dates(Module*, Module*);
+/* Adds daytime types.  */
+extern void set_up_daytimes(Module*, Module*);
+/* Adds time types.  */
+extern void set_up_times(Module*, Module*);
+
 /* Adds functions from functions.cc.  */
 extern Methods<Module>& add_functions(Methods<Module>&);
+extern ref<Module> build_np_module();
 
-/* The numpy setup function in numpy.cc  */
-extern ref<Object> set_up_numpy(Module*, Tuple*, Dict*);
+/* Adds functions from py_cal_functions.cc.  */
+extern Methods<Module>& add_cal_functions(Methods<Module>&);
 
 namespace {
 
@@ -33,8 +60,7 @@ module_def{
   "ora.ext",
   nullptr,
   -1,
-  add_functions(methods)
-    .add<set_up_numpy>                ("set_up_numpy")
+  add_cal_functions(add_functions(methods))
 };
 
 
@@ -48,26 +74,32 @@ module_def{
 PyMODINIT_FUNC
 PyInit_ext(void)
 {
-  auto mod = Module::Create(&module_def);
-
   try {
-    PyDate<ora::date::Date>             ::add_to(mod, "Date");
-    PyDate<ora::date::Date16>           ::add_to(mod, "Date16");
+    auto mod = Module::Create(&module_def);
 
-    PyDaytime<ora::daytime::Daytime>    ::add_to(mod, "Daytime");
-    PyDaytime<ora::daytime::Daytime32>  ::add_to(mod, "Daytime32");
-    PyDaytime<ora::daytime::UsecDaytime>::add_to(mod, "UsecDaytime");
+    // Import numpy.
+    // FIXME: Handle if numpy is missing.
+    if (_import_array() < 0) 
+      throw ImportError("failed to import numpy.core.multiarray"); 
+    if (_import_umath() < 0) 
+      throw ImportError("failed to import numpy.core.umath");
+    bool const np = true;
 
-    PyTime<ora::time::Time>             ::add_to(mod, "Time");
-    PyTime<ora::time::HiTime>           ::add_to(mod, "HiTime");
-    PyTime<ora::time::SmallTime>        ::add_to(mod, "SmallTime");
-    PyTime<ora::time::NsTime>           ::add_to(mod, "NsTime");
-    PyTime<ora::time::Unix32Time>       ::add_to(mod, "Unix32Time");
-    PyTime<ora::time::Unix64Time>       ::add_to(mod, "Unix64Time");
-    PyTime<ora::time::Time128>          ::add_to(mod, "Time128");
+    set_up_dates(mod, nullptr);
+    set_up_daytimes(mod, nullptr);
 
-    PyTimeZone                          ::add_to(mod, "TimeZone");
-    PyLocal                             ::add_to(mod, "Local");
+    // FIXME: Move this up, once build_np_module() doesn't require types.
+    ref<Module> np_mod;
+    if (np) {
+      np_mod = build_np_module();
+      mod->AddObject("np", np_mod);
+    }
+
+    set_up_times(mod, np_mod);
+
+    PyTimeZone  ::add_to(mod, "TimeZone");
+    PyLocal     ::add_to(mod, "Local");
+    PyCalendar  ::add_to(mod);
 
     StructSequenceType* const ymd_date_type = get_ymd_date_type();
     mod->AddObject(ymd_date_type->tp_name, (PyObject*) ymd_date_type);
@@ -88,9 +120,7 @@ PyInit_ext(void)
     mod->AddObject("SSM_INVALID"      , Float::from(ora::SSM_INVALID));
     mod->AddObject("DATENUM_MIN"      , Long::from(ora::DATENUM_MIN));
     mod->AddObject("DATENUM_MAX"      , Long::from(ora::DATENUM_MAX));
-    mod->AddObject("MIDNIGHT"         , PyDaytimeDefault::create(PyDaytimeDefault::Daytime::MIDNIGHT));
-    mod->AddObject("UTC"              , 
-                   PyTimeZone::create(std::make_shared<ora::TimeZone>()));
+    mod->AddObject("UTC"              , PyTimeZone::create(std::make_shared<ora::TimeZone>()));
 
     // FIXME: Use specific Python exception classes.
     TranslateException<ora::InvalidDateError>::to(PyExc_ValueError);
@@ -102,6 +132,7 @@ PyInit_ext(void)
     TranslateException<ora::NonexistentDateDaytime>::to(PyExc_RuntimeError);
     TranslateException<ora::TimeRangeError>::to(PyExc_OverflowError);
     TranslateException<ora::TimeFormatError>::to(PyExc_ValueError);
+    TranslateException<ora::CalendarRangeError>::to(PyExc_ValueError);
     TranslateException<ora::lib::fs::FileNotFoundError>::to(PyExc_FileNotFoundError);
     TranslateException<ora::lib::RuntimeError>::to(PyExc_RuntimeError);
     TranslateException<FormatError>::to(PyExc_RuntimeError);

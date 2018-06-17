@@ -2,6 +2,7 @@
 
 #include "ora/lib/exc.hh"
 #include "ora/lib/math.hh"
+#include "ora/lib/num.hh"
 #include "ora/time_math.hh"
 #include "ora/time_nex.hh"
 #include "ora/time_type.hh"
@@ -32,6 +33,14 @@ from_timespec(
 
 
 //------------------------------------------------------------------------------
+
+template<class TIME>
+inline typename TIME::Offset
+get_offset(
+  TIME const time)
+{
+  return time.get_offset();
+}
 
 /*
  * Returns the closest UNIX epoch time.
@@ -105,6 +114,34 @@ compare(
 // Arithemtic with seconds
 //------------------------------------------------------------------------------
 
+namespace {
+
+template<class TIME>
+inline TIME
+seconds_shift(
+  TIME const time,
+  double const seconds,
+  bool const forward)
+{
+  using Offset = typename TIME::Offset;
+
+  ensure_valid(time);
+  if (std::isnan(seconds) || std::isinf(seconds))
+    throw TimeRangeError();
+
+  ora::num::Checked c;
+  auto const offset = c.convert<Offset>(round(seconds * TIME::DENOMINATOR));
+  if (c)
+    // FIXME: Check for addition/subtraction overflow.
+    return from_offset<TIME>(
+      forward ? (time.get_offset() + offset) : (time.get_offset() - offset));
+  else
+    throw TimeRangeError();
+}
+
+
+}  // anonymous namespace
+
 /*
  * Shifts `time` forward by `seconds`.
  */
@@ -114,11 +151,7 @@ seconds_after(
   TIME const time,
   double const seconds)
 {
-  using Offset = typename TIME::Offset;
-  ensure_valid(time);
-  // FIXME: Check for overflow.
-  return from_offset<TIME>(
-    time.get_offset() + (Offset) round(seconds * TIME::DENOMINATOR));
+  return seconds_shift<TIME>(time, std::abs(seconds), seconds > 0);
 }
 
 
@@ -131,11 +164,7 @@ seconds_before(
   TIME const time,
   double const seconds)
 {
-  using Offset = typename TIME::Offset;
-  ensure_valid(time);
-  // FIXME: Check for overflow.
-  return from_offset<TIME>(
-    time.get_offset() - (Offset) round(seconds * TIME::DENOMINATOR));
+  return seconds_shift<TIME>(time, std::abs(seconds), seconds < 0);
 }
 
 

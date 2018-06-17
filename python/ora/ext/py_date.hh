@@ -11,8 +11,10 @@
 #include <Python.h>
 #include <datetime.h>
 
+#include "np.hh"
 #include "ora.hh"
 #include "py.hh"
+#include "types.hh"
 
 namespace ora {
 namespace py {
@@ -28,13 +30,14 @@ using std::unique_ptr;
 // Declarations
 //------------------------------------------------------------------------------
 
-extern StructSequenceType* get_ymd_date_type();
 extern ref<Object> make_ordinal_date(ora::OrdinalDate);
 extern ref<Object> make_week_date(ora::WeekDate);
 extern ref<Object> make_ymd_date(ora::YmdDate);
 
 extern ref<Object> get_month_obj(int month);
 extern ref<Object> get_weekday_obj(int weekday);
+
+extern Weekday convert_to_weekday(Object*);
 
 /*
  * Attempts to convert various kinds of Python date objects to Date.
@@ -47,7 +50,7 @@ extern ref<Object> get_weekday_obj(int weekday);
  *  - objects with a 'datenum' attribute
  *  - objects with a 'toordinal()' method
  */
-template<class DATE> optional<DATE> maybe_date(Object*);
+template<class DATE=Date> optional<DATE> maybe_date(Object*);
 
 /*
  * Converts various kinds of Python objects to Date.
@@ -55,22 +58,22 @@ template<class DATE> optional<DATE> maybe_date(Object*);
  * If 'obj' can be converted unambiguously to a date, returns it.  Otherwise,
  * raises a Python exception.
  */
-template<class DATE> DATE convert_to_date(Object*);
+template<class DATE=Date> DATE convert_to_date(Object*);
 
 /*
  * Helper for converting a 2-element sequence of ordinal date parts.
  */
-template<class DATE> inline DATE ordinal_date_to_date(Sequence*);
+template<class DATE=Date> inline DATE ordinal_date_to_date(Sequence*);
 
 /*
  * Helper for converting a 3-element sequence of week date parts.
  */
-template<class DATE> inline DATE week_date_to_date(Sequence*);
+template<class DATE=Date> inline DATE week_date_to_date(Sequence*);
 
 /*
  * Helper for converting a 3-element sequence of date parts.
  */
-template<class DATE> inline DATE ymd_to_date(Sequence*);
+template<class DATE=Date> inline DATE ymd_to_date(Sequence*);
 
 //------------------------------------------------------------------------------
 // Virtual API
@@ -90,8 +93,12 @@ public:
   /*
    * Registers a virtual API for a Python type.
    */
-  static void add(PyTypeObject* const type, std::unique_ptr<PyDateAPI>&& api)
-    { apis_.emplace(type, std::move(api)); }
+  static PyDateAPI* add(
+    PyTypeObject* const type, 
+    std::unique_ptr<PyDateAPI>&& api)
+  {
+    return apis_.emplace(type, std::move(api)).first->second.get();
+  }
 
   /*
    * Returns the API for a Python object, or nullptr if it isn't a PyDate.
@@ -106,6 +113,17 @@ public:
 
   static PyDateAPI const* get(PyObject* const obj)
     { return get(obj->ob_type); }
+
+  static PyDateAPI const* 
+  from(
+    PyObject* const obj)
+  {
+    auto const api = get(obj);
+    if (api == nullptr) 
+      throw TypeError("not an ora date type");
+    else
+      return api;
+  }
 
   // API methods.
   virtual ora::Datenum              get_datenum(Object* date) const = 0;
@@ -132,15 +150,9 @@ using doc_t = char const* const;
 
 namespace pydate {
 
-#include "PyDate.docstrings.hh.inc"
+#include "py_date.docstrings.hh.inc"
 
 }  // namespace docstring
-
-namespace ymddate {
-
-#include "YmdDate.docstrings.hh.inc"
-
-}  // namespace ymddate
 
 }  // namespace pydate
 
@@ -222,6 +234,8 @@ private:
   // Number methods.
   static ref<Object> nb_add     (PyDate* self, Object* other, bool right);
   static ref<Object> nb_subtract(PyDate* self, Object* other, bool right);
+  static ref<Object> nb_int     (PyDate* self);
+  static ref<Object> nb_float   (PyDate* self);
   static PyNumberMethods tp_as_number_;
 
   // Methods.
@@ -263,6 +277,7 @@ private:
 public:
 
   static Type type_;
+  static PyDateAPI const* api_;
 
 };
 
@@ -275,11 +290,13 @@ PyDate<DATE>::add_to(
 {
   // Construct the type struct.
   type_ = build_type(string{module.GetName()} + "." + name);
+  // FIXME: Make the conditional on successfully importing numpy.
+  type_.tp_base = &PyGenericArrType_Type;
   // Hand it to Python.
   type_.Ready();
 
   // Set up the API.
-  PyDateAPI::add(&type_, std::make_unique<API>());
+  api_ = PyDateAPI::add(&type_, std::make_unique<API>());
 
   // Build the repr format.
   repr_format_ = make_unique<ora::date::DateFormat>(
@@ -458,6 +475,24 @@ PyDate<DATE>::nb_subtract(
 
 
 template<class DATE>
+inline ref<Object>
+PyDate<DATE>::nb_int(
+  PyDate* const self)
+{
+  throw TypeError("int() argument cannot be a date");
+}
+
+
+template<class DATE>
+inline ref<Object>
+PyDate<DATE>::nb_float(
+  PyDate* const self)
+{
+  throw TypeError("float() argument cannot be a date");
+}
+
+
+template<class DATE>
 PyNumberMethods
 PyDate<DATE>::tp_as_number_ = {
   (binaryfunc)  wrap<PyDate, nb_add>,           // nb_add
@@ -476,9 +511,11 @@ PyDate<DATE>::tp_as_number_ = {
   (binaryfunc)  nullptr,                        // nb_and
   (binaryfunc)  nullptr,                        // nb_xor
   (binaryfunc)  nullptr,                        // nb_or
-  (unaryfunc)   nullptr,                        // nb_int
+  // Work around a NumPy bug (https://github.com/numpy/numpy/issues/10693) by
+  // defining nb_int, nb_float that raise TypeError.
+  (unaryfunc)   wrap<PyDate, nb_int>,           // nb_int
   (void*)       nullptr,                        // nb_reserved
-  (unaryfunc)   nullptr,                        // nb_float
+  (unaryfunc)   wrap<PyDate, nb_float>,         // nb_float
   (binaryfunc)  nullptr,                        // nb_inplace_add
   (binaryfunc)  nullptr,                        // nb_inplace_subtract
   (binaryfunc)  nullptr,                        // nb_inplace_multiply
@@ -973,6 +1010,11 @@ PyDate<DATE>::build_type(
 template<class DATE>
 Type
 PyDate<DATE>::type_;
+
+
+template<class DATE>
+PyDateAPI const*
+PyDate<DATE>::api_;
 
 
 //------------------------------------------------------------------------------

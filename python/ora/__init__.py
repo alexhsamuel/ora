@@ -3,31 +3,36 @@ import enum
 import os
 from   pathlib import Path
 import re
-import sys
 import warnings
 
 from   .ext import *
+from   .util import Range
 
 __version__ = "0.2.4"
 
 __all__ = (
     "Date",
     "Date16",
+    "DATE_TYPES",
+
     "Daytime",
     "Daytime32",
+    "UsecDaytime",
+    "DAYTIME_TYPES",
+
     "HiTime",
-    "HmsDaytime",
-    "MIDNIGHT",
-    "Month",
-    "MonthOfYear",
     "NsTime",
     "SmallTime",
     "Time",
     "Time128",
     "Unix32Time",
     "Unix64Time",
+    "TIME_TYPES",
+
+    "HmsDaytime",
+    "Month",
+    "MonthOfYear",
     "TimeZone",
-    "UTC",
     "Weekday",
     "YmdDate",
 
@@ -52,6 +57,9 @@ __all__ = (
     "to_weekday",
     "today",
 
+    "MIDNIGHT",
+    "UTC",
+
     "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun",
 
     "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
@@ -62,6 +70,28 @@ __all__ = (
     )
 
 #-------------------------------------------------------------------------------
+
+TIME_TYPES = frozenset((
+    HiTime,
+    NsTime,
+    SmallTime,
+    Time,
+    Time,
+    Unix32Time,
+    Unix64Time,
+))
+    
+DATE_TYPES = frozenset((
+    Date,
+    Date16,
+))
+    
+DAYTIME_TYPES = frozenset((
+    Daytime, 
+    Daytime32, 
+    UsecDaytime,
+))
+    
 
 # Set the location of the time zone database.  If ZONEINFO is set in the 
 # environment, use it; otherwise, use our own copy of the database.
@@ -206,6 +236,7 @@ globals().update(Month.__members__)
 #-------------------------------------------------------------------------------
 # FIXME: Move these into C++ and extension code?
 
+MIDNIGHT = Daytime(0, 0, 0)
 UNIX_EPOCH = (1970/Jan/1, MIDNIGHT) @ UTC
 
 #-------------------------------------------------------------------------------
@@ -269,5 +300,15 @@ def get_zoneinfo_version():
     else:
         return version
 
+
+def load_calendar_file(path):
+    with open(path, "r") as file:
+        return parse_calendar(file)
+
+
+def load_business_calendar(holiday_path, weekdays=(Mon, Tue, Wed, Thu, Fri)):
+    holiday_cal = load_calendar_file(holiday_path)
+    weekday_cal = make_weekday_calendar(holiday_cal.range, weekdays)
+    return weekday_cal & ~holiday_cal
 
 

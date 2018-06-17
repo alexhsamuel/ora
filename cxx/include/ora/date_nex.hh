@@ -140,6 +140,16 @@ from_ymdi(
 //------------------------------------------------------------------------------
 
 template<class DATE>
+inline bool
+is_valid(
+  DATE const date)
+  noexcept
+{
+  return date.is_valid();
+}
+
+
+template<class DATE>
 inline Datenum
 get_datenum(
   DATE const date)
@@ -294,6 +304,7 @@ days_after(
   int const days)
   noexcept
 {
+  // FIXME: Check for overflows.
   return 
       date.is_valid()
     ? from_offset<DATE>(date.get_offset() + days)
@@ -311,6 +322,7 @@ days_before(
   int const days)
   noexcept
 {
+  // FIXME: Check for overflows.
   return nex::days_after(date, -days);
 }  
 

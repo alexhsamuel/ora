@@ -1,6 +1,6 @@
 #-*- python -*-
 
-type = """
+YmdDate = """
 A (year, month, date) tuple containing components of the Gregorian date.
 
   >>> ymd = YmdDate((1973, Dec, 3))

@@ -1,20 +1,13 @@
-# Work List
+# Miscellaneous Work List
 
-1. Intro Python documentation in rst.
-1. `print(t @ z)` should show time zone offset.
-   - Add time zone offset (and name/abbr?) to `LocalTime`.
-   - Sync up C++ LoalDatenumDaytick, LocalTime, TimeParts.
-   - `LocalTime` should carry datenum, daytick internally?
-   - `LocalTime` should construct Date, Daytime lazily?
-   - Add formatting for `LocalTime`.
-1. Fix rounding in formatting.  I _think_ this is how we should do it: Change
-   daytime formatting to use dayticks rather than HMS parts.  This also avoids
-   the need to convert to floating point seconds.  In the format_iso_time and
-   format_iso_daytime, perform the rounding on the time offset, before splitting
-   into datenum and daytick.  (This can work for integrated time formatting
-   only, not for componentwise formatting!  Rounding has to apply to all
-   components at the same time.)
+1. Document `ora.np`.
+1. Remove seconds decimal point in repr of time types with no subsecond resolution.
+1. Move doc_t into generated docstring.cc, or elsewhere.
+1. Base Python `Time`, `Date`, `Daytime` classes, as markers only.  Move APIs.
+1. Make Python Date like Time.
+1. Make Python Daytime like Time.
 1. When parsing fractional seconds, work in terms of dayticks.
+1. Make the Python default Time, Date, Daytime types setable.
 1. One too many digits of second precision?
 1. Supress trailing zeros in fractional seconds.
 1. Add `EPOCH` class attributes.
@@ -23,13 +16,13 @@
 1. Accept `dateutil` time zones.
 1. Sloppy time and date parsing.
 1. Add default precision to TimeAPI; use for formatting.
+1. Better `Time.__repr__`.
 1. Basic string parsing for `convert_to_*()` functions.
 1. Make Time(datetime, tz) work for naive datetime.
-1. Relax numpy setup dependency.
 1. Replace first with fold to match `datetime`.
 1. Revisit type definitions.
    - Benchmark 2^n vs. 10^n types.
-   - Add exact us, ns types.
+   - Add exact us, ms types.
 1. Convert docstrings to rst.
 1. Benchmark tick computations.
 1. More parsing support.
@@ -62,6 +55,90 @@
 1. Adjust/clean up C++ predefined format strings.
 1. Clean up time zone structs.
 1. macOS old tzinfo format.
+1. Expose calendar contents as numpy arrays.
+
+
+# Projects
+
+1. Initial Python documentation
+   - formatting
+   - parsing
+   - philosophy
+   - tour
+
+1. Fix rounding in formatting.  I _think_ this is how we should do it: Change
+   daytime formatting to use dayticks rather than HMS parts.  This also avoids
+   the need to convert to floating point seconds.  In the format_iso_time and
+   format_iso_daytime, perform the rounding on the time offset, before splitting
+   into datenum and daytick.  (This can work for integrated time formatting
+   only, not for componentwise formatting!  Rounding has to apply to all
+   components at the same time.)
+
+   - Deal with FE_INVALID in time add/sub.
+   - Change `Time` to use _signed_ int64 around UNIX epoch?
+
+1. `print(t @ z)` should show time zone offset.
+   - Add time zone offset (and name/abbr?) to `LocalTime`.
+   - Sync up C++ LoalDatenumDaytick, LocalTime, TimeParts.
+   - `LocalTime` should carry datenum, daytick internally?
+   - `LocalTime` should construct Date, Daytime lazily?
+   - Add formatting for `LocalTime`.
+
+1. Initial numpy support
+   - date type and ufuncs
+     - [ ] casts
+     - [x] arithmetic
+     - [x] comparisons (template)
+     - [x] is_valid
+     - [ ] weekday
+     - [x] to/from ymd date
+     - [x] to/from ordinal date
+     - [x] to/from week date
+     - [x] to/from ymdi
+     - [ ] range functions
+     - [ ] parsing
+     - [ ] formatting
+     - [ ] specialized arrfuncs (template)
+   - daytime type and ufuncs
+     - [ ] casts
+     - [x] arithmetic
+     - [x] comparisons (template)
+     - [x] is_valid
+     - [ ] to/from hms
+     - [ ] parsing
+     - [ ] formatting
+     - [ ] specialized arrfuncs (template)
+   - time type and ufuncs
+     - [ ] casts (which?)
+     - [x] to_offset
+     - [x] from_offset
+     - [x] `offset_dtype` attribute
+     - [x] arithmetic
+     - [x] comparison (template)
+     - [x] is_valid
+     - [ ] parsing
+     - [ ] formatting
+     - [ ] specialized arrfuncs (template)
+   - localization ufuncs
+     - [x] `from_local`
+     - [x] `to_local`
+
+1. Investigate 'safe integer' math packages for offset arithmetic.
+   - https://github.com/dcleblanc/SafeInt
+   - https://github.com/robertramey/safe_numerics
+   - https://github.com/RobertLeahy/Safe
+   - https://msdn.microsoft.com/en-us/library/windows/desktop/ff521693(v=vs.85).aspx
+   - others
+
+
+
+# NumPy project
+
+1. Convert `setup.py` numpy dependency to extras?
+1. Conda package with/without numpy.
+1. Travis builds with/without numpy.
+1. Either dtypes need to initialize to INVALID, or underlying types must handle
+   any bit pattern, so that `np.empty()` doesn't blow things up.
 
 
 # Small fixes
@@ -113,6 +190,9 @@
 ## PyTimeDuration
 
 ## PyCalendar
+
+- str/repr
+- calendar repo dir and get function, like time zones
 
 # Infrastructure / tech debt
 

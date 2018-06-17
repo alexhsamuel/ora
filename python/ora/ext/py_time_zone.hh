@@ -87,8 +87,6 @@ public:
 };
 
 
-// FIXME: Use a singleton object per underlying time zone.
-
 inline ref<PyTimeZone>
 PyTimeZone::create(
   ora::TimeZone_ptr const tz,
