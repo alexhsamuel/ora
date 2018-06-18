@@ -46,6 +46,7 @@ Tour
    dates
    time-zones
    localization
+   calendars
    background
    limitations
 

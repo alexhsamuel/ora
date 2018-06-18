@@ -11,6 +11,8 @@ from   .util import Range
 __version__ = "0.2.4"
 
 __all__ = (
+    "Calendar",
+
     "Date",
     "Date16",
     "DATE_TYPES",
@@ -46,7 +48,11 @@ __all__ = (
     "get_system_time_zone",
     "get_zoneinfo_dir",
     "is_leap_year",
+    "load_calendar_file",
+    "make_const_calendar",
+    "make_weekday_calendar",
     "now",
+    "parse_calendar",
     "parse_date",
     "parse_daytime",
     "parse_time",
