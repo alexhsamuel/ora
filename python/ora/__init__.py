@@ -308,6 +308,23 @@ def get_zoneinfo_version():
 
 
 def load_calendar_file(path, *, name=None):
+    """
+    Loads a calendar from the file at `path`.
+
+    The file has the following format::
+
+        START date
+        END date
+        date
+        date
+        ...
+
+    Each 'date' is in YYYY-MM-DD format.  Blank lines are ignored.  Text on
+    each line following the date is ignored.
+
+    :param name:
+      The calendar name.  If `None`, the file's stem name is used.
+    """
     path = Path(path)
     with open(path, "r") as file:
         cal = parse_calendar(file)
