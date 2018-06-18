@@ -11,9 +11,6 @@ namespace py {
 //------------------------------------------------------------------------------
 
 namespace docstring {
-
-using doc_t = char const* const;
-
 namespace pycalendar {
 
 #include "py_calendar.docstrings.hh.inc"

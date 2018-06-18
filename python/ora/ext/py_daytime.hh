@@ -101,15 +101,11 @@ private:
 //------------------------------------------------------------------------------
 
 namespace docstring {
-
-using doc_t = char const* const;
-
 namespace pydaytime {
 
 #include "py_daytime.docstrings.hh.inc"
 
 }  // namespace pydaytime
-
 }  // namespace docstring
 
 //------------------------------------------------------------------------------

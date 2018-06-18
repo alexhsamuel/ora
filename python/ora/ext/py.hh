@@ -18,6 +18,8 @@ namespace py {
 
 using std::experimental::optional;
 
+using doc_t = char const* const;
+
 class Float;
 class Iter;
 class Long;

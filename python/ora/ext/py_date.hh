@@ -145,15 +145,11 @@ private:
 //------------------------------------------------------------------------------
 
 namespace docstring {
-
-using doc_t = char const* const;
-
 namespace pydate {
 
 #include "py_date.docstrings.hh.inc"
 
 }  // namespace docstring
-
 }  // namespace pydate
 
 

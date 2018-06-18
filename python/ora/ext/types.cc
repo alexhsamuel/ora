@@ -4,14 +4,16 @@ namespace ora {
 namespace py {
 
 //------------------------------------------------------------------------------
+// Docstrings
 
 namespace docstring {
 
-using doc_t = char const* const;
 #include "types.docstrings.cc.inc"
 
 }  // namespace docstring
 
+
+//------------------------------------------------------------------------------
 
 StructSequenceType*
 get_ymd_date_type()
