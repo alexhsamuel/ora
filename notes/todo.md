@@ -1,8 +1,10 @@
 # Miscellaneous Work List
 
-1. Return namedtuple or similar from Calendar.range.
 1. Sloppy time and date parsing.
 1. Inconsistency: `ora.n.get_ymd` returns structured array but `ora.np.to_local` returns two arrays.
+1. Rename Calendar "range" to "domain".
+1. Use an interval class for the calendar domain.
+1. Fix `Time.__qualname__` etc.
 1. Remove seconds decimal point in repr of time types with no subsecond resolution.
 1. Supress trailing zeros in fractional seconds.
 1. Better `Time.__repr__`.
@@ -131,7 +133,6 @@
    - others
 
 
-
 # NumPy project
 
 1. Convert `setup.py` numpy dependency to extras?
@@ -139,12 +140,6 @@
 1. Travis builds with/without numpy.
 1. Either dtypes need to initialize to INVALID, or underlying types must handle
    any bit pattern, so that `np.empty()` doesn't blow things up.
-
-
-# Small fixes
-
-1. Fix `Time.__qualname__` etc.
-
 
 # C++ API
 
@@ -182,12 +177,7 @@
 - Rename `TimeZoneParts` to something better, maybe `TimeZoneOffset`?
 
 
-
-## PyDateDuration
-
 ## PyTime
-
-## PyTimeDuration
 
 ## PyCalendar
 
