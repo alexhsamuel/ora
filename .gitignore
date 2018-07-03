@@ -4,6 +4,7 @@
 *.o
 *.s
 .cache/
+.pytest_cache/
 build/
 cfg.sh
 dist/
