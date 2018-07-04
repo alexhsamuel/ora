@@ -305,28 +305,16 @@ method_shift(
 Methods<PyCalendar>
 tp_methods_
   = Methods<PyCalendar>()
-    .template add<method_after>                     ("after",       docstring::pycalendar::after)
-    .template add<method_before>                    ("before",      docstring::pycalendar::before)
-    .template add<method_contains>                  ("contains")
-    .template add<method_shift>                     ("shift",       docstring::pycalendar::shift)
+    .template add<method_after>             ("after",       docstring::pycalendar::after)
+    .template add<method_before>            ("before",      docstring::pycalendar::before)
+    .template add<method_contains>          ("contains")
+    .template add<method_shift>             ("shift",       docstring::pycalendar::shift)
   ;
 
 
 //------------------------------------------------------------------------------
 // Getsets
 //------------------------------------------------------------------------------
-
-ref<Object>
-get_range(
-  PyCalendar* const self,
-  void* /* closure */)
-{
-  auto const range = self->cal_.range();
-  return ref<Tuple>(Tuple::builder
-     << PyDate<Date>::create(range.start)
-     << PyDate<Date>::create(range.stop));
-}
-
 
 ref<Object>
 get_name(
@@ -353,11 +341,23 @@ set_name(
 }
 
 
+ref<Object>
+get_range(
+  PyCalendar* const self,
+  void* /* closure */)
+{
+  auto const range = self->cal_.range();
+  return ref<Tuple>(Tuple::builder
+     << PyDate<Date>::create(range.start)
+     << PyDate<Date>::create(range.stop));
+}
+
+
 GetSets<PyCalendar>
 tp_getsets_ 
   = GetSets<PyCalendar>()
-     .template add_get<get_range>               ("range")
      .template add_getset<get_name, set_name>   ("name")
+     .template add_get<get_range>               ("range")
  ;
 
 
