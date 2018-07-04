@@ -2,7 +2,7 @@ from   pathlib import Path
 import pytest
 
 import ora
-from   ora import Jan, Feb, Jun, Jul
+from   ora import Date, Jan, Feb, Jun, Jul
 
 #-------------------------------------------------------------------------------
 
@@ -188,6 +188,13 @@ def test_ops():
         assert (date in cal0 or date in cal1) == (date in cal_or)
         assert ((date in cal0) ^ (date in cal1)) == (date in cal_xor)
         assert (date in cal0 and date in cal1) == (date in cal_and)
+
+
+def test_get_calendar():
+    cal = ora.get_calendar("usa-federal-holidays")
+    start, stop = cal.range
+    assert start < Date(2018, 1, 1)
+    assert stop  > Date(2019, 1, 1)
 
 
 
