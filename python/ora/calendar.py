@@ -40,3 +40,64 @@ def load_business_calendar(holiday_path, weekdays=(0, 1, 2, 3, 4), *, name=None)
     return cal
 
 
+#-------------------------------------------------------------------------------
+
+class CalendarDir:
+    """
+    A directory containing calendar files.
+
+    Each calendar file has the suffix '.cal'.
+    """
+
+    SUFFIX = ".cal"
+
+    def __init__(self, path):
+        self.__path = Path(path)
+
+
+    @property
+    def path(self):
+        """
+        The path to the calendar directory.
+        """
+        return self.__path
+
+
+    # FIXME: Caching?
+
+    def __getitem__(self, name):
+        """
+        Gets a calendar from a calendar file.
+        """
+        path = (self.__path / name).with_suffix(self.SUFFIX)
+        try:
+            return load_calendar_file(path)
+        except FileNotFoundError:
+            raise KeyError(name)
+
+
+
+_CALENDAR_DIR = CalendarDir(Path(__file__).parent / "calendars")
+
+def get_calendar_dir():
+    """
+    Returns the global calendar directory.
+    """
+    return _CALENDAR_DIR.path
+
+
+def set_calendar_dir(path):
+    """
+    Sets the global calendar directory.
+    """
+    global _CALENDAR_DIR
+    _CALENDAR_DIR = CalendarDir(path)
+
+
+def get_calendar(name):
+    """
+    Gets a calendar from the global calendar directory.
+    """
+    return _CALENDAR_DIR[name]
+
+

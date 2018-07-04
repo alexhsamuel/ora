@@ -78,7 +78,7 @@ setup(
     packages        =["ora", "ora.np"],
     package_data    ={
         ""      : ["test/*"],
-        "ora"   : ["zoneinfo/*", "zoneinfo/*/*"],
+        "ora"   : ["calendars/*", "zoneinfo/*", "zoneinfo/*/*"],
     },
 
     ext_modules=[

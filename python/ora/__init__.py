@@ -5,7 +5,10 @@ from   pathlib import Path
 import re
 import warnings
 
-from   .calendar import load_calendar_file, load_business_calendar
+from   .calendar import (
+    load_calendar_file, load_business_calendar, CalendarDir, 
+    get_calendar_dir, set_calendar_dir, get_calendar,
+)
 from   .ext import *
 from   .util import Range
 
@@ -49,8 +52,6 @@ __all__ = (
     "get_system_time_zone",
     "get_zoneinfo_dir",
     "is_leap_year",
-    "load_calendar_file",
-    "load_business_calendar",
     "make_const_calendar",
     "make_weekday_calendar",
     "now",
@@ -64,6 +65,13 @@ __all__ = (
     "to_local",
     "to_weekday",
     "today",
+
+    "CalendarDir",
+    "get_calendar",
+    "get_calendar_dir",
+    "load_business_calendar",
+    "load_calendar_file",
+    "set_calendar_dir",
 
     "MIDNIGHT",
     "UTC",
