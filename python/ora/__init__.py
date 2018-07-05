@@ -1,5 +1,4 @@
 import contextlib
-import enum
 import os
 from   pathlib import Path
 import re
@@ -11,6 +10,7 @@ from   .calendar import (
     get_calendar_dir, set_calendar_dir, get_calendar, 
 )
 from   .ext import *
+from   .weekday import *
 from   .util import Range
 
 __version__ = "0.2.4"
@@ -130,51 +130,6 @@ class ParseError(ValueError):
 
     pass
 
-
-
-#-------------------------------------------------------------------------------
-
-class Weekday(enum.IntEnum):
-    """
-    A day of the (seven-day) week.
-
-    Integer values are counted from Monday = 0.
-    """
-
-    Mon = 0
-    Tue = 1
-    Wed = 2
-    Thu = 3
-    Fri = 4
-    Sat = 5
-    Sun = 6
-
-    def __repr__(self):
-        return super().__str__()
-
-
-    def __str__(self):
-        return self.name
-
-
-
-# FIXME: Is this a good idea?
-def to_weekday(obj):
-    if isinstance(obj, Weekday):
-        return obj
-    try:
-        return Weekday[obj]
-    except KeyError:
-        pass
-    try:
-        return Weekday(obj)
-    except ValueError:
-        pass
-    raise ValueError("can't convert to a weekday: {!r}".format(obj))
-
-
-# Add the days of the week to the module namespace.
-globals().update(Weekday.__members__)
 
 
 class MonthOfYear:
