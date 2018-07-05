@@ -7,7 +7,8 @@ import warnings
 
 from   .calendar import (
     load_calendar_file, load_business_calendar, CalendarDir, 
-    get_calendar_dir, set_calendar_dir, get_calendar,
+    format_calendar, dump_calendar_file,
+    get_calendar_dir, set_calendar_dir, get_calendar, 
 )
 from   .ext import *
 from   .util import Range
@@ -67,6 +68,8 @@ __all__ = (
     "today",
 
     "CalendarDir",
+    "dump_calendar_file",
+    "format_calendar",
     "get_calendar",
     "get_calendar_dir",
     "load_business_calendar",

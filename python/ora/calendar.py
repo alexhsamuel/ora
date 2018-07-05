@@ -1,4 +1,6 @@
 from   pathlib import Path
+from   typing import Iterable
+
 from   .ext import make_weekday_calendar, parse_calendar
 
 #-------------------------------------------------------------------------------
@@ -38,6 +40,27 @@ def load_business_calendar(holiday_path, weekdays=(0, 1, 2, 3, 4), *, name=None)
         else name
     )
     return cal
+
+
+def format_calendar(cal) -> Iterable[str]:
+    """
+    Formats `cal` in the calendar file format.
+    """
+    start, stop = cal.range
+    yield f"START {start}"
+    yield f"STOP  {stop}"
+    yield ""
+    for date in cal.dates_array:
+        yield str(date)
+
+
+def dump_calendar_file(cal, path):
+    """
+    Writes `cal` as a calendar file at `path`.
+    """
+    with open(path, "wt") as file:
+        for line in format_calendar(cal):
+            print(line, file=file)
 
 
 #-------------------------------------------------------------------------------
