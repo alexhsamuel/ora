@@ -1,3 +1,4 @@
+import numpy as np
 from   pathlib import Path
 import pytest
 
@@ -191,10 +192,32 @@ def test_ops():
 
 
 def test_get_calendar():
+    # Make sure we can load a calendar.
     cal = ora.get_calendar("usa-federal-holidays")
     start, stop = cal.range
     assert start < Date(2018, 1, 1)
     assert stop  > Date(2019, 1, 1)
 
+
+def test_dates_array_const():
+    rng = Date(2018, 7, 1), Date(2018, 8, 1)
+    cal = ora.make_const_calendar(rng, False)
+    arr = cal.dates_array
+    assert isinstance(arr, np.ndarray)
+    assert arr.shape == (0, )
+
+    cal = ora.make_const_calendar(rng, True)
+    arr = cal.dates_array
+    assert isinstance(arr, np.ndarray)
+    assert arr.shape == (31, )
+    assert list(arr) == [ rng[0] + i for i in range(31) ]
+
+
+def test_dates_array_holidays():
+    cal = ora.get_calendar("usa-federal-holidays")
+    arr = cal.dates_array
+
+    dates = [ d for d in ora.Range(*cal.range) if d in cal ]
+    assert list(arr) == dates
 
 

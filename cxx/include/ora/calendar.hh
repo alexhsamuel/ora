@@ -100,6 +100,17 @@ public:
   Calendar(Calendar&&)                      = default;
   ~Calendar()                               = default;
 
+  size_t
+  count()
+    const
+  {
+    size_t count = 0;
+    for (auto bit : dates_)
+      if (bit)
+        ++count;
+    return count;
+  }
+
   Interval<Date>
   range() 
     const

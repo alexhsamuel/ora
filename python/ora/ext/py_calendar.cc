@@ -2,6 +2,8 @@
 
 #include "py.hh"
 #include "py_calendar.hh"
+#include "py_date.hh"
+#include "np_date.hh"
 
 namespace ora {
 namespace py {
@@ -317,6 +319,27 @@ tp_methods_
 //------------------------------------------------------------------------------
 
 ref<Object>
+get_dates_array(
+  PyCalendar* const self,
+  void* /* closure */)
+{
+  auto const type_num   = DateDtype<PyDateDefault>::get()->type_num;
+  auto const length     = self->cal_.count();
+  auto arr              = Array::SimpleNew1D(length, type_num);
+  auto const ptr        = arr->get_ptr<Date>();
+  auto const range      = self->cal_.range();
+
+  auto i = size_t(0);
+  for (auto date = range.start; date < range.stop; ++date)
+    if (self->cal_.contains(date))
+      ptr[i++] = date;
+  assert(i == length);
+
+  return std::move(arr);
+}
+
+
+ref<Object>
 get_name(
   PyCalendar* const self,
   void* /* closure */)
@@ -356,6 +379,7 @@ get_range(
 GetSets<PyCalendar>
 tp_getsets_ 
   = GetSets<PyCalendar>()
+     .template add_get<get_dates_array>         ("dates_array")
      .template add_getset<get_name, set_name>   ("name")
      .template add_get<get_range>               ("range")
  ;
