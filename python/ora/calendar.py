@@ -1,7 +1,9 @@
 from   pathlib import Path
 from   typing import Iterable
 
-from   .ext import make_weekday_calendar, parse_calendar
+from   .ext import Date
+from   .ext import make_weekday_calendar, parse_calendar, make_const_calendar
+from   .weekday import parse_weekdays
 
 #-------------------------------------------------------------------------------
 
@@ -117,10 +119,31 @@ def set_calendar_dir(path):
     _CALENDAR_DIR = CalendarDir(path)
 
 
+def _get_special_calendar(name):
+    if name == "all":
+        return make_const_calendar((Date.MIN, Date.MAX), True)
+    if name == "none":
+        return make_const_calendar((Date.MIN, Date.MAX), False)
+
+    try:
+        weekdays = parse_weekdays(name)
+    except ValueError:
+        pass
+    else:
+        return make_weekday_calendar((Date.MIN, Date.MAX), weekdays)
+
+    raise LookupError(f"unknown calendar: {name}")
+
+
 def get_calendar(name):
     """
     Gets a calendar from the global calendar directory.
     """
+    try:
+        return _get_special_calendar(name)
+    except LookupError:
+        pass
+
     return _CALENDAR_DIR[name]
 
 
