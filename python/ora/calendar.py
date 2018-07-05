@@ -137,7 +137,12 @@ def _get_special_calendar(name):
 
 def get_calendar(name):
     """
-    Gets a calendar from the global calendar directory.
+    Gets a calendar.
+
+    The name may be:
+    - "all" or "none"
+    - A weekday expression; see `parse_weekdays`.
+    - The name of a calendar in the global calendar directory.
     """
     try:
         return _get_special_calendar(name)

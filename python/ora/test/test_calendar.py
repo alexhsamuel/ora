@@ -3,7 +3,7 @@ from   pathlib import Path
 import pytest
 
 import ora
-from   ora import Date, Jan, Feb, Jun, Jul
+from   ora import Date, Jan, Feb, Jun, Jul, Mon, Tue, Fri
 
 #-------------------------------------------------------------------------------
 
@@ -219,5 +219,16 @@ def test_dates_array_holidays():
 
     dates = [ d for d in ora.Range(*cal.range) if d in cal ]
     assert list(arr) == dates
+
+
+def test_special():
+    cal = ora.get_calendar("all")
+    cal = ora.get_calendar("none")
+    assert len(cal.dates_array) == 0
+
+    cal = ora.get_calendar("Mon-Tue,Fri")
+    for date in cal.dates_array[: 32]:
+        assert date.weekday in {Mon, Tue, Fri}
+
 
 
