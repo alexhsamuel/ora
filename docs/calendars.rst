@@ -131,6 +131,17 @@ comments.
 
 Use `parse_calendar` to parse lines of text directly.
 
+Dumping calendars
+-----------------
+
+Use `format_calendar` to produce the calendar file format.  This function
+returns an interable of lines.
+
+    >>> for line in format_calendar(cal):
+    ...     print(line)
+
+To write this directly to a file, use `dump_calenar_file(cal, path)`.    
+
 
 Arithmetic
 ----------
