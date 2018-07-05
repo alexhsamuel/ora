@@ -89,20 +89,6 @@ If these methods move past the calendar range, the calendar throws
       File "<stdin>", line 1, in <module>
     ora.CalendarRangeError: date not in calendar range
 
-Making calendars
-----------------
-
-In addition specifying to explicit dates, you can create calendars with
-these special functions:
-
-`make_const_calendar(range, contains)` returns a calendar that contains *all*
-dates in its range, if `contains` is true, or *none* of them otherwise.
-
-`make_weekday_calendar(range, weekdays)` returns a calendar that contains only
-the specified weekdays.
-
-    >>> cal = make_weekday_calendar(cal_range, [Mon, Wed, Fri])
-
 Finding calendars
 -----------------
 
@@ -116,6 +102,20 @@ these:
 
 Use `get_calendar_dir()` and `set_calendar_dir()` to retrieve and set global
 calendar directory.  
+
+Making calendars
+----------------
+
+In addition specifying to explicit dates, you can create calendars with
+these special functions:
+
+`make_const_calendar(range, contains)` returns a calendar that contains *all*
+dates in its range, if `contains` is true, or *none* of them otherwise.
+
+`make_weekday_calendar(range, weekdays)` returns a calendar that contains only
+the specified weekdays.
+
+    >>> cal = make_weekday_calendar(cal_range, [Mon, Wed, Fri])
 
 Loading calendars
 -----------------
