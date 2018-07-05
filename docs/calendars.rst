@@ -154,7 +154,7 @@ returns an interable of lines.
     >>> for line in format_calendar(cal):
     ...     print(line)
 
-To write this directly to a file, use `dump_calenar_file(cal, path)`.    
+To write this directly to a file, use `dump_calendar_file(cal, path)`.    
 
 
 Arithmetic
