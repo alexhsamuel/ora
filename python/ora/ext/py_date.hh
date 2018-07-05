@@ -189,6 +189,9 @@ public:
    */
   static bool Check(PyObject* object);
 
+  static std::string repr(Date const date) 
+    { return (*repr_format_)(date); }
+
   PyDate(Date date) : date_(date) {}
 
   /*
@@ -382,7 +385,7 @@ ref<Unicode>
 PyDate<DATE>::tp_repr(
   PyDate* const self)
 {
-  return Unicode::from((*repr_format_)(self->date_));
+  return Unicode::from(repr(self->date_));
 }
 
 

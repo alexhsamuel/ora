@@ -58,9 +58,13 @@ tp_repr(
 {
   std::string full_name{self->ob_type->tp_name};
   std::string type_name = full_name.substr(full_name.rfind('.') + 1);
-  auto repr = type_name + "(";
+  auto const range = self->cal_.range();
+  auto repr = 
+    type_name + "(("
+    + PyDate<Date>::repr(range.start) 
+    + ", " + PyDate<Date>::repr(range.stop) + ")";
   if (self->name_ != nullptr)
-    repr += "name=" + self->name_->Repr()->as_utf8_string();
+    repr += ", name=" + self->name_->Repr()->as_utf8_string();
   repr += ")";
   return Unicode::from(repr);
 }

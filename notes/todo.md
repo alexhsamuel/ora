@@ -1,7 +1,6 @@
 # Miscellaneous Work List
 
 1. Show calendar range in repr.
-1. Calendar method or function to produce list of dates.
 1. Document `ora.np`.
 1. Remove seconds decimal point in repr of time types with no subsecond resolution.
 1. Base Python `Time`, `Date`, `Daytime` classes, as markers only.  Move APIs.
