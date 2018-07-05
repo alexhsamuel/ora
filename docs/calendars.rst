@@ -103,6 +103,20 @@ the specified weekdays.
 
     >>> cal = make_weekday_calendar(cal_range, [Mon, Wed, Fri])
 
+Finding calendars
+-----------------
+
+Use the `get_calendar()` function to obtain a calendar.  It accepts any of
+these:
+
+- "none", which contains no dates
+- "all", which contains all dates
+- a weekday expression such as "Mon", or "Mon,Wed-Fri"
+- the name of a calendar file in the global calendar directory
+
+Use `get_calendar_dir()` and `set_calendar_dir()` to retrieve and set global
+calendar directory.  
+
 Loading calendars
 -----------------
 
