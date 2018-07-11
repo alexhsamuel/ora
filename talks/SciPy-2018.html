@@ -17,9 +17,28 @@
         font-weight: 700;
       }
       .remark-slide-content {
-        font-size: 32px;
+        font-size: 36px;
       }
       .remark-code, .remark-inline-code { font-family: 'Inconsolata'; }
+
+
+
+div.footer {
+    position: absolute;
+    bottom: 0px;
+    left: 24px;
+    height: 32px;
+    width: 100%;
+    font-size: 16px;
+}
+
+div.footer span {
+    font-size: 10pt;
+    position: absolute;
+    left: 15px;
+    bottom: 2px;
+}
+
     </style>
   </head>
   <body>
@@ -65,6 +84,12 @@ class: center, middle
 
 ---
 
+layout: true
+
+<div class="footer">https://bit.ly/2NJSk39</div>
+
+---
+
 # Implementation
 
 - template C++ library + Python
@@ -87,7 +112,7 @@ Date(2018, Jul, 11)
 # Types
 
 - time, date, time-of-day, time zone
-- multiple widths, precisions, ranges
+- widths, resolutions, ranges
 - distinct missing, invalid values
 
 ```py
@@ -108,7 +133,7 @@ ora.Time(9999, 12, 31, 23, 59, 59.99999997, UTC)
 
 - small
 - focus on physical time
-- explicit physical time ↔ local date/time
+- explicit physical ↔ local time
 - rich + fast formatting and parsing
 
 ```py
@@ -136,6 +161,7 @@ array([Date(2018, Jul, 11), Date(2018, Jul, 11)], dtype=Date)
 ---
 
 class: center, middle
+layout: false
 
 # Ora
 
