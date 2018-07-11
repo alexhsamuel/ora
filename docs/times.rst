@@ -124,7 +124,7 @@ a different range and resolution.
 =============== ======== =========== ====================
 Type            Size     Resolution  Approx Range (years)
 =============== ======== =========== ====================
-`SmallTime`      32 bits 1 s         1970-2016
+`SmallTime`      32 bits 1 s         1970-2106
 `Unix32Time`     32 bits 1 s         1902-2038
 `Unix64Time`     64 bits 1 s         0001-9999
 `Time`           64 bits 30 ns       0001-9999
