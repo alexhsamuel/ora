@@ -1,11 +1,9 @@
-import datetime
-import sys
-
 import numpy as np
 import pytest
 
 import ora
-from   ora import *
+from   ora import DATE_TYPES
+from   ora import Date, Date16, Jan, Feb, Mar, Sep, Nov, Dec
 
 #-------------------------------------------------------------------------------
 
@@ -124,6 +122,13 @@ def test_is_valid(Date):
     assert (v == np.array([ d.valid for d in dates ])).all()
 
 
+@pytest.mark.parametrize("Date", DATE_TYPES)
+def test_is_valid2(Date):
+    arr = get_array(Date)
+    iv = ora.np.is_valid(arr)
+    assert iv[: -2].all() & ~iv[-2 :].any()
+
+
 def test_add_shift():
     assert (arr + 1 == (
         Date.MIN + 1,
@@ -177,12 +182,5 @@ def test_subtract_diff():
     sub = arr - 5
     dif = arr - sub
     assert (~ora.np.is_valid(sub) | (dif == 5)).all()
-
-
-@pytest.mark.parametrize("Date", DATE_TYPES)
-def test_is_valid(Date):
-    arr = get_array(Date)
-    iv = ora.np.is_valid(arr)
-    assert iv[: -2].all() & ~iv[-2 :].any()
 
 
