@@ -242,6 +242,8 @@ fixmes:
 	@find $(CXX_DIR) $(PY_DIR) -name \*.cc -o -name \*.hh -o -name \*.py \
 	| xargs grep FIXME
 
+.SUFFIXES:
+
 #-------------------------------------------------------------------------------
 
 # Include autodependency makefles.
