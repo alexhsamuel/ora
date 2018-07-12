@@ -44,7 +44,7 @@ LDLIBS          =
 
 ifeq ($(UNAME),Linux)
   CXXFLAGS     += -pthread
-  LDLIBS       += -lpthread
+  LDLIBS       += -lpthread -lrt
 endif
 
 #-------------------------------------------------------------------------------
