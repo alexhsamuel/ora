@@ -338,6 +338,7 @@ functions
     .add<date_from_ymd>             ("date_from_ymd")
     .add<date_from_ymdi>            ("date_from_ymdi")
     .add<from_local>                ("from_local")
+    // FIXME: Rename to time_from_offset, or accept date and daytime.
     .add<from_offset>               ("from_offset")
     .add<to_local>                  ("to_local")
   ;

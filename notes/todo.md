@@ -2,6 +2,7 @@
 
 1. Return namedtuple or similar from Calendar.range.
 1. Document `ora.np`.
+1. Inconsistency: `ora.n.get_ymd` returns structured array but `ora.np.to_local` returns two arrays.
 1. Remove seconds decimal point in repr of time types with no subsecond resolution.
 1. Base Python `Time`, `Date`, `Daytime` classes, as markers only.  Move APIs.
 1. Make Python Date like Time.
@@ -84,7 +85,7 @@
    - `LocalTime` should construct Date, Daytime lazily?
    - Add formatting for `LocalTime`.
 
-1. Initial numpy support
+1. NumPya support
    - date type and ufuncs
      - [ ] casts
      - [x] arithmetic

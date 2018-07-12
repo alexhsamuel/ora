@@ -46,6 +46,7 @@ Tour
    dates
    time-zones
    localization
+   numpy
    calendars
    background
    limitations
