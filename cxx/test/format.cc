@@ -224,11 +224,11 @@ TEST(TimeFormat, iso_T_tz) {
   auto const tz1 = get_time_zone("Asia/Tokyo");
   auto const tz2 = get_time_zone("Asia/Kolkata");
   
-  EXPECT_EQ("2018-01-28T15:20:08-05:00",        TimeFormat("%T")(time, *tz0));
-  EXPECT_EQ("20180129T052008+0900",             TimeFormat("%~T")(time, *tz1));
-  EXPECT_EQ("2018-01-29t01:50:08+05:30",        TimeFormat("%_T")(time, *tz2));
-  EXPECT_EQ("2018-01-28T15:20:08.-05:00",       TimeFormat("%.0T")(time, *tz0));
-  EXPECT_EQ("2018-01-29T01:50:08.762+05:30",    TimeFormat("%.3T")(time, *tz2));
+  EXPECT_EQ("2018-01-28T15:20:08R",             TimeFormat("%T")(time, *tz0));
+  EXPECT_EQ("20180129T052008I",                 TimeFormat("%~T")(time, *tz1));
+  EXPECT_EQ("2018-01-29t01:50:08?",             TimeFormat("%_T")(time, *tz2));
+  EXPECT_EQ("2018-01-28T15:20:08.R",            TimeFormat("%.0T")(time, *tz0));
+  EXPECT_EQ("2018-01-29T01:50:08.762?",         TimeFormat("%.3T")(time, *tz2));
   EXPECT_EQ("2018-01-28T20:20:08.762939453125Z", TimeFormat("%.12T")(time, *UTC));
 }
 

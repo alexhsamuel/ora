@@ -580,7 +580,7 @@ parse_iso_time(
   else
     return false;
   TRY(parse_iso_daytime(s, hms, compact));
-  // Accept only 'Z' for UTC, not any other military time zone letter.
+  // FIXME: Accept only 'Z' for UTC, not any other military time zone letter.
   if (*s == 'Z') {
     tz_offset = 0;
     ++s;

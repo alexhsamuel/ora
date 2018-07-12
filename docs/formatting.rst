@@ -59,6 +59,10 @@ Code Example                      Description
 `%z` `-0500`                      5-char UTC offset, e.g. +0000 
 ==== ============================ ===========
 
+Note that some time zones and UTC offsets cannot be represented with a military
+time zone letter.  Use the numerical UTC offset wherever possible, except
+possibly when formatting times in UTC only.
+
 
 Modifiers
 ---------

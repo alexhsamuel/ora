@@ -335,8 +335,8 @@ format_iso_time(
   sb.format(date.day, 2, '0');
   sb << (capital ? 'T' : 't');
   daytime::format_iso_daytime(sb, daytime, precision, compact);
-  if (military && time_zone.offset == 0)
-    sb << 'Z';
+  if (military)
+    sb << get_time_zone_offset_letter(time_zone.offset);
   else
     format_iso_offset(sb, time_zone, !compact);
 }
