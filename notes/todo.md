@@ -39,6 +39,7 @@
 1. timezone etc. namespace cleanup
 1. Daytime and Time rounding functions.  Maybe like Arrow's `floor()`, `ceil()`?
 1. Use `fold` attribute per [PEP-495](https://www.python.org/dev/peps/pep-0495/)
+1. Make `std` a method instead of an attribute?  Accept a time zone?
 1. Clean up C++ Time and localization functions; document.
 1. Clean up old-style docstrings.
 1. Update docs for nex, namespaces, includes.
