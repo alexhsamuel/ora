@@ -463,6 +463,9 @@ public:
   parse(
     std::string const& pattern)
   {
+    if (pattern.length() == 0)
+      // Empty pattern.  
+      return {TimeFormat::DEFAULT.get_pattern(), UTC};
     // Look for a time zone in the format pattern.
     auto const at = pattern.rfind('@');
     if (at == std::string::npos) {
