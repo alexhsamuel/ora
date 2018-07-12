@@ -41,6 +41,13 @@ representation, you must specify the time zone as well.
 - Another time instance, or an _aware_ `datetime.datetime` instance.
 - An ISO 8601 string, or `"MIN"` or `"MAX"`.
 
+The `std` attribute returns the time represented as closely as possible by a
+`datetime.datetime` instance.  The instance's `tzinfo` is always explicitly set
+to UTC.
+
+    >>> time.std
+    datetime.datetime(2018, 7, 12, 19, 32, 39, 791202, tzinfo=datetime.timezone.utc)
+
 
 Special times
 -------------
@@ -129,7 +136,7 @@ Type            Size     Resolution  Approx Range (years)
 `Unix64Time`     64 bits 1 s         0001-9999
 `Time`           64 bits 30 ns       0001-9999
 `NsTime`         64 bits 1 ns        1677-2262
-`HiTime`         64 bits 233 fs      1970-2016
+`HiTime`         64 bits 233 fs      1970-2106
 `Time128`       128 bits 54 zs       0001-9999
 =============== ======== =========== ====================
 
@@ -157,4 +164,5 @@ you to specify which time class you want.
 
     >>> now(Time=Time128)
     Time128(2018, 3, 2, 12, 49, 21.010432000000000, UTC)
+
 
