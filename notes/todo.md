@@ -4,6 +4,7 @@
 1. Document `ora.np`.
 1. Inconsistency: `ora.n.get_ymd` returns structured array but `ora.np.to_local` returns two arrays.
 1. Remove seconds decimal point in repr of time types with no subsecond resolution.
+1. Should `format(time)` produce the same as `str(time)`?
 1. Base Python `Time`, `Date`, `Daytime` classes, as markers only.  Move APIs.
 1. Make Python Date like Time.
 1. Make Python Daytime like Time.
