@@ -306,6 +306,7 @@ PyDate<DATE>::add_to(
   // Add in static data members.
   Dict* const dict = (Dict*) type_.tp_dict;
   assert(dict != nullptr);
+  dict->SetItemString("EPOCH"   , create(Date::from_offset(0)));
   dict->SetItemString("INVALID" , create(Date::INVALID));
   dict->SetItemString("MAX"     , create(Date::MAX));
   dict->SetItemString("MIN"     , create(Date::MIN));
