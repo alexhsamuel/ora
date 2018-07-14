@@ -8,6 +8,7 @@
 1. Base Python `Time`, `Date`, `Daytime` classes, as markers only.  Move APIs.
 1. Make Python Date like Time.
 1. Make Python Daytime like Time.
+1. Fix `LocalTime`; see below.
 1. When parsing fractional seconds, work in terms of dayticks.
 1. Make the Python default Time, Date, Daytime types setable.
 1. One too many digits of second precision?
