@@ -3,12 +3,10 @@ import pytest
 
 import ora
 from   ora import Time, Time128, HiTime, NsTime, SmallTime, Unix32Time, Unix64Time
-from   ora import Date, Daytime, UTC, MIDNIGHT
+from   ora import TIME_TYPES, Date, Daytime, UTC, MIDNIGHT
 from   ora import Jan, Jul, Nov, Dec
 from   ora import to_local, from_local, now, display_time_zone, format_time
 from   tools import xeq
-
-TIME_TYPES = (Time, Time128, HiTime, NsTime, SmallTime, Unix32Time, Unix64Time)
 
 #-------------------------------------------------------------------------------
 
