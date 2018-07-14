@@ -284,6 +284,7 @@ PyTime<TIME>::set_up(
   Dict* const dict = (Dict*) type_.tp_dict;
   assert(dict != nullptr);
   dict->SetItemString("DENOMINATOR" , Long::from(Time::DENOMINATOR));
+  dict->SetItemString("EPOCH"       , create(Time::from_offset(0)));
   dict->SetItemString("INVALID"     , create(Time::INVALID));
   dict->SetItemString("MAX"         , create(Time::MAX));
   dict->SetItemString("MIN"         , create(Time::MIN));

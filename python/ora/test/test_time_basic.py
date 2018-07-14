@@ -24,6 +24,12 @@ def test_max():
     assert not Time.MAX.missing
 
 
+@pytest.mark.parametrize("Time", TIME_TYPES)
+def test_epoch(Time):
+    assert isinstance(Time.EPOCH, Time)
+    assert Time.EPOCH == Time.from_offset(0)
+
+
 def test_comparison():
     assert     Time.MIN     == Time.MIN
     assert     Time.MAX     != Time.MIN
