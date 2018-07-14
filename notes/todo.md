@@ -13,7 +13,6 @@
 1. Make the Python default Time, Date, Daytime types setable.
 1. One too many digits of second precision?
 1. Supress trailing zeros in fractional seconds.
-1. Add `EPOCH` class attributes.
 1. Fixed-offset time zones, corresponding to `datetime.timezone`.
 1. Accept `datetime.timezone` time zones.
 1. Accept `dateutil` time zones.
