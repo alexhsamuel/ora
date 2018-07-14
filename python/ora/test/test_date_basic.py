@@ -1,8 +1,8 @@
 import datetime
 import pytest
 
-from   ora import *
 from   ora import Date, Date16, TimeZone, now, today, UTC
+from   ora import Apr, Jun, Jul, Dec
 
 import data
 
