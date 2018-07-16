@@ -4,6 +4,7 @@
 1. Inconsistency: `ora.n.get_ymd` returns structured array but `ora.np.to_local` returns two arrays.
 1. Rename Calendar "range" to "domain".
 1. Use an interval class for the calendar domain.
+1. Come up with a better syntax for the domain the calendar file.
 1. Fix `Time.__qualname__` etc.
 1. Remove seconds decimal point in repr of time types with no subsecond resolution.
 1. Supress trailing zeros in fractional seconds.
