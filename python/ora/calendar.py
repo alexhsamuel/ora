@@ -130,7 +130,10 @@ def _get_special_calendar(name):
     except ValueError:
         pass
     else:
-        return make_weekday_calendar((Date.MIN, Date.MAX), weekdays)
+        cal = make_weekday_calendar((Date.MIN, Date.MAX), weekdays)
+        # FIXME: Do this in make_weekday_calendar.
+        cal.name = name
+        return cal
 
     raise LookupError(f"unknown calendar: {name}")
 
