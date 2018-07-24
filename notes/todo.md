@@ -1,5 +1,12 @@
 # Miscellaneous Work List
 
+1. matplotlib axis integration
+1. Fixfmt-style formatter objects.
+1. Date, time, daytime range functions.
+1. Rounding functions.
+1. Nth day of month function (or generator!).
+1. Span class.
+1. Return namedtuple or similar from Calendar.range.
 1. Sloppy time and date parsing.
 1. Inconsistency: `ora.n.get_ymd` returns structured array but `ora.np.to_local` returns two arrays.
 1. Rename Calendar "range" to "domain".
