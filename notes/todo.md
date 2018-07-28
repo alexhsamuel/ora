@@ -1,6 +1,7 @@
 # Miscellaneous Work List
 
 1. matplotlib axis integration
+1. Use [ryu](https://github.com/ulfjack/ryu/tree/master/ryu) for `format_seconds()`.
 1. Fixfmt-style formatter objects.
 1. Date, time, daytime range functions.
 1. Rounding functions.
