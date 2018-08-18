@@ -537,6 +537,7 @@ bool parse_daytime_parts(
       skip_modifiers(p);
 
       switch (*p) {
+      case 'C': TRY(parse_iso_daytime(s, hms)); break;
       case 'f': TRY(parse_usec(s, extra.usec)); break;
       case 'H': TRY(parse_hour(s, hms.hour)); break;
       case 'I': TRY(parse_hour12(s, extra.hour_12)); break;
@@ -579,7 +580,7 @@ parse_iso_time(
   else
     return false;
   TRY(parse_iso_daytime(s, hms, compact));
-  // Accept only 'Z' for UTC, not any other military time zone letter.
+  // FIXME: Accept only 'Z' for UTC, not any other military time zone letter.
   if (*s == 'Z') {
     tz_offset = 0;
     ++s;
@@ -642,6 +643,7 @@ parse_time_parts(
                 date.ordinal_date.year = date.ymd_date.year; break;
       case 'y': TRY(parse_two_digit_year(s, date.ymd_date.year)); break;
 
+      case 'C': TRY(parse_iso_daytime(s, hms)); break;
       case 'f': TRY(parse_usec(s, extra.usec)); break;
       case 'H': TRY(parse_hour(s, hms.hour)); break;
       case 'I': TRY(parse_hour12(s, extra.hour_12)); break;

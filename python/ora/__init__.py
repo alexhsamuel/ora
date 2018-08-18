@@ -1,16 +1,23 @@
 import contextlib
-import enum
 import os
 from   pathlib import Path
 import re
 import warnings
 
+from   .calendar import (
+    load_calendar_file, load_business_calendar, CalendarDir, 
+    format_calendar, dump_calendar_file,
+    get_calendar_dir, set_calendar_dir, get_calendar, 
+)
 from   .ext import *
+from   .weekday import *
 from   .util import Range
 
-__version__ = "0.2.4"
+__version__ = "0.3.2"
 
 __all__ = (
+    "Calendar",
+
     "Date",
     "Date16",
     "DATE_TYPES",
@@ -46,7 +53,10 @@ __all__ = (
     "get_system_time_zone",
     "get_zoneinfo_dir",
     "is_leap_year",
+    "make_const_calendar",
+    "make_weekday_calendar",
     "now",
+    "parse_calendar",
     "parse_date",
     "parse_daytime",
     "parse_time",
@@ -56,6 +66,15 @@ __all__ = (
     "to_local",
     "to_weekday",
     "today",
+
+    "CalendarDir",
+    "dump_calendar_file",
+    "format_calendar",
+    "get_calendar",
+    "get_calendar_dir",
+    "load_business_calendar",
+    "load_calendar_file",
+    "set_calendar_dir",
 
     "MIDNIGHT",
     "UTC",
@@ -111,51 +130,6 @@ class ParseError(ValueError):
 
     pass
 
-
-
-#-------------------------------------------------------------------------------
-
-class Weekday(enum.IntEnum):
-    """
-    A day of the (seven-day) week.
-
-    Integer values are counted from Monday = 0.
-    """
-
-    Mon = 0
-    Tue = 1
-    Wed = 2
-    Thu = 3
-    Fri = 4
-    Sat = 5
-    Sun = 6
-
-    def __repr__(self):
-        return super().__str__()
-
-
-    def __str__(self):
-        return self.name
-
-
-
-# FIXME: Is this a good idea?
-def to_weekday(obj):
-    if isinstance(obj, Weekday):
-        return obj
-    try:
-        return Weekday[obj]
-    except KeyError:
-        pass
-    try:
-        return Weekday(obj)
-    except ValueError:
-        pass
-    raise ValueError("can't convert to a weekday: {!r}".format(obj))
-
-
-# Add the days of the week to the module namespace.
-globals().update(Weekday.__members__)
 
 
 class MonthOfYear:
@@ -299,26 +273,5 @@ def get_zoneinfo_version():
         raise RuntimeError("unexpected zoneinfo version: {}".format(version))
     else:
         return version
-
-
-def load_calendar_file(path, *, name=None):
-    path = Path(path)
-    with open(path, "r") as file:
-        cal = parse_calendar(file)
-    cal.name = path.stem if name is None else name
-    return cal
-
-
-def load_business_calendar(
-        holiday_path, weekdays=(Mon, Tue, Wed, Thu, Fri), *, name=None):
-    holiday_cal = load_calendar_file(holiday_path)
-    weekday_cal = make_weekday_calendar(holiday_cal.range, weekdays)
-    cal = weekday_cal & ~holiday_cal
-    cal.name = (
-        ",".join( str(w) for w in weekdays ) + " except " + holiday_cal.name
-        if name is None
-        else name
-    )
-    return cal
 
 

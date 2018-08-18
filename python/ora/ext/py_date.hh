@@ -145,15 +145,11 @@ private:
 //------------------------------------------------------------------------------
 
 namespace docstring {
-
-using doc_t = char const* const;
-
 namespace pydate {
 
 #include "py_date.docstrings.hh.inc"
 
 }  // namespace docstring
-
 }  // namespace pydate
 
 
@@ -192,6 +188,9 @@ public:
    * Returns true if 'object' is an instance of this type.
    */
   static bool Check(PyObject* object);
+
+  static std::string repr(Date const date) 
+    { return (*repr_format_)(date); }
 
   PyDate(Date date) : date_(date) {}
 
@@ -307,6 +306,7 @@ PyDate<DATE>::add_to(
   // Add in static data members.
   Dict* const dict = (Dict*) type_.tp_dict;
   assert(dict != nullptr);
+  dict->SetItemString("EPOCH"   , create(Date::from_offset(0)));
   dict->SetItemString("INVALID" , create(Date::INVALID));
   dict->SetItemString("MAX"     , create(Date::MAX));
   dict->SetItemString("MIN"     , create(Date::MIN));
@@ -386,7 +386,7 @@ ref<Unicode>
 PyDate<DATE>::tp_repr(
   PyDate* const self)
 {
-  return Unicode::from((*repr_format_)(self->date_));
+  return Unicode::from(repr(self->date_));
 }
 
 

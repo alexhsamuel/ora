@@ -1,0 +1,63 @@
+#-*- python -*-
+
+type = """
+A calendar.
+
+A calendar is a subset of the dates in a date range.  It may represent, for 
+instance, public holidays in a jurisdiction, or dates on which a business is
+open.  A calendar always carries a range of dates for which it is applicable.
+
+
+# Constructor
+
+Construct a `Calendar` with a (start, stop) range and a sequence of dates in
+that range.  The range is half-inclusive; dates on or after the start date and
+strictly before the stop date are in the range.
+
+
+# Membership
+
+The `in` operator returns whether a date is in the calendar.  The date must
+be in the calendar's range; otherwise the calendar raises `CalendarRangeError`.
+
+"""
+
+
+after = """
+Returns the first date in the calendar on or after `date`.
+
+If `date` is in the calendar, returns it.
+
+:signature:
+  after(date)
+:raise CalendarRangeError:
+  The calendar contains no date on or after `date`.
+"""
+
+
+before = """
+Returns the first date in the calendar before or on `date`.
+
+If `date` is in the calendar, returns it.
+
+:signature:
+  after(date)
+:raise CalendarRangeError:
+  The calendar contains no date before or on `date`.
+"""
+
+
+shift = """
+Shifts `date` forward or backward in the calendar by `shift` calendar days.
+
+If `date` is not in the calendar, the first forward/backward shift takes it to
+the nearest calendar date after/before.
+
+:param shift:
+  The number of calendar days to shift forward (positive) or backward
+  (negative).  If zero, does not shift the date.
+:signature:
+  shift(date, shift)
+"""
+
+

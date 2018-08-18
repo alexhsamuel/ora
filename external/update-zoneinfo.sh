@@ -18,7 +18,7 @@ if [[ -z "$version" ]]; then
     exit 1
 fi
 
-wget https://data.iana.org/time-zones/releases/tzdb-$version.tar.lz
+curl https://data.iana.org/time-zones/releases/tzdb-$version.tar.lz -O
 
 tar xf tzdb-$version.tar.lz
 cd tzdb-$version

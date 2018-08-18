@@ -2,9 +2,25 @@
 
 #include "py.hh"
 #include "py_calendar.hh"
+#include "py_date.hh"
+#include "np_date.hh"
 
 namespace ora {
 namespace py {
+
+//------------------------------------------------------------------------------
+// Docstrings
+//------------------------------------------------------------------------------
+
+namespace docstring {
+namespace pycalendar {
+
+#include "py_calendar.docstrings.hh.inc"
+#include "py_calendar.docstrings.cc.inc"
+
+}  // namespace docstring
+}  // namespace pydate
+
 
 //------------------------------------------------------------------------------
 
@@ -42,9 +58,13 @@ tp_repr(
 {
   std::string full_name{self->ob_type->tp_name};
   std::string type_name = full_name.substr(full_name.rfind('.') + 1);
-  auto repr = type_name + "(";
+  auto const range = self->cal_.range();
+  auto repr = 
+    type_name + "(("
+    + PyDate<Date>::repr(range.start) 
+    + ", " + PyDate<Date>::repr(range.stop) + ")";
   if (self->name_ != nullptr)
-    repr += "name=" + self->name_->Repr()->as_utf8_string();
+    repr += ", name=" + self->name_->Repr()->as_utf8_string();
   repr += ")";
   return Unicode::from(repr);
 }
@@ -79,7 +99,6 @@ tp_init(
   while (auto date_obj = dates_iter->Next())
     dates.push_back(convert_to_date(date_obj));
 
-  std::cerr << "name=" << name_arg->Str()->as_utf8() << "\n";
   new(self) PyCalendar(Calendar(range, dates), name_arg);
 }
 
@@ -107,7 +126,22 @@ nb_and(
     return PyCalendar::create(self->cal_ & other->cal_);
   }
   else
-    throw TypeError("not a Calendar");
+    return not_implemented_ref();
+}
+
+
+ref<Object>
+nb_xor(
+  PyCalendar* self,
+  Object* arg,
+  bool /* right */)
+{
+  if (PyCalendar::Check(arg)) {
+    auto other = cast<PyCalendar>(arg);
+    return PyCalendar::create(self->cal_ ^ other->cal_);
+  }
+  else
+    return not_implemented_ref();
 }
 
 
@@ -122,7 +156,7 @@ nb_or(
     return PyCalendar::create(self->cal_ | other->cal_);
   }
   else
-    throw TypeError("not a Calendar");
+    return not_implemented_ref();
 }
 
 
@@ -142,8 +176,8 @@ tp_as_number = {
   (binaryfunc)  nullptr,                        // nb_lshift
   (binaryfunc)  nullptr,                        // nb_rshift
   (binaryfunc)  wrap<PyCalendar, nb_and>,       // nb_and
-  (binaryfunc)  wrap<PyCalendar, nb_or>,        // nb_xor
-  (binaryfunc)  nullptr,                        // nb_or
+  (binaryfunc)  wrap<PyCalendar, nb_xor>,       // nb_xor
+  (binaryfunc)  wrap<PyCalendar, nb_or>,        // nb_or
   (unaryfunc)   nullptr,                        // nb_int
   (void*)       nullptr,                        // nb_reserved
   (unaryfunc)   nullptr,                        // nb_float
@@ -277,10 +311,10 @@ method_shift(
 Methods<PyCalendar>
 tp_methods_
   = Methods<PyCalendar>()
-    .template add<method_after>                     ("after")
-    .template add<method_before>                    ("before")
-    .template add<method_contains>                  ("contains")
-    .template add<method_shift>                     ("shift")
+    .template add<method_after>             ("after",       docstring::pycalendar::after)
+    .template add<method_before>            ("before",      docstring::pycalendar::before)
+    .template add<method_contains>          ("contains")
+    .template add<method_shift>             ("shift",       docstring::pycalendar::shift)
   ;
 
 
@@ -289,14 +323,23 @@ tp_methods_
 //------------------------------------------------------------------------------
 
 ref<Object>
-get_range(
+get_dates_array(
   PyCalendar* const self,
   void* /* closure */)
 {
-  auto const range = self->cal_.range();
-  return ref<Tuple>(Tuple::builder
-     << PyDate<Date>::create(range.start)
-     << PyDate<Date>::create(range.stop));
+  auto const type_num   = DateDtype<PyDateDefault>::get()->type_num;
+  auto const length     = self->cal_.count();
+  auto arr              = Array::SimpleNew1D(length, type_num);
+  auto const ptr        = arr->get_ptr<Date>();
+  auto const range      = self->cal_.range();
+
+  auto i = size_t(0);
+  for (auto date = range.start; date < range.stop; ++date)
+    if (self->cal_.contains(date))
+      ptr[i++] = date;
+  assert(i == length);
+
+  return std::move(arr);
 }
 
 
@@ -325,11 +368,24 @@ set_name(
 }
 
 
+ref<Object>
+get_range(
+  PyCalendar* const self,
+  void* /* closure */)
+{
+  auto const range = self->cal_.range();
+  return ref<Tuple>(Tuple::builder
+     << PyDate<Date>::create(range.start)
+     << PyDate<Date>::create(range.stop));
+}
+
+
 GetSets<PyCalendar>
 tp_getsets_ 
   = GetSets<PyCalendar>()
-     .template add_get<get_range>               ("range")
+     .template add_get<get_dates_array>         ("dates_array")
      .template add_getset<get_name, set_name>   ("name")
+     .template add_get<get_range>               ("range")
  ;
 
 
@@ -362,7 +418,7 @@ PyCalendar::build_type()
     (PyBufferProcs*)      nullptr,                        // tp_as_buffer
     (unsigned long)       Py_TPFLAGS_DEFAULT
                           | Py_TPFLAGS_BASETYPE,          // tp_flags
-    (char const*)         nullptr,                        // tp_doc
+    (char const*)         docstring::pycalendar::type,    // tp_doc
     (traverseproc)        nullptr,                        // tp_traverse
     (inquiry)             nullptr,                        // tp_clear
     (richcmpfunc)         nullptr,                        // tp_richcompare

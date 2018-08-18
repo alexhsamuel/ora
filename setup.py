@@ -53,7 +53,7 @@ def enumerate_data_files(dir):
 
 setup(
     name            ="ora",
-    version         ="0.2.4",
+    version         ="0.3.2",
     description     ="Alternative time and date library",
     long_description=__doc__,
     url             ="https://github.com/alexhsamuel/ora",
@@ -78,7 +78,7 @@ setup(
     packages        =["ora", "ora.np"],
     package_data    ={
         ""      : ["test/*"],
-        "ora"   : ["zoneinfo/*", "zoneinfo/*/*"],
+        "ora"   : ["calendars/*", "zoneinfo/*", "zoneinfo/*/*"],
     },
 
     ext_modules=[

@@ -18,6 +18,8 @@ namespace py {
 
 using std::experimental::optional;
 
+using doc_t = char const* const;
+
 class Float;
 class Iter;
 class Long;
@@ -176,7 +178,7 @@ inline T*
 cast(PyObject* obj)
 {
   assert(T::Check(obj));  // FIXME: TypeError?
-  return static_cast<T*>(obj);
+  return reinterpret_cast<T*>(obj);
 }
 
 
@@ -739,7 +741,7 @@ public:
 
   static bool Check(PyObject* obj)
     { return PyModule_Check(obj); }
-  static auto Create(PyModuleDef* def)
+  static auto Create(PyModuleDef* def) -> ref<Module>
     { return ref<Module>::take(PyModule_Create(def)); }
   static ref<Module> ImportModule(char const* const name)
     { return take_not_null<Module>(PyImport_ImportModule(name)); }
@@ -1995,6 +1997,18 @@ inline ref<Object>
 import(const char* module_name, const char* name)
 {
   return Module::ImportModule(module_name)->GetAttrString(name);
+}
+
+
+inline ref<Object>
+new_exception(
+  char const* const full_name,
+  PyObject* const base=PyExc_Exception)
+{
+  auto exc = PyErr_NewException(full_name, (PyObject*) base, nullptr);
+  check_not_null(exc);
+  assert(Type::Check(exc));
+  return ref<Object>::take(exc);
 }
 
 

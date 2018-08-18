@@ -1,26 +1,35 @@
 import datetime
 import pytest
 
-from   ora import *
-from   ora import Date, Date16, TimeZone, now, today, UTC
+from   ora import DATE_TYPES, Date, Date16, TimeZone, now, today, UTC
+from   ora import Apr, Jun, Jul, Dec
 
 import data
 
 #-------------------------------------------------------------------------------
 
-def test_min():
+@pytest.mark.parametrize("Date", DATE_TYPES)
+def test_min(Date):
     assert Date.MIN.valid
     assert not Date.MIN.invalid
     assert not Date.MIN.missing
 
 
-def test_max():
+@pytest.mark.parametrize("Date", DATE_TYPES)
+def test_max(Date):
     assert Date.MAX.valid
     assert not Date.MAX.invalid
     assert not Date.MAX.missing
 
 
-def test_comparison():
+@pytest.mark.parametrize("Date", DATE_TYPES)
+def test_epoch(Date):
+    assert isinstance(Date.EPOCH, Date)
+    assert Date.EPOCH == Date.from_offset(0)
+
+
+@pytest.mark.parametrize("Date", DATE_TYPES)
+def test_comparison(Date):
     dates = [
         Date.INVALID, Date.MISSING, Date.MIN, 2016/Jun/7, 2016/Jul/4, Date.MAX,
     ]
@@ -56,7 +65,8 @@ def test_comparison_sampled2():
             assert date0 == date1 or date0 != date1
 
 
-def test_order():
+@pytest.mark.parametrize("Date", DATE_TYPES)
+def test_order(Date):
     assert     Date.MAX     >= Date.MIN
     assert     Date.MIN     <= Date.MAX
     assert     Date.MIN     <  Date.MAX

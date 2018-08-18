@@ -64,6 +64,19 @@ module_def{
 };
 
 
+inline ref<Object>
+new_exception(
+  Module* const module,
+  char const* const name,
+  PyObject* const base=PyExc_Exception)
+{
+  auto const full_name = std::string("ora.") + name;
+  auto exc = ora::py::new_exception(full_name.c_str(), base);
+  module->AddObject(name, exc);
+  return exc;
+}
+
+
 }  // anonymous namespace
 
 }  // namespace py
@@ -122,17 +135,30 @@ PyInit_ext(void)
     mod->AddObject("DATENUM_MAX"      , Long::from(ora::DATENUM_MAX));
     mod->AddObject("UTC"              , PyTimeZone::create(std::make_shared<ora::TimeZone>()));
 
-    // FIXME: Use specific Python exception classes.
-    TranslateException<ora::InvalidDateError>::to(PyExc_ValueError);
-    TranslateException<ora::InvalidDaytimeError>::to(PyExc_ValueError);
-    TranslateException<ora::InvalidTimeError>::to(PyExc_ValueError);
-    TranslateException<ora::DateFormatError>::to(PyExc_ValueError); 
-    TranslateException<ora::DateRangeError>::to(PyExc_OverflowError);
-    TranslateException<ora::DaytimeRangeError>::to(PyExc_OverflowError);
-    TranslateException<ora::NonexistentDateDaytime>::to(PyExc_RuntimeError);
-    TranslateException<ora::TimeRangeError>::to(PyExc_OverflowError);
-    TranslateException<ora::TimeFormatError>::to(PyExc_ValueError);
-    TranslateException<ora::CalendarRangeError>::to(PyExc_ValueError);
+    TranslateException<ora::InvalidDateError>::to(
+      new_exception(mod, "InvalidDateError", PyExc_ValueError));
+    TranslateException<ora::DateFormatError>::to(
+      new_exception(mod, "DateFormatError", PyExc_ValueError));
+    TranslateException<ora::DateRangeError>::to(
+      new_exception(mod, "DateRangeError", PyExc_OverflowError));
+
+    TranslateException<ora::InvalidDaytimeError>::to(
+      new_exception(mod, "InvalidDaytimeError", PyExc_ValueError));
+    TranslateException<ora::DaytimeRangeError>::to(
+      new_exception(mod, "DaytimeRangeError", PyExc_OverflowError));
+
+    TranslateException<ora::InvalidTimeError>::to(
+      new_exception(mod, "InvalidTimeError", PyExc_ValueError));
+    TranslateException<ora::NonexistentDateDaytime>::to(
+      new_exception(mod, "NonexistentDateDaytime", PyExc_RuntimeError));
+    TranslateException<ora::TimeRangeError>::to(
+      new_exception(mod, "TimeRangeError", PyExc_OverflowError));
+    TranslateException<ora::TimeFormatError>::to(
+      new_exception(mod, "TimeFormatError", PyExc_ValueError));
+
+    TranslateException<ora::CalendarRangeError>::to(
+      new_exception(mod, "CalendarRangeError", PyExc_ValueError));
+
     TranslateException<ora::lib::fs::FileNotFoundError>::to(PyExc_FileNotFoundError);
     TranslateException<ora::lib::RuntimeError>::to(PyExc_RuntimeError);
     TranslateException<FormatError>::to(PyExc_RuntimeError);

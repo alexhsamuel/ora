@@ -53,6 +53,19 @@ public:
     return self;
   }
 
+  static ref<PyCalendar>
+  create(
+    Calendar&& cal,
+    char const* const name,
+    PyTypeObject* type=&type_)
+  {
+    auto self = ref<PyCalendar>::take(
+      check_not_null(PyCalendar::type_.tp_alloc(type, 0)));
+    auto const name_str = Unicode::from(name);
+    new(self) PyCalendar(std::move(cal), name_str);
+    return self;
+  }
+
   static bool 
   Check(
     PyObject* object)

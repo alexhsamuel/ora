@@ -1,25 +1,36 @@
 # Miscellaneous Work List
 
-1. Document `ora.np`.
+1. matplotlib axis integration
+1. Use [ryu](https://github.com/ulfjack/ryu/tree/master/ryu) for `format_seconds()`.
+1. Fixfmt-style formatter objects.
+1. Date, time, daytime range functions.
+1. Rounding functions.
+1. Nth day of month function (or generator!).
+1. Span class.
+1. Return namedtuple or similar from Calendar.range.
+1. Sloppy time and date parsing.
+1. Inconsistency: `ora.n.get_ymd` returns structured array but `ora.np.to_local` returns two arrays.
+1. Rename Calendar "range" to "domain".
+1. Use an interval class for the calendar domain.
+1. Come up with a better syntax for the domain the calendar file.
+1. Fix `Time.__qualname__` etc.
 1. Remove seconds decimal point in repr of time types with no subsecond resolution.
-1. Move doc_t into generated docstring.cc, or elsewhere.
+1. Supress trailing zeros in fractional seconds.
+1. Better `Time.__repr__`.
+1. Should `format(time)` produce the same as `str(time)`?
+1. Make Time(datetime, tz) work for naive datetime.
+1. Fix `LocalTime`; see below.
+1. Make the Python default Time, Date, Daytime types setable.
+1. Accept `datetime.timezone` time zones.
+1. Accept `dateutil` time zones.
 1. Base Python `Time`, `Date`, `Daytime` classes, as markers only.  Move APIs.
 1. Make Python Date like Time.
 1. Make Python Daytime like Time.
 1. When parsing fractional seconds, work in terms of dayticks.
-1. Make the Python default Time, Date, Daytime types setable.
 1. One too many digits of second precision?
-1. Supress trailing zeros in fractional seconds.
-1. Add `EPOCH` class attributes.
 1. Fixed-offset time zones, corresponding to `datetime.timezone`.
-1. Accept `datetime.timezone` time zones.
-1. Accept `dateutil` time zones.
-1. Sloppy time and date parsing.
 1. Add default precision to TimeAPI; use for formatting.
-1. Better `Time.__repr__`.
-1. Basic string parsing for `convert_to_*()` functions.
-1. Make Time(datetime, tz) work for naive datetime.
-1. Replace first with fold to match `datetime`.
+1. Use `fold` instead of `first` per [PEP-495](https://www.python.org/dev/peps/pep-0495/)
 1. Revisit type definitions.
    - Benchmark 2^n vs. 10^n types.
    - Add exact us, ms types.
@@ -36,7 +47,7 @@
 1. Remove superflous `extern`.
 1. timezone etc. namespace cleanup
 1. Daytime and Time rounding functions.  Maybe like Arrow's `floor()`, `ceil()`?
-1. Use `fold` attribute per [PEP-495](https://www.python.org/dev/peps/pep-0495/)
+1. Make `std` a method instead of an attribute?  Accept a time zone?
 1. Clean up C++ Time and localization functions; document.
 1. Clean up old-style docstrings.
 1. Update docs for nex, namespaces, includes.
@@ -84,7 +95,7 @@
    - `LocalTime` should construct Date, Daytime lazily?
    - Add formatting for `LocalTime`.
 
-1. Initial numpy support
+1. NumPya support
    - date type and ufuncs
      - [ ] casts
      - [x] arithmetic
@@ -131,7 +142,6 @@
    - others
 
 
-
 # NumPy project
 
 1. Convert `setup.py` numpy dependency to extras?
@@ -139,12 +149,6 @@
 1. Travis builds with/without numpy.
 1. Either dtypes need to initialize to INVALID, or underlying types must handle
    any bit pattern, so that `np.empty()` doesn't blow things up.
-
-
-# Small fixes
-
-1. Fix `Time.__qualname__` etc.
-
 
 # C++ API
 
@@ -182,19 +186,15 @@
 - Rename `TimeZoneParts` to something better, maybe `TimeZoneOffset`?
 
 
-
-## PyDateDuration
-
 ## PyTime
-
-## PyTimeDuration
 
 ## PyCalendar
 
 - unit tests for ~, &, |
 - docstrings
 - docs
-- calendar repo dir and get function, like time zones
+- an actual repository of calendar data?
+- ufunc versions of calendar functions
 
 
 # Infrastructure / tech debt

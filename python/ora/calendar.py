@@ -1,213 +1,157 @@
-import bisect
-from   collections import namedtuple
+from   pathlib import Path
+from   typing import Iterable
 
-from   . import to_weekday
-from   .date import Date
-from   .util import format_ctor
+from   .ext import Date
+from   .ext import make_weekday_calendar, parse_calendar, make_const_calendar
+from   .weekday import parse_weekdays
 
 #-------------------------------------------------------------------------------
 
-# FIXME: Elsewhere.
-Range = namedtuple("Range", ("min", "max"))
-
-
-# FIXME: What about invalid and missing?
-
-class CalendarError(Exception):
-
-    pass
-
-
-class CalendarRangeError(CalendarError):
+def load_calendar_file(path, *, name=None):
     """
-    A date is not in the range of the calendar.
+    Loads a calendar from the file at `path`.
+
+    The file has the following format::
+
+        START date
+        END date
+        date
+        date
+        ...
+
+    Each 'date' is in YYYY-MM-DD format.  Blank lines are ignored.  Text on
+    each line following the date is ignored.
+
+    :param name:
+      The calendar name.  If `None`, the file's stem name is used.
+    """
+    path = Path(path)
+    with open(path, "r") as file:
+        cal = parse_calendar(file)
+    cal.name = path.stem if name is None else name
+    return cal
+
+
+def load_business_calendar(holiday_path, weekdays=(0, 1, 2, 3, 4), *, name=None):
+    holiday_cal = load_calendar_file(holiday_path)
+    weekday_cal = make_weekday_calendar(holiday_cal.range, weekdays)
+    cal = weekday_cal & ~holiday_cal
+    cal.name = (
+        ",".join( str(w) for w in weekdays ) + " except " + holiday_cal.name
+        if name is None
+        else name
+    )
+    return cal
+
+
+def format_calendar(cal) -> Iterable[str]:
+    """
+    Formats `cal` in the calendar file format.
+    """
+    start, stop = cal.range
+    yield f"START {start}"
+    yield f"STOP  {stop}"
+    yield ""
+    for date in cal.dates_array:
+        yield str(date)
+
+
+def dump_calendar_file(cal, path):
+    """
+    Writes `cal` as a calendar file at `path`.
+    """
+    with open(path, "wt") as file:
+        for line in format_calendar(cal):
+            print(line, file=file)
+
+
+#-------------------------------------------------------------------------------
+
+class CalendarDir:
+    """
+    A directory containing calendar files.
+
+    Each calendar file has the suffix '.cal'.
     """
 
-    pass
+    SUFFIX = ".cal"
 
-
-
-class DateNotInCalendarError(CalendarError):
-
-    pass
-
-
-
-class Calendar:
-
-    # FIXME: Exceptions?
-
-    def __init__(self, range):
-        self.__range = Range(*range)
-
-
-    def _check(self, date):
-        date = Date(date)
-        if not date.valid:
-            raise InvalidDateError(date)  # FIXME: ?
-        if date < self.__range.min:
-            raise CalendarRangeError(
-                "date {} before min {}".format(date, self.__range.min))
-        if date > self.__range.max:
-            raise CalendarRangeError(
-                "date {} after max {}".foramt(date, self.__range.max))
-        return date
+    def __init__(self, path):
+        self.__path = Path(path)
 
 
     @property
-    def range(self):
+    def path(self):
         """
-        The range of dates covered by this calendar.
+        The path to the calendar directory.
         """
-        return self.__range
+        return self.__path
 
 
-    def previous(self, date):
-        date = self._check(date)
-        while date.valid and date not in self:
-            date -= 1
-        return date
+    # FIXME: Caching?
 
-
-    def next(self, date):
-        date = self._check(date)
-        while date.valid and date not in self:
-            date += 1
-        return date
-
-
-    def shift(self, date, offset):
-        date = self._check(date)
-        if date not in self:
-            raise DateNotInCalendarError(date)
-        if offset > 0:
-            for _ in range(offset):
-                date = self.next(date + 1)
-        elif offset < 0:
-            for _ in range(offset):
-                date = self.previous(date - 1)
-        return date
-        
-
-
-class AllCalendar(Calendar):
-
-    def __init__(self):
-        super().__init__((Date.MIN, Date.MAX))
-
-
-    def __repr__(self):
-        return format_ctor(self)
-
-
-    def __str__(self):
-        return "all days"
-
-
-    def __contains__(self, date):
-        return True
-
-
-    def previous(self, date):
-        return self._check(date)
-
-
-    def next(self, date):
-        return self._check(date)
-
-
-    def shift(self, date, offset):
-        return self._check(self._check(date) + offset)
+    def __getitem__(self, name):
+        """
+        Gets a calendar from a calendar file.
+        """
+        path = (self.__path / name).with_suffix(self.SUFFIX)
+        try:
+            return load_calendar_file(path)
+        except FileNotFoundError:
+            raise KeyError(name)
 
 
 
+_CALENDAR_DIR = CalendarDir(Path(__file__).parent / "calendars")
 
-class ExplicitCalendar(Calendar):
-
-    def __init__(self, range, dates):
-        super().__init__(range)
-        self.__dates = sorted( self._check(d) for d in dates )
-
-
-    def __contains__(self, date):
-        date = self._check(date)
-        i = bisect.bisect_left(self.__dates, date)
-        return i != len(self.__dates) and self.__dates[i] == date
+def get_calendar_dir():
+    """
+    Returns the global calendar directory.
+    """
+    return _CALENDAR_DIR.path
 
 
-    def previous(self, date):
-        date = self._check(date)
-        i = bisect.bisect_right(self.__dates, date)
-        if i == 0:
-            raise CalendarRangeError(
-                "no calendar previous date for {}".format(date))
-        else:
-            return self.__dates[i]
+def set_calendar_dir(path):
+    """
+    Sets the global calendar directory.
+    """
+    global _CALENDAR_DIR
+    _CALENDAR_DIR = CalendarDir(path)
 
 
-    def next(self, date):
-        date = self._check(date)
-        i = bisect.bisect_left(self.__dates, date)
-        if i == len(self.__dates):
-            raise CalendarRangeError(
-                "no calendar next date for [{}]".format(date))
-        else:
-            return self.__dates[i]
+def _get_special_calendar(name):
+    if name == "all":
+        return make_const_calendar((Date.MIN, Date.MAX), True)
+    if name == "none":
+        return make_const_calendar((Date.MIN, Date.MAX), False)
 
-        
-        
-class WeekdayCalendar(Calendar):
+    try:
+        weekdays = parse_weekdays(name)
+    except ValueError:
+        pass
+    else:
+        cal = make_weekday_calendar((Date.MIN, Date.MAX), weekdays)
+        # FIXME: Do this in make_weekday_calendar.
+        cal.name = name
+        return cal
 
-    def __init__(self, weekdays):
-        super().__init__(Range(Date.MIN, Date.MAX))
-        self.__weekdays = { to_weekday(w) for w in weekdays }
-
-
-    def __repr__(self):
-        return format_ctor(self, self.__weekdays)
+    raise LookupError(f"unknown calendar: {name}")
 
 
-    def __str__(self):
-        return ",".join( str(w) for w in self.__weekdays )
+def get_calendar(name):
+    """
+    Gets a calendar.
 
+    The name may be:
+    - "all" or "none"
+    - A weekday expression; see `parse_weekdays`.
+    - The name of a calendar in the global calendar directory.
+    """
+    try:
+        return _get_special_calendar(name)
+    except LookupError:
+        pass
 
-    def __contains__(self, date):
-        return date.weekday in self.__weekdays
-
-
-    # FIXME: We can make previous() and next() more efficient.
-
-
-
-def parse_calendar(lines):
-    # FIXME: Min and max!
-
-    # Remove whitespace and trailing comments.
-    lines = ( l.split("#", 1)[0].strip() for l in lines )
-    # Skip blank lines.
-    lines = ( l for l in lines if l != "" )
-    # FIXME: Handle errors better.
-    dates = sorted( Date(l) for l in lines )
-    assert len(dates) > 0  # FIXME
-
-    return ExplicitCalendar(Range(dates[0], dates[-1] + 1), dates)
-
-
-def load_calendar_file(path):
-    from pathlib import Path  # FIXME
-    with Path(path).open() as file:
-        return parse_calendar(file)
-
-
-if __name__ == "__main__":
-    import ora
-    # cal = WeekdayCalendar({ora.Mon, ora.Tue, ora.Wed, ora.Thu, ora.Fri})
-    cal = load_calendar_file("share/calendar/US federal holidays.txt")
-    date = ora.today("UTC")
-    print(date)
-    date = cal.next(date)
-    while True:
-        print(date, date.weekday)
-        date = cal.shift(date, 1)
+    return _CALENDAR_DIR[name]
 
 

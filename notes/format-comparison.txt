@@ -48,7 +48,7 @@ X  L %X    locale's time representation
 x  L %x    locale's date representation
 Y    %Y %Y the full year
 y    %y %y the last two digits of the year
-Z    %Z %Z the time zone name
+Z  - %Z %Z the time zone name
 z    %z %z 5-char UTC offset, e.g. +0000
 
 

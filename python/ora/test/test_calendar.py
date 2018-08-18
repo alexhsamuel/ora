@@ -1,8 +1,9 @@
+import numpy as np
 from   pathlib import Path
 import pytest
 
 import ora
-from   ora import Jan, Feb, Jun, Jul
+from   ora import Date, Jan, Feb, Jun, Jul, Mon, Tue, Fri
 
 #-------------------------------------------------------------------------------
 
@@ -164,5 +165,70 @@ def test_load_business_calendar():
     assert 2018/Jun/26 not in cal  # holiday
     assert 2018/Jun/27     in cal
     assert 2018/Jun/30 not in cal  # Sat
+
+
+def test_ops():
+    cal0 = ora.Calendar(
+        (20180101, 20180201),
+        [20180102, 20180105, 20180107, 20180125, 20180127]
+    )
+    cal1 = ora.Calendar(
+        cal0.range,
+        (20180102, 20180103, 20180108, 20180116, 20180123, 20180125, 20180128)
+    )
+
+    not0    = ~cal0
+    not1    = ~cal1
+    cal_or  = cal0 | cal1
+    cal_xor = cal0 ^ cal1
+    cal_and = cal0 & cal1
+
+    for date in ora.Range(*cal0.range):
+        assert (date in cal0) == (date not in not0)
+        assert (date in cal1) == (date not in not1)
+        assert (date in cal0 or date in cal1) == (date in cal_or)
+        assert ((date in cal0) ^ (date in cal1)) == (date in cal_xor)
+        assert (date in cal0 and date in cal1) == (date in cal_and)
+
+
+def test_get_calendar():
+    # Make sure we can load a calendar.
+    cal = ora.get_calendar("usa-federal-holidays")
+    start, stop = cal.range
+    assert start < Date(2018, 1, 1)
+    assert stop  > Date(2019, 1, 1)
+
+
+def test_dates_array_const():
+    rng = Date(2018, 7, 1), Date(2018, 8, 1)
+    cal = ora.make_const_calendar(rng, False)
+    arr = cal.dates_array
+    assert isinstance(arr, np.ndarray)
+    assert arr.shape == (0, )
+
+    cal = ora.make_const_calendar(rng, True)
+    arr = cal.dates_array
+    assert isinstance(arr, np.ndarray)
+    assert arr.shape == (31, )
+    assert list(arr) == [ rng[0] + i for i in range(31) ]
+
+
+def test_dates_array_holidays():
+    cal = ora.get_calendar("usa-federal-holidays")
+    arr = cal.dates_array
+
+    dates = [ d for d in ora.Range(*cal.range) if d in cal ]
+    assert list(arr) == dates
+
+
+def test_special():
+    cal = ora.get_calendar("all")
+    cal = ora.get_calendar("none")
+    assert len(cal.dates_array) == 0
+
+    cal = ora.get_calendar("Mon-Tue,Fri")
+    for date in cal.dates_array[: 32]:
+        assert date.weekday in {Mon, Tue, Fri}
+
 
 

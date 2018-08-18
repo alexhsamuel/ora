@@ -284,6 +284,7 @@ PyTime<TIME>::set_up(
   Dict* const dict = (Dict*) type_.tp_dict;
   assert(dict != nullptr);
   dict->SetItemString("DENOMINATOR" , Long::from(Time::DENOMINATOR));
+  dict->SetItemString("EPOCH"       , create(Time::from_offset(0)));
   dict->SetItemString("INVALID"     , create(Time::INVALID));
   dict->SetItemString("MAX"         , create(Time::MAX));
   dict->SetItemString("MIN"         , create(Time::MIN));
@@ -553,11 +554,7 @@ PyTime<TIME>::method___format__(
     throw TypeError("__format__() takes one argument");
   auto const fmt = args->GetItem(0)->Str()->as_utf8();
 
-  // If the format pattern is empty, use the default str format.
-  if (*fmt == '\0')
-    return tp_str(self);
-  else
-    return Unicode::from(ora::time::LocalTimeFormat::parse(fmt)(self->time_));
+  return Unicode::from(ora::time::LocalTimeFormat::parse(fmt)(self->time_));
 }
 
 

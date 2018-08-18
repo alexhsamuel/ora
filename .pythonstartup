@@ -22,6 +22,7 @@ t = now()
 d, y = t @ z
 dt = pytz.UTC.localize(datetime(1973, 12, 3, 12, 30))
 z = TimeZone("US/Eastern")
+c = ora.get_calendar("usa-federal-holidays")
 
 try:
     import ora.np

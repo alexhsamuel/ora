@@ -2,13 +2,11 @@ import datetime
 import pytest
 
 import ora
-from   ora import *
 from   ora import Time, Time128, HiTime, NsTime, SmallTime, Unix32Time, Unix64Time
-from   ora import Daytime, UTC, MIDNIGHT
+from   ora import TIME_TYPES, Date, Daytime, UTC, MIDNIGHT
+from   ora import Jan, Jul, Nov, Dec
 from   ora import to_local, from_local, now, display_time_zone, format_time
 from   tools import xeq
-
-TIME_TYPES = (Time, Time128, HiTime, NsTime, SmallTime, Unix32Time, Unix64Time)
 
 #-------------------------------------------------------------------------------
 
@@ -22,6 +20,12 @@ def test_max():
     assert     Time.MAX.valid
     assert not Time.MAX.invalid
     assert not Time.MAX.missing
+
+
+@pytest.mark.parametrize("Time", TIME_TYPES)
+def test_epoch(Time):
+    assert isinstance(Time.EPOCH, Time)
+    assert Time.EPOCH == Time.from_offset(0)
 
 
 def test_comparison():

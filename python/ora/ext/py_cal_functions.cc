@@ -21,7 +21,9 @@ make_const_calendar(
     args, kw_args, "Op", arg_names, &range_arg, &contains);
   auto const range = parse_range(range_arg);
 
-  return PyCalendar::create(make_const_calendar(range, contains != 0));
+  return PyCalendar::create(
+    make_const_calendar(range, contains != 0),
+    contains ? "all days" : "no days");
 }
 
 

@@ -44,7 +44,7 @@ LDLIBS          =
 
 ifeq ($(UNAME),Linux)
   CXXFLAGS     += -pthread
-  LDLIBS       += -lpthread
+  LDLIBS       += -lpthread -lrt
 endif
 
 #-------------------------------------------------------------------------------
@@ -241,6 +241,8 @@ force: ;
 fixmes:
 	@find $(CXX_DIR) $(PY_DIR) -name \*.cc -o -name \*.hh -o -name \*.py \
 	| xargs grep FIXME
+
+.SUFFIXES:
 
 #-------------------------------------------------------------------------------
 
