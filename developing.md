@@ -68,7 +68,8 @@ as an egg.
 bumpversion patch  # or minor, major
 git push --tags
 git push
-python setup.py sdist upload
+python setup.py sdist
+twine upload dist/ora-...tar.gz
 ```
 
 ### OS/X binary
@@ -85,8 +86,15 @@ anaconda upload ...
 ```
 docker run -ti --rm continuumio/conda_builder_linux bash
 git clone https://github.com/alexhsamuel/ora
+
 conda build ora/conda-recipe --python 3.6
 anaconda upload ...
-```
 
+conda create -n build python=3.6 numpy pytest pathlib -y
+pip install wheelhouse auditwheel
+# Add -static-libstdc++ -static-libgcc in setup.py
+pip wheel ./ora -w wheels
+auditwheel repair ./wheels/ora-...-cp36-cp36m-linux_x86_64.whl -w wheels
+
+```
 
