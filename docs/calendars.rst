@@ -101,7 +101,8 @@ these:
 - the name of a calendar file in the global calendar directory
 
 Use `get_calendar_dir()` and `set_calendar_dir()` to retrieve and set global
-calendar directory.  
+calendar directory.  The initial calendar directory is provided with Ora but can
+be set with the `ORA_CALENDARS` environemnt variable.
 
 Making calendars
 ----------------

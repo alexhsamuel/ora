@@ -1,3 +1,4 @@
+import os
 from   pathlib import Path
 from   typing import Iterable
 
@@ -101,8 +102,13 @@ class CalendarDir:
             raise KeyError(name)
 
 
-
-_CALENDAR_DIR = CalendarDir(Path(__file__).parent / "calendars")
+# The initial calendar dir is the one shipped with Ora, or pointed to by
+# ORA_CALENDARS if this is set.
+try:
+    _CALENDAR_DIR = os.environ["ORA_CALENDARS"]
+except KeyError:
+    _CALENDAR_DIR = Path(__file__).parent / "calendars"
+_CALENDAR_DIR = CalendarDir(_CALENDAR_DIR)
 
 def get_calendar_dir():
     """
