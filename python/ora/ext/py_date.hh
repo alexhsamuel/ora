@@ -90,6 +90,8 @@ class PyDateAPI
 {
 public:
 
+  virtual ~PyDateAPI() {}
+
   /*
    * Registers a virtual API for a Python type.
    */

@@ -63,6 +63,8 @@ class PyDaytimeAPI
 {
 public:
 
+  virtual ~PyDaytimeAPI() {}
+
   /*
    * Registers a virtual API for a Python type.
    */

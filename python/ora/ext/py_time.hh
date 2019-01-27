@@ -82,6 +82,8 @@ class PyTimeAPI
 {
 public:
 
+  virtual ~PyTimeAPI() {}
+
   /*
    * Registers a virtual API for a Python type.
    */
