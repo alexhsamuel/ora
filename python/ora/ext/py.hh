@@ -1346,7 +1346,7 @@ private:
     try {
       throw;
     }
-    catch (EXCEPTION exc) {
+    catch (EXCEPTION const& exc) {
       throw Exception(exception_, exc.what());
     }
     catch (...) {

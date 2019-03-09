@@ -929,7 +929,7 @@ convert_to_time(
     try {
       return ora::time::parse_time_iso<TIME>(str.c_str());
     }
-    catch (ora::TimeParseError) {
+    catch (ora::TimeParseError const&) {
       throw py::ValueError("can't parse as time: '"s + str + "'");
     }
   }

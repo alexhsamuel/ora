@@ -387,7 +387,7 @@ parse_time(
       try {
         tz = get_time_zone(tz_info.name);
       }
-      catch (ora::lib::ValueError) {
+      catch (ora::lib::ValueError const&) {
         throw py::ValueError(std::string("not a time zone: ") + tz_info.name);
       }
       return api->from_local_datenum_daytick(datenum, daytick, *tz, first);

@@ -483,7 +483,7 @@ public:
         try {
           tz = ora::get_system_time_zone();
         }
-        catch (RuntimeError) {
+        catch (RuntimeError const&) {
           tz = UTC;
         }
       else

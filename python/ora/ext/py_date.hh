@@ -1145,7 +1145,7 @@ convert_to_date(
     try {
       return ora::date::from_iso_date<DATE>(str);
     }
-    catch (ora::DateError) {
+    catch (ora::DateError const&) {
       throw py::ValueError("can't parse as date: '"s + str + "'");
     }
   }

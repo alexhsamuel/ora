@@ -70,7 +70,7 @@ maybe_time_zone(
     try {
       return ora::get_time_zone(tz_name);
     }
-    catch (ora::lib::ValueError) {
+    catch (ora::lib::ValueError const&) {
       throw py::ValueError(string("not a time zone: ") + tz_name);
     }
   }
@@ -86,7 +86,7 @@ maybe_time_zone(
       try {
         return ora::get_system_time_zone();
       }
-      catch (ora::lib::RuntimeError) {
+      catch (ora::lib::RuntimeError const&) {
         // Fall back to UTC if the system time zone isn't specified.
         return UTC;
       }
@@ -94,7 +94,7 @@ maybe_time_zone(
       try {
         return ora::get_time_zone(tz_name);
       }
-      catch (ora::lib::ValueError) {
+      catch (ora::lib::ValueError const&) {
         throw py::ValueError(string("not a time zone: ") + tz_name);
       }
   }
@@ -129,7 +129,7 @@ get_parts_local(
   try {
     return tz->get_parts_local(datenum, daytick, first);
   }
-  catch (ora::NonexistentDateDaytime) {
+  catch (ora::NonexistentDateDaytime const&) {
     // FIXME: Use a custom exception class.
     throw py::ValueError("nonexistent local time");
   }

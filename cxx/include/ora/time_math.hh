@@ -103,7 +103,7 @@ datenum_daytick_to_offset(
     return datenum_daytick_to_offset<TRAITS>(
       datenum, daytick, tz.get_parts_local(datenum, daytick, first).offset);
   }
-  catch (NonexistentDateDaytime) {
+  catch (NonexistentDateDaytime const&) {
     // FIXME: Don't catch and rethrow...
     throw NonexistentDateDaytime();
   }

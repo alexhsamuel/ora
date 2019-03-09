@@ -898,7 +898,7 @@ convert_to_daytime(
     try {
       return ora::daytime::from_iso_daytime<DAYTIME>(str);
     }
-    catch (ora::DaytimeError) {
+    catch (ora::DaytimeError const&) {
       throw py::ValueError("can't parse as daytime: '"s + str + "'");
     }
   }

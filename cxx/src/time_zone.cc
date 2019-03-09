@@ -379,7 +379,7 @@ get_display_time_zone()
       try {
         tz = get_system_time_zone();
       }
-      catch (RuntimeError) {
+      catch (RuntimeError const&) {
         // Unknown system time zone.  Fall back to UTC.
         tz = UTC;
       }
@@ -387,7 +387,7 @@ get_display_time_zone()
       try {
         tz = get_time_zone(tz_name);
       }
-      catch (ValueError) {
+      catch (ValueError const&) {
         // Unknown time zone.  Fall back to UTC.
         tz = UTC;
       }

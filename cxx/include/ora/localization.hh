@@ -106,16 +106,14 @@ get_parts(
   TimeZoneParts tz_parts;
   std::tie(datenum, daytime_offset, tz_parts) = split(time, time_zone);
   
+  auto const ymd = datenum_to_ymd(datenum);
   auto const minutes = daytime_offset / secs_per_min;
-  return {
-    datenum_to_ymd(datenum),
-    HmsDaytime{
-      (Hour)   (minutes / MINS_PER_HOUR),
-      (Minute) (minutes % MINS_PER_HOUR),
-      (Second) (daytime_offset % secs_per_min) / TIME::DENOMINATOR,
-    },
-    tz_parts,
+  auto const hms = HmsDaytime{
+    (Hour)   (minutes / MINS_PER_HOUR),
+    (Minute) (minutes % MINS_PER_HOUR),
+    (Second) (daytime_offset % secs_per_min) / TIME::DENOMINATOR,
   };
+  return {ymd, hms, tz_parts};
 }
 
 
