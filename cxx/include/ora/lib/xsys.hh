@@ -14,18 +14,6 @@
 
 //------------------------------------------------------------------------------
 
-// If NDEBUG, assert(x) is #define'd as (void)(0).  If 'x' references a variable
-// that is otherwise not used, this may result in an unused variable warning.
-// Redefine the NDEBUG assert() to suppress this.
-
-// FIXME: Bad idea!!  Add check_*() functions instead.
-#ifdef NDEBUG
-# undef assert
-# define assert(e) do { (void) (e); } while (false)
-#endif
-
-//------------------------------------------------------------------------------
-
 void 
 xexecv(
   char const* filename, 
@@ -47,7 +35,6 @@ inline void xclose(int fd)
   int const rval = close(fd);
   if (rval == -1)
     throw ora::lib::SystemError("close");
-  assert(rval == 0);
 }
 
 
@@ -71,16 +58,14 @@ inline int xdup2(int old_fd, int new_fd)
 
 inline void xexecv(char const* filename, char* const argv[])
 {
-  int const rval = execv(filename, argv);
-  assert(rval == -1);
+  execv(filename, argv);
   throw ora::lib::SystemError("execv");
 }
 
 
 inline void xexecve(char const* filename, char* const argv[], char* const envp[])
 {
-  int const rval = execve(filename, argv, envp);
-  assert(rval == -1);
+  execve(filename, argv, envp);
   throw ora::lib::SystemError("execve");
 }
 
@@ -99,7 +84,6 @@ inline void xfstat(int fd, struct stat* buf)
   int const rval = fstat(fd, buf);
   if (rval == -1)
     throw ora::lib::SystemError("fstat");
-  assert(rval == 0);
 }
 
 
@@ -108,7 +92,6 @@ inline char* xgetcwd(char* buf, size_t size)
   char* const cwd = getcwd(buf, size);
   if (cwd == NULL)
     throw ora::lib::SystemError("getcwd");
-  assert(cwd == buf);
   return cwd;
 }
 
@@ -116,10 +99,8 @@ inline char* xgetcwd(char* buf, size_t size)
 inline void xgettimeofday(struct timeval* tv, struct timezone* tz=nullptr)
 {
   int const rval = gettimeofday(tv, tz);
-  if (rval != 0) {
-    assert(rval == -1);
+  if (rval == -1)
     throw ora::lib::SystemError("gettimeofday");
-  }
 }
 
 
@@ -139,7 +120,6 @@ inline void xlstat(
   int const rval = lstat(path, buf);
   if (rval == -1)
     throw ora::lib::SystemError("lstat");
-  assert(rval == 0);
 }
 
 
@@ -148,7 +128,6 @@ inline int xmkstemp(char* name_template)
   int const fd = mkstemp(name_template);
   if (fd == -1)
     throw ora::lib::SystemError("mkstemp");
-  assert(fd >= 0);
   return fd;
 }
 
@@ -177,7 +156,6 @@ inline char* xrealpath(char const* path, char* resolved_path)
   char* const new_path = realpath(path, resolved_path);
   if (new_path == NULL)
     throw ora::lib::SystemError("realpath");
-  assert(resolved_path == NULL || new_path == resolved_path);
   return new_path;
 }
 
@@ -189,7 +167,6 @@ inline void xstat(
   int const rval = stat(path, buf);
   if (rval == -1)
     throw ora::lib::SystemError("stat");
-  assert(rval == 0);
 }
 
 
@@ -198,7 +175,6 @@ inline void xunlink(char const* pathname)
   int const rval = unlink(pathname);
   if (rval == -1)
     throw ora::lib::SystemError("unlink");
-  assert(rval == 0);
 }
 
 
@@ -212,8 +188,6 @@ xwait4(
   pid_t const rval = wait4(pid, status, options, usage);
   if (rval == -1)
     throw ora::lib::SystemError("wait4");
-  if (pid > 0)
-    assert(rval == pid);
   return rval;
 }
 
