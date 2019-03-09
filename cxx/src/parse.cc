@@ -1,5 +1,4 @@
 #pragma GCC diagnostic ignored "-Wparentheses"
-#pragma GCC diagnostic ignored "-Wdangling-else"
 
 #include <cstdint>
 
