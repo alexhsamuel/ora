@@ -1009,12 +1009,12 @@ public:
   static auto from(char character)
     { return FromStringAndSize(&character, 1); }
 
-  char* as_utf8() { return PyUnicode_AsUTF8(this); }
+  char const* as_utf8() { return PyUnicode_AsUTF8(this); }
 
   std::string as_utf8_string()
   {
     Py_ssize_t length;
-    char* const utf8 = PyUnicode_AsUTF8AndSize(this, &length);
+    char const* const utf8 = PyUnicode_AsUTF8AndSize(this, &length);
     if (utf8 == nullptr)
       throw Exception();
     else
