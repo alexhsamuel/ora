@@ -144,3 +144,20 @@ def test_is_valid(Time):
     assert (ora.np.is_valid(arr).astype(int) == [1, 1, 1, 1, 1, 1, 1, 0, 0]).all()
 
 
+@pytest.mark.xfail
+def test_convert_invalid():
+    assert (np.array([
+        "",
+        None,
+        "invalid",
+        "2019-04-16",
+        20190416,
+        "12:30:45",
+        "2019-04-16T12:30:45",
+        "2019-04-16T12:30:45+17:00",
+        "2019-04-16T12:61:45+00:00",
+        ora.Date(2019, 4, 16),
+        ora.Daytime(12, 30, 45),
+    ], dtype=ora.Time) == ora.Time.INVALID).all()
+
+

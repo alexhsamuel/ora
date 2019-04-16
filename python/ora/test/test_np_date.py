@@ -184,3 +184,21 @@ def test_subtract_diff():
     assert (~ora.np.is_valid(sub) | (dif == 5)).all()
 
 
+@pytest.mark.xfail
+def test_convert_invalid():
+    assert (np.array([
+        None,
+        "bogus"
+        "2012-02-30",
+        "2013-02-29",
+        "2012-02",
+        20120230,
+        2012023,
+        201202301,
+        "missing",
+        "87654321",
+        ora.now(),
+        ora.Daytime(12, 30, 45),
+    ], dtype=Date) == Date.INVALID).all()
+
+
