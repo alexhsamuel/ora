@@ -1,5 +1,8 @@
 # Small problems
 
+- fix now() rounding problem... if there is one
+  - or more likely, fix rounding in last digit of seconds in Time repr
+- is there a full ns-resolution time function for Darwin?
 - rename `ora.np` function dtype args consistently: either `dtype` or `Date`, `Time`, `Daytime`
 - xfail tests
 - `ora.np.date_from_offset()`
