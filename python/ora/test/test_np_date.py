@@ -202,3 +202,22 @@ def test_convert_invalid():
     ], dtype=Date) == Date.INVALID).all()
 
 
+@pytest.mark.xfail
+@pytest.mark.parametrize("Date", DATE_TYPES)
+def test_to_offset(Date):
+    dates = get_array(Date)
+    offsets = ora.np.to_offset(dates)
+    assert (offsets == [ d.offset for d in dates ]).all()
+
+
+@pytest.mark.xfail
+@pytest.mark.parametrize("Date", DATE_TYPES)
+def test_date_from_offset(Date):
+    dates = get_array(Date)
+    offsets = np.array([ d.offset for d in dates ])
+    assert (ora.np.date_from_offset(offsets) == dates).all()
+
+    offsets = offsets.astype("int64")
+    assert (ora.np.date_from_offset(offsets) == dates).all()
+    
+
