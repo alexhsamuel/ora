@@ -410,3 +410,16 @@ def test_offset():
     assert 0 < Daytime(12, 0, 0).offset < Daytime.MAX.offset
 
 
+@pytest.mark.xfail
+@pytest.mark.parametrize("Daytime", ora.DAYTIME_TYPES)
+def test_from_offset(Daytime):
+    for y in [
+        Daytime.MIN, 
+        Daytime(0, 0, 1), 
+        Daytime(12, 0, 0), 
+        Daytime.MAX,
+        Daytime.INVALID,
+    ]:
+        assert Daytime.from_offset(y.offset) == y
+
+
