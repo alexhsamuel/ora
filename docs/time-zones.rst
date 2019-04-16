@@ -44,7 +44,7 @@ Ora also provied a `UTC` symbol.
 Localizing
 ----------
 
-The principle function of a time zone is to localize a time, _i.e._ to convert a
+The principle function of a time zone is to localize a time, *i.e.* to convert a
 time to a date and daytime, or vice versa. The `to_local()` and `from_local()`
 functions do this, as well as the `@` operator (`__matrix_multiply__`) operator.
 See :ref:`localization`.

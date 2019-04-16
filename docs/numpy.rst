@@ -68,7 +68,6 @@ You can localize an array of times to a time zone.
           dtype=Date)
 
 
-
 Internals
 ---------
 
@@ -80,5 +79,51 @@ similar to NumPy's own `datetime64` dtypes.
     >>> Time.dtype.itemsize
     8
 
-Use `ora.np.to_offset()` to obtain the underlying integer offsets.
+Use `ora.np.to_offset()` to obtain an array of the underlying integer offsets.  
+You can also array `view()` method.
 
+
+API
+---
+
+This section lists the functions and ufuncs that operate on arrays with Ora
+dtypes.  These are available in the `ora.np` module.
+
+Functions
+^^^^^^^^^
+
+.. function:: date_from_ordinal_date(year, ordinal)
+
+    Constructs dates from years and ordinal dates.  Broadcasting rules apply.
+
+
+- date_from_week_date <class 'builtin_function_or_method'>
+- date_from_ymd <class 'builtin_function_or_method'>
+- date_from_ymdi <class 'builtin_function_or_method'>
+- from_local <class 'builtin_function_or_method'>
+- from_offset <class 'builtin_function_or_method'>
+
+
+Ufuncs
+^^^^^^
+
+- get_day <class 'numpy.ufunc'>
+- get_month <class 'numpy.ufunc'>
+- get_ordinal_date <class 'numpy.ufunc'>
+- get_week_date <class 'numpy.ufunc'>
+- get_weekday <class 'numpy.ufunc'>
+- get_year <class 'numpy.ufunc'>
+- get_ymd <class 'numpy.ufunc'>
+- get_ymdi <class 'numpy.ufunc'>
+- is_valid <class 'numpy.ufunc'>
+- numpy <class 'module'>
+- to_local <class 'builtin_function_or_method'>
+- to_offset <class 'numpy.ufunc'>
+
+
+Dtypes
+^^^^^^
+
+- ORDINAL_DATE_DTYPE <class 'numpy.dtype'>
+- WEEK_DATE_DTYPE <class 'numpy.dtype'>
+- YMD_DTYPE <class 'numpy.dtype'>

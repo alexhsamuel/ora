@@ -38,7 +38,7 @@ representation, you must specify the time zone as well.
 
 - Year, month, day, hour, minute, second, time zone of a local time.
 - A date, daytime, and time zone.
-- Another time instance, or an _aware_ `datetime.datetime` instance.
+- Another time instance, or an *aware* `datetime.datetime` instance.
 - An ISO 8601 string, or `"MIN"` or `"MAX"`.
 
 The `std` attribute returns the time represented as closely as possible by a
