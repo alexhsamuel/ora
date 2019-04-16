@@ -1,3 +1,27 @@
+# Small problems
+
+- rename `ora.np` function dtype args consistently: either `dtype` or `Date`, `Time`, `Daytime`
+- xfail tests
+- `ora.np.date_from_offset()`
+- `ora.np.daytime_from_offset()`
+- `ora.np.daytime_from_hms()`
+- `ora.np.daytime_from_ssm()`
+- `ora.np.get_hms()` and `HMS_DTYPE`
+- `ora.np.get_hour()`
+- `ora.np.get_minute()`
+- `ora.np.get_second()`
+- `ora.np.get_ssm()`
+- Functions to convert to/from datetime64 arrays.
+  - Cast functions?  If not, ...
+    - `ora.np.date_to_datetime64()`
+    - `ora.np.time_to_datetime64()`
+  - Logic is:
+    ```
+    >>> uo = ora.UNIX_EPOCH.offset
+    >>> ((a.view("int64") - ora.UNIX_EPOCH.offset) / Time.RESOLUTION / 1e9).astype("int64").view("datetime64[ns]")
+    ```
+
+
 # Miscellaneous Work List
 
 1. matplotlib axis integration
