@@ -71,16 +71,23 @@ You can localize an array of times to a time zone.
 Internals
 ---------
 
-The NumPy array stores the underlying time or date integer offset directly,
-similar to NumPy's own `datetime64` dtypes.
+The NumPy array stores the underlying time, date, or daytime integer offset
+directly, similar to NumPy's own `datetime64` dtypes.
 
     >>> Date.dtype.itemsize
     4
     >>> Time.dtype.itemsize
     8
+    >>> Daytime.dtype.itemsize
 
 Use `ora.np.to_offset()` to obtain an array of the underlying integer offsets.  
-You can also array `view()` method.
+
+This function creates a new array containing offsets.  Since the offset is the
+internal representation of a time, you can obtain a similar array, albeit with
+shared array data, using the ndarray `view()` method and the integer type
+corresponding to the Ora date, time, or daytime type.
+
+
 
 
 API
@@ -92,38 +99,47 @@ dtypes.  These are available in the `ora.np` module.
 Functions
 ^^^^^^^^^
 
+These functions produce NumPy arrays of Ora objects.  
+
 .. function:: date_from_ordinal_date(year, ordinal)
 
-    Constructs dates from years and ordinal dates.  Broadcasting rules apply.
+    Constructs dates from years and ordinal dates, like
+    `Date.from_ordinal_date`.
+
+.. function:: date_from_week_date(week_year, week, weekday)
+
+    Constructs dates from ISO week days, like `Date.from_week_date`.
+
+.. function:: date_from_ymd(year, month, day)
+
+    Contructs dates from day, month, and year components, like
+    `Date.from_ymd`.
+
+.. function:: date_from_ymdi(ymdi)
+
+    Constructs dates from YYYYMMDD integers, like `Date.from_ymdi`.
+
+.. function:: time_from_offset(offset)
+
+    Constructs times from number of ticks, like `Time.from_offset`.  The
+    duration of a tick, and the epoch time from which it's measured, depends
+    on the Ora time type.
+
+.. function:: to_local(time, time_zone)
+
+    FIXME
+
+.. function:: from_local(date, daytime, time_zone)
+
+    FIXME
+
+FIXME: Explain type arguments.
+
+    # FIXME: type example
+
+Ufunc-style broadcasting is applied to the arguments.
+
+    # FIXME: broadcasting example
 
 
-- date_from_week_date <class 'builtin_function_or_method'>
-- date_from_ymd <class 'builtin_function_or_method'>
-- date_from_ymdi <class 'builtin_function_or_method'>
-- from_local <class 'builtin_function_or_method'>
-- from_offset <class 'builtin_function_or_method'>
 
-
-Ufuncs
-^^^^^^
-
-- get_day <class 'numpy.ufunc'>
-- get_month <class 'numpy.ufunc'>
-- get_ordinal_date <class 'numpy.ufunc'>
-- get_week_date <class 'numpy.ufunc'>
-- get_weekday <class 'numpy.ufunc'>
-- get_year <class 'numpy.ufunc'>
-- get_ymd <class 'numpy.ufunc'>
-- get_ymdi <class 'numpy.ufunc'>
-- is_valid <class 'numpy.ufunc'>
-- numpy <class 'module'>
-- to_local <class 'builtin_function_or_method'>
-- to_offset <class 'numpy.ufunc'>
-
-
-Dtypes
-^^^^^^
-
-- ORDINAL_DATE_DTYPE <class 'numpy.dtype'>
-- WEEK_DATE_DTYPE <class 'numpy.dtype'>
-- YMD_DTYPE <class 'numpy.dtype'>
