@@ -98,6 +98,5 @@ def test_from_local(Time, Date, Daytime, time_zone):
             except ValueError:
                 t = Time.INVALID
             assert time[r, c] == t
-
     
 
