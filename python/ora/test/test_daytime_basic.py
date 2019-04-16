@@ -404,3 +404,9 @@ def test_format_iso():
     assert ora.format_daytime_iso(daytime, 12) == "09:34:05.625000000000"
 
 
+@pytest.mark.xfail
+def test_offset():
+    assert Daytime.MIN.offset == 0
+    assert 0 < Daytime(12, 0, 0).offset < Daytime.MAX.offset
+
+
