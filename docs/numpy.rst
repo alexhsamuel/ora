@@ -127,13 +127,16 @@ These functions produce NumPy arrays of Ora objects.
 
 .. function:: to_local(time, time_zone)
 
-    FIXME
+    Converts times to local dates and daytimes in a given time zone, like
+    `ora.to_local`.  Returns a date array and a daytime array.
 
 .. function:: from_local(date, daytime, time_zone)
 
-    FIXME
+    Converts local dates and daytimes to times in a given time zone, like
+    `ora.from_local`.  Returns a time array.
 
-FIXME: Explain type arguments.
+The functions above also accept `Time`, `Date`, and/or `Daytime` keyword
+arguments, to control the dtypes of the resulting arrays.
 
     # FIXME: type example
 
@@ -143,3 +146,34 @@ Ufunc-style broadcasting is applied to the arguments.
 
 
 
+Ufuncs
+^^^^^^
+
+.. function:: is_valid(obj)
+
+    Returns a boolean array indicating true where the value is valid.  Works on
+    time, date, and daytime arrays.
+
+.. function:: to_offset(obj)
+
+    Returns the offset (ticks) of the time, date, or daytime array.  The offset
+    dtype depends on the dtype of the argument.  Each Ora type uses a specific
+    signed or unsigned integer to represent its offset.
+
+.. function:: get_day(date)
+.. function:: get_month(date)
+.. function:: get_ordinal_date(date)
+.. function:: get_week_date(date)
+.. function:: get_weekday(date)
+.. function:: get_year(date)
+.. function:: get_ymd(date)
+.. function:: get_ymdi(date)
+
+
+
+Dtypes
+^^^^^^
+
+- ORDINAL_DATE_DTYPE <class 'numpy.dtype'>
+- WEEK_DATE_DTYPE <class 'numpy.dtype'>
+- YMD_DTYPE <class 'numpy.dtype'>
