@@ -15,6 +15,15 @@ namespace py {
 
 using namespace np;
 
+namespace docstring {
+namespace np_date {
+
+#include "np_date.docstrings.hh.inc"
+
+}  // namespace docstring
+}  // namespace pydate
+
+
 //------------------------------------------------------------------------------
 
 // FIXME: For debugging; remove this, eventually.
@@ -221,9 +230,11 @@ DateDtype<PYDATE>::add(
   assert(dict != nullptr);
   dict->SetItemString("dtype", (Object*) dtype);
 
-  create_or_get_ufunc(module, "get_day", 1, 1)->add_loop_1(
-    dtype->type_num, NPY_UINT8, 
-    ufunc_loop_1<Date, npy_bool, ora::date::nex::get_day<Date>>);
+  create_or_get_ufunc(
+    module, "get_day", 1, 1, docstring::np_date::get_day
+    )->add_loop_1(
+      dtype->type_num, NPY_UINT8, 
+      ufunc_loop_1<Date, npy_bool, ora::date::nex::get_day<Date>>);
   create_or_get_ufunc(module, "get_month", 1, 1)->add_loop_1(
     dtype->type_num, NPY_UINT8, 
     ufunc_loop_1<Date, npy_bool, ora::date::nex::get_month<Date>>);

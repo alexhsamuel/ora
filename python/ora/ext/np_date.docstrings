@@ -1,0 +1,8 @@
+#-*- python -*-
+
+get_day = """
+Returns the day part of an `ora.Date`.
+
+Ufunc.
+"""
+
