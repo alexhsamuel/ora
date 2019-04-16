@@ -1,11 +1,8 @@
 """
 Numpy support for Ora.
 
-Numpy support is provided in a submodule so that users who do not need it aren't
-forced to import numpy.
-
-After this module is imported, Ora types that can be used as numpy array types
-will have a `dtype` attribute.  For example:
+Ora types can be used as numpy array types, and will have a `dtype` attribute.
+For example:
 
   >>> import numpy as np
   >>> from ora import Date
