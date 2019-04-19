@@ -1,5 +1,6 @@
 #pragma once
 
+#undef _LIBCPP_WARN_ON_DEPRECATED_EXPERIMENTAL_HEADER
 #include <experimental/optional>
 
 namespace ora {

@@ -2,6 +2,7 @@
 #pragma GCC diagnostic ignored "-Wparentheses"
 
 #include <cstring>
+#undef _LIBCPP_WARN_ON_DEPRECATED_EXPERIMENTAL_HEADER
 #include <experimental/optional>
 #include <iostream>
 #include <memory>
