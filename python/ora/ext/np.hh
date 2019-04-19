@@ -152,6 +152,8 @@ public:
   static ref<ArrayMultiIter> New(PyObject* obj0, PyObject* obj1, PyObject* obj2)
     { return take_not_null<ArrayMultiIter>(PyArray_MultiIterNew(3, obj0, obj1, obj2)); }
 
+  operator bool() const
+    { return PyArray_MultiIter_NOTDONE(this); }
   bool not_done() const
     { return PyArray_MultiIter_NOTDONE(this); }
   void next()

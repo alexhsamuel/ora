@@ -30,10 +30,9 @@ def test_date_from_ymd_types(yt, mt, dt):
     assert (res == dates).all()
 
 
-@pytest.mark.xfail
 def test_date_from_ymd_broadcast():
     dates = ora.np.date_from_ymd(2019, [1, 4], [[1, 2], [30, 31]])
-    assert (dates == np.array([[20190101, 20190430], [Date.INVALID, 20200430]], dtype=Date)).all()
+    assert (dates == np.array([[20190101, 20190402], [20190130, Date.INVALID]], dtype=Date)).all()
 
     dates = ora.np.date_from_ymd([[2019, 2020], [2021, 1950]], 1, 31)
     assert (dates == np.array([[20190131, 20200131], [20210131, 19500131]], dtype=Date)).all()

@@ -489,7 +489,7 @@ DateDtype<PYDATE>::API::function_date_from_ymd(
   auto const& mi = mit->iter<Month>(1);
   auto const& di = mit->iter<Day>(2);
   auto const r = date_arr->get_ptr<Date>();
-  for (; mit->not_done(); mit->next())
+  for (; *mit; mit->next())
     r[mit->index()] = ora::date::nex::from_ymd<Date>(*yi, *mi, *di);
 
   return std::move(date_arr);
