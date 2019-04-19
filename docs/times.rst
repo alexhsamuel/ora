@@ -165,4 +165,9 @@ you to specify which time class you want.
     >>> now(Time=Time128)
     Time128(2018, 3, 2, 12, 49, 21.010432000000000, UTC)
 
+Note that the precision of `now()` depends on the underlying operating system's
+clock.  For example, on MacOS, the precision is 1 µs, even if the chosen time
+type can represent additional precision.  Keep in mind that the real-time clock
+on a typical computer is far less accurate than 1 µs, even with clock
+synchronization enabled.
 
