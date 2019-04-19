@@ -76,7 +76,7 @@ public:
   /*
    * Returns the singletone descriptor / dtype object.
    */
-  static PyArray_Descr* get();
+  static Descr* get();
 
   /*
    * Adds the dtype object.
@@ -122,13 +122,13 @@ private:
 
   };
 
-  static PyArray_Descr* descr_;
+  static Descr* descr_;
 
 };
 
 
 template<class PYDAYTIME>
-PyArray_Descr*
+Descr*
 DaytimeDtype<PYDAYTIME>::get()
 {
   if (descr_ == nullptr) {
@@ -140,7 +140,7 @@ DaytimeDtype<PYDAYTIME>::get()
     arr_funcs->setitem          = (PyArray_SetItemFunc*) setitem;
     arr_funcs->compare          = (PyArray_CompareFunc*) compare;
 
-    descr_ = PyObject_New(PyArray_Descr, &PyArrayDescr_Type);
+    descr_ = (Descr*) PyObject_New(PyArray_Descr, &PyArrayDescr_Type);
     descr_->typeobj         = incref(&PYDAYTIME::type_);
     descr_->kind            = 'V';
     descr_->type            = 'j';  // FIXME
@@ -320,7 +320,7 @@ DaytimeDtype<PYDAYTIME>::compare(
 //------------------------------------------------------------------------------
 
 template<class PYDAYTIME>
-PyArray_Descr*
+Descr*
 DaytimeDtype<PYDAYTIME>::descr_
   = nullptr;
 

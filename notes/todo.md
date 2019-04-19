@@ -1,6 +1,5 @@
 # Small problems
 
-- rename `ora.np` function dtype args consistently: either `dtype` or `Date`, `Time`, `Daytime`
 - xfail tests
 - `ora.np.date_from_offset()`
 - `ora.np.daytime_from_offset()`

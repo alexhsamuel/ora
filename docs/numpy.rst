@@ -138,7 +138,11 @@ These functions produce NumPy arrays of Ora objects.
 The functions above also accept `Time`, `Date`, and/or `Daytime` keyword
 arguments, to control the dtypes of the resulting arrays.
 
-    # FIXME: type example
+    >>> ora.np.time_from_offset(np.arange(4), Time=Unix32Time)
+    array([ora.Unix32Time(1970, 1, 1, 0, 0, 0., UTC),
+           ora.Unix32Time(1970, 1, 1, 0, 0, 1., UTC),
+           ora.Unix32Time(1970, 1, 1, 0, 0, 2., UTC),
+           ora.Unix32Time(1970, 1, 1, 0, 0, 3., UTC)], dtype=Unix32Time)
 
 Ufunc-style broadcasting is applied to the arguments.
 

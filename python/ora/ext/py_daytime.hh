@@ -480,10 +480,8 @@ PyDaytime<DAYTIME>::tp_as_number_ = {
   (binaryfunc)  nullptr,                        // nb_inplace_floor_divide
   (binaryfunc)  nullptr,                        // nb_inplace_true_divide
   (unaryfunc)   nullptr,                        // nb_index
-/* FIXME: Python 2.5
   (binaryfunc)  nullptr,                        // nb_matrix_multiply
   (binaryfunc)  nullptr,                        // nb_inplace_matrix_multiply
-*/
 };
 
 

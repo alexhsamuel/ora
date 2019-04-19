@@ -102,7 +102,7 @@ public:
   /*
    * Returns the singleton descriptor / dtype object.
    */
-  static PyArray_Descr* get();
+  static Descr* get();
 
   /*
    * Adds the dtype object to the Python type object as the `dtype` attribute.
@@ -159,13 +159,13 @@ private:
 
   };
 
-  static PyArray_Descr* descr_;
+  static Descr* descr_;
 
 };
 
 
 template<class PYDATE>
-PyArray_Descr*
+Descr*
 DateDtype<PYDATE>::get()
 {
   if (descr_ == nullptr) {
@@ -179,7 +179,7 @@ DateDtype<PYDATE>::get()
     arr_funcs->compare      = (PyArray_CompareFunc*) compare;
     // FIMXE: Additional methods.
 
-    descr_ = PyObject_New(PyArray_Descr, &PyArrayDescr_Type);
+    descr_ = (Descr*) PyObject_New(PyArray_Descr, &PyArrayDescr_Type);
     descr_->typeobj         = incref(&PYDATE::type_);
     descr_->kind            = 'V';
     descr_->type            = 'j';  // FIXME?
@@ -520,7 +520,7 @@ DateDtype<PYDATE>::API::function_date_from_ymdi(
 //------------------------------------------------------------------------------
 
 template<class PYDATE>
-PyArray_Descr*
+Descr*
 DateDtype<PYDATE>::descr_
   = nullptr;
 

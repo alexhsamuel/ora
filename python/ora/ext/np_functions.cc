@@ -24,7 +24,7 @@ date_from_ordinal_date(
   static char const* arg_names[] = {"year", "ordinal", "Date", nullptr};
   PyObject* year_arg;
   PyObject* ordinal_arg;
-  PyArray_Descr* descr = DateDtype<PyDateDefault>::get();
+  Descr* descr = DateDtype<PyDateDefault>::get();
   Arg::ParseTupleAndKeywords(
     args, kw_args, "OO|$O&", arg_names,
     &year_arg, &ordinal_arg, &PyArray_DescrConverter2, &descr);
@@ -47,20 +47,16 @@ date_from_week_date(
   Dict* const kw_args)
 {
   static char const* arg_names[] 
-    = {"week_year", "week", "weekday", "dtype", nullptr};
+    = {"week_year", "week", "weekday", "Date", nullptr};
   PyObject* week_year_arg;
   PyObject* week_arg;
   PyObject* weekday_arg;
-  PyArray_Descr* dtype = DateDtype<PyDateDefault>::get();
+  Descr* descr = DateDtype<PyDateDefault>::get();
   Arg::ParseTupleAndKeywords(
     args, kw_args, "OOO|$O!", arg_names,
-    &week_year_arg, &week_arg, &weekday_arg, &PyArrayDescr_Type, &dtype);
+    &week_year_arg, &week_arg, &weekday_arg, &PyArrayDescr_Type, &descr);
 
-  // FIXME: Encapsulate this.
-  auto const api = (DateAPI*) dtype->c_metadata;
-  assert(api != nullptr);
-
-  return api->function_date_from_week_date(
+  return DateAPI::from(descr)->function_date_from_week_date(
     Array::FromAny(
       week_year_arg, np::YEAR_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO),
     Array::FromAny(
@@ -76,20 +72,16 @@ date_from_ymd(
   Tuple* const args,
   Dict* const kw_args)
 {
-  static char const* arg_names[] = {"year", "month", "day", "dtype", nullptr};
+  static char const* arg_names[] = {"year", "month", "day", "Date", nullptr};
   PyObject* year_arg;
   PyObject* month_arg;
   PyObject* day_arg;
-  PyArray_Descr* dtype = DateDtype<PyDateDefault>::get();
+  Descr* descr = DateDtype<PyDateDefault>::get();
   Arg::ParseTupleAndKeywords(
     args, kw_args, "OOO|$O!", arg_names,
-    &year_arg, &month_arg, &day_arg, &PyArrayDescr_Type, &dtype);
+    &year_arg, &month_arg, &day_arg, &PyArrayDescr_Type, &descr);
 
-  // FIXME: Encapsulate this.
-  auto const api = (DateAPI*) dtype->c_metadata;
-  assert(api != nullptr);
-
-  return api->function_date_from_ymd(
+  return DateAPI::from(descr)->function_date_from_ymd(
     Array::FromAny(year_arg, np::YEAR_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO),
     Array::FromAny(month_arg, np::MONTH_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO),
     Array::FromAny(day_arg, np::DAY_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO));
@@ -102,21 +94,18 @@ date_from_ymdi(
   Tuple* const args,
   Dict* const kw_args)
 {
-  static char const* arg_names[] = {"ymdi", "dtype", nullptr};
+  static char const* arg_names[] = {"ymdi", "Date", nullptr};
   PyObject* ymdi_arg;
-  PyArray_Descr* dtype = DateDtype<PyDateDefault>::get();
+  Descr* descr = DateDtype<PyDateDefault>::get();
   Arg::ParseTupleAndKeywords(
-    args, kw_args, "O|$O!", arg_names,
-    &ymdi_arg, &PyArrayDescr_Type, &dtype);
+    args, kw_args, "O|$O&", arg_names,
+    &ymdi_arg, &PyArray_DescrConverter2, &descr);
+  if (descr == nullptr)
+    throw TypeError("not an ora date dtype");
   auto ymdi_arr
     = Array::FromAny(ymdi_arg, np::YMDI_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO);
 
-  // OK, we have an aligned 1D int32 array.
-  // FIXME: Encapsulate this, and check that it is an ora date dtype.
-  auto const api = (DateAPI*) dtype->c_metadata;
-  assert(api != nullptr);
-
-  return api->function_date_from_ymdi(ymdi_arr);
+  return DateAPI::from(descr)->function_date_from_ymdi(ymdi_arr);
 }
 
 
@@ -126,17 +115,15 @@ time_from_offset(
   Tuple* const args,
   Dict* const kw_args)
 {
-  static char const* arg_names[] = {"offset", "dtype", nullptr};
+  static char const* arg_names[] = {"offset", "Time", nullptr};
   PyObject* offset_arg;
-  Descr* dtype = TimeDtype<PyTimeDefault>::get_descr();
-  // FIXME: DescrConverter2 and check for failure.
+  Descr* descr = TimeDtype<PyTimeDefault>::get_descr();
   Arg::ParseTupleAndKeywords(
     args, kw_args, "O|$O&", arg_names,
-    &offset_arg, &PyArray_DescrConverter, &dtype);
+    &offset_arg, &PyArray_DescrConverter2, &descr);
   auto offset = Array::FromAny(offset_arg, NPY_INT64, 0, 0, NPY_ARRAY_BEHAVED);
 
-  // FIXME: Handle dtype == nullptr in TimeAPI::get().
-  return TimeAPI::from(dtype)->from_offset(offset);
+  return TimeAPI::from(descr)->from_offset(offset);
 }
 
 
@@ -153,7 +140,7 @@ from_local(
   Object* daytime_arg;
   Object* tz_arg;
   bool first = true;
-  PyArray_Descr* time_descr = TimeDtype<PyTimeDefault>::get_descr();
+  Descr* time_descr = TimeDtype<PyTimeDefault>::get_descr();
   Arg::ParseTupleAndKeywords(
     args, kw_args, "OOO|$O&", arg_names, 
     &date_arg, &daytime_arg, &tz_arg, 
@@ -164,11 +151,11 @@ from_local(
     throw TypeError("not an ora time dtype");
 
   auto const date_arr       = to_date_array(date_arg);
-  auto const date_descr     = date_arr->descr();
+  auto const date_descr     = (Descr*) date_arr->descr();
   auto const date_api       = DateAPI::from(date_descr);
 
   auto const daytime_arr    = to_daytime_array(daytime_arg);
-  auto const daytime_descr  = daytime_arr->descr();
+  auto const daytime_descr  = (Descr*) daytime_arr->descr();
   auto const daytime_api    = DaytimeAPI::from(daytime_descr);
 
   auto const tz             = convert_to_time_zone(tz_arg);
@@ -188,12 +175,12 @@ from_local(
     NPY_ITER_READONLY,
     NPY_ITER_WRITEONLY | NPY_ITER_ALLOCATE,
   };
-  PyArray_Descr* dtypes[nargs] = {date_descr, daytime_descr, time_descr};
+  Descr const* dtypes[nargs] = {date_descr, daytime_descr, time_descr};
 
   // Construct the iterator.  We'll handle the inner loop explicitly.
   auto const iter = NpyIter_MultiNew(
     nargs, op, NPY_ITER_EXTERNAL_LOOP, NPY_KEEPORDER, NPY_UNSAFE_CASTING, 
-    flags, dtypes);
+    flags, (PyArray_Descr**) dtypes);
   if (iter == nullptr)
     throw Exception();
 
@@ -241,8 +228,8 @@ to_local(
     = {"time", "time_zone", "Date", "Daytime", nullptr};
   Object* time_arg;
   Object* tz_arg;
-  PyArray_Descr* date_descr = DateDtype<PyDateDefault>::get();
-  PyArray_Descr* daytime_descr = DaytimeDtype<PyDaytimeDefault>::get();
+  Descr* date_descr = DateDtype<PyDateDefault>::get();
+  Descr* daytime_descr = DaytimeDtype<PyDaytimeDefault>::get();
   Arg::ParseTupleAndKeywords(
     args, kw_args, "OO|$O&O&", arg_names, 
     &time_arg, &tz_arg, 
