@@ -82,9 +82,9 @@ date_from_ymd(
     &year_arg, &month_arg, &day_arg, &PyArrayDescr_Type, &descr);
 
   return DateAPI::from(descr)->function_date_from_ymd(
-    Array::FromAny(year_arg, np::YEAR_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO),
-    Array::FromAny(month_arg, np::MONTH_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO),
-    Array::FromAny(day_arg, np::DAY_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO));
+    Array::FromAny(year_arg, np::YEAR_TYPE, 0, 0, NPY_ARRAY_CARRAY_RO),
+    Array::FromAny(month_arg, np::MONTH_TYPE, 0, 0, NPY_ARRAY_CARRAY_RO),
+    Array::FromAny(day_arg, np::DAY_TYPE, 0, 0, NPY_ARRAY_CARRAY_RO));
 }
 
 

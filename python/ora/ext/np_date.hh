@@ -72,7 +72,7 @@ public:
 
   virtual ref<Object> function_date_from_ordinal_date(Array*, Array*) = 0;
   virtual ref<Object> function_date_from_week_date(Array*, Array*, Array*) = 0;
-  virtual ref<Object> function_date_from_ymd(Array*, Array*, Array*) = 0;
+  virtual ref<Object> function_date_from_ymd(Object*, Object*, Object*) = 0;
   virtual ref<Object> function_date_from_ymdi(Array*) = 0;
 
   static bool check(PyArray_Descr* const descr)
@@ -154,7 +154,7 @@ private:
 
     virtual ref<Object> function_date_from_ordinal_date(Array*, Array*) override;
     virtual ref<Object> function_date_from_week_date(Array*, Array*, Array*) override;
-    virtual ref<Object> function_date_from_ymd(Array*, Array*, Array*) override;
+    virtual ref<Object> function_date_from_ymd(Object*, Object*, Object*) override;
     virtual ref<Object> function_date_from_ymdi(Array*) override;
 
   };
@@ -473,25 +473,30 @@ DateDtype<PYDATE>::API::function_date_from_week_date(
 template<class PYDATE>
 ref<Object>
 DateDtype<PYDATE>::API::function_date_from_ymd(
-  Array* const year_arr,
-  Array* const month_arr,
-  Array* const day_arr)
+  Object* const year,
+  Object* const month,
+  Object* const day)
 {
   using Date = typename PYDATE::Date;
 
+  // Broadcast args together.
+  auto const mit = (PyArrayMultiIterObject*) PyArray_MultiIterNew(3, year, month, day);
   // Create the output array.
-  auto const size = year_arr->size();
-  if (month_arr->size() != size || day_arr->size() != size)
-    throw py::ValueError("year, month, day must be the same size");
-  auto date_arr = Array::SimpleNew1D(size, descr_->type_num);
+  auto date_arr = Array::SimpleNew(mit->nd, mit->dimensions, descr_->type_num);
 
-  // Fill it.
-  auto const y = year_arr->get_const_ptr<ora::Year>();
-  auto const m = month_arr->get_const_ptr<ora::Month>();
-  auto const d = day_arr->get_const_ptr<ora::Day>();
   auto const r = date_arr->get_ptr<Date>();
-  for (npy_intp i = 0; i < size; ++i)
-    r[i] = ora::date::nex::from_ymd<Date>(y[i], m[i], d[i]);
+  auto const yi = mit->iters[0];
+  auto const mi = mit->iters[1];
+  auto const di = mit->iters[2];
+  while (PyArray_MultiIter_NOTDONE(mit)) {
+    r[mit->index] = ora::date::nex::from_ymd<Date>(
+      *(ora::Year*) yi->dataptr,
+      *(ora::Month*) mi->dataptr,
+      *(ora::Day*) di->dataptr);
+    PyArray_MultiIter_NEXT(mit);
+  }
+
+  decref((Object*) mit);
 
   return std::move(date_arr);
 }
