@@ -121,6 +121,64 @@ template<> struct IntType<uint64_t>
 
 //------------------------------------------------------------------------------
 
+template<class TYPE>
+class ArrayIter
+: public Object
+{
+public:
+
+  TYPE& operator*()
+    { return *(TYPE*) (obj()->dataptr); }
+  TYPE operator*() const
+    { return *(TYPE const*) (obj()->dataptr); }
+
+private:
+
+  ArrayIter() = delete;
+  ArrayIter(ArrayIter const&) = delete;
+  ArrayIter(ArrayIter&&) = delete;
+
+  PyArrayIterObject* obj() const
+    { return (PyArrayIterObject*) this; }
+
+};
+
+
+class ArrayMultiIter
+: public Object
+{
+public:
+
+  static ref<ArrayMultiIter> New(PyObject* obj0, PyObject* obj1, PyObject* obj2)
+    { return take_not_null<ArrayMultiIter>(PyArray_MultiIterNew(3, obj0, obj1, obj2)); }
+
+  bool not_done() const
+    { return PyArray_MultiIter_NOTDONE(this); }
+  void next()
+    { PyArray_MultiIter_NEXT(this); }
+
+  int nd() const
+    { return obj()->nd; }
+  npy_intp* dimensions() const
+    { return obj()->dimensions; }
+  template<class TYPE> ArrayIter<TYPE>& iter(size_t const index)
+    { return *(ArrayIter<TYPE>*) (obj()->iters[index]); }
+  npy_intp index() const
+    { return obj()->index; }
+
+private:
+
+  ArrayMultiIter() = delete;
+  ArrayMultiIter(ArrayMultiIter const&) = delete;
+  ArrayMultiIter(ArrayMultiIter&&) = delete;
+
+  PyArrayMultiIterObject* obj() const
+    { return (PyArrayMultiIterObject*) this; }
+
+};
+
+//------------------------------------------------------------------------------
+
 class UFunc
 : public Object
 {

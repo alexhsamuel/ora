@@ -480,23 +480,17 @@ DateDtype<PYDATE>::API::function_date_from_ymd(
   using Date = typename PYDATE::Date;
 
   // Broadcast args together.
-  auto const mit = (PyArrayMultiIterObject*) PyArray_MultiIterNew(3, year, month, day);
+  auto const mit = ArrayMultiIter::New(year, month, day);
   // Create the output array.
-  auto date_arr = Array::SimpleNew(mit->nd, mit->dimensions, descr_->type_num);
+  auto date_arr = Array::SimpleNew(
+    mit->nd(), mit->dimensions(), descr_->type_num);
 
+  auto const& yi = mit->iter<Year>(0);
+  auto const& mi = mit->iter<Month>(1);
+  auto const& di = mit->iter<Day>(2);
   auto const r = date_arr->get_ptr<Date>();
-  auto const yi = mit->iters[0];
-  auto const mi = mit->iters[1];
-  auto const di = mit->iters[2];
-  while (PyArray_MultiIter_NOTDONE(mit)) {
-    r[mit->index] = ora::date::nex::from_ymd<Date>(
-      *(ora::Year*) yi->dataptr,
-      *(ora::Month*) mi->dataptr,
-      *(ora::Day*) di->dataptr);
-    PyArray_MultiIter_NEXT(mit);
-  }
-
-  decref((Object*) mit);
+  for (; mit->not_done(); mit->next())
+    r[mit->index()] = ora::date::nex::from_ymd<Date>(*yi, *mi, *di);
 
   return std::move(date_arr);
 }
