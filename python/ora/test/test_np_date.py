@@ -2,8 +2,7 @@ import numpy as np
 import pytest
 
 import ora
-from   ora import DATE_TYPES
-from   ora import Date, Date16, Jan, Feb, Mar, Sep, Nov
+from   ora import DATE_TYPES, Date, Date16
 
 #-------------------------------------------------------------------------------
 
