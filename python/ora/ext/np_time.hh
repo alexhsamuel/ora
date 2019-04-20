@@ -183,15 +183,13 @@ TimeDtype<PYTIME>::set_up(
   type_dict->SetItemString("dtype", (Object*) descr_);
 
   // Set the offset dtype as an attribute as well.
-  auto const offset_type_num = IntType<typename PYTIME::Time::Offset>::type_num;
+  auto constexpr offset_type_num = IntType<Offset>::type_num;
   // There may be no offset dtype available, e.g. 128-bit integer types.
   if (offset_type_num != -1)
     type_dict->SetItemString(
       "offset_dtype", (Object*) Descr::from(offset_type_num));
 
   auto const np_module = Module::ImportModule("numpy");
-
-  int constexpr int_type_num = IntType<Offset>::type_num;
 
   // Cast from object to time.
   Array::RegisterCastFunc(
@@ -218,12 +216,11 @@ TimeDtype<PYTIME>::set_up(
     type_num, type_num, NPY_FLOAT64, 
     ufunc_loop_2<Time, Time, float64_t, subtract>);
 
-  // Conversion to offset.
-  if (int_type_num != -1) {
+  // Conversion to offset; not available for 128-bit integer types.
+  if (offset_type_num != -1)
     create_or_get_ufunc(module, "to_offset", 1, 1)->add_loop_1(
-      type_num, int_type_num,
+      type_num, offset_type_num,
       ufunc_loop_1<Time, Offset, ora::time::nex::get_offset<Time>>);
-  }
 
   create_or_get_ufunc(module, "is_valid", 1, 1)->add_loop_1(
       type_num, NPY_BOOL,
