@@ -3,37 +3,9 @@ import pytest
 
 import ora
 from   ora import DATE_TYPES
-from   ora import Date, Date16, Jan, Feb, Mar, Sep, Nov, Dec
+from   ora import Date, Date16, Jan, Feb, Mar, Sep, Nov
 
 #-------------------------------------------------------------------------------
-
-valid_dates = (
-    Date.MIN,
-    Date.MIN + 1,
-    1000/Jan/ 1,
-    1000/Dec/31,
-    1999/Dec/31,
-    2000/Jan/ 1,
-    2004/Feb/28,
-    2004/Feb/29,
-    2004/Mar/ 1,
-    Date.MAX - 10000,
-    Date.MAX -  1000,
-    Date.MAX -   100,
-    Date.MAX -    10,
-    Date.MAX -     1,
-    Date.MAX,
-)
-
-
-dates = valid_dates + (
-    Date.MISSING,
-    Date.INVALID,
-)
-
-
-arr = np.array(dates)
-
 
 def get_array(Date):
     return np.array([
