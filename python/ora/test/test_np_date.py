@@ -70,9 +70,11 @@ def test_date_from_ordinal_date0(Date):
 
 
 def test_date_from_ordinal_date1():
-    year, ordinal = zip(*( (d.year, d.ordinal) for d in valid_dates ))
+    dates = get_array(Date)
+    dates = dates[ora.np.is_valid(dates)]
+    year, ordinal = zip(*( (d.year, d.ordinal) for d in dates ))
     arr = ora.np.date_from_ordinal_date(year, ordinal)
-    assert (arr == np.array(valid_dates)).all()
+    assert (arr == np.array(dates)).all()
 
 
 @pytest.mark.parametrize("Date", DATE_TYPES)
@@ -91,7 +93,7 @@ def test_ne(Date):
 def test_is_valid(Date):
     arr = get_array(Date)
     v = ora.np.is_valid(arr)
-    assert (v == np.array([ d.valid for d in dates ])).all()
+    assert (v == np.array([ d.valid for d in arr ])).all()
 
 
 @pytest.mark.parametrize("Date", DATE_TYPES)
@@ -102,47 +104,45 @@ def test_is_valid2(Date):
 
 
 def test_add_shift():
-    assert (arr + 1 == (
-        Date.MIN + 1,
-        Date.MIN + 2,
-        1000/Jan/ 2,
-        1001/Jan/ 1,
-        2000/Jan/ 1,
-        2000/Jan/ 2,
-        2004/Feb/29,
-        2004/Mar/ 1,
-        2004/Mar/ 2,
-        Date.MAX -  9999,
-        Date.MAX -   999,
-        Date.MAX -    99,
-        Date.MAX -     9,
+    arr = np.array([
+        Date.MIN,
+        Date(2019, 4, 20),
+        Date.MAX - 100,
+        Date.MAX - 1,
+        Date.MAX,
+        Date.MISSING,
+        Date.INVALID,
+    ]) + 100
+    assert (arr == np.array([
+        Date.MIN + 100,
+        Date(2019, 7, 29),
         Date.MAX,
         Date.INVALID,
         Date.INVALID,
         Date.INVALID,
-    )).all()
+        Date.INVALID,
+    ])).all()
     
 
 def test_subtract_shift():
-    assert (arr - 100 == (
+    arr = np.array([
+        Date.MIN,
+        Date.MIN + 1,
+        Date.MIN + 100,
+        Date(2019, 4, 20),
+        Date.MAX,
+        Date.MISSING,
+        Date.INVALID,
+    ]) - 100
+    assert (arr == np.array([
         Date.INVALID,
         Date.INVALID,
-         999/Sep/23,
-        1000/Sep/22,
-        1999/Sep/22,
-        1999/Sep/23,
-        2003/Nov/20,
-        2003/Nov/21,
-        2003/Nov/22,
-        Date.MAX - 10100,
-        Date.MAX -  1100,
-        Date.MAX -   200,
-        Date.MAX -   110,
-        Date.MAX -   101,
-        Date.MAX -   100,
+        Date.MIN,
+        Date(2019, 1, 10),
+        Date.MAX - 100,
         Date.INVALID,
         Date.INVALID,
-    )).all()
+    ])).all()
     
 
 def test_subtract_diff():
@@ -208,5 +208,83 @@ def test_cast(Date0, Date1):
     arr1 = arr0.astype(Date1)
     assert (arr1 == arr0).all()
     assert (arr1.astype(Date0) == arr0).all()
+
+
+@pytest.mark.parametrize(
+    "yt,mt,dt",
+    [
+        (int, int, int),
+        ("int16", "int32", "int64"),
+        ("uint64", "uint32", "uint16"),
+    ]
+)
+def test_date_from_ymd_types(yt, mt, dt):
+    """
+    Tests that `date_from_ymd_types` works with different array dtypes.
+    """
+    y = np.array([2019, 2019, 2019, 2020], dtype=yt)
+    m = np.array([   1,    4,    4,   12], dtype=mt)
+    d = np.array([   1,   30,   31,   31], dtype=dt)
+
+    dates = np.array([20190101, 20190430, Date.INVALID, 20201231], dtype=Date)
+
+    res = ora.np.date_from_ymd(y, m, d)
+    assert (res == dates).all()
+
+
+def test_date_from_ymd_broadcast():
+    """
+    Tests that `date_from_ymd_broadcast` broadcasts its args.
+    """
+    dates = ora.np.date_from_ymd(2019, [1, 4], [[1, 2], [30, 31]])
+    assert (dates == np.array([[20190101, 20190402], [20190130, Date.INVALID]], dtype=Date)).all()
+
+    dates = ora.np.date_from_ymd([[2019, 2020], [2021, 1950]], 1, 31)
+    assert (dates == np.array([[20190131, 20200131], [20210131, 19500131]], dtype=Date)).all()
+
+
+@pytest.mark.xfail
+@pytest.mark.parametrize(
+    "Date,dtype",
+    [
+        (Date, int),
+        (Date16, "uint32"),
+        (Date16, "int32"),
+    ]
+)
+def test_date_from_ymdi_types(Date, dtype):
+    """
+    Tests that `date_from_ymdi` works with different dtypes.
+    """
+    dates = get_array(Date)
+    # MISSING won't survive the round trip, so remove it.
+    dates[dates == Date.MISSING] = Date.INVALID
+
+    # Round-trip it.
+    ymdi = ora.np.get_ymdi(dates).astype(dtype)
+    res = ora.np.date_from_ymdi(ymdi, Date=Date)
+    assert (res == dates).all()
+
+
+@pytest.mark.xfail
+def test_date_from_ymdi_broadcast():
+    """
+    Tests that `date_from_ymdi` works for different shapes.
+    """
+    # Scalar.
+    dates = ora.np.date_from_ymdi(20190420)
+    assert dates == np.array(Date(2019, 4, 20))
+
+    # 1D.
+    dates = ora.np.date_from_ymdi([20190420, 20190430, 20190101])
+    assert dates == np.array(
+        [Date(2019, 4, 20), Date.INVALID, Date(2019, 1, 1)])
+
+    # 2D.
+    dates = ora.np.date_from_ymdi([[20190420, 20190430], [20190101, 19731231]])
+    assert dates == np.array([
+        [Date(2019, 4, 20), Date.INVALID],
+        [Date(201, 1, 1), Date(1973, 12, 31)]
+    ])
 
 
