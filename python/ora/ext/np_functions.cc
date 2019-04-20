@@ -81,10 +81,11 @@ date_from_ymd(
     args, kw_args, "OOO|$O!", arg_names,
     &year_arg, &month_arg, &day_arg, &PyArrayDescr_Type, &descr);
 
+  auto flags = NPY_ARRAY_FORCECAST | NPY_ARRAY_CARRAY_RO;
   return DateAPI::from(descr)->function_date_from_ymd(
-    Array::FromAny(year_arg, np::YEAR_TYPE, 0, 0, NPY_ARRAY_CARRAY_RO),
-    Array::FromAny(month_arg, np::MONTH_TYPE, 0, 0, NPY_ARRAY_CARRAY_RO),
-    Array::FromAny(day_arg, np::DAY_TYPE, 0, 0, NPY_ARRAY_CARRAY_RO));
+    Array::FromAny(year_arg , np::YEAR_TYPE , 0, 0, flags),
+    Array::FromAny(month_arg, np::MONTH_TYPE, 0, 0, flags),
+    Array::FromAny(day_arg  , np::DAY_TYPE  , 0, 0, flags));
 }
 
 
