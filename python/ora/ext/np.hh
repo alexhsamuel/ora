@@ -54,7 +54,7 @@ public:
   static bool Check(PyObject* const obj)
     { return PyArray_Check(obj); }
   static ref<Array> FromAny(PyObject* const obj, PyArray_Descr* const dtype, int const dims_min, int const dims_max, int const requirements, PyObject* const context=nullptr)
-    { return take_not_null<Array>(PyArray_FromAny(obj, dtype, dims_min, dims_max, requirements, context)); }
+    { return take_not_null<Array>(PyArray_FromAny(obj, (PyArray_Descr*) xincref((PyObject*) dtype), dims_min, dims_max, requirements, context)); }
   static ref<Array> FromAny(PyObject* const obj, int const dtype, int const dims_min, int const dims_max, int const requirements, PyObject* const context=nullptr)
     { return FromAny(obj, PyArray_DescrFromType(dtype), dims_min, dims_max, requirements, context); }
   static void RegisterCanCast(PyArray_Descr* const from, int const to, NPY_SCALARKIND const scalar)

@@ -70,6 +70,7 @@ public:
    */
   virtual Datenum     get_datenum(void*) const = 0;
 
+  virtual ref<Object> function_date_from_offset(Array*) = 0;
   virtual ref<Object> function_date_from_ordinal_date(Array*, Array*) = 0;
   virtual ref<Object> function_date_from_week_date(Array*, Array*, Array*) = 0;
   virtual ref<Object> function_date_from_ymd(Object*, Object*, Object*) = 0;
@@ -153,6 +154,7 @@ private:
     virtual Datenum get_datenum(void* const date_ptr) const override
       { return ora::date::nex::get_datenum(*reinterpret_cast<Date*>(date_ptr)); }
 
+    virtual ref<Object> function_date_from_offset(Array*) override;
     virtual ref<Object> function_date_from_ordinal_date(Array*, Array*) override;
     virtual ref<Object> function_date_from_week_date(Array*, Array*, Array*) override;
     virtual ref<Object> function_date_from_ymd(Object*, Object*, Object*) override;
@@ -423,6 +425,28 @@ DateDtype<PYDATE>::cast_from_object(
 
 
 //------------------------------------------------------------------------------
+
+template<class PYDATE>
+ref<Object>
+DateDtype<PYDATE>::API::function_date_from_offset(
+  Array* const offset_arr)
+{
+  using Date = typename PYDATE::Date;
+
+  // Create the output array.
+  auto const descr = DateDtype<PYDATE>::get();
+  auto date_arr = Array::NewLikeArray(offset_arr, NPY_CORDER, descr);
+
+  // Fill it.
+  auto const size = offset_arr->size();
+  auto const o = offset_arr->get_const_ptr<int64_t>();
+  auto const r = date_arr->get_ptr<Date>();
+  for (npy_intp i = 0; i < size; ++i)
+    r[i] = ora::date::nex::from_offset<Date>(o[i]);
+
+  return std::move(date_arr);
+}
+
 
 template<class PYDATE>
 ref<Object>

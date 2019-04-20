@@ -181,15 +181,17 @@ def test_to_offset(Date):
     assert (offsets == [ d.offset for d in dates ]).all()
 
 
-@pytest.mark.xfail
 @pytest.mark.parametrize("Date", DATE_TYPES)
 def test_date_from_offset(Date):
     dates = get_array(Date)
-    offsets = np.array([ d.offset for d in dates ])
-    assert (ora.np.date_from_offset(offsets) == dates).all()
+    # MISSING dates won't survive the round-trip.
+    dates[dates == Date.MISSING] = Date.INVALID
+
+    offsets = ora.np.to_offset(dates)
+    assert (ora.np.date_from_offset(offsets, Date=Date) == dates).all()
 
     offsets = offsets.astype("int64")
-    assert (ora.np.date_from_offset(offsets) == dates).all()
+    assert (ora.np.date_from_offset(offsets, Date=Date) == dates).all()
     
 
 @pytest.mark.xfail

@@ -16,6 +16,25 @@ using namespace ora::py;
 namespace {
 
 ref<Object>
+date_from_offset(
+  Module*,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* arg_names[] = {"offset", "Date", nullptr};
+  PyObject* offset_arg;
+  Descr* descr = DateDtype<PyDateDefault>::get();
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "O|$O&", arg_names,
+    &offset_arg, &PyArray_DescrConverter2, &descr);
+  // FIXME: Is it right to require int64 here?
+  auto offset = Array::FromAny(offset_arg, NPY_INT64, 0, 0, NPY_ARRAY_BEHAVED);
+
+  return DateAPI::from(descr)->function_date_from_offset(offset);
+}
+
+
+ref<Object>
 date_from_ordinal_date(
   Module* /* module */,
   Tuple* const args,
@@ -321,6 +340,7 @@ to_local(
 auto
 functions 
   = Methods<Module>()
+    .add<date_from_offset>          ("date_from_offset")
     .add<date_from_ordinal_date>    ("date_from_ordinal_date")
     .add<date_from_week_date>       ("date_from_week_date")
     .add<date_from_ymd>             ("date_from_ymd")
