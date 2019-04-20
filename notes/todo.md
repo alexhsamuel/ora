@@ -10,6 +10,9 @@
 - `ora.np.get_minute()`
 - `ora.np.get_second()`
 - `ora.np.get_ssm()`
+- cast functions among dates
+- cast functions among times
+- cast functions among daytimes
 - fix now() rounding problem... if there is one
   - or more likely, fix rounding in last digit of seconds in Time repr
   - and maybe Daytime should have lower resolution
