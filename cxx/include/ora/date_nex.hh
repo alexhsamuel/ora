@@ -150,6 +150,16 @@ is_valid(
 
 
 template<class DATE>
+inline typename DATE::Offset
+get_offset(
+  DATE const date)
+  noexcept
+{
+  return date.offset_;
+}
+
+
+template<class DATE>
 inline Datenum
 get_datenum(
   DATE const date)

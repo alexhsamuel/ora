@@ -110,6 +110,10 @@ cast_func(
 // Compile-time mapping from C++ integer types to numpy type numbers.
 template<class INT> struct IntType 
   { static int constexpr type_num = -1; };
+template<> struct IntType<int16_t> 
+  { static int constexpr type_num = NPY_INT16; };
+template<> struct IntType<uint16_t>
+  { static int constexpr type_num = NPY_UINT16; };
 template<> struct IntType<int32_t> 
   { static int constexpr type_num = NPY_INT32; };
 template<> struct IntType<uint32_t>

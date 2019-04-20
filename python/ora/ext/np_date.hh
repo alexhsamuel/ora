@@ -98,6 +98,7 @@ class DateDtype
 public:
 
   using Date = typename PYDATE::Date;
+  using Offset = typename Date::Offset;
 
   /*
    * Returns the singleton descriptor / dtype object.
@@ -273,6 +274,11 @@ DateDtype<PYDATE>::add(
   create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
     dtype->type_num, dtype->type_num, NPY_INT32,
     ufunc_loop_2<Date, Date, int32_t, subtract_between>);
+
+  static_assert(IntType<Offset>::type_num >= 0, "no type num for offset type");
+  create_or_get_ufunc(module, "to_offset", 1, 1)->add_loop_1(
+    dtype->type_num, IntType<Offset>::type_num,
+    ufunc_loop_1<Date, Offset, ora::date::nex::get_offset<Date>>);
 
   create_or_get_ufunc(module, "is_valid", 1, 1)->add_loop_1(
     dtype->type_num, NPY_BOOL,

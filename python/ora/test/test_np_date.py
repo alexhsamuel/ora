@@ -173,10 +173,10 @@ def test_convert_invalid():
     ], dtype=Date) == Date.INVALID).all()
 
 
-@pytest.mark.xfail
 @pytest.mark.parametrize("Date", DATE_TYPES)
 def test_to_offset(Date):
     dates = get_array(Date)
+    dates = dates[ora.np.is_valid(dates)]
     offsets = ora.np.to_offset(dates)
     assert (offsets == [ d.offset for d in dates ]).all()
 
