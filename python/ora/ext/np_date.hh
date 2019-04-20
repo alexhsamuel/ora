@@ -434,8 +434,7 @@ DateDtype<PYDATE>::API::function_date_from_offset(
   using Date = typename PYDATE::Date;
 
   // Create the output array.
-  auto const descr = DateDtype<PYDATE>::get();
-  auto date_arr = Array::NewLikeArray(offset_arr, NPY_CORDER, descr);
+  auto date_arr = Array::NewLikeArray(offset_arr, NPY_CORDER, descr_);
 
   // Fill it.
   auto const size = offset_arr->size();
