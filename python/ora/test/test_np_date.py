@@ -259,8 +259,10 @@ def test_date_from_ymdi_types(Date, dtype):
     """
     dates = get_array(Date)
     # MISSING won't survive the round trip, so remove it.
+    dates = dates[dates == Date.INVALID]
     # Dates before year 1000 can't be represented as YMDI.
-    dates = dates[(dates == Date.INVALID) | (dates >= Date(1000, 1, 1))]
+    if Date.MIN.year < 1000:
+        dates = dates[dates >= Date(1000, 1, 1)]
 
     # Round-trip it.
     ymdi = ora.np.get_ymdi(dates).astype(dtype)
