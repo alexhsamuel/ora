@@ -46,7 +46,7 @@ from_iso_date(
   std::string const& date)
   noexcept
 {
-  return from_ymd<DATE>(parse_iso_date(date));
+  return nex::from_ymd<DATE>(parse_iso_date(date));
 }
 
 

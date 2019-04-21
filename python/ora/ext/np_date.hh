@@ -376,7 +376,7 @@ DateDtype<PYDATE>::setitem(
   if (PRINT_ARR_FUNCS)
     std::cerr << "setitem\n";
   try {
-    *data = convert_to_date<Date>(item);
+    *data = convert_to_date_nex<Date>(item);
   }
   catch (Exception) {
     return -1;

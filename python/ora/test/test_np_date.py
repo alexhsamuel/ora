@@ -156,7 +156,6 @@ def test_subtract_diff():
     assert (~ora.np.is_valid(sub) | (dif == 5)).all()
 
 
-@pytest.mark.xfail
 def test_convert_invalid():
     assert (np.array([
         None,
