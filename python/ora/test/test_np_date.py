@@ -1,4 +1,5 @@
 import numpy as np
+from   numpy.testing import assert_array_equal
 import pytest
 
 import ora
@@ -159,7 +160,7 @@ def test_subtract_diff():
 def test_convert_invalid():
     assert (np.array([
         None,
-        "bogus"
+        "bogus",
         "2012-02-30",
         "2013-02-29",
         "2012-02",
@@ -244,9 +245,8 @@ def test_date_from_ymd_broadcast():
     assert (dates == np.array([[20190131, 20200131], [20210131, 19500131]], dtype=Date)).all()
 
 
-@pytest.mark.xfail
 @pytest.mark.parametrize(
-    "Date,dtype",
+    "Date, dtype",
     [
         (Date, int),
         (Date16, "uint32"),
@@ -259,7 +259,8 @@ def test_date_from_ymdi_types(Date, dtype):
     """
     dates = get_array(Date)
     # MISSING won't survive the round trip, so remove it.
-    dates[dates == Date.MISSING] = Date.INVALID
+    # Dates before year 1000 can't be represented as YMDI.
+    dates = dates[(dates == Date.INVALID) | (dates >= Date(1000, 1, 1))]
 
     # Round-trip it.
     ymdi = ora.np.get_ymdi(dates).astype(dtype)
@@ -267,8 +268,7 @@ def test_date_from_ymdi_types(Date, dtype):
     assert (res == dates).all()
 
 
-@pytest.mark.xfail
-def test_date_from_ymdi_broadcast():
+def test_date_from_ymdi_shape():
     """
     Tests that `date_from_ymdi` works for different shapes.
     """
@@ -277,15 +277,16 @@ def test_date_from_ymdi_broadcast():
     assert dates == np.array(Date(2019, 4, 20))
 
     # 1D.
-    dates = ora.np.date_from_ymdi([20190420, 20190430, 20190101])
-    assert dates == np.array(
-        [Date(2019, 4, 20), Date.INVALID, Date(2019, 1, 1)])
+    assert_array_equal(
+        ora.np.date_from_ymdi([20190220, 20190230, 20190101]),
+        [Date(2019, 2, 20), Date.INVALID, Date(2019, 1, 1)])
 
     # 2D.
-    dates = ora.np.date_from_ymdi([[20190420, 20190430], [20190101, 19731231]])
-    assert dates == np.array([
-        [Date(2019, 4, 20), Date.INVALID],
-        [Date(201, 1, 1), Date(1973, 12, 31)]
-    ])
+    assert_array_equal(
+        ora.np.date_from_ymdi([[20190420, 20190230], [20190101, 19731231]]),
+        [
+            [Date(2019, 4, 20), Date.INVALID],
+            [Date(2019, 1, 1), Date(1973, 12, 31)],
+        ])
 
 

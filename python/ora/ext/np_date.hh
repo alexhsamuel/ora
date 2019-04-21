@@ -73,7 +73,7 @@ public:
   virtual ref<Object> function_date_from_offset(Array*) = 0;
   virtual ref<Object> function_date_from_ordinal_date(Array*, Array*) = 0;
   virtual ref<Object> function_date_from_week_date(Array*, Array*, Array*) = 0;
-  virtual ref<Object> function_date_from_ymd(Object*, Object*, Object*) = 0;
+  virtual ref<Object> function_date_from_ymd(Array*, Array*, Array*) = 0;
   virtual ref<Object> function_date_from_ymdi(Array*) = 0;
 
   static bool check(PyArray_Descr* const descr)
@@ -157,7 +157,7 @@ private:
     virtual ref<Object> function_date_from_offset(Array*) override;
     virtual ref<Object> function_date_from_ordinal_date(Array*, Array*) override;
     virtual ref<Object> function_date_from_week_date(Array*, Array*, Array*) override;
-    virtual ref<Object> function_date_from_ymd(Object*, Object*, Object*) override;
+    virtual ref<Object> function_date_from_ymd(Array*, Array*, Array*) override;
     virtual ref<Object> function_date_from_ymdi(Array*) override;
 
   };
@@ -502,9 +502,9 @@ DateDtype<PYDATE>::API::function_date_from_week_date(
 template<class PYDATE>
 ref<Object>
 DateDtype<PYDATE>::API::function_date_from_ymd(
-  Object* const year,
-  Object* const month,
-  Object* const day)
+  Array* const year,
+  Array* const month,
+  Array* const day)
 {
   using Date = typename PYDATE::Date;
 
@@ -533,9 +533,9 @@ DateDtype<PYDATE>::API::function_date_from_ymdi(
   using Date = typename PYDATE::Date;
 
   // Create the output array.
-  auto const size = ymdi_arr->size();
-  auto date_arr = Array::SimpleNew1D(size, descr_->type_num);
+  auto date_arr = Array::NewLikeArray(ymdi_arr, descr_);
   // Fill it.
+  auto const size = ymdi_arr->size();
   auto const y = ymdi_arr->get_const_ptr<int>();
   auto const d = date_arr->get_ptr<Date>();
   for (npy_intp i = 0; i < size; ++i)

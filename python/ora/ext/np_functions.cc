@@ -122,9 +122,9 @@ date_from_ymdi(
     &ymdi_arg, &PyArray_DescrConverter2, &descr);
   if (descr == nullptr)
     throw TypeError("not an ora date dtype");
-  auto ymdi_arr
-    = Array::FromAny(ymdi_arg, np::YMDI_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO);
 
+  auto ymdi_arr = Array::FromAny(
+    ymdi_arg, np::YMDI_TYPE, 0, 0, NPY_ARRAY_FORCECAST | NPY_ARRAY_CARRAY_RO);
   return DateAPI::from(descr)->function_date_from_ymdi(ymdi_arr);
 }
 

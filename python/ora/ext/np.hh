@@ -67,6 +67,8 @@ public:
     { check_zero(PyArray_RegisterCastFunc(PyArray_DescrFromType(from), to, f)); }
   static ref<Array> NewLikeArray(Array* prototype, NPY_ORDER order=NPY_CORDER, PyArray_Descr* descr=nullptr, bool subok=true)
     { return take_not_null<Array>(PyArray_NewLikeArray((PyArrayObject*) prototype, order, (PyArray_Descr*) xincref((PyObject*) descr), subok ? 1 : 0)); }
+  static ref<Array> NewLikeArray(Array* prototype, PyArray_Descr* descr, bool subok=true)
+    { return take_not_null<Array>(PyArray_NewLikeArray((PyArrayObject*) prototype, NPY_CORDER, (PyArray_Descr*) xincref((PyObject*) descr), subok ? 1 : 0)); }
   static ref<Array> SimpleNew(int const nd, npy_intp* const dims, int const typenum)
     { return take_not_null<Array>(PyArray_SimpleNew(nd, dims, typenum)); }
   static ref<Array> SimpleNew1D(npy_intp const size, int const typenum)
