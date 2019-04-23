@@ -428,8 +428,6 @@ ref<Object>
 DateDtype<PYDATE>::API::function_date_from_offset(
   Array* const offset_arr)
 {
-  using Date = typename PYDATE::Date;
-
   // Create the output array.
   auto date_arr = Array::NewLikeArray(offset_arr, NPY_CORDER, descr_);
 
@@ -450,8 +448,6 @@ DateDtype<PYDATE>::API::function_date_from_ordinal_date(
   Array* const year,
   Array* const ordinal)
 {
-  using Date = typename PYDATE::Date;
-
   // Broadcast args together.
   auto const mit = ArrayMultiIter::New(year, ordinal);
   // Create the output array.
@@ -474,8 +470,6 @@ DateDtype<PYDATE>::API::function_date_from_week_date(
   Array* const week,
   Array* const weekday)
 {
-  using Date = typename PYDATE::Date;
-
   // Broadcast args together.
   auto const mit = ArrayMultiIter::New(week_year, week, weekday);
   // Create the output array.
@@ -499,8 +493,6 @@ DateDtype<PYDATE>::API::function_date_from_ymd(
   Array* const month,
   Array* const day)
 {
-  using Date = typename PYDATE::Date;
-
   // Broadcast args together.
   auto const mit = ArrayMultiIter::New(year, month, day);
   // Create the output array.
@@ -522,8 +514,6 @@ ref<Object>
 DateDtype<PYDATE>::API::function_date_from_ymdi(
   Array* const ymdi_arr)
 {
-  using Date = typename PYDATE::Date;
-
   // Create the output array.
   auto date_arr = Array::NewLikeArray(ymdi_arr, descr_);
   // Fill it.
