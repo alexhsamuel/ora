@@ -43,6 +43,15 @@ public:
   static Descr* from(int const typenum)
     { return (Descr*) PyArray_DescrFromType(typenum); }
   
+  void RegisterCanCast(int const to, NPY_SCALARKIND const scalar)
+    { check_zero(PyArray_RegisterCanCast(this, to, scalar)); }
+  void RegisterCanCast(Descr* const to, NPY_SCALARKIND const scalar)
+    { RegisterCanCast(to->type_num, scalar); }
+  void RegisterCastFunc(int const to, PyArray_VectorUnaryFunc* const f)
+    { check_zero(PyArray_RegisterCastFunc(this, to, f)); }
+  void RegisterCastFunc(Descr* const to, PyArray_VectorUnaryFunc* const f)
+    { RegisterCastFunc(to->type_num, f); }
+
 };
 
 

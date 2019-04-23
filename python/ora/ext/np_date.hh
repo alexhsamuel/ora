@@ -204,13 +204,10 @@ DateDtype<PYDATE>::get()
 
     auto const npy_object = PyArray_DescrFromType(NPY_OBJECT);
 
-    if (PyArray_RegisterCastFunc(
-          npy_object, descr_->type_num, 
-          (PyArray_VectorUnaryFunc*) cast_from_object) < 0)
-      throw py::Exception();
-    if (PyArray_RegisterCanCast(
-          npy_object, descr_->type_num, NPY_OBJECT_SCALAR) < 0)
-      throw py::Exception();
+    Array::RegisterCastFunc(
+      npy_object, descr_->type_num, 
+      (PyArray_VectorUnaryFunc*) cast_from_object);
+    Array::RegisterCanCast(npy_object, descr_->type_num, NPY_OBJECT_SCALAR);
   }
 
   return descr_;
