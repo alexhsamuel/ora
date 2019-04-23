@@ -221,11 +221,12 @@ from_local(
          --size,
          d_ptr += d_stride,
          y_ptr += y_stride,
-         t_ptr += t_stride) {
-      auto const datenum = date_api->get_datenum(d_ptr);
-      auto const daytick = daytime_api->get_daytick(y_ptr);
-      time_api->from_local(datenum, daytick, *tz, first, t_ptr);
-    }
+         t_ptr += t_stride)
+      time_api->from_local(
+        date_api->get_datenum(d_ptr), 
+        daytime_api->get_daytick(y_ptr), 
+        *tz, first, t_ptr);
+
   } while (next(iter));
 
   // Get the result from the iterator object array.
