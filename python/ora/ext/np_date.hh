@@ -57,8 +57,6 @@ public:
 
   virtual ~DateAPI() {}
 
-  // FIXME: Add date_from_iso_date().
-
   /*
    * Converts a datenum to a date, and stores it at an address.  Returns true
    * if the date is valid.
