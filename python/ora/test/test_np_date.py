@@ -1,3 +1,4 @@
+from   functools import partial
 import numpy as np
 from   numpy.testing import assert_array_equal
 import pytest
@@ -289,5 +290,69 @@ def test_date_from_ymdi_shape():
             [Date(2019, 4, 20), Date.INVALID],
             [Date(2019, 1, 1), Date(1973, 12, 31)],
         ])
+
+
+@pytest.mark.parametrize(
+    "Date, dtype",
+    [
+        (Date, np.int_),
+        (Date16, np.uint32),
+        (Date, np.int16),
+    ]
+)
+def test_date_from_ordinal_date(Date, dtype):
+    """
+    Tests that `date_from_ordinal_date` broadcasts and converts types.
+    """
+    dfod = partial(ora.np.date_from_ordinal_date, Date=Date)
+
+    # Scalar.
+    assert dfod(dtype(2019), 112) == Date(2019, 4, 22)
+
+    # 1D.
+    assert_array_equal(
+        dfod(np.array([2018, 2019, 2020], dtype=dtype), dtype(100)),
+        [Date(2018, 4, 10), Date(2019, 4, 10), Date(2020, 4, 9)]
+    )
+
+    # 2D.
+    assert_array_equal(
+        dfod(dtype(2020), np.array([[1, 10], [100, 1000]], dtype=dtype)),
+        [
+            [Date(2020, 1, 1), Date(2020, 1, 10)],
+            [Date(2020, 4, 9), Date.INVALID],
+        ]
+    )
+
+
+@pytest.mark.parametrize(
+    "Date, dtype",
+    [
+        (Date, np.int_),
+        (Date16, np.uint32),
+        (Date, np.int16),
+    ]
+)
+def test_date_from_week_date(Date, dtype):
+    """
+    Tests that `date_from_week_date` broadcasts and converts types.
+    """
+    dfwd = partial(ora.np.date_from_week_date, Date=Date)
+
+    # Scalar.
+    assert dfwd(dtype(2019), dtype(17), dtype(0)) == Date(2019, 4, 22)
+
+    # 2D.
+    assert_array_equal(
+        dfwd(
+            dtype(2019), 
+            np.array([[1, 4], [16, 256]], dtype=dtype),
+            np.array([2, 5], dtype=dtype)
+        ),
+        [
+            [Date(2019, 1, 2), Date(2019, 1, 26)],
+            [Date(2019, 4, 17), Date.INVALID],
+        ]
+    )
 
 

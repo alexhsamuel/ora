@@ -51,11 +51,10 @@ date_from_ordinal_date(
     throw TypeError("not an ora date dtype");
   auto const api = DateAPI::from(descr);
 
+  auto constexpr flags = NPY_ARRAY_FORCECAST | NPY_ARRAY_CARRAY_RO;
   return api->function_date_from_ordinal_date(
-    Array::FromAny(
-      year_arg, np::YEAR_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO),
-    Array::FromAny(
-      ordinal_arg, np::ORDINAL_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO));
+    Array::FromAny(year_arg   , np::YEAR_TYPE   , 0, 0, flags),
+    Array::FromAny(ordinal_arg, np::ORDINAL_TYPE, 0, 0, flags));
 }
 
 
@@ -72,16 +71,14 @@ date_from_week_date(
   PyObject* weekday_arg;
   Descr* descr = DateDtype<PyDateDefault>::get();
   Arg::ParseTupleAndKeywords(
-    args, kw_args, "OOO|$O!", arg_names,
-    &week_year_arg, &week_arg, &weekday_arg, &PyArrayDescr_Type, &descr);
+    args, kw_args, "OOO|$O&", arg_names,
+    &week_year_arg, &week_arg, &weekday_arg, &PyArray_DescrConverter2, &descr);
 
+  auto constexpr flags = NPY_ARRAY_FORCECAST | NPY_ARRAY_CARRAY_RO;
   return DateAPI::from(descr)->function_date_from_week_date(
-    Array::FromAny(
-      week_year_arg, np::YEAR_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO),
-    Array::FromAny(
-      week_arg, np::WEEK_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO),
-    Array::FromAny(
-      weekday_arg, np::WEEKDAY_TYPE, 1, 1, NPY_ARRAY_CARRAY_RO));
+    Array::FromAny(week_year_arg, np::YEAR_TYPE   , 0, 0, flags),
+    Array::FromAny(week_arg     , np::WEEK_TYPE   , 0, 0, flags),
+    Array::FromAny(weekday_arg  , np::WEEKDAY_TYPE, 0, 0, flags));
 }
 
 
@@ -100,7 +97,7 @@ date_from_ymd(
     args, kw_args, "OOO|$O!", arg_names,
     &year_arg, &month_arg, &day_arg, &PyArrayDescr_Type, &descr);
 
-  auto flags = NPY_ARRAY_FORCECAST | NPY_ARRAY_CARRAY_RO;
+  auto constexpr flags = NPY_ARRAY_FORCECAST | NPY_ARRAY_CARRAY_RO;
   return DateAPI::from(descr)->function_date_from_ymd(
     Array::FromAny(year_arg , np::YEAR_TYPE , 0, 0, flags),
     Array::FromAny(month_arg, np::MONTH_TYPE, 0, 0, flags),

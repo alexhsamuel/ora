@@ -450,23 +450,21 @@ DateDtype<PYDATE>::API::function_date_from_offset(
 template<class PYDATE>
 ref<Object>
 DateDtype<PYDATE>::API::function_date_from_ordinal_date(
-  Array* const year_arr,
-  Array* const ordinal_arr)
+  Array* const year,
+  Array* const ordinal)
 {
   using Date = typename PYDATE::Date;
 
+  // Broadcast args together.
+  auto const mit = ArrayMultiIter::New(year, ordinal);
   // Create the output array.
-  auto const size = year_arr->size();
-  if (ordinal_arr->size() != size)
-    throw py::ValueError("year, ordinal be the same size");
-  auto date_arr = Array::SimpleNew1D(size, descr_->type_num);
+  auto date_arr = Array::SimpleNew(mit->nd(), mit->dimensions(), descr_);
 
-  // Fill it.
-  auto const y = year_arr->get_const_ptr<ora::Year>();
-  auto const o = ordinal_arr->get_const_ptr<ora::Ordinal>();
+  auto const& yi = mit->iter<Year>(0);
+  auto const& oi = mit->iter<Ordinal>(1);
   auto const r = date_arr->get_ptr<Date>();
-  for (npy_intp i = 0; i < size; ++i)
-    r[i] = ora::date::nex::from_ordinal_date<Date>(y[i], o[i]);
+  for (; *mit; mit->next())
+    r[mit->index()] = ora::date::nex::from_ordinal_date<Date>(*yi, *oi);
 
   return std::move(date_arr);
 }
@@ -475,25 +473,23 @@ DateDtype<PYDATE>::API::function_date_from_ordinal_date(
 template<class PYDATE>
 ref<Object>
 DateDtype<PYDATE>::API::function_date_from_week_date(
-  Array* const week_year_arr,
-  Array* const week_arr,
-  Array* const weekday_arr)
+  Array* const week_year,
+  Array* const week,
+  Array* const weekday)
 {
   using Date = typename PYDATE::Date;
 
+  // Broadcast args together.
+  auto const mit = ArrayMultiIter::New(week_year, week, weekday);
   // Create the output array.
-  auto const size = week_year_arr->size();
-  if (week_arr->size() != size || weekday_arr->size() != size)
-    throw py::ValueError("week_year, week, weekday be the same size");
-  auto date_arr = Array::SimpleNew1D(size, descr_->type_num);
+  auto date_arr = Array::SimpleNew(mit->nd(), mit->dimensions(), descr_);
 
-  // Fill it.
-  auto const y = week_year_arr->get_const_ptr<ora::Year>();
-  auto const w = week_arr->get_const_ptr<ora::Week>();
-  auto const e = weekday_arr->get_const_ptr<ora::Weekday>();
+  auto const& yi = mit->iter<Year>(0);
+  auto const& wi = mit->iter<Week>(1);
+  auto const& di = mit->iter<Weekday>(2);
   auto const r = date_arr->get_ptr<Date>();
-  for (npy_intp i = 0; i < size; ++i)
-    r[i] = ora::date::nex::from_week_date<Date>(y[i], w[i], e[i]);
+  for (; *mit; mit->next())
+    r[mit->index()] = ora::date::nex::from_week_date<Date>(*yi, *wi, *di);
 
   return std::move(date_arr);
 }
@@ -511,8 +507,7 @@ DateDtype<PYDATE>::API::function_date_from_ymd(
   // Broadcast args together.
   auto const mit = ArrayMultiIter::New(year, month, day);
   // Create the output array.
-  auto date_arr = Array::SimpleNew(
-    mit->nd(), mit->dimensions(), descr_->type_num);
+  auto date_arr = Array::SimpleNew(mit->nd(), mit->dimensions(), descr_);
 
   auto const& yi = mit->iter<Year>(0);
   auto const& mi = mit->iter<Month>(1);

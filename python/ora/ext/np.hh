@@ -71,6 +71,8 @@ public:
     { return take_not_null<Array>(PyArray_NewLikeArray((PyArrayObject*) prototype, NPY_CORDER, (PyArray_Descr*) xincref((PyObject*) descr), subok ? 1 : 0)); }
   static ref<Array> SimpleNew(int const nd, npy_intp* const dims, int const typenum)
     { return take_not_null<Array>(PyArray_SimpleNew(nd, dims, typenum)); }
+  static ref<Array> SimpleNew(int const nd, npy_intp* const dims, PyArray_Descr* const descr)
+    { return SimpleNew(nd, dims, descr->type_num); }
   static ref<Array> SimpleNew1D(npy_intp const size, int const typenum)
     { return SimpleNew(1, const_cast<npy_intp*>(&size), typenum); }
 
@@ -155,6 +157,8 @@ class ArrayMultiIter
 {
 public:
 
+  static ref<ArrayMultiIter> New(PyObject* obj0, PyObject* obj1)
+    { return take_not_null<ArrayMultiIter>(PyArray_MultiIterNew(2, obj0, obj1)); }
   static ref<ArrayMultiIter> New(PyObject* obj0, PyObject* obj1, PyObject* obj2)
     { return take_not_null<ArrayMultiIter>(PyArray_MultiIterNew(3, obj0, obj1, obj2)); }
 
