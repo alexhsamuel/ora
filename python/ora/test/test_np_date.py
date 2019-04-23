@@ -193,7 +193,7 @@ def test_date_from_offset(Date):
 
     offsets = offsets.astype("int64")
     assert (ora.np.date_from_offset(offsets, Date=Date) == dates).all()
-    
+
 
 @pytest.mark.xfail
 @pytest.mark.parametrize(
