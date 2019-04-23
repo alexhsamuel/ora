@@ -1,18 +1,22 @@
 # Small problems
 
 - xfail tests
-- `ora.np.date_from_offset()`
-- `ora.np.daytime_from_offset()`
-- `ora.np.daytime_from_hms()`
-- `ora.np.daytime_from_ssm()`
-- `ora.np.get_hms()` and `HMS_DTYPE`
-- `ora.np.get_hour()`
-- `ora.np.get_minute()`
-- `ora.np.get_second()`
-- `ora.np.get_ssm()`
-- cast functions among dates
-- cast functions among times
-- cast functions among daytimes
+- cast functions:
+  - among dates
+  - among times
+  - among daytimes
+- functions:
+  - `ora.np.daytime_from_offset()`
+  - `ora.np.daytime_from_hms()`
+  - `ora.np.daytime_from_ssm()`
+  - `ora.np.time_from_offset()`
+- ufuncs:
+  - `ora.np.get_hms()` and `HMS_DTYPE`
+  - `ora.np.get_hour()`
+  - `ora.np.get_minute()`
+  - `ora.np.get_second()`
+  - `ora.np.get_ssm()`
+  - `ora.np.to_offset()` (daytime)
 - fix now() rounding problem... if there is one
   - or more likely, fix rounding in last digit of seconds in Time repr
   - and maybe Daytime should have lower resolution
@@ -25,7 +29,12 @@
     >>> uo = ora.UNIX_EPOCH.offset
     >>> ((a.view("int64") - ora.UNIX_EPOCH.offset) / Time.RESOLUTION / 1e9).astype("int64").view("datetime64[ns]")
     ```
-
+- What is the story with "parts" types?
+  - date + daytime
+  - date + daytime + tz
+  - date + daytime + tz parts (parsing?)
+  - np?
+  - overload `date / daytime @ tz` ?
 
 # Miscellaneous Work List
 

@@ -343,6 +343,9 @@ functions
     .add<date_from_week_date>       ("date_from_week_date")
     .add<date_from_ymd>             ("date_from_ymd")
     .add<date_from_ymdi>            ("date_from_ymdi")
+ // FIXME
+ // .add<daytime_from_hms>          ("daytime_from_hms")
+ // .add<daytime_from_ssm>          ("daytime_from_ssm")
     .add<from_local>                ("from_local")
     .add<time_from_offset>          ("time_from_offset")
     .add<to_local>                  ("to_local")
