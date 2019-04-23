@@ -146,8 +146,9 @@ arguments, to control the dtypes of the resulting arrays.
 
 Ufunc-style broadcasting is applied to the arguments.
 
-    # FIXME: broadcasting example
-
+    >>> ora.np.date_from_ymd(2019, [1, 2], [[3, 4], [5, 6]])
+    array([[Date(2019, Jan, 3), Date(2019, Feb, 4)],
+           [Date(2019, Jan, 5), Date(2019, Feb, 6)]], dtype=Date)
 
 
 Ufuncs
