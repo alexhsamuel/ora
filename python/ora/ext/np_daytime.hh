@@ -324,6 +324,29 @@ Descr*
 DaytimeDtype<PYDAYTIME>::descr_
   = nullptr;
 
+template<class FROM, class TO>
+void cast_from_daytime(
+  FROM* from,
+  TO* to,
+  npy_intp num,
+  void* /* unused */,
+  void* /* unused */)
+{
+  for (; num > 0; --num, ++from, ++to)
+    *to = daytime::nex::from_daytick<TO>(daytime::nex::get_daytick(*from));
+}
+
+
+template<class FROM, class TO>
+void add_daytime_cast() { 
+  auto const from_descr = DaytimeDtype<PyDaytime<FROM>>::get();
+  auto const to_descr   = DaytimeDtype<PyDaytime<TO>>::get();
+  auto const cast_fn    = (PyArray_VectorUnaryFunc*) cast_from_daytime<FROM, TO>;
+  Array::RegisterCastFunc(from_descr, to_descr, cast_fn);
+  Array::RegisterCanCast(from_descr, to_descr, NPY_OBJECT_SCALAR);
+}
+
+
 //------------------------------------------------------------------------------
 // Accessories
 

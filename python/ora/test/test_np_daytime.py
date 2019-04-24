@@ -55,3 +55,34 @@ def test_daytime_from_offset(Daytime):
     assert (ora.np.daytime_from_offset(offsets) == daytimes).all()
 
 
+@pytest.mark.parametrize(
+    "Daytime0, Daytime1",
+    [
+        (ora.Daytime, ora.UsecDaytime),
+        (ora.Daytime, ora.Daytime32),
+        (ora.Daytime32, ora.UsecDaytime),
+    ]
+)
+def test_cast(Daytime0, Daytime1):
+    """
+    Tests that casts between `Daytime0` and `Daytime1` work.
+    """
+    arr0 = get_array(Daytime0)
+    # MISSING daytimes won't survive the round-trip.
+    arr0 = arr0[arr0 != Daytime0.MISSING]
+    arr1 = arr0.astype(Daytime1)
+    assert (arr1.astype(Daytime0) == arr0).all()
+
+
+@pytest.mark.xfail
+def test_compare():
+    arr0 = get_array(ora.UsecDaytime)
+    arr1 = arr0.astype(ora.Daytime)
+    assert (arr0 == arr1).all()
+    assert (arr0 <  arr1 + 1).all()
+    assert (arr0 <= arr1).all()
+    assert (arr0 >  arr1 - 1).all()
+    assert (arr0 >= arr1).all()
+    assert (arr0 != arr1 + 1).all()
+
+

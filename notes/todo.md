@@ -3,7 +3,6 @@
 - xfail tests
 - cast functions:
   - among times
-  - among daytimes
 - comparisons among types
   - dates
   - daytimes
@@ -152,7 +151,7 @@
      - [ ] formatting
      - [ ] specialized arrfuncs (template)
    - daytime type and ufuncs
-     - [ ] casts
+     - [x] casts
      - [x] arithmetic
      - [x] comparisons (template)
      - [x] is_valid
