@@ -195,7 +195,6 @@ def test_date_from_offset(Date):
     assert (ora.np.date_from_offset(offsets, Date=Date) == dates).all()
 
 
-@pytest.mark.xfail
 @pytest.mark.parametrize(
     "Date0, Date1",
     [
@@ -207,9 +206,22 @@ def test_cast(Date0, Date1):
     Tests that casts between `Date0` and wider `Date1` work.
     """
     arr0 = get_array(Date0)
+    # MISSING dates won't survive the round-trip.
+    arr0 = arr0[arr0 != Date0.MISSING]
     arr1 = arr0.astype(Date1)
-    assert (arr1 == arr0).all()
     assert (arr1.astype(Date0) == arr0).all()
+
+
+@pytest.mark.xfail
+def test_compare():
+    arr0 = get_array(Date16)
+    arr1 = arr0.astype(Date)
+    assert (arr0 == arr1).all()
+    assert (arr0 <  arr1 + 1).all()
+    assert (arr0 <= arr1).all()
+    assert (arr0 >  arr1 - 1).all()
+    assert (arr0 >= arr1).all()
+    assert (arr0 != arr1 + 1).all()
 
 
 @pytest.mark.parametrize(

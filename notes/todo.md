@@ -2,9 +2,12 @@
 
 - xfail tests
 - cast functions:
-  - among dates
   - among times
   - among daytimes
+- comparisons among types
+  - dates
+  - daytimes
+  - times
 - functions:
   - `ora.np.daytime_from_offset()`
   - `ora.np.daytime_from_hms()`

@@ -43,15 +43,6 @@ public:
   static Descr* from(int const typenum)
     { return (Descr*) PyArray_DescrFromType(typenum); }
   
-  void RegisterCanCast(int const to, NPY_SCALARKIND const scalar)
-    { check_zero(PyArray_RegisterCanCast(this, to, scalar)); }
-  void RegisterCanCast(Descr* const to, NPY_SCALARKIND const scalar)
-    { RegisterCanCast(to->type_num, scalar); }
-  void RegisterCastFunc(int const to, PyArray_VectorUnaryFunc* const f)
-    { check_zero(PyArray_RegisterCastFunc(this, to, f)); }
-  void RegisterCastFunc(Descr* const to, PyArray_VectorUnaryFunc* const f)
-    { RegisterCastFunc(to->type_num, f); }
-
 };
 
 
@@ -68,12 +59,16 @@ public:
     { return FromAny(obj, PyArray_DescrFromType(dtype), dims_min, dims_max, requirements, context); }
   static void RegisterCanCast(PyArray_Descr* const from, int const to, NPY_SCALARKIND const scalar)
     { check_zero(PyArray_RegisterCanCast(from, to, scalar)); }
+  static void RegisterCanCast(PyArray_Descr* const from, PyArray_Descr* const to, NPY_SCALARKIND const scalar)
+    { RegisterCanCast(from, to->type_num, scalar); }
   static void RegisterCanCast(int const from, int const to, NPY_SCALARKIND const scalar)
-    { check_zero(PyArray_RegisterCanCast(PyArray_DescrFromType(from), to, scalar)); }
+    { RegisterCanCast(PyArray_DescrFromType(from), to, scalar); }
   static void RegisterCastFunc(PyArray_Descr* const from, int const to, PyArray_VectorUnaryFunc* const f)
     { check_zero(PyArray_RegisterCastFunc(from, to, f)); }
+  static void RegisterCastFunc(PyArray_Descr* const from, PyArray_Descr* const to, PyArray_VectorUnaryFunc* const f)
+    { RegisterCastFunc(from, to->type_num, f); }
   static void RegisterCastFunc(int const from, int const to, PyArray_VectorUnaryFunc* const f)
-    { check_zero(PyArray_RegisterCastFunc(PyArray_DescrFromType(from), to, f)); }
+    { RegisterCastFunc(PyArray_DescrFromType(from), to, f); }
   static ref<Array> NewLikeArray(Array* prototype, NPY_ORDER order=NPY_CORDER, PyArray_Descr* descr=nullptr, bool subok=true)
     { return take_not_null<Array>(PyArray_NewLikeArray((PyArrayObject*) prototype, order, (PyArray_Descr*) xincref((PyObject*) descr), subok ? 1 : 0)); }
   static ref<Array> NewLikeArray(Array* prototype, PyArray_Descr* descr, bool subok=true)

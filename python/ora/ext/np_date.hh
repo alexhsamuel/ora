@@ -532,6 +532,29 @@ Descr*
 DateDtype<PYDATE>::descr_
   = nullptr;
 
+template<class FROM, class TO>
+void cast_from_date(
+  FROM* from,
+  TO* to,
+  npy_intp num,
+  void* /* unused */,
+  void* /* unused */)
+{
+  for (; num > 0; --num, ++from, ++to)
+    *to = date::nex::from_datenum<TO>(date::nex::get_datenum(*from));
+}
+
+
+template<class FROM, class TO>
+void add_cast() { 
+  auto const from_descr = DateDtype<PyDate<FROM>>::get();
+  auto const to_descr   = DateDtype<PyDate<TO>>::get();
+  auto const cast_fn    = (PyArray_VectorUnaryFunc*) cast_from_date<FROM, TO>;
+  Array::RegisterCastFunc(from_descr, to_descr, cast_fn);
+  Array::RegisterCanCast(from_descr, to_descr, NPY_OBJECT_SCALAR);
+}
+
+
 //------------------------------------------------------------------------------
 // Accessories
 
