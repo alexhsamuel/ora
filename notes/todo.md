@@ -32,6 +32,7 @@
     >>> uo = ora.UNIX_EPOCH.offset
     >>> ((a.view("int64") - ora.UNIX_EPOCH.offset) / Time.RESOLUTION / 1e9).astype("int64").view("datetime64[ns]")
     ```
+- Inconsistency: `ora.np.get_ymd` returns structured array but `ora.np.to_local` returns two arrays.
 - What is the story with "parts" types?
   - date + daytime
   - date + daytime + tz
@@ -41,16 +42,15 @@
 
 # Miscellaneous Work List
 
+1. Rounding functions.
 1. matplotlib axis integration
 1. Use [ryu](https://github.com/ulfjack/ryu/tree/master/ryu) for `format_seconds()`.
 1. Fixfmt-style formatter objects.
 1. Date, time, daytime range functions.
-1. Rounding functions.
 1. Nth day of month function (or generator!).
 1. Span class.
 1. Return namedtuple or similar from Calendar.range.
 1. Sloppy time and date parsing.
-1. Inconsistency: `ora.n.get_ymd` returns structured array but `ora.np.to_local` returns two arrays.
 1. Rename Calendar "range" to "domain".
 1. Use an interval class for the calendar domain.
 1. Come up with a better syntax for the domain the calendar file.
@@ -136,9 +136,9 @@
    - `LocalTime` should construct Date, Daytime lazily?
    - Add formatting for `LocalTime`.
 
-1. NumPya support
+1. NumPy support
    - date type and ufuncs
-     - [ ] casts
+     - [x] casts
      - [x] arithmetic
      - [x] comparisons (template)
      - [x] is_valid
