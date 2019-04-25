@@ -205,17 +205,20 @@ def test_cast(Date0, Date1):
     """
     Tests that casts between `Date0` and wider `Date1` work.
     """
-    arr0 = get_array(Date0)
-    # MISSING dates won't survive the round-trip.
-    arr0 = arr0[arr0 != Date0.MISSING]
-    arr1 = arr0.astype(Date1)
-    assert (arr1.astype(Date0) == arr0).all()
+    arr = get_array(Date0)
+    assert (arr.astype(Date1).astype(Date0) == arr).all()
 
 
 @pytest.mark.xfail
-def test_compare():
-    arr0 = get_array(Date16)
-    arr1 = arr0.astype(Date)
+@pytest.mark.parametrize(
+    "Date0, Date1",
+    [
+        (Date16, Date),
+    ]
+)
+def test_compare(Date0, Date1):
+    arr0 = get_array(Date0)
+    arr1 = arr0.astype(Date1)
     assert (arr0 == arr1).all()
     assert (arr0 <  arr1 + 1).all()
     assert (arr0 <= arr1).all()

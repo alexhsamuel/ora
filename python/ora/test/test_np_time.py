@@ -1,6 +1,7 @@
 import numpy as np
 import ora
-from   ora import now, UTC, Time, Unix32Time
+from   ora import now, UTC
+from   ora import Time, Unix32Time, Unix64Time, SmallTime, NsTime, HiTime
 import ora.np
 import pytest
 
@@ -160,6 +161,29 @@ def test_convert_invalid():
         ora.Date(2019, 4, 16),
         ora.Daytime(12, 30, 45),
     ], dtype=ora.Time) == ora.Time.INVALID).all()
+
+
+
+@pytest.mark.xfail
+@pytest.mark.parametrize(
+    "Time0, Time1",
+    [
+        (SmallTime, Unix32Time),
+        (Unix32Time, Unix64Time),
+        (Unix64Time, Time),
+        (Time, NsTime),
+        (NsTime, HiTime),
+    ]
+)
+def test_compare_types(Time0, Time1):
+    arr0 = get_array(Time0)
+    arr1 = arr0.astype(Time1)
+    assert (arr0 == arr1).all()
+    assert (arr0 <  arr1 + 1).all()
+    assert (arr0 <= arr1).all()
+    assert (arr0 >  arr1 - 1).all()
+    assert (arr0 >= arr1).all()
+    assert (arr0 != arr1 + 1).all()
 
 
 def test_time_from_offset():
