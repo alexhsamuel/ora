@@ -1167,7 +1167,7 @@ convert_to_date(
       try {
         return ordinal_date_to_date<DATE>(seq);
       }
-      catch (ora::DateError) {
+      catch (ora::DateError const&) {
         throw py::ValueError("can't convert to a date: "s + *obj->Repr());
       }
   }
@@ -1180,7 +1180,7 @@ convert_to_date(
       try {
         return ora::date::from_ymdi<DATE>(ymdi);
       }
-      catch (ora::DateError) {
+      catch (ora::DateError const&) {
         throw py::ValueError(
           "can't convert to a date: "s + std::to_string(ymdi));
       }
