@@ -91,7 +91,7 @@ TEST(Date, invalid) {
   EXPECT_FALSE(from_ymd(   1,  1,   1).is_invalid());
   EXPECT_FALSE(from_ymd(1000,  1,   2).is_invalid());
   EXPECT_THROW(from_ymd(1970, 13,   2), InvalidDateError);
-  EXPECT_THROW(from_ymd(64000, 1,   2), InvalidDateError);
+  EXPECT_THROW(from_ymd(32000, 1,   2), InvalidDateError);
 }
 
 
