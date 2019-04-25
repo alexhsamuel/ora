@@ -95,6 +95,16 @@ is_valid(
 }
 
 
+template<class DAYTIME=Daytime>
+inline typename DAYTIME::Offset
+get_offset(
+  DAYTIME const daytime)
+  noexcept
+{
+  return daytime.offset_;
+}
+
+
 template<class DAYTIME>
 inline Daytick
 get_daytick(
@@ -112,7 +122,7 @@ get_hms(
   noexcept
 {
   if (daytime.is_valid()) {
-    auto const offset = daytime.get_offset();
+    auto const offset = get_offset(daytime);
     auto const minutes = offset / (SECS_PER_MIN * DAYTIME::Traits::denominator);
     auto const seconds = offset % (SECS_PER_MIN * DAYTIME::Traits::denominator);
     return {
@@ -134,7 +144,7 @@ get_ssm(
 {
   return 
       daytime.is_valid()
-    ? (double) daytime.get_offset() / DAYTIME::Traits::denominator
+    ? (double) get_offset(daytime) / DAYTIME::Traits::denominator
     : SSM_INVALID;
 }
 
@@ -179,8 +189,11 @@ before(
     return true;
   else if (daytime1.is_missing())
     return false;
-  else 
-    return daytime0.get_offset() < daytime1.get_offset();
+  else {
+    assert(daytime0.is_valid());
+    assert(daytime1.is_valid());
+    return get_offset(daytime0) < get_offset(daytime1);
+  }
 }
 
 

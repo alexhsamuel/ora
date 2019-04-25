@@ -19,6 +19,7 @@ namespace daytime {
 
 namespace nex {
 
+template<class DAYTIME> typename DAYTIME::Offset get_offset(DAYTIME) noexcept;
 template<class DAYTIME> bool equal(DAYTIME, DAYTIME) noexcept;
 
 }  // namespace nex
@@ -157,6 +158,8 @@ private:
   }
 
   Offset offset_ = INVALID_OFFSET;
+
+  friend Offset nex::get_offset<DaytimeTemplate>(DaytimeTemplate) noexcept;
 
   template<class DAYTIME> friend bool ora::daytime::nex::equal(DAYTIME, DAYTIME) noexcept;
 
