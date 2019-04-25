@@ -21,7 +21,6 @@ namespace date {
 namespace nex {
 
 template<class DATE> typename DATE::Offset get_offset(DATE) noexcept;
-template<class DATE> bool equal(DATE, DATE) noexcept;
 
 }  // namespace nex
 
@@ -211,8 +210,6 @@ private:
   Offset offset_ = Traits::invalid;
 
   friend Offset nex::get_offset<DateTemplate>(DateTemplate) noexcept;
-
-  template<class DATE> friend bool ora::date::nex::equal(DATE, DATE) noexcept;
 
 public:
 

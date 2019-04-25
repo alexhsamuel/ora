@@ -263,7 +263,7 @@ equal(
   DATE const date1)
   noexcept
 {
-  return date0.offset_ == date1.offset_;
+  return nex::get_offset(date0) == nex::get_offset(date1);
 }
 
 
