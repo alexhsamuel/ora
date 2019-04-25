@@ -284,8 +284,11 @@ before(
     return true;
   else if (date1.is_missing())
     return false;
-  else 
-    return date0.get_offset() < date1.get_offset();
+  else {
+    assert(date0.is_valid());
+    assert(date1.is_valid());
+    return nex::get_offset(date0) < nex::get_offset(date1);
+  }
 }
 
 
@@ -317,7 +320,7 @@ days_after(
   // FIXME: Check for overflows.
   return 
       date.is_valid()
-    ? from_offset<DATE>(date.get_offset() + days)
+    ? from_offset<DATE>(nex::get_offset(date) + days)
     : DATE::INVALID;
 }  
 
@@ -353,7 +356,7 @@ days_between(
 {
   return
       date0.is_valid() && date1.is_valid()
-    ? (int) date1.get_offset() - date0.get_offset()
+    ? (int) nex::get_offset(date1) - nex::get_offset(date0)
     : std::numeric_limits<int>::min();
 }
 

@@ -64,7 +64,7 @@ get_epoch_time(
   return
       time.is_valid() 
     ? convert_offset(
-        time.get_offset(), TIME::DENOMINATOR, TIME::BASE,
+        nex::get_offset(time), TIME::DENOMINATOR, TIME::BASE,
         1, DATENUM_UNIX_EPOCH)
     : EPOCH_TIME_INVALID;
 }
@@ -98,8 +98,11 @@ before(
     return true;
   else if (time1.is_missing())
     return false;
-  else
-    return time0.get_offset() < time1.get_offset();
+  else {
+    assert(time0.is_valid());
+    assert(time1.is_valid());
+    return nex::get_offset(time0) < nex::get_offset(time1);
+  }
 }
 
 
@@ -136,7 +139,9 @@ seconds_shift(
     auto const offset = c.convert<Offset>(round(seconds * TIME::DENOMINATOR));
     if (c)
       return from_offset<TIME>(
-        forward ? (time.get_offset() + offset) : (time.get_offset() - offset));
+        forward
+        ? (nex::get_offset(time) + offset)
+        : (nex::get_offset(time) - offset));
   }
   return TIME::INVALID;
 }
@@ -154,7 +159,9 @@ seconds_shift(
   if (time.is_valid()) {
     auto const offset = rescale_int<Offset, 1, TIME::DENOMINATOR>(seconds);
     return from_offset<TIME>(
-      forward ? (time.get_offset() + offset) : (time.get_offset() - offset));
+      forward
+      ? (nex::get_offset(time) + offset)
+      : (nex::get_offset(time) - offset));
   }
   else
     return TIME::INVALID;
@@ -217,8 +224,8 @@ seconds_between(
   if (! (time0.is_valid() && time1.is_valid()))
     return std::numeric_limits<double>::quiet_NaN();
 
-  auto const off0 = time0.get_offset();
-  auto const off1 = time1.get_offset();
+  auto const off0 = nex::get_offset(time0);
+  auto const off1 = nex::get_offset(time1);
   // Needs to work for unsigned offsets.
   return
       off1 >= off0
