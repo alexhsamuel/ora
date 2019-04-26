@@ -106,7 +106,7 @@ def test_from_hms1():
     assert not a.missing
 
 
-def test_from_hms1():
+def test_from_hms2():
     a = Daytime.from_hms(23, 59, 59.999)
     assert a.hour       == 23
     assert a.minute     == 59
