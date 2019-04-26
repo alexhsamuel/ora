@@ -17,6 +17,12 @@ namespace daytime {
 namespace nex {
 
 //------------------------------------------------------------------------------
+// Forward declarations
+//------------------------------------------------------------------------------
+
+template<class DAYTIME> Daytick get_daytick(DAYTIME) noexcept;
+
+//------------------------------------------------------------------------------
 // Factory functions
 //------------------------------------------------------------------------------
 
@@ -44,6 +50,18 @@ from_daytick(
       daytick_is_valid(daytick)
     ? DAYTIME::from_daytick(daytick)
     : DAYTIME::INVALID;
+}
+
+
+template<class DAYTIME=Daytime, class FROM>
+inline DAYTIME
+from_daytime(
+  FROM const daytime)
+  noexcept
+{
+  return
+      daytime.is_missing() ? DAYTIME::MISSING
+    : nex::from_daytick<DAYTIME>(nex::get_daytick(daytime));
 }
 
 

@@ -854,9 +854,18 @@ inline optional<DAYTIME>
 maybe_daytime(
   Object* const obj)
 {
+  // Try for an instance of teh same PyDaytime.
   if (PyDaytime<DAYTIME>::Check(obj))
     // Exact wrapped type.
     return static_cast<PyDaytime<DAYTIME>*>(obj)->daytime_;
+
+  // Try for an instance of a different PyDaytime template instance.
+  auto const api = PyDaytimeAPI::get(obj);
+  if (api != nullptr)
+    return
+        api->is_invalid(obj) ? DAYTIME::INVALID
+      : api->is_missing(obj) ? DAYTIME::MISSING
+      : ora::daytime::from_daytick<DAYTIME>(api->get_daytick(obj));
 
   // Try for a 'datetime.time' instance.
   if (PyDateTimeAPI == nullptr)

@@ -183,3 +183,11 @@ TEST(Daytime, from_iso_daytime_format_error) {
   EXPECT_THROW(from_iso_daytime("24:00:00"), DaytimeFormatError);
 }
 
+TEST(Daytime, equal) {
+  EXPECT_TRUE(Daytime::MIN == Daytime32::MIN);
+  EXPECT_TRUE(Daytime::INVALID == Daytime32::INVALID);
+  EXPECT_TRUE(Daytime::MISSING == Daytime32::MISSING);
+  EXPECT_TRUE(from_hms(12,  0,  0) == from_hms<Daytime32>(12,  0,  0));
+  EXPECT_TRUE(from_hms(23, 59, 59) == from_hms<Daytime32>(23, 59, 59));
+}
+
