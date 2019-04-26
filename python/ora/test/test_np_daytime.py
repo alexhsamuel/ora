@@ -1,8 +1,11 @@
+import itertools
 import numpy as np
 import pytest
 
 import ora
 from   ora import DAYTIME_TYPES
+
+DAYTIME_TYPE_PAIRS = tuple(itertools.product(DAYTIME_TYPES, DAYTIME_TYPES))
 
 #-------------------------------------------------------------------------------
 
@@ -55,20 +58,27 @@ def test_daytime_from_offset(Daytime):
     assert (ora.np.daytime_from_offset(offsets) == daytimes).all()
 
 
-@pytest.mark.parametrize(
-    "Daytime0, Daytime1",
-    [
-        (ora.Daytime, ora.UsecDaytime),
-        (ora.Daytime, ora.Daytime32),
-        (ora.Daytime32, ora.UsecDaytime),
-    ]
-)
+@pytest.mark.parametrize("Daytime0, Daytime1", DAYTIME_TYPE_PAIRS)
 def test_cast(Daytime0, Daytime1):
+    arr0 = get_array(Daytime0)
+    arr1 = arr0.astype(Daytime1)
+
+    for d0, d1 in zip(arr0, arr1):
+        assert d1 == d0
+
+
+@pytest.mark.parametrize("Daytime0, Daytime1", DAYTIME_TYPE_PAIRS)
+def test_cast_roundtrip(Daytime0, Daytime1):
     """
-    Tests that casts between `Daytime0` and `Daytime1` work.
+    Tests that roundtrip casts work.
     """
-    arr = get_array(Daytime0)
-    assert (arr.astype(Daytime1).astype(Daytime0) == arr).all()
+    arr0 = get_array(Daytime0)
+    arr2 = arr0.astype(Daytime1).astype(Daytime0)
+
+    # Daytimes not representable in Daytime1 are converted to INVALID.
+    assert ((arr2 == Daytime0.INVALID) | (arr2 == arr0)).all()
+    assert (arr2 != Daytime0.INVALID).any()
+    assert (arr2[arr0 == Daytime0.MISSING] == Daytime0.MISSING).all()
 
 
 @pytest.mark.xfail

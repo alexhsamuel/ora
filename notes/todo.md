@@ -19,9 +19,6 @@
   - `ora.np.get_second()`
   - `ora.np.get_ssm()`
   - `ora.np.to_offset()` (daytime)
-- fix now() rounding problem... if there is one
-  - or more likely, fix rounding in last digit of seconds in Time repr
-  - and maybe Daytime should have lower resolution
 - Functions to convert to/from datetime64 arrays.
   - Cast functions?  If not, ...
     - `ora.np.date_to_datetime64()`
@@ -38,6 +35,10 @@
   - date + daytime + tz parts (parsing?)
   - np?
   - overload `date / daytime @ tz` ?
+
+- fix now() rounding problem... if there is one
+  - or more likely, fix rounding in last digit of seconds in Time repr
+  - and maybe Daytime should have lower resolution
 
 # Miscellaneous Work List
 

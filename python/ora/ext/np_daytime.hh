@@ -333,7 +333,7 @@ void cast_from_daytime(
   void* /* unused */)
 {
   for (; num > 0; --num, ++from, ++to)
-    *to = TO(*from);
+    *to = daytime::nex::from_daytime<TO, FROM>(*from);
 }
 
 

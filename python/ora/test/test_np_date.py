@@ -7,9 +7,9 @@ import pytest
 import ora
 from   ora import DATE_TYPES, Date, Date16
 
-#-------------------------------------------------------------------------------
+DATE_TYPE_PAIRS = tuple(itertools.product(DATE_TYPES, DATE_TYPES))
 
-DATE_TYPE_PAIRS = list(itertools.product(DATE_TYPES, DATE_TYPES))
+#-------------------------------------------------------------------------------
 
 def get_array(Date):
     return np.array([
@@ -196,6 +196,20 @@ def test_date_from_offset(Date):
 
     offsets = offsets.astype("int64")
     assert (ora.np.date_from_offset(offsets, Date=Date) == dates).all()
+
+
+@pytest.mark.parametrize("Date0, Date1", DATE_TYPE_PAIRS)
+def test_cast(Date0, Date1):
+    arr0 = get_array(Date0)
+    arr1 = arr0.astype(Date1)
+
+    for d0, d1 in zip(arr0, arr1):
+        try:
+            Date1(d0)
+        except ora.DateRangeError:
+            assert d1 == Date1.INVALID
+        else:
+            assert d1 == d0
 
 
 @pytest.mark.parametrize("Date0, Date1", DATE_TYPE_PAIRS)
