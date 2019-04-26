@@ -48,7 +48,8 @@ from_date(
   noexcept
 {
   return 
-      date.is_missing() ? DATE::MISSING
+      date.is_invalid() ? DATE::INVALID
+    : date.is_missing() ? DATE::MISSING
     : nex::from_datenum<DATE>(nex::get_datenum(date));
 }
 
