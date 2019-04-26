@@ -226,16 +226,19 @@ def test_cast_roundtrip(Date0, Date1):
     assert (arr2[arr0 == Date0.MISSING] == Date0.MISSING).all()
 
 
-@pytest.mark.xfail
 @pytest.mark.parametrize("Date0, Date1", DATE_TYPE_PAIRS)
 def test_compare(Date0, Date1):
-    arr0 = get_array(Date0)
+    arr0 = np.array([19800101, 20190428, Date0.INVALID, Date0.MISSING], dtype=Date0)
     arr1 = arr0.astype(Date1)
     assert (arr0 == arr1).all()
-    assert (arr0 <  arr1 + 1).all()
+    assert not (arr0 != arr1).any()
     assert (arr0 <= arr1).all()
-    assert (arr0 >  arr1 - 1).all()
     assert (arr0 >= arr1).all()
+
+    arr0 = np.array([19800101, 20190428], dtype=Date0)
+    arr1 = arr0.astype(Date1)
+    assert (arr0 <  arr1 + 1).all()
+    assert (arr0 >  arr1 - 1).all()
     assert (arr0 != arr1 + 1).all()
 
 

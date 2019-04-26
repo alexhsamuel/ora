@@ -553,7 +553,7 @@ add_date_cast() {
   auto const to_descr   = DateDtype<PyDate<TO>>::get();
   auto const cast_fn    = (PyArray_VectorUnaryFunc*) cast_from_date<FROM, TO>;
   Array::RegisterCastFunc(from_descr, to_descr, cast_fn);
-  Array::RegisterCanCast(from_descr, to_descr, NPY_OBJECT_SCALAR);
+  Array::RegisterCanCast(from_descr, to_descr, NPY_NOSCALAR);
 }
 
 
