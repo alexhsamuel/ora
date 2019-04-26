@@ -86,13 +86,18 @@ def test_compare(Daytime0, Daytime1):
     """
     Tests that comparisons between `Daytime0` and `Daytime1` work.
     """
-    arr0 = get_array(Daytime0)
+    arr0 = np.array([
+        Daytime0(0, 0, 1), Daytime0(14, 31, 25), Daytime0(23, 59, 58),
+        Daytime0.INVALID, Daytime0.MISSING,
+    ])
     arr1 = arr0.astype(Daytime1)
     assert (arr0 == arr1).all()
     assert (arr0 <= arr1).all()
     assert (arr0 >= arr1).all()
 
-    arr0 = np.array([Daytime0(0, 0, 0), Daytime0(14, 31, 25), Daytime0(23, 59, 59)])
+    arr0 = np.array([
+        Daytime0(0, 0, 1), Daytime0(14, 31, 25), Daytime0(23, 59, 58),
+    ])
     arr1 = arr0.astype(Daytime1)
     assert (arr0 <  arr1 + 1).all()
     assert (arr0 >  arr1 - 1).all()
