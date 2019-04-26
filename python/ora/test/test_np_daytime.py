@@ -81,15 +81,7 @@ def test_cast_roundtrip(Daytime0, Daytime1):
     assert (arr2[arr0 == Daytime0.MISSING] == Daytime0.MISSING).all()
 
 
-@pytest.mark.xfail
-@pytest.mark.parametrize(
-    "Daytime0, Daytime1",
-    [
-        (ora.Daytime, ora.UsecDaytime),
-        (ora.Daytime, ora.Daytime32),
-        (ora.Daytime32, ora.UsecDaytime),
-    ]
-)
+@pytest.mark.parametrize("Daytime0, Daytime1", DAYTIME_TYPE_PAIRS)
 def test_compare(Daytime0, Daytime1):
     """
     Tests that comparisons between `Daytime0` and `Daytime1` work.
@@ -97,10 +89,13 @@ def test_compare(Daytime0, Daytime1):
     arr0 = get_array(Daytime0)
     arr1 = arr0.astype(Daytime1)
     assert (arr0 == arr1).all()
-    assert (arr0 <  arr1 + 1).all()
     assert (arr0 <= arr1).all()
-    assert (arr0 >  arr1 - 1).all()
     assert (arr0 >= arr1).all()
+
+    arr0 = np.array([Daytime0(0, 0, 0), Daytime0(14, 31, 25), Daytime0(23, 59, 59)])
+    arr1 = arr0.astype(Daytime1)
+    assert (arr0 <  arr1 + 1).all()
+    assert (arr0 >  arr1 - 1).all()
     assert (arr0 != arr1 + 1).all()
 
 
