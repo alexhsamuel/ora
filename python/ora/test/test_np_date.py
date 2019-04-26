@@ -1,4 +1,5 @@
 from   functools import partial
+import itertools
 import numpy as np
 from   numpy.testing import assert_array_equal
 import pytest
@@ -7,6 +8,8 @@ import ora
 from   ora import DATE_TYPES, Date, Date16
 
 #-------------------------------------------------------------------------------
+
+DATE_TYPE_PAIRS = list(itertools.product(DATE_TYPES, DATE_TYPES))
 
 def get_array(Date):
     return np.array([
@@ -195,26 +198,18 @@ def test_date_from_offset(Date):
     assert (ora.np.date_from_offset(offsets, Date=Date) == dates).all()
 
 
-@pytest.mark.parametrize(
-    "Date0, Date1",
-    [
-        (Date16, Date),
-    ]
-)
-def test_cast(Date0, Date1):
+@pytest.mark.parametrize("Date0, Date1", DATE_TYPE_PAIRS)
+def test_cast_roundtrip(Date0, Date1):
     """
-    Tests that casts between `Date0` and wider `Date1` work.
+    Tests that roundtrip casts work.
     """
-    arr = get_array(Date0)
-    assert (arr.astype(Date1).astype(Date0) == arr).all()
+    arr0 = get_array(Date0)
+    arr2 = arr0.astype(Date1).astype(Date0)
 
-
-def test_cast_invalid():
-    """
-    Tests that values that cannot be cast become INVALID.
-    """
-    arr = np.array([Date.INVALID, Date.MIN, Date.MIN + 1, Date.MAX])
-    assert (arr.astype(Date16) == Date16.INVALID).all()
+    # Dates not representable in Date1 are converted to INVALID.
+    assert ((arr2 == Date0.INVALID) | (arr2 == arr0)).all()
+    assert (arr2 != Date0.INVALID).any()
+    assert (arr2[arr0 == Date0.MISSING] == Date0.MISSING).all()
 
 
 @pytest.mark.xfail
