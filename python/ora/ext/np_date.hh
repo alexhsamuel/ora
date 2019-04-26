@@ -541,7 +541,7 @@ void cast_from_date(
   void* /* unused */)
 {
   for (; num > 0; --num, ++from, ++to)
-    *to = TO(*from);
+    *to = date::nex::from_date<TO, FROM>(*from);
 }
 
 

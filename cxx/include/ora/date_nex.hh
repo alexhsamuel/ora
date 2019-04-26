@@ -17,6 +17,7 @@ namespace nex {
 
 template<class DATE> inline DATE from_offset(typename DATE::Offset) noexcept;
 template<class DATE> inline DATE from_ymd(YmdDate) noexcept;
+template<class DATE> inline Datenum get_datenum(DATE) noexcept;
 
 //------------------------------------------------------------------------------
 // Factory functions
@@ -37,6 +38,18 @@ from_datenum(
   }
   else
     return DATE::INVALID;
+}
+
+
+template<class DATE=Date, class FROM>
+inline DATE
+from_date(
+  FROM const date)
+  noexcept
+{
+  return 
+      date.is_missing() ? DATE::MISSING
+    : nex::from_datenum<DATE>(nex::get_datenum(date));
 }
 
 

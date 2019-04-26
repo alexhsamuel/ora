@@ -209,6 +209,14 @@ def test_cast(Date0, Date1):
     assert (arr.astype(Date1).astype(Date0) == arr).all()
 
 
+def test_cast_invalid():
+    """
+    Tests that values that cannot be cast become INVALID.
+    """
+    arr = np.array([Date.INVALID, Date.MIN, Date.MIN + 1, Date.MAX])
+    assert (arr.astype(Date16) == Date16.INVALID).all()
+
+
 @pytest.mark.xfail
 @pytest.mark.parametrize(
     "Date0, Date1",
