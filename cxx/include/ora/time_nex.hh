@@ -12,6 +12,12 @@ namespace time {
 namespace nex {
 
 //------------------------------------------------------------------------------
+// Forward declarations
+//------------------------------------------------------------------------------
+
+template<class TIME> typename TIME::Offset get_offset(TIME) noexcept;
+
+//------------------------------------------------------------------------------
 
 template<class TIME=Time>
 inline TIME
@@ -23,6 +29,24 @@ from_offset(
       in_range(TIME::Traits::min, offset, TIME::Traits::max)
     ? TIME::from_offset(offset)
     : TIME::INVALID;
+}
+
+
+template<class TIME=Time, class FROM>
+inline TIME
+from_time(
+  FROM const time)
+  noexcept
+{
+  return
+      time.is_invalid() ? TIME::INVALID
+    : time.is_missing() ? TIME::MISSING
+    : nex::from_offset<TIME>(
+        // FIXME: This does not detect arithmetic overflow.
+        convert_offset(
+          nex::get_offset(time), 
+          FROM::DENOMINATOR, FROM::BASE,
+          TIME::DENOMINATOR, TIME::BASE));
 }
 
 

@@ -1,4 +1,5 @@
 import datetime
+import itertools
 import pytest
 
 import ora
@@ -7,6 +8,8 @@ from   ora import TIME_TYPES, Date, Daytime, UTC, MIDNIGHT
 from   ora import Jan, Jul, Nov, Dec
 from   ora import to_local, from_local, now, display_time_zone, format_time
 from   tools import xeq
+
+TIME_TYPE_PAIRS = tuple(itertools.product(TIME_TYPES, TIME_TYPES))
 
 #-------------------------------------------------------------------------------
 
@@ -325,3 +328,10 @@ def test_add_overfow(Time):
         t0 + float("nan")
 
     
+@pytest.mark.parametrize("Time0, Time1", TIME_TYPE_PAIRS)
+def test_time_convert(Time0, Time1):
+    assert Time1(Time0.INVALID).invalid
+    assert Time1(Time0.MISSING).missing
+    assert Time1(Time0(1980, 1, 1, 12, 30, 45, UTC)) == Time1(1980, 1, 1, 12, 30, 45, UTC)
+
+

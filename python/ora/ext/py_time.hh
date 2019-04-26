@@ -863,6 +863,11 @@ maybe_time(
   // A different instance of the time class?
   auto const api = PyTimeAPI::get(obj);
   if (api != nullptr) {
+    if (api->is_invalid(obj))
+      return {true, TIME::INVALID};
+    if (api->is_missing(obj))
+      return {true, TIME::MISSING};
+
     auto const time128 = api->get_time128(obj);
     // Check explicitly for overflow.
     // FIXME: This is not the right way to do it.  Instead, check for overflow
