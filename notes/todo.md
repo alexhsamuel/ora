@@ -1,8 +1,6 @@
 # Small problems
 
 - xfail tests
-- cast functions:
-  - among times
 - comparisons among types
   - dates
   - daytimes
