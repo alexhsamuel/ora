@@ -365,7 +365,7 @@ add_time_cast()
   auto const to_descr   = TimeDtype<PyTime<TO>>::get_descr();
   auto const cast_fn    = (PyArray_VectorUnaryFunc*) cast_from_time<FROM, TO>;
   Array::RegisterCastFunc(from_descr, to_descr, cast_fn);
-  Array::RegisterCanCast(from_descr, to_descr, NPY_OBJECT_SCALAR);
+  Array::RegisterCanCast(from_descr, to_descr, NPY_NOSCALAR);
 }
 
 

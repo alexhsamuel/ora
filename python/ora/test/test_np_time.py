@@ -4,7 +4,7 @@ import pytest
 
 import ora
 from   ora import now, UTC, TIME_TYPES
-from   ora import Time, Unix32Time, Unix64Time, SmallTime, NsTime, HiTime
+from   ora import Time, Unix32Time
 import ora.np
 
 TIME_TYPE_PAIRS = tuple(itertools.product(TIME_TYPES, TIME_TYPES))
@@ -166,16 +166,23 @@ def test_convert_invalid():
 
 
 
-@pytest.mark.xfail
 @pytest.mark.parametrize("Time0, Time1", TIME_TYPE_PAIRS)
 def test_compare_types(Time0, Time1):
     arr0 = get_array(Time0)
     arr1 = arr0.astype(Time1)
     assert (arr0 == arr1).all()
-    assert (arr0 <  arr1 + 1).all()
     assert (arr0 <= arr1).all()
-    assert (arr0 >  arr1 - 1).all()
     assert (arr0 >= arr1).all()
+
+    arr0 = np.array([
+        Time0(1970,  1,  1,  0,  0,  0  , UTC),
+        Time0(1999, 12, 31, 23, 59, 59  , UTC),
+        Time0(2000,  1,  1,  0,  0,  0  , UTC),
+        Time0(2018,  3, 17, 14,  7, 21  , UTC),
+    ])
+    arr1 = arr0.astype(Time1)
+    assert (arr0 <  arr1 + 1).all()
+    assert (arr0 >  arr1 - 1).all()
     assert (arr0 != arr1 + 1).all()
 
 
