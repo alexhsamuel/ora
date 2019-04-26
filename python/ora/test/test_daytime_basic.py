@@ -1,9 +1,12 @@
 import datetime
+import itertools
 import pytest
 
 import ora
-from   ora import Daytime
+from   ora import Daytime, DAYTIME_TYPES
 from   tools import assert_float_equal
+
+DAYTIME_TYPE_PAIRS = tuple(itertools.product(DAYTIME_TYPES, DAYTIME_TYPES))
 
 #-------------------------------------------------------------------------------
 
@@ -68,7 +71,7 @@ def test_from_daytick0():
 
 def test_from_daytick1():
     # Specific to Daytime.
-    tick = 86400 * (1 << 47) - (1 << 44)  # 1/8 sec before midnight
+    tick = 86400 * (1 << 46) - (1 << 43)  # 1/8 sec before midnight
     a = Daytime.from_daytick(tick)
     assert a.daytick    == tick
     assert a.hour       == 23
@@ -231,6 +234,15 @@ def test_comparison0():
 
     assert     Daytime.MISSING == Daytime.MISSING
     assert not Daytime.MISSING != Daytime.MISSING
+
+
+@pytest.mark.parametrize("Daytime0, Daytime1", DAYTIME_TYPE_PAIRS)
+def test_comparison_types(Daytime0, Daytime1):
+    assert Daytime0.MIN         == Daytime1.MIN
+    assert Daytime0.MISSING     == Daytime1.MISSING
+    assert Daytime0.INVALID     == Daytime1.INVALID
+    assert Daytime0(12,  0,  0) == Daytime1(12,  0,  0)
+    assert Daytime0(23, 59, 59) == Daytime1(23, 59, 59)
 
 
 def test_comparison1():
