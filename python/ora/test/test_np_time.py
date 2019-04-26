@@ -167,16 +167,7 @@ def test_convert_invalid():
 
 
 @pytest.mark.xfail
-@pytest.mark.parametrize(
-    "Time0, Time1",
-    [
-        (SmallTime, Unix32Time),
-        (Unix32Time, Unix64Time),
-        (Unix64Time, Time),
-        (Time, NsTime),
-        (NsTime, HiTime),
-    ]
-)
+@pytest.mark.parametrize("Time0, Time1", TIME_TYPE_PAIRS)
 def test_compare_types(Time0, Time1):
     arr0 = get_array(Time0)
     arr1 = arr0.astype(Time1)
@@ -207,5 +198,37 @@ def test_time_from_offset_cast():
         Time(1, 1, 1, 0, 0, 1, UTC),
         Time(1, 1, 1, 0, 1, 0, UTC),
     ])
+
+
+@pytest.mark.parametrize("Time0, Time1", TIME_TYPE_PAIRS)
+def test_cast(Time0, Time1):
+    arr0 = get_array(Time0)
+    arr1 = arr0.astype(Time1)
+
+    print(arr0)
+    print(arr1)
+
+    for d0, d1 in zip(arr0, arr1):
+        print(d0, d1)
+        try:
+            Time1(d0)
+        except ora.TimeRangeError:
+            assert d1 == Time1.INVALID
+        else:
+            assert d0 == d1 or abs(d1 - d0) <= max(d0.RESOLUTION, d1.RESOLUTION)
+
+
+@pytest.mark.parametrize("Time0, Time1", TIME_TYPE_PAIRS)
+def test_cast_roundtrip(Time0, Time1):
+    """
+    Tests that roundtrip casts work.
+    """
+    arr0 = get_array(Time0)
+    arr2 = arr0.astype(Time1).astype(Time0)
+
+    # Times not representable in Time1 are converted to INVALID.
+    assert ((arr2 == Time0.INVALID) | (arr2 == arr0)).all()
+    assert (arr2 != Time0.INVALID).any()
+    assert (arr2[arr0 == Time0.MISSING] == Time0.MISSING).all()
 
 

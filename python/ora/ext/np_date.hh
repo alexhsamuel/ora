@@ -533,7 +533,8 @@ DateDtype<PYDATE>::descr_
   = nullptr;
 
 template<class FROM, class TO>
-void cast_from_date(
+void
+cast_from_date(
   FROM* from,
   TO* to,
   npy_intp num,
@@ -546,7 +547,8 @@ void cast_from_date(
 
 
 template<class FROM, class TO>
-void add_date_cast() { 
+void
+add_date_cast() { 
   auto const from_descr = DateDtype<PyDate<FROM>>::get();
   auto const to_descr   = DateDtype<PyDate<TO>>::get();
   auto const cast_fn    = (PyArray_VectorUnaryFunc*) cast_from_date<FROM, TO>;

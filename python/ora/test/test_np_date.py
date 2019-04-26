@@ -227,12 +227,7 @@ def test_cast_roundtrip(Date0, Date1):
 
 
 @pytest.mark.xfail
-@pytest.mark.parametrize(
-    "Date0, Date1",
-    [
-        (Date16, Date),
-    ]
-)
+@pytest.mark.parametrize("Date0, Date1", DATE_TYPE_PAIRS)
 def test_compare(Date0, Date1):
     arr0 = get_array(Date0)
     arr1 = arr0.astype(Date1)
