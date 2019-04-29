@@ -104,10 +104,8 @@ Weekday constexpr   SUNDAY              = 6;
 
 // Internally, daytime computations are performed on "dayticks" per midnight.  
 // A daytick is defined by DAYTICKS_PER_SECOND: daytick = 1/(1<<46) s ~= 14 fs.
-// We use one bit less than we could so that a daytick can safely be represented
-// by a singed int64.
 using Daytick = uint64_t;
-Daytick constexpr   DAYTICK_PER_SEC     = (Daytick) 1 << (8 * sizeof(Daytick) - SECS_PER_DAY_BITS - 1);
+Daytick constexpr   DAYTICK_PER_SEC     = (Daytick) 1 << (8 * sizeof(Daytick) - SECS_PER_DAY_BITS);
 Second constexpr    DAYTICK_SEC         = 1. / DAYTICK_PER_SEC;
 Daytick constexpr   DAYTICK_MIN         = 0;
 Daytick constexpr   DAYTICK_END         = SECS_PER_DAY * DAYTICK_PER_SEC;

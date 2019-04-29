@@ -71,7 +71,7 @@ def test_from_daytick0():
 
 def test_from_daytick1():
     # Specific to Daytime.
-    tick = 86400 * (1 << 46) - (1 << 43)  # 1/8 sec before midnight
+    tick = 86400 * (1 << 47) - (1 << 44)  # 1/8 sec before midnight
     a = Daytime.from_daytick(tick)
     assert a.daytick    == tick
     assert a.hour       == 23
