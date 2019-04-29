@@ -195,3 +195,17 @@ TEST(Unix32Time, zero) {
   EXPECT_EQ(52.0, hms.second);
 }
 
+// FIXME: Genealize this.
+TEST(Unix32Time, round_trip) {
+  auto const t = from_local_parts<Unix32Time>(1901, 12, 13, 20, 45, 53, "UTC");
+  EXPECT_EQ(t, t);
+  std::cerr << "offset0: " << t.get_offset() << " "
+            << "offset1: " << NsTime(t).get_offset() << " "
+            << "offset2: " << Unix32Time(NsTime(t)).get_offset() << "\n";
+  EXPECT_EQ(t, Unix32Time(NsTime(t)));
+
+  auto const ns_t = time::nex::from_time<NsTime, Unix32Time>(t);
+  auto const t1 = time::nex::from_time<Unix32Time, NsTime>(ns_t);
+  EXPECT_EQ(t, t1);
+}
+
