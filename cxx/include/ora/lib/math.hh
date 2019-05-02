@@ -143,7 +143,7 @@ round_div(
   T num,
   T den)
 {
-  return (num + den / 2) / den;
+  return (num >= 0 ? num + den / 2 : num - den / 2) / den;
 }
 
 
@@ -343,6 +343,19 @@ operator<<(
       x /= 10;
     }
   os << p;
+  return os;
+}
+
+
+inline std::ostream&
+operator<<(
+  std::ostream& os,
+  ora::lib::int128_t x)
+{
+  if (x < 0)
+    os << '-' << (ora::lib::uint128_t) -x;
+  else
+    os << (ora::lib::uint128_t) x;
   return os;
 }
 
