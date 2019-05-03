@@ -29,7 +29,7 @@ namespace np_date {
 // FIXME: For debugging; remove this, eventually.
 bool constexpr
 PRINT_ARR_FUNCS
-  = false;
+  = true;
 
 
 class DateAPI

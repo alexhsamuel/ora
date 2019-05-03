@@ -1,10 +1,10 @@
 #include <Python.h>
 
-#include "ora/lib/mem.hh"
-#include "ora.hh"
-#include "py.hh"
 #include "np.hh"
 #include "np_types.hh"
+#include "ora.hh"
+#include "ora/lib/mem.hh"
+#include "py.hh"
 #include "py_daytime.hh"
 
 namespace ora {
@@ -72,6 +72,7 @@ class DaytimeDtype
 public:
 
   using Daytime = typename PYDAYTIME::Daytime;
+  using Offset = typename Daytime::Offset;
 
   /*
    * Returns the singletone descriptor / dtype object.
@@ -197,6 +198,11 @@ DaytimeDtype<PYDAYTIME>::add(
     dtype->type_num, dtype->type_num, NPY_FLOAT64,
     ufunc_loop_2<Daytime, Daytime, double, subtract_between>);
 
+  static_assert(IntType<Offset>::type_num >= 0, "no type num for offset type");
+  create_or_get_ufunc(module, "to_offset", 1, 1)->add_loop_1(
+    dtype->type_num, IntType<Offset>::type_num,
+    ufunc_loop_1<Daytime, Offset, ora::daytime::nex::get_offset<Daytime>>);
+
   create_or_get_ufunc(module, "is_valid", 1, 1)->add_loop_1(
     dtype->type_num, NPY_BOOL,
     ufunc_loop_1<Daytime, bool, ora::daytime::nex::is_valid>);
@@ -214,6 +220,8 @@ DaytimeDtype<PYDAYTIME>::copyswap(
   int const swap,
   PyArrayObject* const arr)
 {
+  if (PRINT_ARR_FUNCS)
+    std::cerr << "copyswap\n";
   if (swap)
     copy_swapped<sizeof(Daytime)>(src, dst);
   else
@@ -232,6 +240,8 @@ DaytimeDtype<PYDAYTIME>::copyswapn(
   int const swap, 
   PyArrayObject* const arr)
 {
+  if (PRINT_ARR_FUNCS)
+    std::cerr << "copyswapn\n";
   // FIXME: Abstract this out.
   if (src_stride == 0) {
     // Swapper or unswapped fill.  Optimize this special case.
@@ -332,6 +342,8 @@ void cast_from_daytime(
   void* /* unused */,
   void* /* unused */)
 {
+  if (PRINT_ARR_FUNCS)
+    std::cerr << "cast_from_daytime\n";
   for (; num > 0; --num, ++from, ++to)
     *to = daytime::nex::from_daytime<TO, FROM>(*from);
 }
