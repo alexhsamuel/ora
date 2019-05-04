@@ -952,11 +952,11 @@ convert_to_daytime_nex(
   }
 
   if (Sequence::Check(obj)) {
-    auto const parts = static_cast<Sequence*>(obj);
-    long   const hour   = parts->GetItem(0)->long_value();
-    long   const minute = parts->GetItem(1)->long_value();
-    double const second
-      = parts->Length() > 2 ? parts->GetItem(2)->double_value() : 0;
+    auto const parts  = static_cast<Sequence*>(obj);
+    auto const hour   = parts->GetItem(0)->long_value();
+    auto const minute = parts->GetItem(1)->long_value();
+    auto const second
+      = parts->Length() > 2 ? parts->GetItem(2)->double_value() : 0.0;
     return ora::daytime::nex::from_hms<DAYTIME>(hour, minute, second);
   }
 
