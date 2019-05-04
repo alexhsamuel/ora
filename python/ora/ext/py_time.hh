@@ -873,7 +873,7 @@ maybe_time(
     // FIXME: This is not the right way to do it.  Instead, check for overflow
     // when performing the offset arithmetic.  Do this in the C++ conversion 
     // ctor instead of here.
-    if (time128 < TIME::MIN || time128 > TIME::MAX)
+    if (time128 < Time128(TIME::MIN) || time128 > Time128(TIME::MAX))
       throw TimeRangeError();
     return {true, TIME(time128)};
   }

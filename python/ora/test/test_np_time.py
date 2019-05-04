@@ -168,18 +168,18 @@ def test_convert_invalid():
 
 @pytest.mark.parametrize("Time0, Time1", TIME_TYPE_PAIRS)
 def test_compare_types(Time0, Time1):
-    arr0 = get_array(Time0)
+    arr0 = np.array([
+        Time0(1970,  1,  2,  0,  0,  0  , UTC),
+        Time0(1999, 12, 31, 23, 59, 59  , UTC),
+        Time0(2000,  1,  1,  0,  0,  0  , UTC),
+        Time0(2018,  3, 17, 14,  7, 21  , UTC),
+    ])
+
     arr1 = arr0.astype(Time1)
     assert (arr0 == arr1).all()
     assert (arr0 <= arr1).all()
     assert (arr0 >= arr1).all()
 
-    arr0 = np.array([
-        Time0(1970,  1,  1,  0,  0,  0  , UTC),
-        Time0(1999, 12, 31, 23, 59, 59  , UTC),
-        Time0(2000,  1,  1,  0,  0,  0  , UTC),
-        Time0(2018,  3, 17, 14,  7, 21  , UTC),
-    ])
     arr1 = arr0.astype(Time1)
     assert (arr0 <  arr1 + 1).all()
     assert (arr0 >  arr1 - 1).all()
@@ -212,11 +212,7 @@ def test_cast(Time0, Time1):
     arr0 = get_array(Time0)
     arr1 = arr0.astype(Time1)
 
-    print(arr0)
-    print(arr1)
-
     for d0, d1 in zip(arr0, arr1):
-        print(d0, d1)
         try:
             Time1(d0)
         except ora.TimeRangeError:

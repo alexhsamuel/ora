@@ -37,7 +37,7 @@ private:
     PyArray_Descr* const dtype)
   {
     // Make an attempt to confirm that this is one of our dtypes.
-    if (dtype->kind == 'V' && dtype->type == 'j') {
+    if (true || (dtype->kind == 'V' && dtype->type == 'j')) {
       auto const api = reinterpret_cast<TimeAPI*>(dtype->c_metadata);
       if (api != nullptr && api->magic_ == MAGIC)
         return api;
@@ -156,8 +156,8 @@ TimeDtype<PYTIME>::set_up(
 
   descr_ = (Descr*) PyObject_New(PyArray_Descr, &PyArrayDescr_Type);
   descr_->typeobj       = incref(&PYTIME::type_);
-  descr_->kind          = 'V';
-  descr_->type          = 'j';  // FIXME?
+  descr_->kind          = get_type_char();
+  descr_->type          = descr_->kind;
   descr_->byteorder     = '=';
   // FIXME: Requires initialization to INVALID.  Or else Time needs to handle
   // any bit pattern correctly.

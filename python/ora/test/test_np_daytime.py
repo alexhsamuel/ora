@@ -119,7 +119,6 @@ def test_from_object(Daytime):
     ], dtype=Daytime)
     assert arr.dtype == Daytime.dtype
 
-    assert_array_equal(
-        arr, np.array([y, y, y, y, Daytime.INVALID, Daytime.INVALID]))
+    assert (arr == np.array([y, y, y, y, Daytime.INVALID, Daytime.INVALID])).all()
 
 

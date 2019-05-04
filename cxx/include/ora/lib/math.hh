@@ -164,6 +164,26 @@ rescale_int(
 }
 
 
+// FIXME: Casting from uint128_t to int128_t won't work for large values. 
+// Hack this for now by ignoring the least significant bit.
+// This is horrible.
+template<class T0>
+inline uint128_t
+rescale_int(
+  T0 const val,
+  T0 const old_den,
+  uint128_t const new_den)
+{
+  if (old_den % new_den == 0)
+    return round_div(val, old_den / (T0) new_den);
+  else if (new_den % old_den == 0)
+    return val * (new_den / old_den);
+  else
+    // FIXME: Try to do better!
+    return round_div<int128_t>((int128_t) (val >> 1) * new_den, old_den >> 1);
+}
+
+
 /**
  * Rescales a value from one denominator to another, rounding if necessary.
  */

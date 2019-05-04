@@ -145,8 +145,8 @@ DaytimeDtype<PYDAYTIME>::get()
 
     descr_ = (Descr*) PyObject_New(PyArray_Descr, &PyArrayDescr_Type);
     descr_->typeobj         = incref(&PYDAYTIME::type_);
-    descr_->kind            = 'V';
-    descr_->type            = 'j';  // FIXME
+    descr_->kind            = get_type_char();
+    descr_->type            = descr_->kind;
     descr_->byteorder       = '=';
     descr_->flags           = 0;
     descr_->type_num        = 0;
@@ -189,10 +189,7 @@ DaytimeDtype<PYDAYTIME>::add(
   assert(dict != nullptr);
   dict->SetItemString("dtype", (Object*) dtype);
 
-  // Add ufuncs.
-  // FIXME
-
-  Comparisons<Daytime, ora::daytime::nex::equal, ora::daytime::nex::before>
+  Comparisons<Daytime, ora::daytime::nex::equal<Daytime>, ora::daytime::nex::before<Daytime>>
     ::register_loops(dtype->type_num);
 
   // Add ufunc loops.

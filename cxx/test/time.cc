@@ -195,17 +195,41 @@ TEST(Unix32Time, zero) {
   EXPECT_EQ(52.0, hms.second);
 }
 
-// FIXME: Genealize this.
-TEST(Unix32Time, round_trip) {
-  auto const t = from_local_parts<Unix32Time>(1901, 12, 13, 20, 45, 53, "UTC");
-  EXPECT_EQ(t, t);
-  std::cerr << "offset0: " << t.get_offset() << " "
-            << "offset1: " << NsTime(t).get_offset() << " "
-            << "offset2: " << Unix32Time(NsTime(t)).get_offset() << "\n";
-  EXPECT_EQ(t, Unix32Time(NsTime(t)));
+//------------------------------------------------------------------------------
+// conversions
 
-  auto const ns_t = time::nex::from_time<NsTime, Unix32Time>(t);
-  auto const t1 = time::nex::from_time<Unix32Time, NsTime>(ns_t);
-  EXPECT_EQ(t, t1);
+template<class TIME0, class TIME1>
+void
+test_round_trip(
+  TIME0 const time0)
+{
+  EXPECT_EQ(time0, time0);
+  auto const time1 = TIME1(time0);
+  EXPECT_EQ(time1, time0);
+  auto const time2 = TIME0(time1);
+  EXPECT_EQ(time2, time0);
+
+  auto const time1n = time::nex::from_time<TIME1, TIME0>(time0);
+  EXPECT_EQ(time1n, time0);
+  auto const time2n = time::nex::from_time<TIME0, TIME1>(time1n);
+  EXPECT_EQ(time2n, time0);
+}
+
+TEST(Unix32Time, round_trip_NsTime) {
+  test_round_trip<Unix32Time, NsTime>(
+    from_local_parts<Unix32Time>(1901, 12, 13, 20, 45, 53, "UTC"));
+}
+
+TEST(NsTime, round_trip_Time128) {
+  test_round_trip<NsTime, Time128>(
+    from_local_parts<NsTime>(1973, 12, 3, 12, 30, 45.5, "UTC"));
+}
+
+TEST(NsTime, round_trip_Time128_MIN) {
+  test_round_trip<NsTime, Time128>(NsTime::MIN);
+}
+
+TEST(NsTime, round_trip_Time128_MAX) {
+  test_round_trip<NsTime, Time128>(NsTime::MIN);
 }
 
