@@ -902,6 +902,11 @@ convert_to_daytime(
 
   if (Unicode::Check(obj)) {
     auto const str = static_cast<Unicode*>(obj)->as_utf8_string();
+    if (str == "MIN")
+      return DAYTIME::MIN;
+    else if (str == "MAX")
+      return DAYTIME::MAX;
+
     try {
       return ora::daytime::from_iso_daytime<DAYTIME>(str);
     }
@@ -920,6 +925,48 @@ convert_to_daytime(
       
   // Failed to convert.
   throw py::TypeError("can't convert to daytime: "s + *obj->Repr());
+}
+
+
+template<class DAYTIME>
+inline DAYTIME
+convert_to_daytime_nex(
+  Object* const obj)
+{
+  if (obj == None)
+    // Use the default value.
+    return DAYTIME{};
+
+  auto opt = maybe_daytime<DAYTIME>(obj);
+  if (opt)
+    return *opt;
+
+  if (Unicode::Check(obj)) {
+    auto const str = static_cast<Unicode*>(obj)->as_utf8_string();
+    if (str == "MIN")
+      return DAYTIME::MIN;
+    else if (str == "MAX")
+      return DAYTIME::MAX;
+
+    return ora::daytime::nex::from_iso_daytime<DAYTIME>(str);
+  }
+
+  if (Sequence::Check(obj)) {
+    auto const parts = static_cast<Sequence*>(obj);
+    long   const hour   = parts->GetItem(0)->long_value();
+    long   const minute = parts->GetItem(1)->long_value();
+    double const second
+      = parts->Length() > 2 ? parts->GetItem(2)->double_value() : 0;
+    return ora::daytime::nex::from_hms<DAYTIME>(hour, minute, second);
+  }
+
+  auto const double_opt = obj->maybe_double_value();
+  if (double_opt) 
+    // Interpret as SSM.
+    return ora::daytime::nex::from_ssm<DAYTIME>(*double_opt);
+      
+  // Failed to convert.
+  return DAYTIME::INVALID;
 }
 
 

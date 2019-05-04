@@ -1,3 +1,5 @@
+#pragma once
+
 #include <algorithm>
 #include <Python.h>
 
@@ -29,7 +31,7 @@ namespace np_date {
 // FIXME: For debugging; remove this, eventually.
 bool constexpr
 PRINT_ARR_FUNCS
-  = true;
+  = false;
 
 
 class DateAPI
@@ -201,9 +203,8 @@ DateDtype<PYDATE>::get()
       throw py::Exception();
 
     auto const npy_object = PyArray_DescrFromType(NPY_OBJECT);
-
     Array::RegisterCastFunc(
-      npy_object, descr_->type_num, 
+      npy_object, descr_->type_num,
       (PyArray_VectorUnaryFunc*) cast_from_object);
     Array::RegisterCanCast(npy_object, descr_->type_num, NPY_OBJECT_SCALAR);
   }
@@ -541,6 +542,8 @@ cast_from_date(
   void* /* unused */,
   void* /* unused */)
 {
+  if (PRINT_ARR_FUNCS)
+    std::cerr << "cast_from_date\n";
   for (; num > 0; --num, ++from, ++to)
     *to = date::nex::from_date<TO, FROM>(*from);
 }

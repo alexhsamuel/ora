@@ -99,6 +99,17 @@ from_ssm(
 }
 
 
+template<class DAYTIME=Daytime>
+inline DAYTIME
+from_iso_daytime(
+  std::string const& daytime)
+  noexcept
+{
+  auto hms = parse_iso_daytime(daytime);
+  return nex::from_hms<DAYTIME>(hms.hour, hms.minute, hms.second);
+}  
+
+
 //------------------------------------------------------------------------------
 // Accessors
 //------------------------------------------------------------------------------

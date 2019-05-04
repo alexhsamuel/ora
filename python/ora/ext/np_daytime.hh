@@ -93,6 +93,8 @@ private:
   static int            setitem(Object*, Daytime*, PyArrayObject*);
   static int            compare(Daytime const*, Daytime const*, PyArrayObject*);
 
+  static void           cast_from_object(Object* const*, Daytime*, npy_intp, void*, void*);
+
   // Wrap days_after and days_before to accept int64 args.
   static Daytime add(Daytime const daytime, double const seconds)
     { return ora::daytime::nex::seconds_after(daytime, seconds); }
@@ -160,6 +162,12 @@ DaytimeDtype<PYDAYTIME>::get()
 
     if (PyArray_RegisterDataType(descr_) < 0)
       throw py::Exception();
+
+    auto const npy_object = PyArray_DescrFromType(NPY_OBJECT);
+    Array::RegisterCastFunc(
+      npy_object, descr_->type_num,
+      (PyArray_VectorUnaryFunc*) cast_from_object);
+    Array::RegisterCanCast(npy_object, descr_->type_num, NPY_OBJECT_SCALAR);
   }
 
   return descr_;
@@ -297,7 +305,7 @@ DaytimeDtype<PYDAYTIME>::setitem(
   if (PRINT_ARR_FUNCS)
     std::cerr << "setitem\n";
   try {
-    *data = convert_to_daytime<Daytime>(item);
+    *data = convert_to_daytime_nex<Daytime>(item);
   }
   catch (Exception) {
     return -1;
@@ -324,6 +332,24 @@ DaytimeDtype<PYDAYTIME>::compare(
     : *d0 < *d1        ? -1 
     : *d0 > *d1        ?  1 
     : 0;
+}
+
+
+template<class PYDAYTIME>
+void
+DaytimeDtype<PYDAYTIME>::cast_from_object(
+  Object* const* from,
+  Daytime* to,
+  npy_intp num,
+  void* /* unused */,
+  void* /* unused */)
+{
+  if (PRINT_ARR_FUNCS)
+    std::cerr << "cast_from_object\n";
+  for (; num > 0; --num, ++from, ++to) {
+    auto const daytime = maybe_daytime<Daytime>(*from);
+    *to = daytime ? *daytime : Daytime::INVALID;
+  }
 }
 
 

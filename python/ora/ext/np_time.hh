@@ -6,6 +6,7 @@
 #include "ora.hh"
 #include "ora/lib/mem.hh"
 #include "py.hh"
+#include "np_date.hh"
 #include "py_time.hh"
 
 namespace ora {
@@ -352,6 +353,8 @@ cast_from_time(
   void* /* unused */,
   void* /* unused */)
 {
+  if (PRINT_ARR_FUNCS)
+    std::cerr << "cast_from_time\n";
   for (; num > 0; --num, ++from, ++to)
     *to = time::nex::from_time<TO, FROM>(*from);
 }

@@ -1,5 +1,7 @@
+import datetime
 import itertools
 import numpy as np
+from   numpy.testing import assert_array_equal
 import pytest
 
 import ora
@@ -102,5 +104,22 @@ def test_compare(Daytime0, Daytime1):
     assert (arr0 <  arr1 + 1).all()
     assert (arr0 >  arr1 - 1).all()
     assert (arr0 != arr1 + 1).all()
+
+
+@pytest.mark.parametrize("Daytime", DAYTIME_TYPES)
+def test_from_object(Daytime):
+    y = Daytime(12, 30, 45.5)
+    arr = np.array([
+        y,
+        ora.Daytime(12, 30, 45.5),
+        ora.Daytime32(12, 30, 45.5),
+        datetime.time(12, 30, 45, 500000),
+        "bogus",
+        None
+    ], dtype=Daytime)
+    assert arr.dtype == Daytime.dtype
+
+    assert_array_equal(
+        arr, np.array([y, y, y, y, Daytime.INVALID, Daytime.INVALID]))
 
 
