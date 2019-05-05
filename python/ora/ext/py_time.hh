@@ -948,6 +948,8 @@ convert_to_time(
       return date_daytime_to_time<TIME>(parts);
     else if (length == 7)
       return parts_to_time<TIME>(parts);
+    else if (length == -1)
+      Exception::Clear();
   }
 
   throw py::TypeError("can't convert to a time: "s + *obj->Repr());
