@@ -22,12 +22,16 @@ private:
   static uint64_t constexpr MAGIC = 0x737865c3443a5a50;
   uint64_t const magic_ = MAGIC;
 
+  // Registry of PyArrayDescr->type we use.
+  static std::vector<bool> kinds_;
+
   static DaytimeAPI*
   get(
     PyArray_Descr* const dtype)
   {
     // Make an attempt to confirm that this is one of our dtypes.
-    if (dtype->kind == 'V' && dtype->type == 'j') {
+    if (kinds_[dtype->kind]) {
+      // FIXME: We don't need this additional check if dtype->kind is unique?
       auto const api = reinterpret_cast<DaytimeAPI*>(dtype->c_metadata);
       if (api != nullptr && api->magic_ == MAGIC)
         return api;
@@ -38,6 +42,13 @@ private:
 public:
 
   virtual ~DaytimeAPI() {}
+
+  static void
+  register_kind(
+    char const kind)
+  {
+    kinds_[kind] = true;
+  }
 
   /*
    * Converts a daytick to a daytime, and stores it at an address. 
@@ -146,7 +157,7 @@ DaytimeDtype<PYDAYTIME>::get()
     descr_ = (Descr*) PyObject_New(PyArray_Descr, &PyArrayDescr_Type);
     descr_->typeobj         = incref(&PYDAYTIME::type_);
     descr_->kind            = get_type_char();
-    descr_->type            = descr_->kind;
+    descr_->type            = 't';
     descr_->byteorder       = '=';
     descr_->flags           = 0;
     descr_->type_num        = 0;
@@ -162,6 +173,7 @@ DaytimeDtype<PYDAYTIME>::get()
 
     if (PyArray_RegisterDataType(descr_) < 0)
       throw py::Exception();
+    DaytimeAPI::register_kind(descr_->kind);
 
     auto const npy_object = PyArray_DescrFromType(NPY_OBJECT);
     Array::RegisterCastFunc(
