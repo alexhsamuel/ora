@@ -32,12 +32,16 @@ private:
   static uint64_t constexpr MAGIC = 0xf17c597caa2e0c48;
   uint64_t const magic_ = MAGIC;
 
+  // Registry of PyArrayDescr->type we use.
+  static std::vector<bool> kinds_;
+
   static TimeAPI*
   get(
     PyArray_Descr* const dtype)
   {
     // Make an attempt to confirm that this is one of our dtypes.
-    if (true || (dtype->kind == 'V' && dtype->type == 'j')) {
+    if (kinds_[dtype->kind]) {
+      // FIXME: We don't need this additional check if dtype->kind is unique?
       auto const api = reinterpret_cast<TimeAPI*>(dtype->c_metadata);
       if (api != nullptr && api->magic_ == MAGIC)
         return api;
@@ -48,6 +52,14 @@ private:
 public:
 
   virtual ~TimeAPI() {}
+
+  static void
+  register_kind(
+    char const kind)
+  {
+    kinds_[kind] = true;
+  }
+
   virtual ref<Object> from_offset(Array*) = 0;
   virtual LocalDatenumDaytick to_local_datenum_daytick(void const* time_ptr, ora::TimeZone const& tz) const = 0;
   virtual void from_local(Datenum, Daytick, TimeZone const&, bool, void*) const = 0;
@@ -157,7 +169,7 @@ TimeDtype<PYTIME>::set_up(
   descr_ = (Descr*) PyObject_New(PyArray_Descr, &PyArrayDescr_Type);
   descr_->typeobj       = incref(&PYTIME::type_);
   descr_->kind          = get_type_char();
-  descr_->type          = descr_->kind;
+  descr_->type          = 't';
   descr_->byteorder     = '=';
   // FIXME: Requires initialization to INVALID.  Or else Time needs to handle
   // any bit pattern correctly.
@@ -175,8 +187,9 @@ TimeDtype<PYTIME>::set_up(
 
   if (PyArray_RegisterDataType(descr_) < 0)
     throw py::Exception();
-  int const type_num = descr_->type_num;
+  TimeAPI::register_kind(descr_->kind);
 
+  int const type_num = descr_->type_num;
   auto const type_dict = (Dict*) PYTIME::type_.tp_dict;
 
   // Set the dtype as an attribute to the scalar type.

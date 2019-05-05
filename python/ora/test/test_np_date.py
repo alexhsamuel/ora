@@ -1,7 +1,6 @@
 from   functools import partial
 import itertools
 import numpy as np
-from   numpy.testing import assert_array_equal
 import pytest
 
 import ora
@@ -309,17 +308,19 @@ def test_date_from_ymdi_shape():
     assert dates == np.array(Date(2019, 4, 20))
 
     # 1D.
-    assert_array_equal(
-        ora.np.date_from_ymdi([20190220, 20190230, 20190101]),
-        [Date(2019, 2, 20), Date.INVALID, Date(2019, 1, 1)])
+    assert np.all(
+        ora.np.date_from_ymdi([20190220, 20190230, 20190101])
+        == [Date(2019, 2, 20), Date.INVALID, Date(2019, 1, 1)]
+    )
 
     # 2D.
-    assert_array_equal(
-        ora.np.date_from_ymdi([[20190420, 20190230], [20190101, 19731231]]),
-        [
+    assert np.all(
+        ora.np.date_from_ymdi([[20190420, 20190230], [20190101, 19731231]])
+        == [
             [Date(2019, 4, 20), Date.INVALID],
             [Date(2019, 1, 1), Date(1973, 12, 31)],
-        ])
+        ]
+    )
 
 
 @pytest.mark.parametrize(
@@ -340,15 +341,15 @@ def test_date_from_ordinal_date(Date, dtype):
     assert dfod(dtype(2019), 112) == Date(2019, 4, 22)
 
     # 1D.
-    assert_array_equal(
-        dfod(np.array([2018, 2019, 2020], dtype=dtype), dtype(100)),
-        [Date(2018, 4, 10), Date(2019, 4, 10), Date(2020, 4, 9)]
+    assert np.all(
+        dfod(np.array([2018, 2019, 2020], dtype=dtype), dtype(100))
+        == [Date(2018, 4, 10), Date(2019, 4, 10), Date(2020, 4, 9)]
     )
 
     # 2D.
-    assert_array_equal(
-        dfod(dtype(2020), np.array([[1, 10], [100, 1000]], dtype=dtype)),
-        [
+    assert np.all(
+        dfod(dtype(2020), np.array([[1, 10], [100, 1000]], dtype=dtype))
+        == [
             [Date(2020, 1, 1), Date(2020, 1, 10)],
             [Date(2020, 4, 9), Date.INVALID],
         ]
@@ -373,13 +374,13 @@ def test_date_from_week_date(Date, dtype):
     assert dfwd(dtype(2019), dtype(17), dtype(0)) == Date(2019, 4, 22)
 
     # 2D.
-    assert_array_equal(
+    assert np.all(
         dfwd(
             dtype(2019), 
             np.array([[1, 4], [16, 256]], dtype=dtype),
             np.array([2, 5], dtype=dtype)
-        ),
-        [
+        )
+        == [
             [Date(2019, 1, 2), Date(2019, 1, 26)],
             [Date(2019, 4, 17), Date.INVALID],
         ]

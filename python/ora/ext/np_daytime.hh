@@ -157,7 +157,7 @@ DaytimeDtype<PYDAYTIME>::get()
     descr_ = (Descr*) PyObject_New(PyArray_Descr, &PyArrayDescr_Type);
     descr_->typeobj         = incref(&PYDAYTIME::type_);
     descr_->kind            = get_type_char();
-    descr_->type            = 't';
+    descr_->type            = 'y';
     descr_->byteorder       = '=';
     descr_->flags           = 0;
     descr_->type_num        = 0;

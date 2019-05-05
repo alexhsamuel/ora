@@ -41,12 +41,16 @@ private:
   static uint64_t constexpr MAGIC = 0x231841de2fe33131;
   uint64_t const magic_ = MAGIC;
 
+  // Registry of PyArrayDescr->type we use.
+  static std::vector<bool> kinds_;
+
   static DateAPI*
   get(
     PyArray_Descr* const dtype)
   {
     // Make an attempt to confirm that this is one of our dtypes.
-    if (dtype->kind == 'V' && dtype->type == 'j') {
+    if (kinds_[dtype->kind]) {
+      // FIXME: We don't need this additional check if dtype->kind is unique?
       auto const api = reinterpret_cast<DateAPI*>(dtype->c_metadata);
       if (api != nullptr && api->magic_ == MAGIC)
         return api;
@@ -58,6 +62,13 @@ private:
 public:
 
   virtual ~DateAPI() {}
+
+  static void
+  register_kind(
+    char const kind)
+  {
+    kinds_[kind] = true;
+  }
 
   /*
    * Converts a datenum to a date, and stores it at an address.  Returns true
@@ -184,8 +195,8 @@ DateDtype<PYDATE>::get()
 
     descr_ = (Descr*) PyObject_New(PyArray_Descr, &PyArrayDescr_Type);
     descr_->typeobj         = incref(&PYDATE::type_);
-    descr_->kind            = 'V';
-    descr_->type            = 'j';  // FIXME?
+    descr_->kind            = get_type_char();
+    descr_->type            = 'd';
     descr_->byteorder       = '=';
     descr_->flags           = 0;
     descr_->type_num        = 0;
@@ -201,6 +212,7 @@ DateDtype<PYDATE>::get()
 
     if (PyArray_RegisterDataType(descr_) < 0)
       throw py::Exception();
+    DateAPI::register_kind(descr_->kind);
 
     auto const npy_object = PyArray_DescrFromType(NPY_OBJECT);
     Array::RegisterCastFunc(
