@@ -222,6 +222,20 @@ def test_cast(Time0, Time1):
             assert d0 == d1 or abs(d1 - d0) <= max(d0.RESOLUTION, d1.RESOLUTION)
 
 
+@pytest.mark.parametrize("Time0, Time1", TIME_TYPE_PAIRS)
+def test_cast_scalar(Time0, Time1):
+    scalar0 = Time0(1973, 12, 3, 12, 45, 31, UTC)
+    scalar1 = Time1(scalar0)
+    # FIXME: I'm not sure this is a feature...
+    scalar2 = scalar0.astype(Time0)
+
+    assert scalar1 == scalar0
+    assert scalar2 == scalar0
+    assert scalar2 == scalar1
+    assert scalar1 == Time1(1973, 12, 3, 12, 45, 31, UTC)
+    assert np.array(scalar0) == scalar0
+
+
 @pytest.mark.xfail
 @pytest.mark.parametrize("Time0, Time1", TIME_TYPE_PAIRS)
 def test_cast_roundtrip(Time0, Time1):
