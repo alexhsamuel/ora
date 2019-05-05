@@ -1,7 +1,6 @@
 import datetime
 import itertools
 import numpy as np
-from   numpy.testing import assert_array_equal
 import pytest
 
 import ora
@@ -28,7 +27,6 @@ def test_is_valid(Daytime):
     assert (ora.np.is_valid(arr).astype(int) == [1, 1, 0, 0]).all()
 
 
-@pytest.mark.xfail
 def test_convert_invalid():
     assert (np.array([
         "",
