@@ -88,7 +88,6 @@ def test_from_local(Time, Date, Daytime, time_zone):
         Time = ora.Time
     else:
         time = ora.np.from_local(date, daytime, time_zone, Time=Time)
-    print(date.shape, daytime.shape, time.shape)
     assert time.dtype == Time.dtype
     assert time.shape == (10, 8)
     for r in range(10):
