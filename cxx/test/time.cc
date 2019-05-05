@@ -201,18 +201,19 @@ TEST(Unix32Time, zero) {
 template<class TIME0, class TIME1>
 void
 test_round_trip(
-  TIME0 const time0)
+  TIME0 const time0,
+  double const delta=0)
 {
   EXPECT_EQ(time0, time0);
   auto const time1 = TIME1(time0);
   EXPECT_EQ(time1, time0);
   auto const time2 = TIME0(time1);
-  EXPECT_EQ(time2, time0);
+  EXPECT_TRUE(abs(time2 - time0) <= delta);
 
   auto const time1n = time::nex::from_time<TIME1, TIME0>(time0);
   EXPECT_EQ(time1n, time0);
   auto const time2n = time::nex::from_time<TIME0, TIME1>(time1n);
-  EXPECT_EQ(time2n, time0);
+  EXPECT_TRUE(abs(time2n - time0) <= delta);
 }
 
 TEST(Unix32Time, round_trip_NsTime) {
@@ -226,10 +227,10 @@ TEST(NsTime, round_trip_Time128) {
 }
 
 TEST(NsTime, round_trip_Time128_MIN) {
-  test_round_trip<NsTime, Time128>(NsTime::MIN);
+  test_round_trip<NsTime, Time128>(NsTime::MIN, NsTime::RESOLUTION);
 }
 
 TEST(NsTime, round_trip_Time128_MAX) {
-  test_round_trip<NsTime, Time128>(NsTime::MIN);
+  test_round_trip<NsTime, Time128>(NsTime::MIN, NsTime::RESOLUTION);
 }
 
