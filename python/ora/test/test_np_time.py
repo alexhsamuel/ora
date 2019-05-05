@@ -180,7 +180,6 @@ def test_compare_types(Time0, Time1):
     assert (arr0 <= arr1).all()
     assert (arr0 >= arr1).all()
 
-    arr1 = arr0.astype(Time1)
     assert (arr0 <  arr1 + 1).all()
     assert (arr0 >  arr1 - 1).all()
     assert (arr0 != arr1 + 1).all()
