@@ -408,7 +408,7 @@ public:
   auto Length()
     { return PyObject_Length(this); }
   auto Repr()
-    { return ref<Unicode>::take(PyObject_Repr(this)); }
+    { return take_not_null<Unicode>(PyObject_Repr(this)); }
   auto RichCompare(PyObject* other, int comparison)
     { return ref<Object>::take(PyObject_RichCompare(this, other, comparison)); }
   bool RichCompareBool(PyObject* other, int comparison)
