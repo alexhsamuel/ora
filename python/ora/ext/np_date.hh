@@ -215,17 +215,19 @@ DateDtype<PYDATE>::get()
       throw py::Exception();
     DateAPI::register_kind(descr_->kind);
 
+    // Cast from arbitrary objects, per lenient conversion rules.
     auto const npy_object = PyArray_DescrFromType(NPY_OBJECT);
     Array::RegisterCastFunc(
       npy_object, descr_->type_num,
       (PyArray_VectorUnaryFunc*) cast_from_object);
     Array::RegisterCanCast(npy_object, descr_->type_num, NPY_OBJECT_SCALAR);
 
+    // Cast from datetime64.
+    // FIXME: Only cast datetime64[D], not other units.
     auto const npy_datetime = PyArray_DescrFromType(NPY_DATETIME);
     Array::RegisterCastFunc(
       npy_datetime, descr_->type_num,
       (PyArray_VectorUnaryFunc*) cast_from_datetime);
-    // Array::RegisterCanCast(npy_object, descr_->type_num, NPY_OBJECT_SCALAR);
   }
 
   return descr_;
@@ -451,8 +453,13 @@ DateDtype<PYDATE>::cast_from_datetime(
   if (PRINT_ARR_FUNCS)
     std::cerr << "cast_from_datetime\n";
   for (; num > 0; --num, ++from, ++to) {
-    std::cerr << num << ": " << *from << "\n";
-    // *to = date ? *date : Date::INVALID;
+    auto const offset = *from + DATENUM_UNIX_EPOCH - PYDATE::Date::Traits::base;
+    // Need to check bounds before (possibly) narrowing int64_t to offset.
+    *to = 
+         offset < PYDATE::Date::Traits::min
+      || offset > PYDATE::Date::Traits::max
+      ? PYDATE::Date::INVALID
+      : ora::date::nex::from_offset<Date>(offset);
   }
 }
 
