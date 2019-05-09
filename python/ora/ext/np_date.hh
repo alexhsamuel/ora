@@ -132,6 +132,7 @@ private:
   static int            compare(Date const*, Date const*, PyArrayObject*);
 
   static void           cast_from_object(Object* const*, Date*, npy_intp, void*, void*);
+  static void           cast_from_datetime(int64_t const*, Date*, npy_intp, void*, void*);
 
   static npy_bool is_valid(Date const date)
     { return date.is_valid() ? NPY_TRUE : NPY_FALSE; }
@@ -219,6 +220,12 @@ DateDtype<PYDATE>::get()
       npy_object, descr_->type_num,
       (PyArray_VectorUnaryFunc*) cast_from_object);
     Array::RegisterCanCast(npy_object, descr_->type_num, NPY_OBJECT_SCALAR);
+
+    auto const npy_datetime = PyArray_DescrFromType(NPY_DATETIME);
+    Array::RegisterCastFunc(
+      npy_datetime, descr_->type_num,
+      (PyArray_VectorUnaryFunc*) cast_from_datetime);
+    // Array::RegisterCanCast(npy_object, descr_->type_num, NPY_OBJECT_SCALAR);
   }
 
   return descr_;
@@ -428,6 +435,24 @@ DateDtype<PYDATE>::cast_from_object(
   for (; num > 0; --num, ++from, ++to) {
     auto const date = maybe_date<Date>(*from);
     *to = date ? *date : Date::INVALID;
+  }
+}
+
+
+template<class PYDATE>
+void
+DateDtype<PYDATE>::cast_from_datetime(
+  int64_t const* from,
+  Date* to,
+  npy_intp num,
+  void* /* unused */,
+  void* /* unused */)
+{
+  if (PRINT_ARR_FUNCS)
+    std::cerr << "cast_from_datetime\n";
+  for (; num > 0; --num, ++from, ++to) {
+    std::cerr << num << ": " << *from << "\n";
+    // *to = date ? *date : Date::INVALID;
   }
 }
 

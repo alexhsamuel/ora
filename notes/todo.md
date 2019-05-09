@@ -1,10 +1,6 @@
 # Small problems
 
 - xfail tests
-- comparisons among types
-  - dates
-  - daytimes
-  - times
 - functions:
   - `ora.np.daytime_from_offset()`
   - `ora.np.daytime_from_hms()`
@@ -37,6 +33,8 @@
 - fix now() rounding problem... if there is one
   - or more likely, fix rounding in last digit of seconds in Time repr
   - and maybe Daytime should have lower resolution
+
+- [Hypothesis](https://hypothesis.readthedocs.io/en/latest/) tests
 
 # Miscellaneous Work List
 
