@@ -132,7 +132,7 @@ private:
   static int            compare(Date const*, Date const*, PyArrayObject*);
 
   static void           cast_from_object(Object* const*, Date*, npy_intp, void*, void*);
-  static void           cast_from_datetime(int64_t const*, Date*, npy_intp, void*, void*);
+  static void           cast_from_datetime(int64_t const*, Date*, npy_intp, Array*, Array*);
 
   static npy_bool is_valid(Date const date)
     { return date.is_valid() ? NPY_TRUE : NPY_FALSE; }
@@ -447,11 +447,24 @@ DateDtype<PYDATE>::cast_from_datetime(
   int64_t const* from,
   Date* to,
   npy_intp num,
-  void* /* unused */,
-  void* /* unused */)
+  Array* from_arr,
+  Array* /* unused */)
 {
   if (PRINT_ARR_FUNCS)
     std::cerr << "cast_from_datetime\n";
+  auto const descr = from_arr->descr();
+  auto const& daytime_meta
+    = reinterpret_cast<PyArray_DatetimeDTypeMetaData*>(descr->c_metadata)->meta;
+
+  if (daytime_meta.base != NPY_FR_D) {
+    // FIXME: Raising here dumps core; not sure why.
+    // PyErr_SetString(PyExc_TypeError, "can't cast from datetime");
+    // Maybe a warning instead?
+    for (; num > 0; --num, ++to)
+      *to = PYDATE::Date::INVALID;
+    return;
+  }
+
   for (; num > 0; --num, ++from, ++to) {
     auto const offset = *from + DATENUM_UNIX_EPOCH - PYDATE::Date::Traits::base;
     // Need to check bounds before (possibly) narrowing int64_t to offset.
