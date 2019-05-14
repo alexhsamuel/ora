@@ -125,14 +125,14 @@ public:
 private:
 
   // FIXME: Wrap these.
-  static void           copyswap(Date*, Date const*, int, PyArrayObject*);
-  static void           copyswapn(Date*, npy_intp, Date const*, npy_intp, npy_intp, int, PyArrayObject*);
-  static Object*        getitem(Date const*, PyArrayObject*);
-  static int            setitem(Object*, Date*, PyArrayObject*);
-  static int            compare(Date const*, Date const*, PyArrayObject*);
+  static void       copyswap(Date*, Date const*, int, PyArrayObject*);
+  static void       copyswapn(Date*, npy_intp, Date const*, npy_intp, npy_intp, int, PyArrayObject*);
+  static Object*    getitem(Date const*, PyArrayObject*);
+  static int        setitem(Object*, Date*, PyArrayObject*);
+  static int        compare(Date const*, Date const*, PyArrayObject*);
 
-  static void           cast_from_object(Object* const*, Date*, npy_intp, void*, void*);
-  static void           cast_from_datetime(int64_t const*, Date*, npy_intp, Array*, Array*);
+  static void       cast_from_object(Object* const*, Date*, npy_intp, void*, void*);
+  static void       cast_from_datetime(int64_t const*, Date*, npy_intp, Array*, Array*);
 
   static npy_bool is_valid(Date const date)
     { return date.is_valid() ? NPY_TRUE : NPY_FALSE; }
