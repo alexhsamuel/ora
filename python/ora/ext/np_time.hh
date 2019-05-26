@@ -25,7 +25,7 @@ template<class TIME> inline TIME convert_to_time(Object*);
 
 namespace {
 
-int64_t
+inline int64_t
 get_datetime64_denominator(
   PyArray_Descr const* descr)
 {
