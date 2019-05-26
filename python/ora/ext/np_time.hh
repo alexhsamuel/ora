@@ -5,6 +5,7 @@
 #include "np.hh"
 #include "ora.hh"
 #include "ora/lib/mem.hh"
+#include "ora/time_math.hh"
 #include "py.hh"
 #include "np_date.hh"
 #include "py_time.hh"
@@ -311,9 +312,9 @@ TimeDtype<PYTIME>::cast_from_object(
 }
 
 
-template<class PYDATE>
+template<class PYTIME>
 void
-TimeDtype<PYDATE>::cast_from_datetime(
+TimeDtype<PYTIME>::cast_from_datetime(
   int64_t const* from,
   Time* to,
   npy_intp num,
@@ -341,19 +342,21 @@ TimeDtype<PYDATE>::cast_from_datetime(
     // PyErr_SetString(PyExc_TypeError, "can't cast from datetime");
     // Maybe a warning instead?
     for (; num > 0; --num, ++to)
-      *to = PYDATE::Date::INVALID;
+      *to = PYTIME::Time::INVALID;
     return;
   }
 
   for (; num > 0; --num, ++from, ++to) {
-    auto const offset = 
-    auto const offset = *from + DATENUM_UNIX_EPOCH - PYDATE::Date::Traits::base;
-    // Need to check bounds before (possibly) narrowing int64_t to offset.
+    auto const offset = ora::time::convert_offset(
+      *from,
+      den, DATENUM_UNIX_EPOCH,
+      PYTIME::Time::DENOMINATOR, Time::BASE);
+    // Need to check bounds before (possibly) narrowing to offset.
     *to = 
-         offset < PYDATE::Date::Traits::min
-      || offset > PYDATE::Date::Traits::max
-      ? PYDATE::Date::INVALID
-      : ora::date::nex::from_offset<Date>(offset);
+         offset < Time::Traits::min
+      || offset > Time::Traits::max
+      ? PYTIME::Time::INVALID
+      : ora::time::nex::from_offset<Time>(offset);
   }
 }
 
