@@ -148,22 +148,22 @@ def test_is_valid(Time):
     assert (ora.np.is_valid(arr).astype(int) == [1, 1, 1, 1, 1, 1, 1, 0, 0]).all()
 
 
-@pytest.mark.xfail
 def test_convert_invalid():
-    assert (np.array([
+    for obj in [
         "",
-        None,
         "invalid",
         "2019-04-16",
         20190416,
         "12:30:45",
         "2019-04-16T12:30:45",
-        "2019-04-16T12:30:45+17:00",
+        "2019-04-16T12:30:45+Z:00",
         "2019-04-16T12:61:45+00:00",
         ora.Date(2019, 4, 16),
         ora.Daytime(12, 30, 45),
-    ], dtype=ora.Time) == ora.Time.INVALID).all()
-
+    ]:
+        print(obj)
+        with pytest.raises((TypeError, ValueError)):
+            np.array([obj], dtype=ora.Time)
 
 
 @pytest.mark.parametrize("Time0, Time1", TIME_TYPE_PAIRS)
@@ -248,5 +248,34 @@ def test_cast_roundtrip(Time0, Time1):
     assert ((arr2 == Time0.INVALID) | (arr2 == arr0)).all()
     assert (arr2 != Time0.INVALID).any()
     assert (arr2[arr0 == Time0.MISSING] == Time0.MISSING).all()
+
+
+@pytest.mark.parametrize("Time", TIME_TYPES)
+@pytest.mark.parametrize("units", ["s", "ms", "us", "ns"])
+def test_cast_datetime64(Time, units):
+    dtype = np.dtype(f"datetime64[{units}]")
+
+    dates = [
+        "1900-01-01", "1969-07-20", "1970-01-01", "2019-05-26", "2038-01-05",
+        "2149-06-04",
+    ]
+    dates = [ d for d in dates if (Time.MIN @ UTC).date < ora.Date(d) < (Time.MAX @ UTC).date ]
+    daytimes = ["00:00:00", "20:17:00", "23:59:59"]
+    if units in {"ms", "us", "ns"} and Time.RESOLUTION <= 1e-3:
+        daytimes.append("01:23:45.678")
+    if units in {"us", "ns"} and Time.RESOLUTION <= 1e-6:
+        daytimes.append("09:01:23.456789")
+    if units in {"ns"} and Time.RESOLUTION <= 1e-9:
+        daytimes.append("12:34:56.789012345")
+
+    dt64 = [ d + "T" + y for d in dates for y in daytimes ]
+    dt64.append("NAT")
+    dt64 = np.array(dt64, dtype=dtype)
+
+    times = [ d + "T" + y + "Z" for d in dates for y in daytimes ]
+    times.append(Time.INVALID)
+    times = np.array(times, dtype=Time)
+
+    np.testing.assert_array_equal(dt64.astype(Time), times)
 
 

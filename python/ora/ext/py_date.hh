@@ -62,14 +62,6 @@ template<class DATE=Date> optional<DATE> maybe_date(Object*);
 template<class DATE=Date> DATE convert_to_date(Object*);
 
 /*
- * Converts various kinds of Python objects to Date.
- *
- * If 'obj' can be converted unambiguously to a date, returns it.  Otherwise,
- * returns INVALID.
- */
-template<class DATE=Date> DATE convert_to_date_nex(Object*);
-
-/*
  * Helper for converting a 2-element sequence of ordinal date parts.
  */
 template<class DATE=Date> inline DATE ordinal_date_to_date(Sequence*);
@@ -1187,54 +1179,6 @@ convert_to_date(
   }
 
   throw py::TypeError("can't convert to a date: "s + *obj->Repr());
-}
-
-
-template<class DATE>
-inline DATE
-convert_to_date_nex(
-  Object* const obj)
-{
-  if (obj == None) 
-    // Use the default value.
-    return DATE{};
-
-  auto date = maybe_date<DATE>(obj);
-  if (date)
-    return *date;
-
-  if (Unicode::Check(obj)) {
-    auto const str = static_cast<Unicode*>(obj)->as_utf8_string();
-    if (str == "MIN")
-      return DATE::MIN;
-    else if (str == "MAX")
-      return DATE::MAX;
-
-    return ora::date::nex::from_iso_date<DATE>(str);
-  }
-
-  if (Sequence::Check(obj)) {
-    auto const seq = static_cast<Sequence*>(obj);
-    if (seq->Length() == 3) 
-      // Interpret a three-element sequence as date parts.
-      return ymd_to_date<DATE>(seq);
-    else if (seq->Length() == 2) {
-      // Interpret a two-element sequence as ordinal parts.
-      long const year       = seq->GetItem(0)->long_value();
-      long const ordinal    = seq->GetItem(1)->long_value();
-      return ora::date::nex::from_ordinal_date<DATE>(year, ordinal);
-    }
-  }
-
-  auto const long_obj = obj->Long(false);
-  if (long_obj != nullptr) {
-    // Interpret eight-digit values as YMDI.
-    long const ymdi = (long) *long_obj;
-    if (10000000 <= ymdi && ymdi <= 99999999) 
-      return ora::date::nex::from_ymdi<DATE>(ymdi);
-  }
-
-  return DATE::INVALID;
 }
 
 

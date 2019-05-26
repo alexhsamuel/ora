@@ -934,6 +934,10 @@ convert_to_time(
     catch (ora::TimeParseError const&) {
       throw py::ValueError("can't parse as time: '"s + str + "'");
     }
+    catch (ora::TimeRangeError const&) {
+      // FIXME: Python TimeRangeError.
+      throw py::OverflowError("time out of range: '"s + str + "'");
+    }
   }
 
   if (Sequence::Check(obj)) {

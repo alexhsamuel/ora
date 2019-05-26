@@ -24,6 +24,8 @@ using namespace ora::lib;
 
 //------------------------------------------------------------------------------
 
+auto const DATETIME64_NAT = std::numeric_limits<long>::min();
+
 inline void
 check_succeed(
   npy_intp status)

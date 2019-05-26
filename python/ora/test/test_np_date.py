@@ -160,8 +160,7 @@ def test_subtract_diff():
 
 
 def test_convert_invalid():
-    assert (np.array([
-        None,
+    for obj in [
         "bogus",
         "2012-02-30",
         "2013-02-29",
@@ -173,7 +172,9 @@ def test_convert_invalid():
         "87654321",
         ora.now(),
         ora.Daytime(12, 30, 45),
-    ], dtype=Date) == Date.INVALID).all()
+    ]:
+        with pytest.raises((TypeError, ValueError)):
+            np.array([obj], dtype=Date)
 
 
 @pytest.mark.parametrize("Date", DATE_TYPES)
@@ -395,7 +396,6 @@ def test_cast_datetime64D(Date):
     )
 
     dates = dt64.astype(Date)
-    print(dates)
     assert dates.dtype is Date.dtype
     assert (
         dates == [

@@ -393,7 +393,7 @@ DateDtype<PYDATE>::setitem(
   if (PRINT_ARR_FUNCS)
     std::cerr << "setitem\n";
   try {
-    *data = convert_to_date_nex<Date>(item);
+    *data = convert_to_date<Date>(item);
   }
   catch (Exception) {
     return -1;
@@ -465,15 +465,18 @@ DateDtype<PYDATE>::cast_from_datetime(
     return;
   }
 
-  for (; num > 0; --num, ++from, ++to) {
-    auto const offset = *from + DATENUM_UNIX_EPOCH - PYDATE::Date::Traits::base;
-    // Need to check bounds before (possibly) narrowing int64_t to offset.
-    *to = 
-         offset < PYDATE::Date::Traits::min
-      || offset > PYDATE::Date::Traits::max
-      ? PYDATE::Date::INVALID
-      : ora::date::nex::from_offset<Date>(offset);
-  }
+  for (; num > 0; --num, ++from, ++to)
+    if (*from == DATETIME64_NAT)
+      *to = PYDATE::Date::INVALID;
+    else {
+      auto const offset = *from + DATENUM_UNIX_EPOCH - PYDATE::Date::Traits::base;
+      // Need to check bounds before (possibly) narrowing int64_t to offset.
+      *to = 
+           offset < PYDATE::Date::Traits::min
+        || offset > PYDATE::Date::Traits::max
+        ? PYDATE::Date::INVALID
+        : ora::date::nex::from_offset<Date>(offset);
+    }
 }
 
 

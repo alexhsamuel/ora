@@ -346,18 +346,21 @@ TimeDtype<PYTIME>::cast_from_datetime(
     return;
   }
 
-  for (; num > 0; --num, ++from, ++to) {
-    auto const offset = ora::time::convert_offset(
-      *from,
-      den, DATENUM_UNIX_EPOCH,
-      PYTIME::Time::DENOMINATOR, Time::BASE);
-    // Need to check bounds before (possibly) narrowing to offset.
-    *to = 
-         offset < Time::Traits::min
-      || offset > Time::Traits::max
-      ? PYTIME::Time::INVALID
-      : ora::time::nex::from_offset<Time>(offset);
-  }
+  for (; num > 0; --num, ++from, ++to)
+    if (*from == DATETIME64_NAT)
+      *to = PYTIME::Time::INVALID;
+    else {
+      auto const offset = ora::time::convert_offset(
+        *from,
+        den, DATENUM_UNIX_EPOCH,
+        PYTIME::Time::DENOMINATOR, Time::BASE);
+      // Need to check bounds before (possibly) narrowing to offset.
+      *to = 
+           offset < Time::Traits::min
+        || offset > Time::Traits::max
+        ? PYTIME::Time::INVALID
+        : ora::time::nex::from_offset<Time>(offset);
+    }
 }
 
 

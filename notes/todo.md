@@ -13,8 +13,6 @@
   - `ora.np.get_second()`
   - `ora.np.get_ssm()`
   - `ora.np.to_offset()` (daytime)
-- cast from datetime64
-  - time
 - cast to datetime64
   - date
   - time
