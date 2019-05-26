@@ -13,10 +13,11 @@
   - `ora.np.get_second()`
   - `ora.np.get_ssm()`
   - `ora.np.to_offset()` (daytime)
-- Functions to convert to/from datetime64 arrays.
-  - Cast functions?  If not, ...
-    - `ora.np.date_to_datetime64()`
-    - `ora.np.time_to_datetime64()`
+- cast from datetime64
+  - time
+- cast to datetime64
+  - date
+  - time
   - Logic is:
     ```
     >>> uo = ora.UNIX_EPOCH.offset
