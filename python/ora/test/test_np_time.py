@@ -276,6 +276,13 @@ def test_cast_datetime64(Time, units):
     times.append(Time.INVALID)
     times = np.array(times, dtype=Time)
 
+    # Convert datetime64 to Time.
     np.testing.assert_array_equal(dt64.astype(Time), times)
+
+    # Convert Time to datetime64.  Check that the resulting diffs are less than
+    # the time resolution.
+    dt64_res = {"s": 1.0, "ms": 1e-3, "us": 1e-6, "ns": 1e-9}[units]
+    diff = np.abs(times.astype(dtype) - dt64).astype(int) * dt64_res
+    assert (diff < Time.RESOLUTION).all()
 
 

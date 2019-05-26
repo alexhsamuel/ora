@@ -23,6 +23,31 @@ template<class TIME> inline TIME convert_to_time(Object*);
 
 //------------------------------------------------------------------------------
 
+namespace {
+
+int64_t
+get_datetime64_denominator(
+  PyArray_Descr const* descr)
+{
+  auto const& daytime_meta
+    = reinterpret_cast<PyArray_DatetimeDTypeMetaData*>(descr->c_metadata)->meta;
+  switch (daytime_meta.base) {
+  case NPY_FR_s : return                   1l;
+  case NPY_FR_ms: return                1000l;
+  case NPY_FR_us: return             1000000l;
+  case NPY_FR_ns: return          1000000000l;
+  case NPY_FR_ps: return       1000000000000l;
+  case NPY_FR_fs: return    1000000000000000l;
+  case NPY_FR_as: return 1000000000000000000l;
+  default:        return                  -1l;
+  }
+}
+
+
+}  // anonymous namespace
+
+//------------------------------------------------------------------------------
+
 /*
  * Dispatch for non-ufunc functions to time type-specific implementation.
  */
@@ -102,6 +127,7 @@ private:
 
   static void       cast_from_object(Object* const*, Time*, npy_intp, void*, void*);
   static void       cast_from_datetime(int64_t const*, Time*, npy_intp, Array*, Array*);
+  static void       cast_to_datetime(Time const*, int64_t*, npy_intp, Array*, Array*);
 
   static Time add(Time const time, float64_t const seconds)
     { return ora::time::nex::seconds_after(time, seconds); }
@@ -218,6 +244,9 @@ TimeDtype<PYTIME>::set_up(
   Array::RegisterCastFunc(
     npy_datetime, descr_->type_num,
     (PyArray_VectorUnaryFunc*) cast_from_datetime);
+  Array::RegisterCastFunc(
+    descr_, npy_datetime->type_num,
+    (PyArray_VectorUnaryFunc*) cast_to_datetime);
 
   Comparisons<Time, ora::time::nex::equal, ora::time::nex::before>
     ::register_loops(type_num);
@@ -323,21 +352,8 @@ TimeDtype<PYTIME>::cast_from_datetime(
 {
   if (PRINT_ARR_FUNCS)
     std::cerr << "cast_from_datetime\n";
-  auto const descr = from_arr->descr();
-  auto const& daytime_meta
-    = reinterpret_cast<PyArray_DatetimeDTypeMetaData*>(descr->c_metadata)->meta;
-
-  int64_t den = 0;
-  switch (daytime_meta.base) {
-  case NPY_FR_s : den =                   1l; break;
-  case NPY_FR_ms: den =                1000l; break;
-  case NPY_FR_us: den =             1000000l; break;
-  case NPY_FR_ns: den =          1000000000l; break;
-  case NPY_FR_ps: den =       1000000000000l; break;
-  case NPY_FR_fs: den =    1000000000000000l; break;
-  case NPY_FR_as: den = 1000000000000000000l; break;
-
-  default:
+  int64_t const den = get_datetime64_denominator(from_arr->descr());
+  if (den < 0) {
     // FIXME: Raising here dumps core; not sure why.
     // PyErr_SetString(PyExc_TypeError, "can't cast from datetime");
     // Maybe a warning instead?
@@ -361,6 +377,40 @@ TimeDtype<PYTIME>::cast_from_datetime(
         ? PYTIME::Time::INVALID
         : ora::time::nex::from_offset<Time>(offset);
     }
+}
+
+
+template<class PYTIME>
+void
+TimeDtype<PYTIME>::cast_to_datetime(
+  Time const* from,
+  int64_t* to,
+  npy_intp num,
+  Array* /* unused */,
+  Array* to_arr)
+{
+  if (PRINT_ARR_FUNCS)
+    std::cerr << "cast_to_datetime\n";
+  int64_t const den = get_datetime64_denominator(to_arr->descr());
+  if (den < 0) {
+    // FIXME: Raising here dumps core; not sure why.
+    // PyErr_SetString(PyExc_TypeError, "can't cast from datetime");
+    // Maybe a warning instead?
+    for (; num > 0; --num, ++to)
+      *to = DATETIME64_NAT;
+    return;
+  }
+
+  for (; num > 0; --num, ++from, ++to)
+    if (from->is_valid()) {
+      // FIXME: Need to check bounds before (possibly) narrowing to offset.
+      *to = ora::time::convert_offset(
+        ora::time::nex::get_offset(*from),
+        PYTIME::Time::DENOMINATOR, Time::BASE,
+        den, DATENUM_UNIX_EPOCH);
+    }
+    else
+      *to = DATETIME64_NAT;
 }
 
 
