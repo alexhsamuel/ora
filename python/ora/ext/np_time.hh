@@ -95,11 +95,12 @@ public:
 
 private:
 
-  static Object*        getitem(Time const*, PyArrayObject*);
-  static int            setitem(Object*, Time*, PyArrayObject*);
-  static int            compare(Time const*, Time const*, PyArrayObject*);
+  static Object*    getitem(Time const*, PyArrayObject*);
+  static int        setitem(Object*, Time*, PyArrayObject*);
+  static int        compare(Time const*, Time const*, PyArrayObject*);
 
-  static void           cast_from_object(Object* const*, Time*, npy_intp, void*, void*);
+  static void       cast_from_object(Object* const*, Time*, npy_intp, void*, void*);
+  static void       cast_from_datetime(int64_t const*, Time*, npy_intp, Array*, Array*);
 
   static Time add(Time const time, float64_t const seconds)
     { return ora::time::nex::seconds_after(time, seconds); }
@@ -210,6 +211,13 @@ TimeDtype<PYTIME>::set_up(
     NPY_OBJECT, type_num, (PyArray_VectorUnaryFunc*) cast_from_object);
   Array::RegisterCanCast(NPY_OBJECT, type_num, NPY_OBJECT_SCALAR);
 
+  // Cast from datetime64.
+  // FIXME: Only cast datetime64[s] or less, not larger units.
+  auto const npy_datetime = PyArray_DescrFromType(NPY_DATETIME);
+  Array::RegisterCastFunc(
+    npy_datetime, descr_->type_num,
+    (PyArray_VectorUnaryFunc*) cast_from_datetime);
+
   Comparisons<Time, ora::time::nex::equal, ora::time::nex::before>
     ::register_loops(type_num);
 
@@ -299,6 +307,53 @@ TimeDtype<PYTIME>::cast_from_object(
   for (; num > 0; --num, ++from, ++to) {
     auto const time = maybe_time<Time>(*from);
     *to = time.first ? time.second : Time::INVALID;
+  }
+}
+
+
+template<class PYDATE>
+void
+TimeDtype<PYDATE>::cast_from_datetime(
+  int64_t const* from,
+  Time* to,
+  npy_intp num,
+  Array* from_arr,
+  Array* /* unused */)
+{
+  if (PRINT_ARR_FUNCS)
+    std::cerr << "cast_from_datetime\n";
+  auto const descr = from_arr->descr();
+  auto const& daytime_meta
+    = reinterpret_cast<PyArray_DatetimeDTypeMetaData*>(descr->c_metadata)->meta;
+
+  int64_t den = 0;
+  switch (daytime_meta.base) {
+  case NPY_FR_s : den =                   1l; break;
+  case NPY_FR_ms: den =                1000l; break;
+  case NPY_FR_us: den =             1000000l; break;
+  case NPY_FR_ns: den =          1000000000l; break;
+  case NPY_FR_ps: den =       1000000000000l; break;
+  case NPY_FR_fs: den =    1000000000000000l; break;
+  case NPY_FR_as: den = 1000000000000000000l; break;
+
+  default:
+    // FIXME: Raising here dumps core; not sure why.
+    // PyErr_SetString(PyExc_TypeError, "can't cast from datetime");
+    // Maybe a warning instead?
+    for (; num > 0; --num, ++to)
+      *to = PYDATE::Date::INVALID;
+    return;
+  }
+
+  for (; num > 0; --num, ++from, ++to) {
+    auto const offset = 
+    auto const offset = *from + DATENUM_UNIX_EPOCH - PYDATE::Date::Traits::base;
+    // Need to check bounds before (possibly) narrowing int64_t to offset.
+    *to = 
+         offset < PYDATE::Date::Traits::min
+      || offset > PYDATE::Date::Traits::max
+      ? PYDATE::Date::INVALID
+      : ora::date::nex::from_offset<Date>(offset);
   }
 }
 
