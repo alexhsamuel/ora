@@ -57,10 +57,7 @@ template<class TIME> inline TIME parts_to_time(Sequence*);
 template<class TIME> inline std::pair<bool, TIME> maybe_time(Object*);
 
 /**
- * Converts an object to a time.  Beyond 'maybe_time()', recognizes the 
- * following: 
- *
- *   - 
+ * Converts a Python object of various types to a time.
  *
  * If the argument cannot be converted, raises a Python exception.
  */
