@@ -390,17 +390,22 @@ def test_date_from_week_date(Date, dtype):
 
 @pytest.mark.parametrize("Date", DATE_TYPES)
 def test_cast_datetime64D(Date):
-    dt64 = np.array(
-        ["NaT", "1970-01-01", "1973-12-03", "2149-06-04"],
-        dtype="datetime64[D]"
-    )
+    dtype = np.dtype("datetime64[D]")
 
-    dates = dt64.astype(Date)
-    assert dates.dtype is Date.dtype
-    assert (
-        dates == [
-            Date.INVALID, Date(1970, 1, 1), 
-            Date(1973, 12, 3), Date(2149, 6, 4)
-        ]).all()
+    dt64 = np.array(
+        ["NaT", "1970-01-01", "1973-12-03", "2149-06-04"], dtype=dtype)
+
+    dates = np.array(
+        [Date.INVALID, Date(1970, 1, 1), Date(1973, 12, 3), Date(2149, 6, 4)])
+
+    cast = dt64.astype(Date)
+    assert cast.dtype is Date.dtype
+    assert (cast == dates).all()
+
+    cast = dates.astype(dtype)
+    assert cast.dtype is dtype
+    nat = np.isnat(dt64)
+    assert (np.isnat(cast) == nat).all()
+    assert (cast[~nat] == dt64[~nat]).all()
 
 

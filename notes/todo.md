@@ -13,8 +13,6 @@
   - `ora.np.get_second()`
   - `ora.np.get_ssm()`
   - `ora.np.to_offset()` (daytime)
-- cast to datetime64
-  - date
 - Inconsistency: `ora.np.get_ymd` returns structured array but `ora.np.to_local` returns two arrays.
 - What is the story with "parts" types?
   - date + daytime

@@ -133,6 +133,7 @@ private:
 
   static void       cast_from_object(Object* const*, Date*, npy_intp, void*, void*);
   static void       cast_from_datetime(int64_t const*, Date*, npy_intp, Array*, Array*);
+  static void       cast_to_datetime(Date const*, int64_t*, npy_intp, Array*, Array*);
 
   static npy_bool is_valid(Date const date)
     { return date.is_valid() ? NPY_TRUE : NPY_FALSE; }
@@ -228,6 +229,9 @@ DateDtype<PYDATE>::get()
     Array::RegisterCastFunc(
       npy_datetime, descr_->type_num,
       (PyArray_VectorUnaryFunc*) cast_from_datetime);
+    Array::RegisterCastFunc(
+      descr_, npy_datetime->type_num,
+      (PyArray_VectorUnaryFunc*) cast_to_datetime);
   }
 
   return descr_;
@@ -468,15 +472,40 @@ DateDtype<PYDATE>::cast_from_datetime(
   for (; num > 0; --num, ++from, ++to)
     if (*from == DATETIME64_NAT)
       *to = PYDATE::Date::INVALID;
-    else {
-      auto const offset = *from + DATENUM_UNIX_EPOCH - PYDATE::Date::Traits::base;
-      // Need to check bounds before (possibly) narrowing int64_t to offset.
-      *to = 
-           offset < PYDATE::Date::Traits::min
-        || offset > PYDATE::Date::Traits::max
-        ? PYDATE::Date::INVALID
-        : ora::date::nex::from_offset<Date>(offset);
-    }
+    else
+      *to = ora::date::nex::from_datenum(*from + DATENUM_UNIX_EPOCH);
+}
+
+
+template<class PYDATE>
+void
+DateDtype<PYDATE>::cast_to_datetime(
+  Date const* from,
+  int64_t* to,
+  npy_intp num,
+  Array* /* unused */,
+  Array* to_arr)
+{
+  if (PRINT_ARR_FUNCS)
+    std::cerr << "cast_from_datetime\n";
+  auto const descr = to_arr->descr();
+  auto const& daytime_meta
+    = reinterpret_cast<PyArray_DatetimeDTypeMetaData*>(descr->c_metadata)->meta;
+
+  if (daytime_meta.base != NPY_FR_D) {
+    // FIXME: Raising here dumps core; not sure why.
+    // PyErr_SetString(PyExc_TypeError, "can't cast from datetime");
+    // Maybe a warning instead?
+    for (; num > 0; --num, ++to)
+      *to = DATETIME64_NAT;
+    return;
+  }
+
+  for (; num > 0; --num, ++from, ++to)
+    if (from->is_valid())
+      *to = ora::date::nex::get_datenum(*from) - DATENUM_UNIX_EPOCH;
+    else
+      *to = DATETIME64_NAT;
 }
 
 
