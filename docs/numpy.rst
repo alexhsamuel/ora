@@ -36,6 +36,49 @@ You can use arithmetic and NumPy's built-in ufuncs.
            Date(2018, Jan, 7), Date(2018, Jan, 8)], dtype=Date)
 
 
+Casting
+-------
+
+You can cast a NumPy `datetime64` array with units "s" or smaller to an Ora time
+type.
+
+    >>> arr
+    array(['2000-01-01T00:00:00.000000000', '2019-05-27T18:44:26.000000000'],
+          dtype='datetime64[ns]')
+    >>> arr.astype(Time)
+    array([ora.Time(2000, 1, 1, 0, 0, 0.00000000, UTC),
+           ora.Time(2019, 5, 27, 18, 44, 26.00000000, UTC)], dtype=Time)
+
+You can also cast in the ohter direction.
+
+    >>> arr
+    array([ora.Time(2019, 5, 27, 18, 45, 24.13385701, UTC),
+           ora.Time(2019, 5, 27, 18, 45, 24.13386100, UTC),
+           ora.Time(2019, 5, 27, 18, 45, 24.13386100, UTC),
+           ora.Time(2019, 5, 27, 18, 45, 24.13386198, UTC)], dtype=Time)
+    >>> arr.astype("datetime64[ns]")
+    array(['2019-05-27T18:45:24.133857012', '2019-05-27T18:45:24.133861005',
+           '2019-05-27T18:45:24.133861005', '2019-05-27T18:45:24.133861989'],
+          dtype='datetime64[ns]')
+
+When casting, Ora always assumes that the datetime64 array uses UTC.
+
+You can likewise cast a NumPy `datetime64[D]` array to and from an Ora date
+dtype.
+
+    >>> arr = Date(2019, 5, 27) + np.arange(3)
+    >>> arr
+    array([Date(2019, May, 27), Date(2019, May, 28), Date(2019, May, 29)],
+          dtype=Date)
+    >>> arr.astype("datetime64[D]")
+    array(['2019-05-27', '2019-05-28', '2019-05-29'], dtype='datetime64[D]')
+
+Ora will not let you cast a `datetime64[D]` array to or from a time array, nor
+will it let you cast a `datetime64` with unit seconds or smaller to or from a
+date array.  In either case, Ora will set all values in the result to `INVALID`
+for a date or time dtype, or `NAT` for a `datetime64` dtype.
+
+
 Functions
 ---------
 
