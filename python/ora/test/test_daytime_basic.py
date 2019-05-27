@@ -33,7 +33,6 @@ def test_init1():
     assert a1.daytick    == 1234567890
 
 
-@pytest.mark.xfail
 def test_init_from_time():
     t = datetime.time(0)
     a = Daytime(t)
@@ -46,7 +45,7 @@ def test_init_from_time():
     a = Daytime(t)
     assert a.hour       == 12
     assert a.minute     == 34
-    assert a.second     == 56.7890123
+    assert a.second     == 56.789012
     assert a.valid
     
     t = datetime.time(23, 59, 59, 999999)
