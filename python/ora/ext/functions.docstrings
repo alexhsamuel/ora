@@ -172,7 +172,7 @@ zero.  The time zone may be omitted if specified as an argument.
   The strptime-style format pattern.
 @param string
   The string to parse.
-@param tz
+@param time_zone
   The default time zone, if the pattern and string do not specify a time
   zone or time zone offset.
 @param first
