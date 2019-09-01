@@ -75,6 +75,39 @@ maybe_time_zone(
     }
   }
 
+  // FIXME: Hack.  dateutil time zone objects have a _filename attribute.
+  auto filename_attr = obj->GetAttrString("_filename", false);
+  if (filename_attr != nullptr) {
+    // Try to guess the time zone name from the path.
+    // FIXME: It would be better just to load the file.  But we don't know the
+    // time zone name for sure.
+    auto const filename = filename_attr->Str()->as_utf8_string();
+
+    // First try the last path component.
+    auto const p1 = filename.rfind('/');
+    if (p1 != std::string::npos) {
+      auto const tz_name = filename.substr(p1 + 1);
+      try {
+        return ora::get_time_zone(tz_name);
+      }
+      catch (ora::lib::ValueError const&) {
+      }
+      
+      // Now try the last two path components.
+      if (p1 > 0) {
+        auto const p0 = filename.rfind('/', p1 - 1);
+        if (p0 != std::string::npos) {
+          auto const tz_name = filename.substr(p0 + 1);
+          try {
+            return ora::get_time_zone(tz_name);
+          }
+          catch (ora::lib::ValueError const&) {
+          }
+        }
+      }
+    }
+  }
+
   // If it's a string, interpret it as a time zone name.
   // FIXME: It might be worth speeding this up further by maintaining a mapping
   // from interned str objects to time zones?

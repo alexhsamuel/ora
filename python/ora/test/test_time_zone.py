@@ -1,6 +1,6 @@
+import dateutil.tz
 import pytest
 
-import ora
 from   ora import *
 
 #-------------------------------------------------------------------------------
@@ -171,4 +171,11 @@ def test_display():
     dtz = get_display_time_zone()
     assert dtz == SYSTEM_TIME_ZONE
     
+
+@pytest.mark.parametrize("tz_name", ["UTC", "America/New_York", "Etc/GMT-4"])
+def test_convert_dateutil_timezone(tz_name):
+    du_tz = dateutil.tz.gettz(tz_name)
+    tz = TimeZone(du_tz)
+    assert tz.name == tz_name
+
 
