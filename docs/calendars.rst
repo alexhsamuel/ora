@@ -102,7 +102,7 @@ these:
 
 Use `get_calendar_dir()` and `set_calendar_dir()` to retrieve and set global
 calendar directory.  The initial calendar directory is provided with Ora but can
-be set with the `ORA_CALENDARS` environemnt variable.
+be set with the `ORA_CALENDARS` environment variable.
 
 Making calendars
 ----------------
@@ -156,7 +156,6 @@ returns an interable of lines.
     ...     print(line)
 
 To write this directly to a file, use `dump_calendar_file(cal, path)`.    
-
 
 Arithmetic
 ----------
