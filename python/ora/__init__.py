@@ -86,6 +86,7 @@ __all__ = (
 
     "display_time_zone",
     "UNIX_EPOCH",
+    "Y",
     )
 
 #-------------------------------------------------------------------------------
@@ -269,7 +270,7 @@ def get_zoneinfo_version():
     except FileNotFoundError:
         return None
 
-    if re.match("20\d\d[a-z]$", version) is None:
+    if re.match(r"20\d\d[a-z]$", version) is None:
         raise RuntimeError("unexpected zoneinfo version: {}".format(version))
     else:
         return version
