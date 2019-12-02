@@ -27,6 +27,7 @@ test:
   requires:
     - numpy
     - pytest
+    - python-dateutil
     - pytz
   imports:
     - ora
