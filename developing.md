@@ -72,7 +72,7 @@ python setup.py sdist
 twine upload dist/ora-...tar.gz
 ```
 
-### OS/X binary
+### OS/X binary wheel and conda package
 
 ```
 make clean; rm -rf build
@@ -81,20 +81,33 @@ conda build conda-recipe --python 3.6
 anaconda upload ...
 ```
 
-### Linux binary
+### Linux conda package
+
+Builds a conda (binary) package on CentOS7.
 
 ```
-docker run -ti --rm continuumio/conda_builder_linux bash
+docker run conda/miniconda3-centos7
+yum group install -y "Development Tools"
+yum install -y centos-release-scl
+yum install -y devtoolset-7
+export PATH=/opt/rh/devtoolset-7/root/usr/bin:$PATH
+conda install -y anaconda conda-build
 git clone https://github.com/alexhsamuel/ora
-
-conda build ora/conda-recipe --python 3.6
+conda build ora/conda-recipe
 anaconda upload ...
+```
 
-conda create -n build python=3.6 numpy pytest pathlib -y
-pip install wheelhouse auditwheel
-# Add -static-libstdc++ -static-libgcc in setup.py
-pip wheel ./ora -w wheels
-auditwheel repair ./wheels/ora-...-cp36-cp36m-linux_x86_64.whl -w wheels
+### Linux binary wheel
+
+Builds a manylinux-2014 binary wheel.
 
 ```
+git clone https://github.com/alexhsamuel/ora
+export PATH=/opt/python/cp37-cp37m/bin:$PATH
+pip install numpy twine
+pip wheel ./ora -w wheels
+auditwheel repair ./wheels/ora-0.3.7-cp37-cp37m-linux_x86_64.whl -w wheels
+twine upload wheels/ora-0.3.7-cp37-cp37m-manylinux2014_x86_64.whl 
+```
+
 
