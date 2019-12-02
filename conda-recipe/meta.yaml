@@ -14,11 +14,11 @@ source:
 requirements:
   build:
     - numpy
-    - python 3.6.*
+    - python 3.7.*
     - setuptools
   run:
     - libgcc
-    - python 3.6.*
+    - python 3.7.*
 
 build:
   script: make -j test-cxx; python setup.py install --single-version-externally-managed --record=record.txt
@@ -29,6 +29,7 @@ test:
     - pytest
     - python-dateutil
     - pytz
+    - statsmodels
   imports:
     - ora
   commands:
