@@ -194,8 +194,6 @@ TzFile::TzFile(
   }
 
   // Get is-standard and is-GMT flags.
-  // FIXME: We assume there is one for each transition type.  Is this true?
-  std::cerr << "ttisstdcnt=" << ttisstdcnt << " typecnt=" << typecnt << "\n";
   if (ttisstdcnt > typecnt)
     throw FormatError("invalid tzh_ttisstdcnt");
   for (size_t i = 0; i < ttisstdcnt; ++i)
