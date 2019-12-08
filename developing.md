@@ -86,12 +86,12 @@ anaconda upload ...
 Builds a conda (binary) package on CentOS7.
 
 ```
-docker run conda/miniconda3-centos7
+docker run -ti --rm conda/miniconda3-centos7 bash
 yum group install -y "Development Tools"
 yum install -y centos-release-scl
 yum install -y devtoolset-7
 export PATH=/opt/rh/devtoolset-7/root/usr/bin:$PATH
-conda install -y anaconda conda-build
+conda install -y anaconda-client conda-build
 git clone https://github.com/alexhsamuel/ora
 conda build ora/conda-recipe
 anaconda upload ...
@@ -102,6 +102,7 @@ anaconda upload ...
 Builds a manylinux-2014 binary wheel.
 
 ```
+docker run -ti --rm quay.io/pypa/manylinux2014_x86_64 bash
 git clone https://github.com/alexhsamuel/ora
 export PATH=/opt/python/cp37-cp37m/bin:$PATH
 pip install numpy twine
