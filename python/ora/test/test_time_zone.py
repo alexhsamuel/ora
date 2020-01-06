@@ -1,6 +1,8 @@
+import datetime
 import dateutil.tz
 import pytest
 
+import ora
 from   ora import *
 
 #-------------------------------------------------------------------------------
@@ -177,5 +179,11 @@ def test_convert_dateutil_timezone(tz_name):
     du_tz = dateutil.tz.gettz(tz_name)
     tz = TimeZone(du_tz)
     assert tz.name == tz_name
+
+
+def test_convert_datetime_utc():
+    dt_tz = datetime.timezone.utc
+    tz = ora.TimeZone(dt_tz)
+    assert tz is ora.UTC
 
 
