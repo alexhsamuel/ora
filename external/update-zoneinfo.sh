@@ -27,7 +27,7 @@ make LOCALTIME=UTC TOPDIR=$tmpdir/install INSTALL
 
 rm -rf "$zoneinfo"
 cp -r $tmpdir/install/usr/share/zoneinfo "$zoneinfo"
-echo $version "$zoneinfo"/+VERSION
+echo $version > "$zoneinfo"/+VERSION
 
 rm -rf $tmpdir
 
