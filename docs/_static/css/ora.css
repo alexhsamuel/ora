@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css?family=Arimo:400,400i,700&display=swap');
+
+body {
+  font-family: Arimo, sans-serif;
+  color: #f0f0f0;
+}
+
+html {
+  font-size: 14px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: inherit;
+}
+
+p {
+  font-size: inherit;
+}
+
+a {
+  color: #d0d8ff;
+}
+
+cite {
+  color: inherit;
+  font-size: 90%;
+  font-weight: 700;
+}
+
+.wy-side-scroll, .wy-side-nav-search, .wy-menu-vertical, .wy-nav-side {
+  width: 240px;
+}
+
+.wy-nav-content-wrap {
+  margin-left: 240px;
+}
+
+.wy-side-nav-search {
+  background: #205030;
+}
+
+.wy-nav-content {
+  background: #101010;
+}
+
+.wy-menu-vertical li.current {
+  background: inherit;
+}
+
+.wy-menu-vertical li.current a {
+  color: inherit !important;
+  background: inherit;
+  border: none;
+}
+
+.highlight {
+  background: #202020;
+}
+
+.rst-content div[class^="highlight"] {
+  border: none;
+  border-left: 4px solid #404040;
+}
