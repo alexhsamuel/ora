@@ -1,3 +1,9 @@
+# Tactical
+
+- fix failing test: convert datetime.timezone.utc
+- date // daytime -> LocalTime
+
+
 # Small problems
 
 - xfail tests
@@ -13,6 +19,12 @@
   - `ora.np.get_second()`
   - `ora.np.get_ssm()`
   - `ora.np.to_offset()` (daytime)
+  - `ora.np.parse_time()`
+  - `ora.np.format_time()`
+  - `ora.np.parse_date()`
+  - `ora.np.format_date()`
+  - `ora.np.parse_daytime()`
+  - `ora.np.format_daytime()`
 - Inconsistency: `ora.np.get_ymd` returns structured array but `ora.np.to_local` returns two arrays.
 - What is the story with "parts" types?
   - date + daytime
