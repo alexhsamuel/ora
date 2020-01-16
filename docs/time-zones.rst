@@ -72,10 +72,10 @@ System time zone
 ----------------
 
 Ora also attempts to determine the "system time zone", configured by the 
-host systme.  If a system time zone cannot be determined, Ora uses UTC.
+host system.  If a system time zone cannot be determined, Ora uses UTC.
 
 Use `get_system_time_zone()` to retrieve this, or specify `"system"` as a time
-zone name.  You may not change the system time zone.
+zone name.  Ora cannot change the system time zone.
 
 
 Offsets
