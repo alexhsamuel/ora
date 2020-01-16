@@ -115,7 +115,7 @@ TzFile
 TzFile::load(
   fs::Filename const& filename)
 {
-  string data = load_text(filename);
+  string const data = load_text(filename);
   return TzFile(data.c_str(), data.length());
 }
 
