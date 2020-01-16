@@ -171,6 +171,24 @@ get_date(
 
 
 ref<Object>
+get_datenum(
+  PyLocal* const self,
+  void* /* closure */)
+{
+  return self->date_->GetAttrString("datenum", false);
+}
+
+
+ref<Object>
+get_day(
+  PyLocal* const self,
+  void* /* closure */)
+{
+  return self->date_->GetAttrString("day", false);
+}
+
+
+ref<Object>
 get_daytime(
   PyLocal* const self,
   void* /* closure */)
@@ -179,11 +197,103 @@ get_daytime(
 }
 
 
+ref<Object>
+get_month(
+  PyLocal* const self,
+  void* /* closure */)
+{
+  return self->date_->GetAttrString("month", false);
+}
+
+
+ref<Object>
+get_ordinal(
+  PyLocal* const self,
+  void* /* closure */)
+{
+  return self->date_->GetAttrString("ordinal", false);
+}
+
+
+ref<Object>
+get_ordinal_date(
+  PyLocal* const self,
+  void* /* closure */)
+{
+  return self->date_->GetAttrString("ordinal_date", false);
+}
+
+
+ref<Object>
+get_week(
+  PyLocal* const self,
+  void* /* closure */)
+{
+  return self->date_->GetAttrString("week", false);
+}
+
+
+ref<Object>
+get_week_date(
+  PyLocal* const self,
+  void* /* closure */)
+{
+  return self->date_->GetAttrString("week_date", false);
+}
+
+
+ref<Object>
+get_week_year(
+  PyLocal* const self,
+  void* /* closure */)
+{
+  return self->date_->GetAttrString("week_year", false);
+}
+
+
+ref<Object>
+get_weekday(
+  PyLocal* const self,
+  void* /* closure */)
+{
+  return self->date_->GetAttrString("weekday", false);
+}
+
+
+ref<Object>
+get_year(
+  PyLocal* const self,
+  void* /* closure */)
+{
+  return self->date_->GetAttrString("year", false);
+}
+
+
+ref<Object>
+get_ymdi(
+  PyLocal* const self,
+  void* /* closure */)
+{
+  return self->date_->GetAttrString("ymdi", false);
+}
+
+
 GetSets<PyLocal>
 tp_getsets_
   = GetSets<PyLocal>()
     .template add_get<get_date>             ("date")
+    .template add_get<get_datenum>          ("datenum")
+    .template add_get<get_day>              ("day")
     .template add_get<get_daytime>          ("daytime")
+    .template add_get<get_month>            ("month")
+    .template add_get<get_ordinal>          ("ordinal")
+    .template add_get<get_ordinal_date>     ("ordinal_date")
+    .template add_get<get_week>             ("week")
+    .template add_get<get_week_date>        ("week_date")
+    .template add_get<get_week_year>        ("week_year")
+    .template add_get<get_weekday>          ("weekday")
+    .template add_get<get_year>             ("year")
+    .template add_get<get_ymdi>             ("ymdi")
   ;
 
 
