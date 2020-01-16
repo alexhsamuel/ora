@@ -63,4 +63,7 @@ time zone names or objects.  See :ref:`time_zones`.
     >>> date, daytime = time @ UTC
     >>> date, daytime = time @ "display"
 
+`DTZ` is a synonym for the display time zone.
+
+    >>> date, daytime = time @ DTZ
 

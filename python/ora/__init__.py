@@ -78,6 +78,7 @@ __all__ = (
 
     "MIDNIGHT",
     "UTC",
+    "DTZ",
 
     "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun",
 
@@ -212,6 +213,9 @@ globals().update(Month.__members__)
 
 MIDNIGHT = Daytime(0, 0, 0)
 UNIX_EPOCH = (1970/Jan/1, MIDNIGHT) @ UTC
+
+# Display time zone.
+DTZ = "display"
 
 #-------------------------------------------------------------------------------
 
