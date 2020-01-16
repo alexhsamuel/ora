@@ -2,7 +2,7 @@
 
 body {
   font-family: Arimo, sans-serif;
-  color: #f0f0f0;
+  # color: #f0f0f0;
 }
 
 html {
@@ -15,16 +15,26 @@ h1, h2, h3, h4, h5, h6 {
 
 p {
   font-size: inherit;
+  line-height: 20px;
+  margin-bottom: 8px;
 }
 
 a {
-  color: #d0d8ff;
+  color: #3071a1;
+}
+
+a:visited {
+  color: #3071a1;
+}
+
+a:hover {
+  color: #3071a1;
+  text-decoration: underline;
 }
 
 cite {
-  color: inherit;
   font-size: 90%;
-  font-weight: 700;
+  font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",Courier,monospace;
 }
 
 .wy-side-scroll, .wy-side-nav-search, .wy-menu-vertical, .wy-nav-side {
@@ -36,28 +46,59 @@ cite {
 }
 
 .wy-side-nav-search {
-  background: #205030;
+  # background: #205030;
 }
 
 .wy-nav-content {
-  background: #101010;
+  # background: #101010;
 }
 
 .wy-menu-vertical li.current {
-  background: inherit;
+  # background: inherit;
 }
 
 .wy-menu-vertical li.current a {
-  color: inherit !important;
-  background: inherit;
   border: none;
+  # color: inherit !important;
+  # background: inherit;
+}
+
+.section {
+  margin-top: 24px;
 }
 
 .highlight {
-  background: #202020;
+  # background: #202020;
 }
 
 .rst-content div[class^="highlight"] {
   border: none;
-  border-left: 4px solid #404040;
+  border-left: 4px solid #c0c0c0;
+  margin-bottom: 12px;
 }
+
+/* Disable table borders and striping.  */
+.rst-content table.docutils {
+  border: none;
+}
+.rst-content table.docutils td {
+  border: none;
+  padding: 6px 12px;
+}
+.rst-content table.docutils thead th {
+  border: none;
+  border-bottom: 2px solid #c0c0c0;
+  padding: 6px 12px;
+}
+.rst-content table.docutils:not(.field-list) tr:nth-child(2n-1) td {
+  background-color: inherit;
+}
+
+.highlight .gp {
+  color: #a0a0a0;
+}
+
+.highlight .go {
+  color: #606030;
+}
+
