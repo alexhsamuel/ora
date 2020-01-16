@@ -79,6 +79,19 @@ cite {
   background-color: inherit;
 }
 
+/* Adjust how function signatures are shown.  */
+.rst-content dl:not(.docutils) dt {
+  border: none;
+  border-bottom: 1px solid #c0c0c0;
+  padding-left: 0;
+  background: none;
+  color: #606060;
+}
+
+dl.function dt {
+  font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",Courier,monospace;
+}
+
 .highlight .gp {
   color: #a0a0a0;
 }
