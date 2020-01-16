@@ -189,11 +189,38 @@ get_day(
 
 
 ref<Object>
+get_daytick(
+  PyLocal* const self,
+  void* /* closure */)
+{
+  return self->daytime_->GetAttrString("daytick", false);
+}
+
+
+ref<Object>
 get_daytime(
   PyLocal* const self,
   void* /* closure */)
 {
   return self->daytime_.inc();
+}
+
+
+ref<Object>
+get_hour(
+  PyLocal* const self,
+  void* /* closure */)
+{
+  return self->daytime_->GetAttrString("hour", false);
+}
+
+
+ref<Object>
+get_minute(
+  PyLocal* const self,
+  void* /* closure */)
+{
+  return self->daytime_->GetAttrString("minute", false);
 }
 
 
@@ -216,11 +243,20 @@ get_ordinal(
 
 
 ref<Object>
-get_ordinal_date(
+get_second(
   PyLocal* const self,
   void* /* closure */)
 {
-  return self->date_->GetAttrString("ordinal_date", false);
+  return self->daytime_->GetAttrString("second", false);
+}
+
+
+ref<Object>
+get_ssm(
+  PyLocal* const self,
+  void* /* closure */)
+{
+  return self->daytime_->GetAttrString("ssm", false);
 }
 
 
@@ -278,16 +314,26 @@ get_ymdi(
 }
 
 
+// daytick
+// hour
+// minute
+// second
+// ssm
+
 GetSets<PyLocal>
 tp_getsets_
   = GetSets<PyLocal>()
     .template add_get<get_date>             ("date")
     .template add_get<get_datenum>          ("datenum")
     .template add_get<get_day>              ("day")
+    .template add_get<get_daytick>          ("daytick")
     .template add_get<get_daytime>          ("daytime")
+    .template add_get<get_hour>             ("hour")
+    .template add_get<get_minute>           ("minute")
     .template add_get<get_month>            ("month")
     .template add_get<get_ordinal>          ("ordinal")
-    .template add_get<get_ordinal_date>     ("ordinal_date")
+    .template add_get<get_second>           ("second")
+    .template add_get<get_ssm>              ("ssm")
     .template add_get<get_week>             ("week")
     .template add_get<get_week_date>        ("week_date")
     .template add_get<get_week_year>        ("week_year")
