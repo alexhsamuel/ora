@@ -9,10 +9,21 @@ namespace py {
 
 //------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------------
-
 std::unordered_map<PyTypeObject*, std::unique_ptr<PyDaytimeAPI>>
 PyDaytimeAPI::apis_;
+
+//------------------------------------------------------------------------------
+// Functions
+
+ref<Object>
+to_daytime_object(
+  Object* obj)
+{
+  if (PyDaytimeAPI::get(obj) != nullptr)
+    return ref<Object>::of(obj);
+  else
+    return PyDaytimeDefault::create(convert_to_daytime<Daytime>(obj));
+}
 
 //------------------------------------------------------------------------------
 // Explicit template instances

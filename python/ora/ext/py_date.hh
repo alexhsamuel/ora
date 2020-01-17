@@ -15,6 +15,7 @@
 #include "np.hh"
 #include "ora.hh"
 #include "py.hh"
+#include "py_local.hh"
 #include "types.hh"
 
 namespace ora {
@@ -39,6 +40,8 @@ extern ref<Object> get_month_obj(int month);
 extern ref<Object> get_weekday_obj(int weekday);
 
 extern Weekday convert_to_weekday(Object*);
+
+extern ref<Object> to_daytime_object(Object* obj);
 
 /*
  * Attempts to convert various kinds of Python date objects to Date.
@@ -234,10 +237,11 @@ private:
   static ref<Object>    tp_richcompare(PyDate* self, Object* other, int comparison);
 
   // Number methods.
-  static ref<Object> nb_add     (PyDate* self, Object* other, bool right);
-  static ref<Object> nb_subtract(PyDate* self, Object* other, bool right);
-  static ref<Object> nb_int     (PyDate* self);
-  static ref<Object> nb_float   (PyDate* self);
+  static ref<Object> nb_add         (PyDate* self, Object* other, bool right);
+  static ref<Object> nb_subtract    (PyDate* self, Object* other, bool right);
+  static ref<Object> nb_int         (PyDate* self);
+  static ref<Object> nb_float       (PyDate* self);
+  static ref<Object> nb_floor_divide(PyDate* self, Object* other, bool right);
   static PyNumberMethods tp_as_number_;
 
   // Methods.
@@ -496,6 +500,22 @@ PyDate<DATE>::nb_float(
 
 
 template<class DATE>
+inline ref<Object>
+PyDate<DATE>::nb_floor_divide(
+  PyDate* const self,
+  Object* const other,
+  bool /* ignored */)
+{
+  try {
+    return PyLocal::create(self, to_daytime_object(other));
+  }
+  catch (TypeError&) {
+    return not_implemented_ref();
+  }
+}
+
+
+template<class DATE>
 PyNumberMethods
 PyDate<DATE>::tp_as_number_ = {
   (binaryfunc)  wrap<PyDate, nb_add>,           // nb_add
@@ -529,7 +549,7 @@ PyDate<DATE>::tp_as_number_ = {
   (binaryfunc)  nullptr,                        // nb_inplace_and
   (binaryfunc)  nullptr,                        // nb_inplace_xor
   (binaryfunc)  nullptr,                        // nb_inplace_or
-  (binaryfunc)  nullptr,                        // nb_floor_divide
+  (binaryfunc)  wrap<PyDate, nb_floor_divide>,  // nb_floor_divide
   (binaryfunc)  nullptr,                        // nb_true_divide
   (binaryfunc)  nullptr,                        // nb_inplace_floor_divide
   (binaryfunc)  nullptr,                        // nb_inplace_true_divide

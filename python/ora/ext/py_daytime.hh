@@ -52,6 +52,13 @@ template<class DAYTIME> DAYTIME convert_to_daytime(Object*);
  */
 template<class DAYTIME> inline DAYTIME parts_to_daytime(Sequence*);
 
+/**
+ * Converts various kinds of Python objects to a Daytime object, if possible.
+ *
+ * If `obj` cannot be converted to a daytime, returns a null reference.
+ */
+extern ref<Object> to_daytime_object(Object* obj);
+
 //------------------------------------------------------------------------------
 // Virtual API
 //------------------------------------------------------------------------------

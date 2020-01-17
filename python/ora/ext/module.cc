@@ -111,7 +111,7 @@ PyInit_ext(void)
     set_up_times(mod, np_mod);
 
     PyTimeZone  ::add_to(mod, "TimeZone");
-    PyLocal     ::add_to(mod, "Local");
+    PyLocal     ::add_to(mod, "LocalTime");
     PyCalendar  ::add_to(mod);
 
     StructSequenceType* const ymd_date_type = get_ymd_date_type();
