@@ -39,7 +39,8 @@ to_datenum(
     return ordinal_obj->long_value() - 1;
   }
 
-  throw Exception(PyExc_TypeError, "not a date or datenum");
+  // Fall back to conversion.
+  return convert_to_date<Date>(obj).get_datenum();
 }
 
 
@@ -58,11 +59,12 @@ to_daytick(
     return api->get_daytick(obj);
 
   // Otherwise, look for a daytick attribute or property.
-  auto daytick = obj->maybe_get_attr("daytick");
+  auto const daytick = obj->maybe_get_attr("daytick");
   if (daytick)
     return (*daytick)->unsigned_long_value();
 
-  throw Exception(PyExc_TypeError, "not a time or SSM");
+  // Fall back to conversion.
+  return convert_to_daytime<Daytime>(obj).get_daytick();
 }
 
 

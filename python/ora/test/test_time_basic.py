@@ -335,3 +335,8 @@ def test_time_convert(Time0, Time1):
     assert Time1(Time0(1980, 1, 1, 12, 30, 45, UTC)) == Time1(1980, 1, 1, 12, 30, 45, UTC)
 
 
+def test_to_local_convert():
+    t = (20200117, "12:30:45") @ UTC
+    assert t == Time(2020, 1, 17, 12, 30, 45, UTC)
+
+

@@ -1,6 +1,5 @@
 # Tactical
 
-- (d, "12:30:00") @ UTC
 - `Daytime.__rfloor_div__` -> LocalTime
 - document floor div
 - fix failing test: convert datetime.timezone.utc
