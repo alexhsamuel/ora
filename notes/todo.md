@@ -1,7 +1,9 @@
 # Tactical
 
+- (d, "12:30:00") @ UTC
+- Daytime.__rfloor_div__ -> LocalTime
+- document floor div
 - fix failing test: convert datetime.timezone.utc
-- date // daytime -> LocalTime
 
 
 # Small problems
@@ -31,7 +33,7 @@
   - date + daytime + tz
   - date + daytime + tz parts (parsing?)
   - np?
-  - overload `date / daytime @ tz` ?
+  - overload `date // daytime @ tz` ?
 
 - fix now() rounding problem... if there is one
   - or more likely, fix rounding in last digit of seconds in Time repr
