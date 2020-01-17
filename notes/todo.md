@@ -1,7 +1,7 @@
 # Tactical
 
 - (d, "12:30:00") @ UTC
-- Daytime.__rfloor_div__ -> LocalTime
+- `Daytime.__rfloor_div__` -> LocalTime
 - document floor div
 - fix failing test: convert datetime.timezone.utc
 
@@ -15,6 +15,7 @@
   - `ora.np.daytime_from_ssm()`
   - `ora.np.time_from_offset()`
 - ufuncs:
+  - matmult for `to_local`, `from_local`
   - `ora.np.get_hms()` and `HMS_DTYPE`
   - `ora.np.get_hour()`
   - `ora.np.get_minute()`
