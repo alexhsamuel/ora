@@ -48,6 +48,12 @@ cite {
   margin-left: 240px;
 }
 
+@media screen and (max-width: 768px) {
+.wy-nav-content-wrap {
+  margin-left: 0;
+}
+}
+
 .wy-menu-vertical li.current a {
   border: none;
 }
