@@ -10,6 +10,17 @@ namespace ora {
 namespace py {
 
 //------------------------------------------------------------------------------
+// Functions
+
+ref<Object>
+to_date_object(
+  Object* obj)
+{
+  if (PyDateAPI::get(obj) != nullptr)
+    return ref<Object>::of(obj);
+  else
+    return PyDateDefault::create(convert_to_date<Date>(obj));
+}
 
 Weekday
 convert_to_weekday(

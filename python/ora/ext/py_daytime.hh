@@ -12,6 +12,7 @@
 #include "np.hh"
 #include "ora.hh"
 #include "py.hh"
+#include "py_local.hh"
 #include "types.hh"
 
 namespace ora {
@@ -58,6 +59,8 @@ template<class DAYTIME> inline DAYTIME parts_to_daytime(Sequence*);
  * If `obj` cannot be converted to a daytime, returns a null reference.
  */
 extern ref<Object> to_daytime_object(Object* obj);
+
+extern ref<Object> to_date_object(Object* obj);
 
 //------------------------------------------------------------------------------
 // Virtual API
@@ -192,10 +195,11 @@ private:
   static ref<Object>  tp_richcompare(PyDaytime* self, Object* other, int comparison);
 
   // Number methods.
-  static ref<Object> nb_add     (PyDaytime* self, Object* other, bool right);
-  static ref<Object> nb_subtract(PyDaytime* self, Object* other, bool right);
-  static ref<Object> nb_int     (PyDaytime* self);
-  static ref<Object> nb_float   (PyDaytime* self);
+  static ref<Object> nb_add         (PyDaytime* self, Object* other, bool right);
+  static ref<Object> nb_subtract    (PyDaytime* self, Object* other, bool right);
+  static ref<Object> nb_int         (PyDaytime* self);
+  static ref<Object> nb_float       (PyDaytime* self);
+  static ref<Object> nb_floor_divide(PyDaytime* self, Object* other, bool right);
   static PyNumberMethods tp_as_number_;
 
   // Methods.
@@ -451,6 +455,25 @@ PyDaytime<DAYTIME>::nb_float(
 
 
 template<class DAYTIME>
+inline ref<Object>
+PyDaytime<DAYTIME>::nb_floor_divide(
+  PyDaytime* const self,
+  Object* const other,
+  bool const right)
+{
+  // Right floor divide only.
+  if (!right)
+    return not_implemented_ref();
+  try {
+    return PyLocal::create(to_date_object(other), self);
+  }
+  catch (TypeError&) {
+    return not_implemented_ref();
+  }
+}
+
+
+template<class DAYTIME>
 PyNumberMethods
 PyDaytime<DAYTIME>::tp_as_number_ = {
   (binaryfunc)  wrap<PyDaytime, nb_add>,        // nb_add
@@ -482,7 +505,7 @@ PyDaytime<DAYTIME>::tp_as_number_ = {
   (binaryfunc)  nullptr,                        // nb_inplace_and
   (binaryfunc)  nullptr,                        // nb_inplace_xor
   (binaryfunc)  nullptr,                        // nb_inplace_or
-  (binaryfunc)  nullptr,                        // nb_floor_divide
+  (binaryfunc)  wrap<PyDaytime, nb_floor_divide>, // nb_floor_divide
   (binaryfunc)  nullptr,                        // nb_true_divide
   (binaryfunc)  nullptr,                        // nb_inplace_floor_divide
   (binaryfunc)  nullptr,                        // nb_inplace_true_divide

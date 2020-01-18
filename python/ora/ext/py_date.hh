@@ -64,6 +64,13 @@ template<class DATE=Date> optional<DATE> maybe_date(Object*);
  */
 template<class DATE=Date> DATE convert_to_date(Object*);
 
+/**
+ * Converts various kinds of Python objects to a Date object, if possible.
+ *
+ * If `obj` cannot be converted to a date, returns a null reference.
+ */
+extern ref<Object> to_daytime_object(Object* obj);
+
 /*
  * Helper for converting a 2-element sequence of ordinal date parts.
  */
@@ -504,8 +511,14 @@ inline ref<Object>
 PyDate<DATE>::nb_floor_divide(
   PyDate* const self,
   Object* const other,
-  bool /* ignored */)
+  bool const right)
 {
+  // Left floor divide only.
+  if (right)
+    return not_implemented_ref();
+  if (!PyDate::Check(self))
+    return not_implemented_ref();
+
   try {
     return PyLocal::create(self, to_daytime_object(other));
   }
