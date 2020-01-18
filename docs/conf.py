@@ -51,7 +51,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'ora'
-copyright = '2018, Alex Samuel'
+copyright = '2020, Alex Samuel'
 author = 'Alex Samuel'
 
 # The version info for the project you're documenting, acts as replacement for
