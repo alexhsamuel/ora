@@ -133,7 +133,7 @@ PyInit_ext(void)
     mod->AddObject("SSM_INVALID"      , Float::from(ora::SSM_INVALID));
     mod->AddObject("DATENUM_MIN"      , Long::from(ora::DATENUM_MIN));
     mod->AddObject("DATENUM_MAX"      , Long::from(ora::DATENUM_MAX));
-    mod->AddObject("UTC"              , PyTimeZone::create(std::make_shared<ora::TimeZone>()));
+    mod->AddObject("UTC"              , PyTimeZone::create(ora::UTC));
 
     TranslateException<ora::InvalidDateError>::to(
       new_exception(mod, "InvalidDateError", PyExc_ValueError));

@@ -108,9 +108,6 @@ maybe_time_zone(
     }
   }
 
-  // If it's a string, interpret it as a time zone name.
-  // FIXME: It might be worth speeding this up further by maintaining a mapping
-  // from interned str objects to time zones?
   if (Unicode::Check(obj)) {
     auto const tz_name = cast<Unicode>(obj)->as_utf8();
     if (strcmp(tz_name, "display") == 0)
@@ -123,13 +120,17 @@ maybe_time_zone(
         // Fall back to UTC if the system time zone isn't specified.
         return UTC;
       }
-    else
-      try {
-        return ora::get_time_zone(tz_name);
-      }
-      catch (ora::lib::ValueError const&) {
-        throw py::ValueError(string("not a time zone: ") + tz_name);
-      }
+  }
+
+  // Check if it stringifies to a time zone name.
+  // FIXME: It might be worth speeding this up further by maintaining a mapping
+  // from interned str objects to time zones?
+  auto obj_str = obj->Str();
+  auto str = obj_str->as_utf8();
+  try {
+    return ora::get_time_zone(str);
+  }
+  catch (ora::lib::ValueError const&) {
   }
 
   // Not a time zone object.

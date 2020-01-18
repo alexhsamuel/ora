@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cassert>
+#include <cctype>
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
@@ -281,6 +282,9 @@ extern TimeZone_ptr
 get_time_zone(
   std::string const& name)
 {
+  if (std::tolower(name) == "utc")
+    return UTC;
+
   auto find = time_zones.find(name);
   if (find != end(time_zones))
     return find->second;
