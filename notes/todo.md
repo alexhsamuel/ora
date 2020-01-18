@@ -1,8 +1,6 @@
 # Tactical
 
-- `Daytime.__rfloor_div__` -> LocalTime
 - document floor div
-- fix failing test: convert datetime.timezone.utc
 
 
 # Small problems
