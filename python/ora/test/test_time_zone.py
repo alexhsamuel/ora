@@ -184,6 +184,6 @@ def test_convert_dateutil_timezone(tz_name):
 def test_convert_datetime_utc():
     dt_tz = datetime.timezone.utc
     tz = ora.TimeZone(dt_tz)
-    assert tz is ora.UTC
+    assert tz == ora.UTC
 
 
