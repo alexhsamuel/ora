@@ -37,34 +37,3 @@ def test_attrs():
     assert l.ssm == y.ssm
 
 
-def test_floor_div_date():
-    d = Date(2020, 1, 16)
-    y = Daytime(4, 37, 13.25)
-
-    l = d // y
-    assert tuple(l) == (d, y)
-
-    l = d // "04:37:13.25"
-    assert tuple(l) == (d, y)
-
-    l == d // (4, 37, 13.25)
-    assert tuple(l) == (d, y)
-
-
-def test_floor_div_daytime():
-    d = Date(2020, 1, 16)
-    y = Daytime(4, 37, 13.25)
-
-    l = d // y
-    assert tuple(l) == (d, y)
-
-    l = 20200116 // y
-    assert tuple(l) == (d, y)
-
-    l == "2020-01-16" // y
-    assert tuple(l) == (d, y)
-
-    l == (2020, 1, 16) // y
-    assert tuple(l) == (d, y)
-
-

@@ -248,7 +248,6 @@ private:
   static ref<Object> nb_subtract    (PyDate* self, Object* other, bool right);
   static ref<Object> nb_int         (PyDate* self);
   static ref<Object> nb_float       (PyDate* self);
-  static ref<Object> nb_floor_divide(PyDate* self, Object* other, bool right);
   static PyNumberMethods tp_as_number_;
 
   // Methods.
@@ -507,28 +506,6 @@ PyDate<DATE>::nb_float(
 
 
 template<class DATE>
-inline ref<Object>
-PyDate<DATE>::nb_floor_divide(
-  PyDate* const self,
-  Object* const other,
-  bool const right)
-{
-  // Left floor divide only.
-  if (right)
-    return not_implemented_ref();
-  if (!PyDate::Check(self))
-    return not_implemented_ref();
-
-  try {
-    return PyLocal::create(self, to_daytime_object(other));
-  }
-  catch (TypeError&) {
-    return not_implemented_ref();
-  }
-}
-
-
-template<class DATE>
 PyNumberMethods
 PyDate<DATE>::tp_as_number_ = {
   (binaryfunc)  wrap<PyDate, nb_add>,           // nb_add
@@ -562,7 +539,7 @@ PyDate<DATE>::tp_as_number_ = {
   (binaryfunc)  nullptr,                        // nb_inplace_and
   (binaryfunc)  nullptr,                        // nb_inplace_xor
   (binaryfunc)  nullptr,                        // nb_inplace_or
-  (binaryfunc)  wrap<PyDate, nb_floor_divide>,  // nb_floor_divide
+  (binaryfunc)  nullptr,                        // nb_floor_divide
   (binaryfunc)  nullptr,                        // nb_true_divide
   (binaryfunc)  nullptr,                        // nb_inplace_floor_divide
   (binaryfunc)  nullptr,                        // nb_inplace_true_divide

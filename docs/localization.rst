@@ -26,12 +26,6 @@ representation independent of time zone.
     >>> time
     Time(1963, 11, 22, 18, 30, 0.00000000, UTC)
  
-If you use a time zone object, Ora lets you use the `@` operator (the "matrix
-multiplication" operator) as a shortcut for this function.
-
-    >>> time_zone = TimeZone("America/Chicago")
-    >>> time = (date, daytime) @ time_zone
-
 You could, of course, construct the `Time` instance directly, rather than with a
 date and daytime object.  However, this is just a shortcut for `from_local`.
 
@@ -49,13 +43,13 @@ computes the local date and daytime representation.
     >>> date = local.date
     >>> daytime = local.daytime
 
-You can also unpack resulting object directly into date and daytime components.
+You can unpack resulting object directly into date and daytime components.
 
     >>> date, daytime = to_local(time, "America/Chicago")
 
-The '@' operator means `to_local` if the left hand argument is a time.
+The resulting object also provides accessors for the individual compoennts.
 
-    >>> date, daytime = time @ "America/Chicago"
+    >>> to_local(time, "America/Chicago").hour
 
 The `from_local` and `to_local` functions and the `@` operator will accept
 time zone names or objects.  See :ref:`time_zones`.
@@ -66,4 +60,36 @@ time zone names or objects.  See :ref:`time_zones`.
 `DTZ` is a synonym for the display time zone.
 
     >>> date, daytime = time @ DTZ
+
+
+`@` operator
+------------
+
+Ora the `@` operator ("matrix multiplication") as a shortcut for `from_local`
+and `to_local`.
+
+If the left-hand argument is a time object, `@` is the same as `to_local`.
+
+    >>> date, daytime = time @ time_zone
+
+Since Python operators are implemented on specific types, either the time must
+be an Ora time object, or the time zone must be an Ora time zone object.  The
+other is converted.
+
+    >>> date, daytime = time @ "America/Chicago"
+    >>> date, daytime = "2020-01-19T08:15:00Z" @ UTC
+
+The `@` operator can also serve as `from_local`, with a `(date, daytime)` pair
+on the left and the time zone on the right.
+
+    >>> time_zone = TimeZone("America/Chicago")
+    >>> time = (date, daytime) @ time_zone
+
+You can use the result of `to_local` on the left, for conversion from date,
+daytime in one time zone to date, daytime in another time zone.
+
+    >>> date, daytime = (date, daytime) @ z0 @ z1
+
+The converts a date and daytime in zone `z0` to a (location-independent) time,
+then converts this to a date and daytime in zone `z1`.
 

@@ -8,7 +8,6 @@
     ```
     2020/Jan/19 // "8:15:00" @ "Asia/Manila"
     ```
-- document floor div
 
 
 # Small problems
@@ -39,7 +38,6 @@
   - date + daytime + tz
   - date + daytime + tz parts (parsing?)
   - np?
-  - overload `date // daytime @ tz` ?
 
 - fix now() rounding problem... if there is one
   - or more likely, fix rounding in last digit of seconds in Time repr
