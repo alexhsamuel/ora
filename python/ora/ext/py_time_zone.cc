@@ -320,14 +320,6 @@ nb_matrix_multiply(
   if (!right)
     return not_implemented_ref();
 
-  auto const api = PyTimeAPI::get(other);
-  if (api != nullptr) {
-    // The LHS is a time.  Localize it.
-    auto const local = api->to_local_datenum_daytick(other, *self->tz_);
-    return PyLocal::create(
-      make_date(local.datenum), make_daytime(local.daytick));
-  }
-
   if (Sequence::Check(other)) {
     auto const local = cast<Sequence>(other);
     if (local->Length() == 2) {
@@ -336,6 +328,25 @@ nb_matrix_multiply(
       return PyTimeDefault::create(
         ora::from_local<PyTimeDefault::Time>(datenum, daytick, *self->tz_));
     }
+  }
+
+  auto const api = PyTimeAPI::get(other);
+  if (api != nullptr) {
+    // The LHS is a time.  Localize it.
+    auto const local = api->to_local_datenum_daytick(other, *self->tz_);
+    return PyLocal::create(
+      make_date(local.datenum), make_daytime(local.daytick));
+  }
+
+  // Try to convert to a time
+  try {
+    auto const time = convert_to_time<Time>(other);
+    auto const local = ora::time::to_local_datenum_daytick(time, *self->tz_);
+    return PyLocal::create(
+      make_date(local.datenum), make_daytime(local.daytick));
+  }
+  catch (Exception& exc) {
+    exc.Clear();
   }
 
   return not_implemented_ref();
