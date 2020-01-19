@@ -1,5 +1,13 @@
 # Tactical
 
+- left @ for `TimeZone`
+    ```
+    "2020-01-19T08:15:00Z" @ UTC
+    ```
+- right @ for `LocalTime` and `TimeZone`
+    ```
+    2020/Jan/19 // "8:15:00" @ "Asia/Manila"
+    ```
 - document floor div
 
 
