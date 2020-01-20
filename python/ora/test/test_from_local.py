@@ -3,7 +3,8 @@ import pytz
 
 import pytest
 
-from   ora import NsTime, Date, Daytime, from_local, to_local, UTC, TimeZone
+import ora
+from   ora import Time, NsTime, Date, Daytime, from_local, to_local, UTC, TimeZone
 from   ora import *
 
 #-------------------------------------------------------------------------------
@@ -104,5 +105,11 @@ def test_convert_to_local():
     d, y = "2020-01-19T17:25:00+08:00" @ z
     assert d == Date(2020, 1, 19)
     assert y == Daytime(4, 25)
+
+
+def test_convert_from_local():
+    l = ora.LocalTime("2020-01-19", "17:25:00")
+    t = l @ "Asia/Manila"
+    assert t == Time(2020, 1, 19, 17, 25, 0, "Asia/Manila")
 
 

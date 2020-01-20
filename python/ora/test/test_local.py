@@ -1,6 +1,22 @@
-from   ora import Date, Daytime, UTC
+from   ora import Date, Daytime, UTC, LocalTime, Date16, Daytime32
 
 #-------------------------------------------------------------------------------
+
+def test_date_daytime_args():
+    l = LocalTime(Date16(2020, 1, 20), Daytime32(12, 30, 45))
+    assert isinstance(l.date, Date16)
+    assert l.date == Date(2020, 1, 20)
+    assert isinstance(l.daytime, Daytime32)
+    assert l.daytime == Daytime(12, 30, 45)
+
+
+def test_convert_args():
+    l = LocalTime(20200120, "12:30:45")
+    assert isinstance(l.date, Date)
+    assert l.date == Date(2020, 1, 20)
+    assert isinstance(l.daytime, Daytime)
+    assert l.daytime == Daytime(12, 30, 45)
+
 
 def test_date_daytime():
     d = Date(2020, 1, 16)

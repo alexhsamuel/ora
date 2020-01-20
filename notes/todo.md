@@ -1,9 +1,5 @@
 # Tactical
 
-- right @ for `LocalTime` and `TimeZone`
-    ```
-    2020/Jan/19 // "8:15:00" @ "Asia/Manila"
-    ```
 
 
 # Small problems

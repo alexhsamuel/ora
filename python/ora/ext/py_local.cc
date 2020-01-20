@@ -1,5 +1,9 @@
 #include "py.hh"
 #include "py_local.hh"
+#include "py_date.hh"
+#include "py_daytime.hh"
+#include "py_time.hh"
+#include "py_time_zone.hh"
 
 using std::string;
 using namespace std::string_literals;
@@ -107,14 +111,91 @@ tp_init(
   Tuple* const args,
   Dict* const kw_args)
 {
-  // FIXME: Accept other things too.
-  Object* date;
-  Object* daytime;
-  Arg::ParseTuple(args, "OO", &date, &daytime);
+  Object* date_arg;
+  Object* daytime_arg;
+  Arg::ParseTuple(args, "OO", &date_arg, &daytime_arg);
 
+  auto const date = to_date_object(date_arg);
+  auto const daytime = to_daytime_object(daytime_arg);
   new(self) PyLocal(date, daytime);
 }
 
+
+//------------------------------------------------------------------------------
+// Number
+//------------------------------------------------------------------------------
+
+ref<Object>
+nb_matrix_multiply(
+  PyLocal* const self,
+  Object* const other,
+  bool const right)
+{
+  // We should be on the LHS of the time zone.
+  if (right)
+    return not_implemented_ref();
+
+  ora::TimeZone_ptr tz = maybe_time_zone(other);
+  if (tz == nullptr) 
+    return not_implemented_ref();
+  else {
+    auto const date_api = PyDateAPI::get(self->date_);
+    if (date_api == nullptr)
+      // Should not happen.
+      return not_implemented_ref();
+    auto const daytime_api = PyDaytimeAPI::get(self->daytime_);
+    if (daytime_api == nullptr)
+      // Should not happen.
+      return not_implemented_ref();
+    auto const datenum = date_api->get_datenum(self->date_);
+    auto const daytick = daytime_api->get_daytick(self->daytime_);
+    return PyTimeDefault::create(
+      ora::from_local<PyTimeDefault::Time>(datenum, daytick, *tz));
+  }
+}
+
+
+PyNumberMethods
+tp_as_number = {
+  (binaryfunc)  nullptr,                        // nb_add
+  (binaryfunc)  nullptr,                        // nb_subtract
+  (binaryfunc)  nullptr,                        // nb_multiply
+  (binaryfunc)  nullptr,                        // nb_remainder
+  (binaryfunc)  nullptr,                        // nb_divmod
+  (ternaryfunc) nullptr,                        // nb_power
+  (unaryfunc)   nullptr,                        // nb_negative
+  (unaryfunc)   nullptr,                        // nb_positive
+  (unaryfunc)   nullptr,                        // nb_absolute
+  (inquiry)     nullptr,                        // nb_bool
+  (unaryfunc)   nullptr,                        // nb_invert
+  (binaryfunc)  nullptr,                        // nb_lshift
+  (binaryfunc)  nullptr,                        // nb_rshift
+  (binaryfunc)  nullptr,                        // nb_and
+  (binaryfunc)  nullptr,                        // nb_xor
+  (binaryfunc)  nullptr,                        // nb_or
+  // Work around a NumPy bug (https://github.com/numpy/numpy/issues/10693) by
+  // defining nb_int, nb_float that raise TypeError.
+  (unaryfunc)   nullptr,                        // nb_int
+  (void*)       nullptr,                        // nb_reserved
+  (unaryfunc)   nullptr,                        // nb_float
+  (binaryfunc)  nullptr,                        // nb_inplace_add
+  (binaryfunc)  nullptr,                        // nb_inplace_subtract
+  (binaryfunc)  nullptr,                        // nb_inplace_multiply
+  (binaryfunc)  nullptr,                        // nb_inplace_remainder
+  (ternaryfunc) nullptr,                        // nb_inplace_power
+  (binaryfunc)  nullptr,                        // nb_inplace_lshift
+  (binaryfunc)  nullptr,                        // nb_inplace_rshift
+  (binaryfunc)  nullptr,                        // nb_inplace_and
+  (binaryfunc)  nullptr,                        // nb_inplace_xor
+  (binaryfunc)  nullptr,                        // nb_inplace_or
+  (binaryfunc)  nullptr,                        // nb_floor_divide
+  (binaryfunc)  nullptr,                        // nb_true_divide
+  (binaryfunc)  nullptr,                        // nb_inplace_floor_divide
+  (binaryfunc)  nullptr,                        // nb_inplace_true_divide
+  (unaryfunc)   nullptr,                        // nb_index
+  (binaryfunc)  wrap<PyLocal, nb_matrix_multiply>, // nb_matrix_multiply
+  (binaryfunc)  nullptr,                        // nb_inplace_matrix_multiply
+};
 
 //------------------------------------------------------------------------------
 // Sequence
@@ -364,7 +445,7 @@ PyLocal::build_type(
     (setattrfunc)         nullptr,                        // tp_setattr
                           nullptr,                        // tp_reserved
     (reprfunc)            wrap<PyLocal, tp_repr>,         // tp_repr
-    (PyNumberMethods*)    nullptr,                        // tp_as_number
+    (PyNumberMethods*)    &tp_as_number,                  // tp_as_number
     (PySequenceMethods*)  &tp_as_sequence,                // tp_as_sequence
     (PyMappingMethods*)   nullptr,                        // tp_as_mapping
     (hashfunc)            nullptr,                        // tp_hash
