@@ -138,3 +138,13 @@ def test_get_parts(Daytime):
     assert_array_equal(sa, [45, 5, 25, 45])
 
 
+@pytest.mark.parametrize("Daytime", DAYTIME_TYPES)
+def test_get_ssm(Daytime):
+    y = Daytime(12, 30, 45.25)
+    o = 50000 * np.arange(8)
+    arr = y + o
+    ssm = ora.np.get_ssm(arr)
+    assert ssm.dtype == "float64"
+    assert_array_equal(ssm, (y.ssm + o) % 86400)
+
+

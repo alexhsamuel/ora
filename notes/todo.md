@@ -15,7 +15,6 @@
 - ufuncs:
   - matmult for `to_local`, `from_local`
   - `ora.np.get_hms()` and `HMS_DTYPE`
-  - `ora.np.get_ssm()`
   - `ora.np.to_offset()` (daytime)
   - `ora.np.parse_time()`
   - `ora.np.format_time()`
