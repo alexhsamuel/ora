@@ -6,6 +6,7 @@
 # Small problems
 
 - xfail tests
+- sloppy parsing (and in ctors)
 - functions:
   - `ora.np.daytime_from_offset()`
   - `ora.np.daytime_from_hms()`
@@ -14,9 +15,6 @@
 - ufuncs:
   - matmult for `to_local`, `from_local`
   - `ora.np.get_hms()` and `HMS_DTYPE`
-  - `ora.np.get_hour()`
-  - `ora.np.get_minute()`
-  - `ora.np.get_second()`
   - `ora.np.get_ssm()`
   - `ora.np.to_offset()` (daytime)
   - `ora.np.parse_time()`
@@ -40,6 +38,7 @@
 
 # Miscellaneous Work List
 
+1. Sloppy time and date parsing.
 1. Rounding functions.
 1. matplotlib axis integration
 1. Use [ryu](https://github.com/ulfjack/ryu/tree/master/ryu) for `format_seconds()`.
@@ -48,7 +47,6 @@
 1. Nth day of month function (or generator!).
 1. Span class.
 1. Return namedtuple or similar from Calendar.range.
-1. Sloppy time and date parsing.
 1. Rename Calendar "range" to "domain".
 1. Use an interval class for the calendar domain.
 1. Come up with a better syntax for the domain the calendar file.
@@ -140,7 +138,7 @@
      - [x] arithmetic
      - [x] comparisons (template)
      - [x] is_valid
-     - [ ] weekday
+     - [x] weekday
      - [x] to/from ymd date
      - [x] to/from ordinal date
      - [x] to/from week date

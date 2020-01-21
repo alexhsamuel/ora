@@ -1,6 +1,7 @@
 import datetime
 import itertools
 import numpy as np
+from   numpy.testing import assert_array_equal
 import pytest
 
 import ora
@@ -118,5 +119,22 @@ def test_from_object(Daytime):
     assert arr.dtype == Daytime.dtype
 
     assert (arr == np.array([y, y, y, y, Daytime.INVALID, Daytime.INVALID])).all()
+
+
+@pytest.mark.parametrize("Daytime", DAYTIME_TYPES)
+def test_get_parts(Daytime):
+    arr = Daytime(12, 30, 45) + 50000 * np.arange(4)
+
+    ha = ora.np.get_hour(arr)
+    assert ha.dtype == "uint8"
+    assert_array_equal(ha, [12, 2, 16, 6])
+
+    ma = ora.np.get_minute(arr)
+    assert ma.dtype == "uint8"
+    assert_array_equal(ma, [30, 24, 17, 10])
+
+    sa = ora.np.get_second(arr)
+    assert sa.dtype == "float64"
+    assert_array_equal(sa, [45, 5, 25, 45])
 
 

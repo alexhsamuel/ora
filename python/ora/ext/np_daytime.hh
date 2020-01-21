@@ -205,6 +205,16 @@ DaytimeDtype<PYDAYTIME>::add(
     ::register_loops(dtype->type_num);
 
   // Add ufunc loops.
+  create_or_get_ufunc(module, "get_hour", 1, 1)->add_loop_1(
+    dtype->type_num, NPY_UINT8,
+    ufunc_loop_1<Daytime, uint8_t, ora::daytime::nex::get_hour>);
+  create_or_get_ufunc(module, "get_minute", 1, 1)->add_loop_1(
+    dtype->type_num, NPY_UINT8,
+    ufunc_loop_1<Daytime, uint8_t, ora::daytime::nex::get_minute>);
+  create_or_get_ufunc(module, "get_second", 1, 1)->add_loop_1(
+    dtype->type_num, NPY_FLOAT64,
+    ufunc_loop_1<Daytime, double, ora::daytime::nex::get_second>);
+
   create_or_get_ufunc(np_module, "add", 2, 1)->add_loop_2(
     dtype->type_num, NPY_FLOAT64, dtype->type_num,
     ufunc_loop_2<Daytime, double, Daytime, add>);
