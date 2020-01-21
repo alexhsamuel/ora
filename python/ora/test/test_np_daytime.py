@@ -63,6 +63,48 @@ def test_daytime_from_offset(Daytime):
     assert (((y == Daytime.MISSING) & (a == Daytime.INVALID)) | (y == a)).all()
 
 
+@pytest.mark.parametrize("Daytime", DAYTIME_TYPES)
+def test_daytime_from_hms(Daytime):
+    h = np.array([0, 12, 2, 16, 6, 23, -1, 0, 0, 255])
+    m = np.array([0, 30, 24, 17, 10, 59, 0, 60, 0, 255])
+    s = np.array([0, 45, 5.75, 26.5, 47.25, 59.75, 0, 0, 60, np.nan])
+    y = ora.np.daytime_from_hms(h, m, s)
+    assert_array_equal(y, [
+        Daytime( 0,  0,  0   ),
+        Daytime(12, 30, 45   ),
+        Daytime( 2, 24,  5.75),
+        Daytime(16, 17, 26.5 ),
+        Daytime( 6, 10, 47.25),
+        Daytime(23, 59, 59.75),
+        Daytime.INVALID,
+        Daytime.INVALID,
+        Daytime.INVALID,
+        Daytime.INVALID,
+    ])
+
+
+@pytest.mark.parametrize("Daytime", DAYTIME_TYPES)
+def test_daytime_from_ssm(Daytime):
+    y = ora.np.daytime_from_ssm([
+            0   ,
+        45045.0 ,
+         8645.75,
+        58646.5 ,
+        22247.25,
+        86399.75,
+        np.nan,
+    ])
+    assert_array_equal(y, [
+        Daytime( 0,  0,  0   ),
+        Daytime(12, 30, 45   ),
+        Daytime( 2, 24,  5.75),
+        Daytime(16, 17, 26.5 ),
+        Daytime( 6, 10, 47.25),
+        Daytime(23, 59, 59.75),
+        Daytime.INVALID,
+    ])
+
+
 @pytest.mark.parametrize("Daytime0, Daytime1", DAYTIME_TYPE_PAIRS)
 def test_cast(Daytime0, Daytime1):
     arr0 = get_array(Daytime0)

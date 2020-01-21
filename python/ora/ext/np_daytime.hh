@@ -60,9 +60,9 @@ public:
    */
   virtual Daytick       get_daytick(void*) const = 0;
 
-  // virtual ref<Object>   function_daytime_from_hms(Array*, Array*, Array*) = 0;
+  virtual ref<Object>   function_daytime_from_hms(Array*, Array*, Array*) = 0;
   virtual ref<Object>   function_daytime_from_offset(Array*) = 0;
-  // virtual ref<Object>   function_daytime_from_ssm(Array*) = 0;
+  virtual ref<Object>   function_daytime_from_ssm(Array*) = 0;
 
   static bool check(PyArray_Descr* const descr)
     { return get(descr) != nullptr; }
@@ -135,9 +135,9 @@ private:
         = ora::daytime::nex::from_daytick<Daytime>(daytick); 
     }
 
-    // virtual ref<Object> function_daytime_from_hms(Array*, Array*, Array*) override;
+    virtual ref<Object> function_daytime_from_hms(Array*, Array*, Array*) override;
     virtual ref<Object> function_daytime_from_offset(Array*) override;
-    // virtual ref<Object> function_daytime_from_ssm(Array*) override;
+    virtual ref<Object> function_daytime_from_ssm(Array*) override;
 
     virtual Daytick get_daytick(void* const daytime_ptr) const override
       { return ora::daytime::nex::get_daytick(*reinterpret_cast<Daytime*>(daytime_ptr)); }
@@ -392,6 +392,29 @@ DaytimeDtype<PYDAYTIME>::cast_from_object(
 
 template<class PYDAYTIME>
 ref<Object>
+DaytimeDtype<PYDAYTIME>::API::function_daytime_from_hms(
+  Array* const hour,
+  Array* const minute,
+  Array* const second)
+{
+  // Broadcast args together.
+  auto const mit = ArrayMultiIter::New(hour, minute, second);
+  // Create the output array.
+  auto daytime_arr = Array::SimpleNew(mit->nd(), mit->dimensions(), descr_);
+
+  auto const& hi = mit->iter<Hour>(0);
+  auto const& mi = mit->iter<Minute>(1);
+  auto const& si = mit->iter<Second>(2);
+  auto const r = daytime_arr->get_ptr<Daytime>();
+  for (; *mit; mit->next())
+    r[mit->index()] = ora::daytime::nex::from_hms<Daytime>(*hi, *mi, *si);
+
+  return daytime_arr;
+}
+
+
+template<class PYDAYTIME>
+ref<Object>
 DaytimeDtype<PYDAYTIME>::API::function_daytime_from_offset(
   Array* const offset_arr)
 {
@@ -405,7 +428,26 @@ DaytimeDtype<PYDAYTIME>::API::function_daytime_from_offset(
   for (npy_intp i = 0; i < size; ++i)
     r[i] = ora::daytime::nex::from_offset<Daytime>(o[i]);
 
-  return std::move(daytime_arr);
+  return daytime_arr;
+}
+
+
+template<class PYDAYTIME>
+ref<Object>
+DaytimeDtype<PYDAYTIME>::API::function_daytime_from_ssm(
+  Array* const ssm_arr)
+{
+  // Create the output array.
+  auto daytime_arr = Array::NewLikeArray(ssm_arr, NPY_CORDER, descr_);
+
+  // Fill it.
+  auto const size = ssm_arr->size();
+  auto const s = ssm_arr->get_const_ptr<float64_t>();
+  auto const r = daytime_arr->get_ptr<Daytime>();
+  for (npy_intp i = 0; i < size; ++i)
+    r[i] = ora::daytime::nex::from_ssm<Daytime>(s[i]);
+
+  return daytime_arr;
 }
 
 

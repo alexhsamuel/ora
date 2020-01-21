@@ -7,9 +7,6 @@
 
 - xfail tests
 - sloppy parsing (and in ctors)
-- functions:
-  - `ora.np.daytime_from_hms()`
-  - `ora.np.daytime_from_ssm()`
 - ufuncs:
   - matmult for `to_local`, `from_local`
   - `ora.np.parse_time()`
