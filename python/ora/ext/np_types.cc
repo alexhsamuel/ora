@@ -57,6 +57,23 @@ get_ymd_dtype()
 }
 
 
+PyArray_Descr*
+get_hms_dtype()
+{
+  static PyArray_Descr* dtype = nullptr;
+  if (dtype == nullptr) {
+    // Lazy one-time initialization.
+    auto const fields = take_not_null<Object>(Py_BuildValue(
+      "[(ss)(ss)(ss)]", "hour", "u1", "minute", "u1", "second", "d"));
+    auto rval = PyArray_DescrConverter(fields, &dtype);
+    check_one(rval);
+    assert(dtype != nullptr);
+  }
+
+  return dtype;
+}
+
+
 //------------------------------------------------------------------------------
 
 }  // namespace py

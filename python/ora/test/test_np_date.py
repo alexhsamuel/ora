@@ -247,7 +247,9 @@ def test_get_ymd(Date):
     arr = Date(2020, 1, 21) + 256 * np.arange(4)
     arr = np.concatenate((arr, [Date.INVALID, Date.MISSING]))
     assert arr.dtype == Date.dtype
+
     ymd = ora.np.get_ymd(arr)
+    assert ymd.dtype == ora.np.YMD_DTYPE
     assert [ tuple(i) for i in ymd ] == [
         (2020,  1, 21),
         (2020, 10,  3),

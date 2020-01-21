@@ -235,6 +235,21 @@ struct HmsDaytime
 };
 
 
+/*
+ * As above, but no alignment padding.
+ */
+#pragma pack(1)
+struct HmsDaytimePacked
+{
+  Hour              hour                = HOUR_INVALID;
+  Minute            minute              = MINUTE_INVALID;
+  Second            second              = SECOND_INVALID;
+};
+#pragma pack()
+
+static_assert(sizeof(HmsDaytimePacked) == 10, "HmsDaytimePacked isn't 10 bytes");
+
+
 inline bool constexpr 
 hms_is_valid(
   HmsDaytime const& hms)

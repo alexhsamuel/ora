@@ -217,6 +217,9 @@ DaytimeDtype<PYDAYTIME>::add(
   create_or_get_ufunc(module, "get_ssm", 1, 1)->add_loop_1(
     dtype->type_num, NPY_FLOAT64,
     ufunc_loop_1<Daytime, double, ora::daytime::nex::get_ssm>);
+  create_or_get_ufunc(module, "get_hms", 1, 1)->add_loop_1(
+    dtype, get_hms_dtype(),
+    ufunc_loop_1<Daytime, ora::HmsDaytimePacked, ora::daytime::nex::get_hms_packed<Daytime>>);
 
   create_or_get_ufunc(np_module, "add", 2, 1)->add_loop_2(
     dtype->type_num, NPY_FLOAT64, dtype->type_num,

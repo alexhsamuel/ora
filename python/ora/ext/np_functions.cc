@@ -387,6 +387,7 @@ build_np_module()
   mod->AddObject("ORDINAL_DATE_DTYPE",  (Object*) get_ordinal_date_dtype());
   mod->AddObject("WEEK_DATE_DTYPE",     (Object*) get_week_date_dtype());
   mod->AddObject("YMD_DTYPE",           (Object*) get_ymd_dtype());
+  mod->AddObject("HMS_DTYPE",           (Object*) get_hms_dtype());
 
   return mod;
 }

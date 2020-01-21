@@ -166,6 +166,27 @@ get_hms(
 
 
 template<class DAYTIME>
+inline HmsDaytimePacked
+get_hms_packed(
+  DAYTIME const daytime)  
+  noexcept
+{
+  if (daytime.is_valid()) {
+    auto const offset = get_offset(daytime);
+    auto const minutes = offset / (SECS_PER_MIN * DAYTIME::Traits::denominator);
+    auto const seconds = offset % (SECS_PER_MIN * DAYTIME::Traits::denominator);
+    return {
+      (Hour)   (minutes / MINS_PER_HOUR),
+      (Minute) (minutes % MINS_PER_HOUR),
+      (Second) seconds / DAYTIME::Traits::denominator
+    };
+  }
+  else
+    return {};  // invalid
+}
+
+
+template<class DAYTIME>
 inline double 
 get_ssm(
   DAYTIME const daytime)

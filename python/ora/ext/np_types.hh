@@ -37,6 +37,7 @@ int constexpr TIME_OFFSET_TYPE      = NPY_INT64;
 extern PyArray_Descr* get_ordinal_date_dtype();
 extern PyArray_Descr* get_week_date_dtype();
 extern PyArray_Descr* get_ymd_dtype();
+extern PyArray_Descr* get_hms_dtype();
 
 //------------------------------------------------------------------------------
 

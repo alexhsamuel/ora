@@ -148,3 +148,22 @@ def test_get_ssm(Daytime):
     assert_array_equal(ssm, (y.ssm + o) % 86400)
 
 
+@pytest.mark.parametrize("Daytime", DAYTIME_TYPES)
+def test_get_ssm_invalid(Daytime):
+    ssm = ora.np.get_ssm([Daytime.INVALID, Daytime.MISSING])
+    assert np.isnan(ssm).all()
+
+
+@pytest.mark.parametrize("Daytime", DAYTIME_TYPES)
+def test_get_hms(Daytime):
+    arr = Daytime(12, 30, 45) + 50000.75 * np.arange(4)
+    arr = np.concatenate((arr, [Daytime.MISSING, Daytime.INVALID]))
+    assert arr.dtype == Daytime.dtype
+
+    hms = ora.np.get_hms(arr)
+    assert hms.dtype == ora.np.HMS_DTYPE
+    assert_array_equal(hms["hour"], [12, 2, 16, 6, 255, 255])
+    assert_array_equal(hms["minute"], [30, 24, 17, 10, 255, 255])
+    assert_array_equal(hms["second"], [45, 5.75, 26.5, 47.25, np.nan, np.nan])
+
+
