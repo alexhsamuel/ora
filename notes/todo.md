@@ -1,6 +1,13 @@
 # Tactical
 
-
+- Fix (and where are tests??):
+    ```py
+    >>> t = datetime.datetime.now(dateutil.tz.gettz("UTC"))
+    >>> Time(t)
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+    ora.InvalidDateError: invalid date
+    ```
 
 # Small problems
 
