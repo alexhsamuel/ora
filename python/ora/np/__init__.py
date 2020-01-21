@@ -1,5 +1,5 @@
 """
-Numpy support for Ora.
+NumPy support for Ora.
 
 Ora types can be used as numpy array types, and will have a `dtype` attribute.
 For example:
@@ -15,7 +15,6 @@ For example:
 
 #-------------------------------------------------------------------------------
 
-import numpy
 from   .. import ext
 
 try:
