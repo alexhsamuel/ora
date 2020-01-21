@@ -127,6 +127,24 @@ date_from_ymdi(
 
 
 ref<Object>
+daytime_from_offset(
+  Module*,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* arg_names[] = {"offset", "Daytime", nullptr};
+  PyObject* offset_arg;
+  Descr* descr = DaytimeDtype<PyDaytimeDefault>::get();
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "O|$O&", arg_names,
+    &offset_arg, &PyArray_DescrConverter2, &descr);
+  auto offset = Array::FromAny(offset_arg, NPY_UINT64, 0, 0, NPY_ARRAY_BEHAVED);
+
+  return DaytimeAPI::from(descr)->function_daytime_from_offset(offset);
+}
+
+
+ref<Object>
 time_from_offset(
   Module*,
   Tuple* const args,
@@ -343,9 +361,9 @@ functions
     .add<date_from_week_date>       ("date_from_week_date")
     .add<date_from_ymd>             ("date_from_ymd")
     .add<date_from_ymdi>            ("date_from_ymdi")
- // FIXME
- // .add<daytime_from_hms>          ("daytime_from_hms")
- // .add<daytime_from_ssm>          ("daytime_from_ssm")
+//    .add<daytime_from_hms>          ("daytime_from_hms")
+    .add<daytime_from_offset>       ("daytime_from_offset")
+//    .add<daytime_from_ssm>          ("daytime_from_ssm")
     .add<from_local>                ("from_local")
     .add<time_from_offset>          ("time_from_offset")
     .add<to_local>                  ("to_local")

@@ -51,12 +51,18 @@ def test_to_offset(Daytime):
     assert (offsets == [ y.offset for y in daytimes ]).all()
 
 
-@pytest.mark.xfail
 @pytest.mark.parametrize("Daytime", DAYTIME_TYPES)
 def test_daytime_from_offset(Daytime):
-    daytimes = get_array(Daytime)
-    offsets = np.array([ y.offset for y in daytimes ])
-    assert (ora.np.daytime_from_offset(offsets) == daytimes).all()
+    y = get_array(Daytime)
+    o = ora.np.to_offset(y)
+
+    for yy, oo in zip(y, o):
+        assert not yy.valid or oo == yy.offset
+
+    a = ora.np.daytime_from_offset(o, Daytime=Daytime)
+    assert a.dtype is Daytime.dtype
+    #$ MISSING converted to INVALID in the round-trip.
+    assert (((y == Daytime.MISSING) & (a == Daytime.INVALID)) | (y == a)).all()
 
 
 @pytest.mark.parametrize("Daytime0, Daytime1", DAYTIME_TYPE_PAIRS)
