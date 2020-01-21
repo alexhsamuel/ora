@@ -1,5 +1,7 @@
 # Tactical
 
+- Release 0.4.0.a
+
 
 # Small problems
 
