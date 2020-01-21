@@ -43,21 +43,19 @@ def test_convert_invalid():
     ], dtype=ora.Daytime) == ora.Daytime.INVALID).all()
 
 
-@pytest.mark.xfail
 @pytest.mark.parametrize("Daytime", DAYTIME_TYPES)
 def test_to_offset(Daytime):
     daytimes = get_array(Daytime)
     offsets = ora.np.to_offset(daytimes)
-    assert (offsets == [ y.offset for y in daytimes ]).all()
+
+    for y, o in zip(daytimes, offsets):
+        assert not y.valid or o == y.offset
 
 
 @pytest.mark.parametrize("Daytime", DAYTIME_TYPES)
 def test_daytime_from_offset(Daytime):
     y = get_array(Daytime)
     o = ora.np.to_offset(y)
-
-    for yy, oo in zip(y, o):
-        assert not yy.valid or oo == yy.offset
 
     a = ora.np.daytime_from_offset(o, Daytime=Daytime)
     assert a.dtype is Daytime.dtype
