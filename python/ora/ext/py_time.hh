@@ -891,8 +891,8 @@ maybe_time(
     // FIXME: Provide a all-integer ctor with (sec, usec).
     auto const time = ora::from_local_parts<TIME>(
       PyDateTime_GET_YEAR(obj),
-      PyDateTime_GET_MONTH(obj) - 1,
-      PyDateTime_GET_DAY(obj) - 1,
+      PyDateTime_GET_MONTH(obj),
+      PyDateTime_GET_DAY(obj),
       PyDateTime_DATE_GET_HOUR(obj),
       PyDateTime_DATE_GET_MINUTE(obj),
       PyDateTime_DATE_GET_SECOND(obj) 

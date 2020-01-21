@@ -1,4 +1,5 @@
 import datetime
+import dateutil.tz
 import itertools
 import pytest
 
@@ -216,6 +217,16 @@ def test_std():
     assert time.microsecond == 625000
     assert isinstance(time.tzinfo, datetime.tzinfo)
     assert time.tzinfo.utcoffset(time) == datetime.timedelta(0)
+
+
+def test_from_std():
+    z = datetime.timezone.utc
+    t = datetime.datetime(2020, 1, 22, 12, 30, 45, 250000, z)
+    assert Time(t) == Time(2020, 1, 22, 12, 30, 45.25, UTC)
+
+    z = dateutil.tz.gettz("America/New_York")
+    t = datetime.datetime(2020, 1, 22, 12, 30, 45, 250000, z)
+    assert Time(t) == Time(2020, 1, 22, 17, 30, 45.25, UTC)
 
 
 def test_now():
