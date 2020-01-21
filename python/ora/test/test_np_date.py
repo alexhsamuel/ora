@@ -242,6 +242,22 @@ def test_compare(Date0, Date1):
     assert (arr0 != arr1 + 1).all()
 
 
+@pytest.mark.parametrize("Date", DATE_TYPES)
+def test_get_ymd(Date):
+    arr = Date(2020, 1, 21) + 256 * np.arange(4)
+    arr = np.concatenate((arr, [Date.INVALID, Date.MISSING]))
+    assert arr.dtype == Date.dtype
+    ymd = ora.np.get_ymd(arr)
+    assert [ tuple(i) for i in ymd ] == [
+        (2020,  1, 21),
+        (2020, 10,  3),
+        (2021,  6, 16),
+        (2022,  2, 27),
+        (-32768, 255, 255),
+        (-32768, 255, 255),
+    ]
+
+
 @pytest.mark.parametrize(
     "yt,mt,dt",
     [
