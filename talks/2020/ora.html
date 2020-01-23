@@ -4,24 +4,20 @@
     <title>Ora: a time library</title>
     <meta charset="utf-8">
     <style>
-      /*
-      @import url('https://fonts.googleapis.com/css?family=Roboto+Mono:400,400i,700|Roboto:400,400i,700');-->
-      */
-      @import url('https://fonts.googleapis.com/css?family=Inconsolata:400,700|Noto+Sans:400,400i,700');
+@import url('https://fonts.googleapis.com/css?family=Inconsolata:400,700|Noto+Sans:400,400i,700');
+@import url('https://fonts.googleapis.com/css?family=Arimo:400,400i,700&display=swap');
 
-      body { 
-          font-family: 'Noto Sans'; 
-      }
-      h1, h2, h3 {
-        font-family: 'Noto Sans';
-        font-weight: 700;
-      }
-      .remark-slide-content {
-        font-size: 36px;
-      }
-      .remark-code, .remark-inline-code { font-family: 'Inconsolata'; }
-
-
+body { 
+    font-family: Arimo, sans-serif; 
+}
+h1, h2, h3 {
+  font-family: inherit;
+  font-weight: 700;
+}
+.remark-slide-content {
+  font-size: 24px;
+}
+.remark-code, .remark-inline-code { font-family: 'Inconsolata'; }
 
 div.footer {
     position: absolute;
@@ -50,7 +46,7 @@ class: center, middle
 
 a time library
 
-<img src="http://www.muji.eu/images/products/l/4549337330030_l.jpg" width="200px">
+<img src="calendar-clock.jpg" width="200px">
 
 [`github.com/alexhsamuel/ora`](https://github.com/alexhsamuel/ora)
 
@@ -58,14 +54,14 @@ a time library
 
 ---
 
-class: center
-
 # Time in Python
 
+Some of the most widely-used libraries:
+
 - `datetime`
-- udatetime
-- dateutil
-- pytz
+- `udatetime`
+- `dateutil`
+- `pytz`
 - `np.datetime64`
 - `pd.Timestamp`
 - Delorean
@@ -78,39 +74,56 @@ class: center
 
 # Tradeoffs
 
-- `datetime` is standard
+- standard `datetime`
   - no time zones (use `dateutil`)
   - confusing API
-  - no vectorization
   - reasonably fast
-
-- `datetime64` is standard in NumPy
-  - _very_ limited operations
-
-- Pendulum _etc_
+  - not vectorized
+- NumPy `datetime64`
+  - very limited operations; no localization
+  - fast, vectorized
+- Pandas `Timestamp`
+  - full feature set
+  - fast, vectorized
+  - not a scalar type
+- Pendulum _etc._
   - rich feature set
-  - easy API
-  - no vectorization
   - slow
+  - not vectorized
+
+---
+
+class: center, middle
+
+Which should I use?
 
 ---
 
 # Ora
 
-Attempt to build a time library that is
+Attempt to build a time library that is:
+
 1. feature-complete
+
 2. fast
-3. array-friendly / vectorizaed
+
+3. array-friendly / vectorized
+
+Also a testbed for some ideas and experiments.
 
 ---
 
-# Design philosophy
+# API design philosophy
 
-- Physical time is the main concept
-- Date and daytime (time of day) are separate
-- Time zones mediate time ⟷ (date, daytime)
+- Central concept is physical <u>time</u>
+
+- Separate concepts for <u>date</u> and <u>daytime</u> (time of day)
+
+- <u>Localization</u>: time ⟷ (date, daytime) mediated by <u>time zone</u>
 
 ---
+
+# Example
 
 ```py
 >>> t = now()
@@ -120,7 +133,11 @@ ora.Time(2020, 1, 21, 19, 3, 2.58399501, UTC)
 2020-01-21T19:03:02.58399501+00:00
 ```
 
-A `Time` is printed in UTC but doesn't carry a timezone.
+<b>A `Time` doesn't have a time zone.</b>
+
+It's printed with date, daytime, UTC _because we don't have another way_.
+
+Note `float` seconds; more on precision later.
 
 ---
 
@@ -153,9 +170,8 @@ Offset tick size:
 
 # Localization
 
-A time zone mediates
-
-    time ⟷ date, daytime
+A time zone mediates time ⟷ date, daytime<br>
+in the function `to_local()`.
 
 ```py
 >>> d, y = to_local(t, "America/New_York")
@@ -164,8 +180,6 @@ Date(2020, Jan, 21)
 >>> y
 Daytime(14, 3, 02.583995014429092)
 ```
-
----
 
 `from_local()` is the inverse operation.
 
@@ -178,7 +192,39 @@ ora.Time(2020, 1, 29, 16, 0, 0.00000000, UTC)
 
 ---
 
-# Time zone objects
+# Dates and daytimes
+
+- Date offset is days since epoch
+- Daytime offset is ticks since midnight
+
+```py
+>>> Date.EPOCH
+Date(1, Jan, 1)
+>>> Date(2020, 1, 29).offset
+737452
+```
+
+```py
+>>> Daytime(12, 0, 0).offset
+6079859496950169600
+>>> Daytime.RESOLUTION
+7.105427357601002e-15
+```
+
+Sugar:
+```py
+>>> 2020/Jan/29
+Date(2020, Jan, 29)
+```
+
+---
+
+# Time zones
+
+What is a time zone?
+
+- A geographical region with a legislated time-dependent mapping:<br>
+  time ⟷ date, daytime
 
 ```py
 >>> TimeZone("America/New_York")
@@ -212,7 +258,7 @@ Daytime(0, 0, 00.000000000000000)
 
 # Components
 
-A physical `Time` _has no components_.
+`Time` is physical and <u>has no date/daytime components</u>.
 ```py
 >>> t.hour
 Traceback (most recent call last):
@@ -244,19 +290,52 @@ Weekday.Thu
 
 ---
 
+# Conversions
+
+Ora accepts:
+- various formats anywhere a time, date, daytime is needed
+- Python `datetime` types
+- time zone names
+
+```py
+>>> from_local((20200129, "11:00:00"), "America/New_York")
+ora.Time(2020, 1, 29, 16, 0, 0.00000000, UTC)
+```
+
+```py
+>>> t.std
+datetime.datetime(2020, 1, 23, 13, 45, 0, 138361, tzinfo=datetime.timezone.utc)
+```
+
+```py
+>>> d = datetime.date(2020, 11, 20)
+>>> Date(d)
+Date(2020, Nov, 20)
+```
+
+Note operator `@` requires LHS or RHS to be an Ora type.
+
+---
+
 # Arithmetic
 
 No time delta type.
 - Time, daytime arithmetic always in seconds.
 - Date arithmetic always in days.
 
+Elapsed time:
 ```py
->>> t0 = now()
->>> t1 = now()
 >>> t1 - t0
 1.3957649767398834
 ```
 
+Seconds since epoch:
+```py
+>>> Time.EPOCH + 2020 * 365 * 86400
+ora.Time(2019, 8, 30, 0, 0, 0.00000000, UTC)
+```
+
+Date shift:
 ```py
 >>> Date(2020, 1, 29) + 7
 Date(2020, Feb, 5)
@@ -266,27 +345,29 @@ Date(2020, Feb, 5)
 
 # Types
 
-Why is `Time.DENOMINATOR` 1<<25?
+Why is `Time.DENOMINATOR` set to 1<<25?
 
-Tradeoff among bit width, range, and resolution.
+Different time types trade off bit width, range, and resolution.
 
 Ora provides multiple time types.
 
-| Type         |Size    |Resolution |Range (years)|
-|:-------------|-------:|----------:|------------:|
-|`SmallTime`   | 32 bits|1 s        |1970-2106|
-|`Unix32Time`  | 32 bits|1 s        |1902-2038|
-|`Unix64Time`  | 64 bits|1 s        |0001-9999|
-|`Time`        | 64 bits|30 ns      |0001-9999|
-|`NsTime`      | 64 bits|1 ns       |1677-2262|
-|`HiTime`      | 64 bits|233 fs     |1970-2106|
-|`Time128`     |128 bits|54 zs      |0001-9999|
+| Type         | Bits | Frac bits |Resolution |Range (years)|
+|:-------------|------:|----------:|------------:|
+|`SmallTime`   |  32 | 0|1 s        |1970-2106|
+|`Unix32Time`  |  32 | 0|1 s        |1902-2038|
+|`Unix64Time`  |  64 | 0|1 s        |0001-9999|
+|`Time`        |  64 |25|30 ns      |0001-9999|
+|`NsTime`      |  64 |* |1 ns       |1677-2262|
+|`HiTime`      |  64 |32|233 fs     |1970-2106|
+|`Time128`     | 128 |64|54 zs      |0001-9999|
+
+\* Most types have 2^n denominator, but `NsTime` uses 10^9.
 
 Similarly, multiple date and daytime types.
 
 ---
 
-# Missing/invalid
+# Missing & invalid
 
 Every time, date, daytime type has distinct "missing" and "invalid" values.
 ```py
@@ -296,32 +377,56 @@ ora.Time.MISSING
 ora.Time.INVALID
 ```
 
+`MISSING` is propagated where possible but never produced by an operation.
+
 ---
 
 # Implementation
 
-- template C++ library
+- templated C++ library with no dependencies
+- non-virtual: `sizeof(ora::Time) == 8`
+- includes zoneinfo database (but can use system's)
+- integer math
+- fast overflow checking using condition bit
 - hand-written Python wrappers
-- integer math with overflow checking by condition bit
-- zero dependencies (incl zoneinfo)
-- as fast or faster than others
+- only Python dependency is NumPy
+
+As fast or faster than other libraries.  On my laptop:
 
 ```py
->>> %timeit now()
-146 ns ± 1.21 ns per loop
+>>> %timeit now()                                                                                                  
+153 ns ± 4.27 ns per loop (mean ± std. dev. of 7 runs, 10000000 loops each)
 ```
+
+```py
+>>> %timeit t @ z                                                                                                  
+164 ns ± 12.6 ns per loop (mean ± std. dev. of 7 runs, 10000000 loops each)
+```
+
 
 ---
 
 # NumPy
 
 - a dtype for every time, date, daytime type
-- ufuncs, including localization
 
 ```py
 >>> Time.dtype
 dtype(Time)
+```
+
+- ufuncs, including localization
+
+```py
 >>> import ora.np
+>>> dir(ora.np)
+['HMS_DTYPE', 'ORDINAL_DATE_DTYPE', 'WEEK_DATE_DTYPE', 'YMD_DTYPE', ...
+ 'date_from_offset', 'date_from_ordinal_date', 'date_from_week_date', 
+ 'date_from_ymd', 'date_from_ymdi', 'daytime_from_hms', 'daytime_from_offset',
+ 'daytime_from_ssm', 'from_local', 'get_day', 'get_hms', 'get_hour',
+ 'get_minute', 'get_month', 'get_ordinal_date', 'get_second', 'get_ssm', 
+ 'get_week_date', 'get_weekday', 'get_year', 'get_ymd', 'get_ymdi', 'is_valid',
+ 'time_from_offset', 'to_local', 'to_offset']
 ```
 
 ---
@@ -341,9 +446,22 @@ array([ora.Time(2020, 1, 21, 19, 50, 54.49559500, UTC),
 8
 ```
 
+Ora's tick representation is simliar to NumPy's; you can `view`.
+```py
+>>> a = np.array([0, "now"], dtype="datetime64[ns]")
+>>> a
+array(['1970-01-01T00:00:00.000000000', '2020-01-23T14:00:29.000000000'],
+      dtype='datetime64[ns]')
+>>> a.view(NsTime)
+array([ora.NsTime(1970, 1, 1, 0, 0, 0.000000000, UTC),
+       ora.NsTime(2020, 1, 23, 14, 0, 29.000000000, UTC)], dtype=NsTime)
+```
+
 ---
 
 # NumPy localization
+
+Vectorized `to_local()`, `from_local()` ufuncs.
 
 ```py
 >>> da, ya = ora.np.to_local(a, "America/New_York")
@@ -362,9 +480,14 @@ array([Daytime(14, 50, 54.495595008134840),
 
 # NumPy components
 
+Access components with ufuncs.
+
 ```py
 >>> ora.np.get_year(da)
 array([2020, 2020, 2020, 2020, 2020], dtype=int16)
+```
+
+```py
 >>> ora.np.get_ymd(da)
 array([(2020, 1, 21), (2020, 1, 21), (2020, 1, 21), (2020, 1, 21),
        (2020, 1, 21)],
@@ -375,46 +498,72 @@ array([(2020, 1, 21), (2020, 1, 21), (2020, 1, 21), (2020, 1, 21),
 
 # Formatting
 
-Similar to `datetime` formatting, with extensions.
+Similar to `datetime` formatting, with many extensions.
 
-"%i" is ISO format.
+`"%i"` is ISO 8601 format (which is default):
 ```py
 >>> format(t, "%i")
 '2020-01-21T19:58:17+00:00'
 ```
 
-Supports precision.
 ```py
->>> format(t, "%.3i")
+>>> format(t, "%.3i")   # precision
 '2020-01-21T19:58:17.648+00:00'
 ```
 
-Specify time zone in format.
+You can specify time zone in the format spec with `@`.
 ```py
 >>> format(t, "%.3i@America/New_York")
 '2020-01-21T14:58:17.648-05:00'
 ```
 
-Parsing similar.
+```py
+>>> z = "Asia/Tokyo"
+>>> print(f"it's now {now():@{z}} in {z}")
+it's now 2020-01-23T23:21:46+09:00 in Asia/Tokyo
+```
 
 ---
 
-Other features:
+# Parsing
 
-- packaged with zoneinfo library
+```py
+>>> parse_time("%~D:%~C", "20200129:110000", "America/New_York")                                              
+ora.Time(2020, 1, 29, 16, 0, 0.00000000, UTC)
+```
+
+Formatting and parsing are fast too.
+```py
+>>> %timeit format(t, "%.3i")                                                                                      
+624 ns ± 10.6 ns per loop (mean ± std. dev. of 7 runs, 1000000 loops each)
+```
+
+```py
+>>> %timeit parse_time("%i", "2020-01-21T19:58:17.648+00:00")                                                      
+241 ns ± 5.02 ns per loop (mean ± std. dev. of 7 runs, 1000000 loops each)
+```
+
+---
+
+# Other features
+
 - global system and display time zones
+
 - month and weekday enums
+
 - ISO week dates and ordinal dates
+
 - basic calendar support
 
 ---
 
 class: center, middle
-layout: false
 
 # Ora
 
 a time library
+
+<img src="calendar-clock.jpg" width="200px">
 
 [`github.com/alexhsamuel/ora`](https://github.com/alexhsamuel/ora)
 
@@ -423,10 +572,10 @@ a time library
 ---
 
     </textarea>
-    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    <script src="remark-latest.min.js">
     </script>
     <script>
-      var slideshow = remark.create();
+      var slideshow = remark.create({ratio: '3:2'});
     </script>
   </body>
 </html>
