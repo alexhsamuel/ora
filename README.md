@@ -40,7 +40,7 @@ or smaller is supported.
 ### Platform
 
 - Requires C++14 and Python 3.6+.
-- Tested on Linux and OSX.  Not currently tested on Windows.
+- Tested on Linux and MacOS.  Currently no Windows support.
 - Tested on x86-64 only.
 
 
@@ -48,12 +48,13 @@ or smaller is supported.
 
 Ora is distributed:
 
-- On [PyPI](https://pypi.python.org/pypi/ora), as source and OS/X binary wheel:
+- On [PyPI](https://pypi.python.org/pypi/ora), as source and Linux x64 / MacOS
+  binary wheels:
   ```
   pip install ora
   ```
 
-- On [Anaconda](https://anaconda.org/alexhsamuel/ora), as Linux x64 and OS/X
+- On [Anaconda](https://anaconda.org/alexhsamuel/ora), as Linux x64 / MacOS
   conda packages:
   ```
   conda install -c alexhsamuel ora
