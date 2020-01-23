@@ -19,6 +19,28 @@ h1, h2, h3 {
 }
 .remark-code, .remark-inline-code { font-family: 'Inconsolata'; }
 
+/* No scrollbars in formatted code. */
+.hljs-default .hljs {
+  overflow: hidden;
+}
+
+table {
+  margin-left: 24px;
+  border-collapse: collapse;
+}
+thead th {
+  padding-bottom: 4px;
+  border-bottom: 2px solid #ccc;
+}
+th, td {
+  padding: 0 12px;
+}
+
+.super{
+ vertical-align: super;
+ font-size: 80%;
+}
+
 div.footer {
     position: absolute;
     bottom: 0px;
@@ -345,14 +367,12 @@ Date(2020, Feb, 5)
 
 # Types
 
-Why is `Time.DENOMINATOR` set to 1<<25?
+- Why is `Time.DENOMINATOR` equal to `1<<25`?
 
-Different time types trade off bit width, range, and resolution.
+Ora provides time types than trade off bit width, range, and resolution.
 
-Ora provides multiple time types.
-
-| Type         | Bits | Frac bits |Resolution |Range (years)|
-|:-------------|------:|----------:|------------:|
+| Type         | Bits | Frac |Res |Range (years)|
+|:-------------|------:|----------:|------------:|---:|
 |`SmallTime`   |  32 | 0|1 s        |1970-2106|
 |`Unix32Time`  |  32 | 0|1 s        |1902-2038|
 |`Unix64Time`  |  64 | 0|1 s        |0001-9999|
@@ -361,7 +381,8 @@ Ora provides multiple time types.
 |`HiTime`      |  64 |32|233 fs     |1970-2106|
 |`Time128`     | 128 |64|54 zs      |0001-9999|
 
-\* Most types have 2^n denominator, but `NsTime` uses 10^9.
+\* Most types have 2<span class="super">frac</span> denominator, but `NsTime` uses 
+10<span class="super">9</span>.
 
 Similarly, multiple date and daytime types.
 
