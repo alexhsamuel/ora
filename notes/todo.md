@@ -1,5 +1,11 @@
 # Tactical
 
+- fix `parse_date("%~D", "20200129")` etc.
+- formatting and parsing for time zone name: `%Z`
+- convert np.datetime64[D] -> Date
+- convert np.datetime64[*] -> Time
+- convert Date -> np.datetime64[D]
+- convert Time -> np.datetime64[ns]
 - Release 0.4.0.a
 
 
