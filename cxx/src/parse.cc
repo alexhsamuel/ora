@@ -713,13 +713,12 @@ parse_iso_time(
   else
     return false;
   TRY(parse_iso_daytime(s, hms, compact));
-  // FIXME: Accept only 'Z' for UTC, not any other military time zone letter.
   if (*s == 'Z') {
     tz_offset = 0;
     ++s;
   }
   else
-    TRY(parse_tz_offset(s, tz_offset));
+    TRY(parse_tz_offset(s, tz_offset, !compact));
   return true;
 }
 
@@ -860,13 +859,32 @@ parse_time_parts(
 
       // Time zone parts --------------------
 
-      case 'E': TRY(parse_tz_offset(s, tz.offset)); break;
-      case 'e': TRY(parse_tz_offset_letter(s, tz.offset)); break;
+      case 'E':
+        TRY(parse_tz_offset(s, tz.offset));
+        break;
+
+      case 'e':
+        TRY(parse_tz_offset_letter(s, tz.offset));
+        break;
+
+      case 'o':
+        TRY(parse_tz_offset_secs(s, tz.offset));
+        break;
+
+      case 'Z':
+        TRY(parse_tz_name(s, tz.name));
+        break;
+
+      case 'z':
+        TRY(parse_tz_offset(s, tz.offset, false));
+        break;
+
+      // Complate time formats --------------------
+
       case 'i': 
-      case 'T': TRY(parse_iso_time(s, date.ymd_date, hms, tz.offset)); break;
-      case 'o': TRY(parse_tz_offset_secs(s, tz.offset)); break;
-      case 'Z': TRY(parse_tz_name(s, tz.name)); break;
-      case 'z': TRY(parse_tz_offset(s, tz.offset, false)); break;
+      case 'T':
+        TRY(parse_iso_time(s, date.ymd_date, hms, tz.offset, mods.abbreviate));
+        break;
 
       default:
         return false;

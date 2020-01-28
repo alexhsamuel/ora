@@ -38,6 +38,16 @@ get_time_parts_type()
 
 //------------------------------------------------------------------------------
 
+char const* const
+CONVERT_PATTERNS[] = {
+  "%DT%C%e",    // ISO 8601 with time zone letter
+  "%~i",        // abbreviated ISO 8601
+  "%~DT%~C%e",  // abbreviated ISO 8601 with time zone letter
+  "%D %C%E",    // Python datetime.__str__
+  "%D %C%e",    // Python datetime.__str__ with time zone letter
+  nullptr
+};
+
 std::unordered_map<PyTypeObject*, std::unique_ptr<PyTimeAPI>>
 PyTimeAPI::apis_;
 

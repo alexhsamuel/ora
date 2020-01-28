@@ -11,7 +11,6 @@
 # Small problems
 
 - xfail tests
-- sloppy parsing (and in ctors)
 - ufuncs:
   - matmult for `to_local`, `from_local`
   - `ora.np.parse_time()`
@@ -35,7 +34,6 @@
 
 # Miscellaneous Work List
 
-1. Sloppy time and date parsing.
 1. Rounding functions.
 1. matplotlib axis integration
 1. Use [ryu](https://github.com/ulfjack/ryu/tree/master/ryu) for `format_seconds()`.

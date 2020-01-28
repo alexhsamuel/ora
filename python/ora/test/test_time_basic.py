@@ -5,7 +5,7 @@ import pytest
 
 import ora
 from   ora import Time, Time128, HiTime, NsTime, SmallTime, Unix32Time, Unix64Time
-from   ora import TIME_TYPES, Date, Daytime, UTC, MIDNIGHT
+from   ora import TIME_TYPES, Date, Daytime, UTC, MIDNIGHT, TimeZone
 from   ora import Jan, Jul, Nov, Dec
 from   ora import to_local, from_local, now, display_time_zone, format_time
 from   tools import xeq
@@ -349,5 +349,21 @@ def test_time_convert(Time0, Time1):
 def test_to_local_convert():
     t = (20200117, "12:30:45") @ UTC
     assert t == Time(2020, 1, 17, 12, 30, 45, UTC)
+
+
+def test_string_convert():
+    t = (20200128, "18:13:25") @ TimeZone("America/New_York")
+    assert Time("2020-01-28T23:13:25+00:00") == t
+    assert Time("2020-01-28T18:13:25-05:00") == t
+    assert Time("2020-01-28T23:13:25Z") == t
+    assert Time("2020-01-28T18:13:25R") == t
+    assert Time("20200128T231325+0000") == t
+    assert Time("20200128T181325-0500") == t
+    assert Time("20200128T231325Z") == t
+    assert Time("20200128T181325R") == t
+    assert Time("2020-01-28 23:13:25+00:00") == t
+    assert Time("2020-01-28 18:13:25-05:00") == t
+    assert Time("2020-01-28 23:13:25Z") == t
+    assert Time("2020-01-28 18:13:25R") == t
 
 

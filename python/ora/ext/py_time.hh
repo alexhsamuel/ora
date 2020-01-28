@@ -63,6 +63,11 @@ template<class TIME> inline std::pair<bool, TIME> maybe_time(Object*);
  */
 template<class TIME> inline TIME convert_to_time(Object*);
 
+/**
+ * Additional parsing patterns to try when converting strings.
+ */
+extern char const* const CONVERT_PATTERNS[];
+
 //------------------------------------------------------------------------------
 // Virtual API
 //------------------------------------------------------------------------------
@@ -927,17 +932,31 @@ convert_to_time(
     else if (str == "MAX")
       return TIME::MAX;
     
-    // FIXME: Sloppy parsing.
     try {
       return ora::time::parse_time_iso<TIME>(str.c_str());
     }
     catch (ora::TimeParseError const&) {
-      throw py::ValueError("can't parse as time: '"s + str + "'");
     }
     catch (ora::TimeRangeError const&) {
       // FIXME: Python TimeRangeError.
       throw py::OverflowError("time out of range: '"s + str + "'");
     }
+
+    // Also try Python's datetime.datetime.__str__() format.
+    FullDate date;
+    HmsDaytime hms;
+    ora::time::TimeZoneInfo tz_info;
+    for (auto pattern = CONVERT_PATTERNS; *pattern; ++pattern) {
+      auto p = *pattern;
+      auto s = str.c_str();
+      if (ora::time::parse_time_parts(p, s, date, hms, tz_info))
+        return ora::from_local<TIME>(
+          parts_to_datenum(date),
+          hms_to_daytick(hms.hour, hms.minute, hms.second),
+          tz_info.offset);
+    }
+      
+    throw py::ValueError("can't parse as time: '"s + str + "'");
   }
 
   if (Sequence::Check(obj)) {
