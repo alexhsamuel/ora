@@ -23,45 +23,6 @@ namespace {
 #define TRY(stmt) do { if (!(stmt)) return false; } while(false)
 
 /*
- * Skips over formatting modifiers; see `parse_modifiers`.
- */
-inline bool
-skip_modifiers(
-  char const*& p)
-{
-  bool decimal = false;
-
-  for (; *p != 0; ++p)
-    switch (*p) {
-    case '.':
-      if (decimal)
-        // Two decimal points.
-        return false;
-      else
-        decimal = true;
-      break;
-
-    case '0': case '1': case '2': case '3': case '4':
-    case '5': case '6': case '7': case '8': case '9':
-    case '^': case '_': case '~':
-      break;
-
-    case '#':
-      if (*++p == 0)
-        // Must be followed by another character.
-        return false;
-      break;
-
-    default:
-      return true;
-    }
-
-  // Unrechable.
-  return false;
-}
-
-
-/*
  * Parses modifiers after % and before the type character.
  *
  * Note that width, precision, and padding are ignored when parsing.
