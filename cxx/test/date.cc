@@ -94,7 +94,6 @@ TEST(Date, invalid) {
   EXPECT_THROW(from_ymd(32000, 1,   2), InvalidDateError);
 }
 
-
 TEST(Date, range_error) {
   EXPECT_THROW(Date::MIN  -       1, DateRangeError);
   EXPECT_THROW(Date::MIN  +      -1, DateRangeError);
