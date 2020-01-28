@@ -22,6 +22,7 @@ to_date_object(
     return PyDateDefault::create(convert_to_date<Date>(obj));
 }
 
+
 Weekday
 convert_to_weekday(
   Object* obj)

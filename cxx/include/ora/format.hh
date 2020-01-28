@@ -107,6 +107,31 @@ namespace _impl {
 
 using namespace ora::lib;
 
+/**
+ * Helper class to hold modifier state in an escape sequence.
+ */
+struct Modifiers
+{
+  /**
+   * Returns the numeric width, or a default value if it's not set.
+   */
+  int get_width(int def) const { return width == -1 ? def : width; }
+  
+  /**
+   * Returns the pad character, or a default value if it's not set.
+   */
+  char get_pad(char def) const { return pad == 0 ? def : pad; }
+
+  int width = -1;
+  int precision = -1;
+  char pad = 0;
+  char str_case = 0;
+  bool abbreviate = false;
+  bool decimal = false;
+
+};
+
+
 class Format
 {
 public:

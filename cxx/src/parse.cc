@@ -10,6 +10,8 @@
 namespace ora {
 
 using namespace ora::lib;
+using ora::_impl::Modifiers;
+
 using std::string;
 
 //------------------------------------------------------------------------------
@@ -56,6 +58,68 @@ skip_modifiers(
 
   // Unrechable.
   return false;
+}
+
+
+/*
+ * Parses modifiers after % and before the type character.
+ *
+ * Note that width, precision, and padding are ignored when parsing.
+ */
+// FIXME: This should be unified with the version in format.cc.
+Modifiers
+parse_modifiers(
+  char const*& p)
+{
+  Modifiers mods;
+  while (true)
+    switch (*p) {
+    case '.':
+      if (mods.decimal)
+        // Already saw a decimal point in this escape.
+        throw ValueError("second decimal point in escape");
+      else {
+        mods.decimal = true;
+        p++;
+      }
+      break;
+
+    case '0': case '1': case '2': case '3': case '4':
+    case '5': case '6': case '7': case '8': case '9':
+      // Note: width and precision not used in parsing.
+      {
+        int value = *p++ - '0';
+        while (*p >= '0' && *p <= '9')
+          value = value * 10 + (*p++ - '0');
+        if (mods.decimal)
+          mods.precision = value;
+        else
+          mods.width = value;
+      }
+      break;
+
+    case '#':
+      p++;
+      if (*p == 0)
+        throw ValueError("unterminated escape in pattern");
+      mods.pad = *p++;
+      break;
+
+    case '^':
+    case '_':
+      mods.str_case = *p++;
+      break;
+
+    case '~':
+      mods.abbreviate = true;
+      p++;
+      break;
+
+    default:
+      // Not a modifier.  Stop.
+      return mods;
+
+    }
 }
 
 
@@ -436,25 +500,75 @@ parse_date_parts(
           // Didn't match %.
           return false;
 
-      skip_modifiers(p);
+      auto const mods = parse_modifiers(p);
 
       switch (*p) {
-      case 'A': TRY(parse_weekday_name(s, parts.week_date.weekday)); break;
-      case 'a': TRY(parse_weekday_abbr(s, parts.week_date.weekday)); break;
-      case 'B': TRY(parse_month_name(s, parts.ymd_date.month)); break;
-      case 'b': TRY(parse_month_abbr(s, parts.ymd_date.month)); break;
-      case 'D': TRY(parse_iso_date(s, parts.ymd_date)); break;
-      case 'd': TRY(parse_day(s, parts.ymd_date.day)); break;
-      case 'G': TRY(parse_year(s, parts.week_date.week_year)); break;
-      case 'g': TRY(parse_two_digit_year(s, parts.week_date.week_year)); break;
-      case 'j': TRY(parse_ordinal(s, parts.ordinal_date.ordinal)); break;
-      case 'm': TRY(parse_month(s, parts.ymd_date.month)); break;
-      case 'u': TRY(parse_weekday_iso(s, parts.week_date.weekday)); break;
-      case 'V': TRY(parse_week(s, parts.week_date.week)); break;
-      case 'w': TRY(parse_weekday_unix(s, parts.week_date.weekday)); break;
-      case 'Y': TRY(parse_year(s, parts.ymd_date.year)); 
-                parts.ordinal_date.year = parts.ymd_date.year; break;
-      case 'y': TRY(parse_two_digit_year(s, parts.ymd_date.year)); break;
+      case 'A': 
+        TRY(
+          mods.abbreviate
+          ? parse_weekday_abbr(s, parts.week_date.weekday)
+          : parse_weekday_name(s, parts.week_date.weekday));
+        break;
+
+      case 'a':
+        TRY(parse_weekday_abbr(s, parts.week_date.weekday));
+        break;
+
+      case 'B':
+        TRY(
+          mods.abbreviate
+          ? parse_month_abbr(s, parts.ymd_date.month)
+          : parse_month_name(s, parts.ymd_date.month));
+        break;
+
+      case 'b':
+        TRY(parse_month_abbr(s, parts.ymd_date.month));
+        break;
+
+      case 'D':
+        TRY(parse_iso_date(s, parts.ymd_date, mods.abbreviate));
+        break;
+
+      case 'd':
+        TRY(parse_day(s, parts.ymd_date.day));
+        break;
+
+      case 'G':
+        TRY(parse_year(s, parts.week_date.week_year));
+        break;
+
+      case 'g':
+        TRY(parse_two_digit_year(s, parts.week_date.week_year));
+        break;
+
+      case 'j':
+        TRY(parse_ordinal(s, parts.ordinal_date.ordinal));
+        break;
+
+      case 'm':
+        TRY(parse_month(s, parts.ymd_date.month));
+        break;
+
+      case 'u':
+        TRY(parse_weekday_iso(s, parts.week_date.weekday));
+        break;
+
+      case 'V':
+        TRY(parse_week(s, parts.week_date.week));
+        break;
+
+      case 'w':
+        TRY(parse_weekday_unix(s, parts.week_date.weekday));
+        break;
+
+      case 'Y': 
+        TRY(parse_year(s, parts.ymd_date.year)); 
+        parts.ordinal_date.year = parts.ymd_date.year;
+        break;
+
+      case 'y':
+        TRY(parse_two_digit_year(s, parts.ymd_date.year));
+        break;
 
       default:
         return false;

@@ -1,6 +1,7 @@
 # Tactical
 
-- fix `parse_date("%~D", "20200129")` etc.
+- modifiers in daytime parsing
+- modifiers in time parsing
 - formatting and parsing for time zone name: `%Z`
 - convert np.datetime64[D] -> Date
 - convert np.datetime64[*] -> Time
@@ -107,8 +108,6 @@
 # Projects
 
 1. Initial Python documentation
-   - formatting
-   - parsing
    - philosophy
    - tour
 

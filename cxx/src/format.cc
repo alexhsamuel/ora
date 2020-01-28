@@ -11,6 +11,7 @@
 namespace ora {
 
 using namespace ora::lib;
+using ora::_impl::Modifiers;
 
 using std::string;
 
@@ -19,31 +20,6 @@ using std::string;
 //------------------------------------------------------------------------------
 
 namespace {
-
-/**
- * Helper class to hold modifier state in an escape sequence.
- */
-struct Modifiers
-{
-  /**
-   * Returns the numeric width, or a default value if it's not set.
-   */
-  int get_width(int def) const { return width == -1 ? def : width; }
-  
-  /**
-   * Returns the pad character, or a default value if it's not set.
-   */
-  char get_pad(char def) const { return pad == 0 ? def : pad; }
-
-  int width = -1;
-  int precision = -1;
-  char pad = 0;
-  char str_case = 0;
-  bool abbreviate = false;
-  bool decimal = false;
-
-};
-
 
 bool
 parse_modifiers(
@@ -168,14 +144,14 @@ format_date(
     sb.format(date.ymd_date.day, mods.get_width(2), mods.get_pad('0'));
     break;
 
-  case 'g':
-    sb.format(
-      date.week_date.week_year % 100, mods.get_width(2), mods.get_pad('0'));
-    break;
-
   case 'G':
     sb.format(
       date.week_date.week_year, mods.get_width(4), mods.get_pad('0'));
+    break;
+
+  case 'g':
+    sb.format(
+      date.week_date.week_year % 100, mods.get_width(2), mods.get_pad('0'));
     break;
 
   case 'j':
@@ -188,15 +164,15 @@ format_date(
       date.ymd_date.month, mods.get_width(2), mods.get_pad('0'));
     break;
 
-  case 'V':
-    sb.format(
-      date.week_date.week, mods.get_width(2), mods.get_pad('0'));
-    break;
-
   case 'u':
     sb.format(
       weekday::ENCODING_ISO::encode(date.week_date.weekday),
       mods.get_width(1), mods.get_pad('0'));
+    break;
+
+  case 'V':
+    sb.format(
+      date.week_date.week, mods.get_width(2), mods.get_pad('0'));
     break;
 
   case 'w':
@@ -680,6 +656,8 @@ get_weekday_name(
 }
 
 
+// FIXME: Move parsing functions to parse.cc.
+
 TimeZoneOffset
 parse_time_zone_offset_letter(
   char const letter)
@@ -691,17 +669,6 @@ parse_time_zone_offset_letter(
 }
 
 
-Weekday 
-parse_weekday_name(
-  string const& str)
-{
-  for (Weekday weekday = 0; weekday < 7; ++weekday)
-    if (weekday_names[weekday] == str)
-      return weekday;
-  throw ValueError(string("bad weekday name: ") + str);
-}
-
-
 bool
 parse_weekday_name(
   char const*& p,
@@ -709,13 +676,26 @@ parse_weekday_name(
 {
   for (Weekday w = 0; w < 7; ++w) {
     auto const& name = weekday_names[w];
-    if (strncmp(name.c_str(), p, name.length()) == 0) {
+    if (strncasecmp(name.c_str(), p, name.length()) == 0) {
       p += name.length();
       weekday = w;
       return true;
     }
   }
   return false;
+}
+
+
+Weekday 
+parse_weekday_name(
+  string const& str)
+{
+  Weekday weekday;
+  char const* p = str.c_str();
+  if (parse_weekday_name(p, weekday))
+    return weekday;
+  else
+    throw ValueError(string("bad weekday name: ") + str);
 }
 
 
@@ -729,17 +709,6 @@ get_weekday_abbr(
 }
 
 
-Weekday 
-parse_weekday_abbr(
-  string const& str)
-{
-  for (Weekday weekday = 0; weekday < 7; ++weekday)
-    if (weekday_abbrs[weekday] == str)
-      return weekday;
-  throw ValueError(string("bad weekday abbr: ") + str);
-}
-
-
 bool
 parse_weekday_abbr(
   char const*& p,
@@ -747,13 +716,26 @@ parse_weekday_abbr(
 {
   for (Weekday w = 0; w < 7; ++w) {
     auto const& abbr = weekday_abbrs[w];
-    if (strncmp(abbr.c_str(), p, abbr.length()) == 0) {
+    if (strncasecmp(abbr.c_str(), p, abbr.length()) == 0) {
       p += abbr.length();
       weekday = w;
       return true;
     }
   }
   return false;
+}
+
+
+Weekday 
+parse_weekday_abbr(
+  string const& str)
+{
+  Weekday weekday;
+  char const* p = str.c_str();
+  if (parse_weekday_abbr(p, weekday))
+    return weekday;
+  else
+    throw ValueError(string("bad weekday abbr: ") + str);
 }
 
 

@@ -133,3 +133,29 @@ def test_ordinal():
     assert parse_date("%Y-%j", "2020-366") == Date(2020, 12, 31)
 
 
+@pytest.mark.parametrize("fmt", (
+        "%Y%m%d",
+        "%Y-%m-%d",
+        "%m/%d/%Y",
+        "%B/%d/%Y",
+        "%b/%d/%Y",
+        "%~B/%d/%Y",
+        "%D",
+        "%~D",
+        "%A %D",
+        "%~A %D",
+        "%^A %D",
+        "%^a %D",
+        "%_A %D",
+        "%~_A %D",
+        "%a %D",
+        "%G-W%V-%u",
+        "%Y-%j",
+))
+def test_parse_roundtrip(fmt):
+    d = Date(2020, 1, 28)
+    str = format(d, fmt)
+    print(f"{fmt} → {str}")
+    assert parse_date(fmt, str) == d
+
+
