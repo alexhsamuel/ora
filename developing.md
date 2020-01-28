@@ -112,3 +112,7 @@ twine upload wheels/ora-0.3.7-cp37-cp37m-manylinux2014_x86_64.whl
 ```
 
 
+# Talks
+
+Talks and other media are on the `gh-pages` branch and available at 
+http://alexhsamuel.github.io.
