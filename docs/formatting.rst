@@ -175,4 +175,7 @@ a time zone or UTC offset, you must specify the time zone explicitly.
     >>> parse_time("%DT%C", "2018-07-12T11:30:20", time_zone="America/New_York")
     ora.Time(2018, 7, 12, 15, 30, 20.00000000, UTC)
 
+The parse functions honor the `\~` abbreviation modifier for month and weekday
+names and ISO formats.  The other modifiers are ignored.
+
 
