@@ -647,16 +647,36 @@ bool parse_daytime_parts(
           // Didn't match %.
           return false;
 
-      skip_modifiers(p);
+      auto const mods = parse_modifiers(p);
 
       switch (*p) {
-      case 'C': TRY(parse_iso_daytime(s, hms)); break;
-      case 'f': TRY(parse_usec(s, extra.usec)); break;
-      case 'H': TRY(parse_hour(s, hms.hour)); break;
-      case 'I': TRY(parse_hour12(s, extra.hour_12)); break;
-      case 'M': TRY(parse_minute(s, hms.minute)); break;
-      case 'p': TRY(parse_am_pm(s, extra.am_pm)); break;
-      case 'S': TRY(parse_second(s, hms.second)); break;
+      case 'C':
+        TRY(parse_iso_daytime(s, hms, mods.abbreviate));
+        break;
+
+      case 'f':
+        TRY(parse_usec(s, extra.usec));
+        break;
+
+      case 'H':
+        TRY(parse_hour(s, hms.hour));
+        break;
+
+      case 'I':
+        TRY(parse_hour12(s, extra.hour_12));
+        break;
+
+      case 'M':
+        TRY(parse_minute(s, hms.minute));
+        break;
+
+      case 'p':
+        TRY(parse_am_pm(s, extra.am_pm));
+        break;
+
+      case 'S':
+        TRY(parse_second(s, hms.second));
+        break;
 
       default:
         return false;
@@ -736,33 +756,109 @@ parse_time_parts(
           // Didn't match %.
           return false;
 
-      skip_modifiers(p);
+      auto const mods = parse_modifiers(p);
 
       switch (*p) {
-      case 'A': TRY(parse_weekday_name(s, date.week_date.weekday)); break;
-      case 'a': TRY(parse_weekday_abbr(s, date.week_date.weekday)); break;
-      case 'B': TRY(parse_month_name(s, date.ymd_date.month)); break;
-      case 'b': TRY(parse_month_abbr(s, date.ymd_date.month)); break;
-      case 'D': TRY(parse_iso_date(s, date.ymd_date)); break;
-      case 'd': TRY(parse_day(s, date.ymd_date.day)); break;
-      case 'G': TRY(parse_year(s, date.week_date.week_year)); break;
-      case 'g': TRY(parse_two_digit_year(s, date.week_date.week_year)); break;
-      case 'j': TRY(parse_ordinal(s, date.ordinal_date.ordinal)); break;
-      case 'm': TRY(parse_month(s, date.ymd_date.month)); break;
-      case 'u': TRY(parse_weekday_iso(s, date.week_date.weekday)); break;
-      case 'V': TRY(parse_week(s, date.week_date.week)); break;
-      case 'w': TRY(parse_weekday_unix(s, date.week_date.weekday)); break;
-      case 'Y': TRY(parse_year(s, date.ymd_date.year)); 
-                date.ordinal_date.year = date.ymd_date.year; break;
-      case 'y': TRY(parse_two_digit_year(s, date.ymd_date.year)); break;
+      // Date parts --------------------
 
-      case 'C': TRY(parse_iso_daytime(s, hms)); break;
-      case 'f': TRY(parse_usec(s, extra.usec)); break;
-      case 'H': TRY(parse_hour(s, hms.hour)); break;
-      case 'I': TRY(parse_hour12(s, extra.hour_12)); break;
-      case 'M': TRY(parse_minute(s, hms.minute)); break;
-      case 'p': TRY(parse_am_pm(s, extra.am_pm)); break;
-      case 'S': TRY(parse_second(s, hms.second)); break;
+      case 'A': 
+        TRY(
+          mods.abbreviate
+          ? parse_weekday_abbr(s, date.week_date.weekday)
+          : parse_weekday_name(s, date.week_date.weekday));
+        break;
+
+      case 'a':
+        TRY(parse_weekday_abbr(s, date.week_date.weekday));
+        break;
+
+      case 'B':
+        TRY(
+          mods.abbreviate
+          ? parse_month_abbr(s, date.ymd_date.month)
+          : parse_month_name(s, date.ymd_date.month));
+        break;
+
+      case 'b':
+        TRY(parse_month_abbr(s, date.ymd_date.month));
+        break;
+
+      case 'D':
+        TRY(parse_iso_date(s, date.ymd_date, mods.abbreviate));
+        break;
+
+      case 'd':
+        TRY(parse_day(s, date.ymd_date.day));
+        break;
+
+      case 'G':
+        TRY(parse_year(s, date.week_date.week_year));
+        break;
+
+      case 'g':
+        TRY(parse_two_digit_year(s, date.week_date.week_year));
+        break;
+
+      case 'j':
+        TRY(parse_ordinal(s, date.ordinal_date.ordinal));
+        break;
+
+      case 'm':
+        TRY(parse_month(s, date.ymd_date.month));
+        break;
+
+      case 'u':
+        TRY(parse_weekday_iso(s, date.week_date.weekday));
+        break;
+
+      case 'V':
+        TRY(parse_week(s, date.week_date.week));
+        break;
+
+      case 'w':
+        TRY(parse_weekday_unix(s, date.week_date.weekday));
+        break;
+
+      case 'Y': 
+        TRY(parse_year(s, date.ymd_date.year)); 
+        date.ordinal_date.year = date.ymd_date.year;
+        break;
+
+      case 'y':
+        TRY(parse_two_digit_year(s, date.ymd_date.year));
+        break;
+
+      // Daytime parts --------------------
+
+      case 'C':
+        TRY(parse_iso_daytime(s, hms, mods.abbreviate));
+        break;
+
+      case 'f':
+        TRY(parse_usec(s, extra.usec));
+        break;
+
+      case 'H':
+        TRY(parse_hour(s, hms.hour));
+        break;
+
+      case 'I':
+        TRY(parse_hour12(s, extra.hour_12));
+        break;
+
+      case 'M':
+        TRY(parse_minute(s, hms.minute));
+        break;
+
+      case 'p':
+        TRY(parse_am_pm(s, extra.am_pm));
+        break;
+
+      case 'S':
+        TRY(parse_second(s, hms.second));
+        break;
+
+      // Time zone parts --------------------
 
       case 'E': TRY(parse_tz_offset(s, tz.offset)); break;
       case 'e': TRY(parse_tz_offset_letter(s, tz.offset)); break;

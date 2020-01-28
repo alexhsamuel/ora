@@ -136,3 +136,17 @@ def test_parse_time_iso_invalid():
         parse_time_iso(None)
 
 
+@pytest.mark.parametrize("fmt", (
+    "%.3i",
+    "%Y-%m-%d %H%M%.3S %E",
+    "%Y%m%d %H:%M:%.3S %z",
+    "%D %.3C %~Z",
+    "%~D %~.3C %~Z",
+))
+def test_parse_roundtrip(fmt):
+    t = Time(2020, 1, 28, 12, 30, 45.125, UTC)
+    str = format(t, fmt)
+    print(f"{fmt} → {str}")
+    assert parse_time(fmt, str) == t
+
+

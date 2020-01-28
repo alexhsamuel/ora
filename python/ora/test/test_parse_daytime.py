@@ -91,3 +91,21 @@ def test_12hour():
     assert parse_daytime("%I:%M %p", "11:59 PM" ) == Daytime(23, 59,  0)
 
 
+@pytest.mark.parametrize("fmt", (
+    "%H%M%.3S",
+    "%H:%M:%.3S",
+    "%.3C",
+    "%~.3C",
+    "%.4~C",
+    "%.5C",
+    "%I:%M:%.3S %p",
+    "%I:%M:%.3S %_p",
+    "%I:%M:%.3S %^p",
+))
+def test_parse_roundtrip(fmt):
+    y = Daytime(12, 30, 45.125)
+    str = format(y, fmt)
+    print(f"{fmt} → {str}")
+    assert parse_daytime(fmt, str) == y
+
+

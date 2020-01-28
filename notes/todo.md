@@ -1,7 +1,5 @@
 # Tactical
 
-- modifiers in daytime parsing
-- modifiers in time parsing
 - formatting and parsing for time zone name: `%Z`
 - convert np.datetime64[D] -> Date
 - convert np.datetime64[*] -> Time
