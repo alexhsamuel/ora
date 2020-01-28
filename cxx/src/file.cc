@@ -38,6 +38,7 @@ load_text(
   int const fd = xopen(filename, O_RDONLY);
   size_t const num_read = xread(fd, buffer, size);
   assert(num_read == size);
+  xclose(fd);
   // FIXME: Do we need this copy?
   return string(buffer, size);
 }
