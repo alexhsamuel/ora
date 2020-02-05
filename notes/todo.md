@@ -5,7 +5,9 @@
 - convert np.datetime64[*] -> Time
 - convert Date -> np.datetime64[D]
 - convert Time -> np.datetime64[ns]
-- Release 0.4.0.a
+
+- calendar iteration
+- calendar slices
 
 
 # Small problems
