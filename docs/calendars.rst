@@ -161,7 +161,7 @@ Arithmetic
 ----------
 
 A calendar is, in a sense, a boolean mask over the dates in its range.
-Calendars can be combined using bitwide arithmetic.
+Calendars can be combined using bitwise arithmetic.
 
 The `~` operator returns an inverted calendar, with dates in the range *not* in
 the original calendar.
