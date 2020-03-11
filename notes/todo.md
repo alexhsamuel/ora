@@ -34,6 +34,10 @@
 
 - [Hypothesis](https://hypothesis.readthedocs.io/en/latest/) tests
 
+- faster double parsing
+  - https://github.com/lemire/fast_double_parser
+
+
 # Miscellaneous Work List
 
 1. Rounding functions.
