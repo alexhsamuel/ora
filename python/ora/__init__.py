@@ -96,7 +96,7 @@ TIME_TYPES = frozenset((
     NsTime,
     SmallTime,
     Time,
-    Time,
+    Time128,
     Unix32Time,
     Unix64Time,
 ))
