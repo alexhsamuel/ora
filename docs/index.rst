@@ -4,16 +4,20 @@ Ora, a time and date library
 Overview
 --------
 
+Ora is a complete implementation of dates and times for Python and NumPy.
+
 - A concise, ergonomic API centered around physical times and localization.
+- Fast and easy formatting and parsing.
 - Batteries included: time zones, calendars.
-- Full NumPy support for times and dates and their functions.
 - High performance, as good or better than other implementations.
+- NumPy dtypes for date and time types, with ufunc/vectorized operations.
 
 Ora also provides some advanced and experimental features, such as time and date
 types in multiple widths; calendars; and C++ library support.
 
 Ora is not a drop-in replacement for `datetime` or other Python time libraries,
 but supports easy interoperability.
+
 
 Source
 ------
