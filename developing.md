@@ -76,7 +76,7 @@ twine upload dist/ora-...tar.gz
 
 ```
 make clean; rm -rf build
-python setup.py bdist_wheel upload
+python setup.py bdist_wheel
 conda build conda-recipe --python 3.6
 anaconda upload ...
 ```
