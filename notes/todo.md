@@ -1,5 +1,6 @@
 # Tactical
 
+- `str(t @ tz)` should show time zone offset
 - formatting and parsing for time zone name: `%Z`
 - convert np.datetime64[D] -> Date
 - convert np.datetime64[*] -> Time
