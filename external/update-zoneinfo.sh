@@ -23,7 +23,7 @@ curl https://data.iana.org/time-zones/releases/tzdb-$version.tar.lz -O
 tar xf tzdb-$version.tar.lz
 cd tzdb-$version
 
-make LOCALTIME=UTC TOPDIR=$tmpdir/install INSTALL
+make LOCALTIME=UTC AWK=gawk TOPDIR=$tmpdir/install INSTALL
 
 rm -rf "$zoneinfo"
 cp -r $tmpdir/install/usr/share/zoneinfo "$zoneinfo"
