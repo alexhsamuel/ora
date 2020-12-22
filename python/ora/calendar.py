@@ -153,6 +153,7 @@ def get_calendar(name):
     - A weekday expression; see `parse_weekdays`.
     - The name of a calendar in the global calendar directory.
     """
+    name = str(name)
     try:
         return _get_special_calendar(name)
     except LookupError:
