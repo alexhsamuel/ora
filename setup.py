@@ -67,7 +67,7 @@ setup(
         "License :: OSI Approved :: BSD License",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
-    ],    
+    ],
 
     python_requires='>=3.6',
     install_requires=[
@@ -85,8 +85,9 @@ setup(
         Extension(
             "ora.ext",
             extra_compile_args=[
-                "-std=c++14", 
-                "-fdiagnostics-color=always", 
+                "-std=c++14",
+                "-fdiagnostics-color=always",
+                "-Wno-dangling-else",
             ],
             include_dirs      =[
                 "cxx/include",
@@ -94,8 +95,8 @@ setup(
                 *get_numpy_include_dirs(),
             ],
             sources           =glob("python/ora/ext/*.cc"),
-            library_dirs      =["cxx/src",],
-            libraries         =["ora",],
+            library_dirs      =["cxx/src", ],
+            libraries         =["ora", ],
             depends           =[
                 *glob("cxx/include/*.hh"),
                 *glob("python/ora/ext/*.hh"),

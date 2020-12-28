@@ -254,29 +254,29 @@ TimeDtype<PYTIME>::set_up(
   // Arithmetic by seconds.
   create_or_get_ufunc(np_module, "add", 2, 1)->add_loop_2(
     type_num, NPY_FLOAT64, type_num,
-    ufunc_loop_2<Time, float64_t, Time, add>);
+    (PyUFuncGenericFunction) ufunc_loop_2<Time, float64_t, Time, add>);
   create_or_get_ufunc(np_module, "add", 2, 1)->add_loop_2(
     NPY_FLOAT64, type_num, type_num,
-    ufunc_loop_2<float64_t, Time, Time, add>);
+    (PyUFuncGenericFunction) ufunc_loop_2<float64_t, Time, Time, add>);
   create_or_get_ufunc(np_module, "add", 2, 1)->add_loop_2(
     type_num, NPY_INT64, type_num,
-    ufunc_loop_2<Time, int64_t, Time, add>);
+    (PyUFuncGenericFunction) ufunc_loop_2<Time, int64_t, Time, add>);
   create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
     type_num, NPY_FLOAT64, type_num,
-    ufunc_loop_2<Time, float64_t, Time, subtract>);
+    (PyUFuncGenericFunction) ufunc_loop_2<Time, float64_t, Time, subtract>);
   create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
     type_num, type_num, NPY_FLOAT64, 
-    ufunc_loop_2<Time, Time, float64_t, subtract>);
+    (PyUFuncGenericFunction) ufunc_loop_2<Time, Time, float64_t, subtract>);
 
   // Conversion to offset; not available for 128-bit integer types.
   if (offset_type_num != -1)
     create_or_get_ufunc(module, "to_offset", 1, 1)->add_loop_1(
       type_num, offset_type_num,
-      ufunc_loop_1<Time, Offset, ora::time::nex::get_offset<Time>>);
+      (PyUFuncGenericFunction) ufunc_loop_1<Time, Offset, ora::time::nex::get_offset<Time>>);
 
   create_or_get_ufunc(module, "is_valid", 1, 1)->add_loop_1(
       type_num, NPY_BOOL,
-      ufunc_loop_1<Time, bool, ora::time::nex::is_valid>);
+      (PyUFuncGenericFunction) ufunc_loop_1<Time, bool, ora::time::nex::is_valid>);
 }
 
 

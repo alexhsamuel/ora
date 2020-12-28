@@ -354,7 +354,7 @@ create_or_get_ufunc(
 /*
  * Wraps a unary function `FN(ARG0) -> RET0` in a ufunc loop function
  */
-template<class ARG0, class RET0, RET0 (*FN)(ARG0)>
+template<class ARG0, class RET0, RET0 (*FN)(ARG0 const) noexcept>
 void
 ufunc_loop_1(
   char** const args,
@@ -422,22 +422,22 @@ public:
 
     create_or_get_ufunc(np_module, "equal", 2, 1)->add_loop_2(
       type_num, type_num, NPY_BOOL,
-      ufunc_loop_2<TYPE, TYPE, npy_bool, equal>);
+      (PyUFuncGenericFunction) ufunc_loop_2<TYPE, TYPE, npy_bool, equal>);
     create_or_get_ufunc(np_module, "not_equal", 2, 1)->add_loop_2(
       type_num, type_num, NPY_BOOL,
-      ufunc_loop_2<TYPE, TYPE, npy_bool, not_equal>);
+      (PyUFuncGenericFunction) ufunc_loop_2<TYPE, TYPE, npy_bool, not_equal>);
     create_or_get_ufunc(np_module, "less", 2, 1)->add_loop_2(
       type_num, type_num, NPY_BOOL,
-      ufunc_loop_2<TYPE, TYPE, npy_bool, less>);
+      (PyUFuncGenericFunction) ufunc_loop_2<TYPE, TYPE, npy_bool, less>);
     create_or_get_ufunc(np_module, "less_equal", 2, 1)->add_loop_2(
       type_num, type_num, NPY_BOOL,
-      ufunc_loop_2<TYPE, TYPE, npy_bool, less_equal>);
+      (PyUFuncGenericFunction) ufunc_loop_2<TYPE, TYPE, npy_bool, less_equal>);
     create_or_get_ufunc(np_module, "greater", 2, 1)->add_loop_2(
       type_num, type_num, NPY_BOOL,
-      ufunc_loop_2<TYPE, TYPE, npy_bool, greater>);
+      (PyUFuncGenericFunction) ufunc_loop_2<TYPE, TYPE, npy_bool, greater>);
     create_or_get_ufunc(np_module, "greater_equal", 2, 1)->add_loop_2(
       type_num, type_num, NPY_BOOL,
-      ufunc_loop_2<TYPE, TYPE, npy_bool, greater_equal>);
+      (PyUFuncGenericFunction) ufunc_loop_2<TYPE, TYPE, npy_bool, greater_equal>);
   }
 
 private:
