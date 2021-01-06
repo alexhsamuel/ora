@@ -217,38 +217,38 @@ DaytimeDtype<PYDAYTIME>::add(
   // Add ufunc loops.
   create_or_get_ufunc(module, "get_hour", 1, 1)->add_loop_1(
     dtype->type_num, NPY_UINT8,
-    ufunc_loop_1<Daytime, uint8_t, ora::daytime::nex::get_hour>);
+    (PyUFuncGenericFunction) ufunc_loop_1<Daytime, uint8_t, ora::daytime::nex::get_hour>);
   create_or_get_ufunc(module, "get_minute", 1, 1)->add_loop_1(
     dtype->type_num, NPY_UINT8,
-    ufunc_loop_1<Daytime, uint8_t, ora::daytime::nex::get_minute>);
+    (PyUFuncGenericFunction) ufunc_loop_1<Daytime, uint8_t, ora::daytime::nex::get_minute>);
   create_or_get_ufunc(module, "get_second", 1, 1)->add_loop_1(
     dtype->type_num, NPY_FLOAT64,
-    ufunc_loop_1<Daytime, double, ora::daytime::nex::get_second>);
+    (PyUFuncGenericFunction) ufunc_loop_1<Daytime, double, ora::daytime::nex::get_second>);
   create_or_get_ufunc(module, "get_ssm", 1, 1)->add_loop_1(
     dtype->type_num, NPY_FLOAT64,
-    ufunc_loop_1<Daytime, double, ora::daytime::nex::get_ssm>);
+    (PyUFuncGenericFunction) ufunc_loop_1<Daytime, double, ora::daytime::nex::get_ssm>);
   create_or_get_ufunc(module, "get_hms", 1, 1)->add_loop_1(
     dtype, get_hms_dtype(),
-    ufunc_loop_1<Daytime, ora::HmsDaytimePacked, ora::daytime::nex::get_hms_packed<Daytime>>);
+    (PyUFuncGenericFunction) ufunc_loop_1<Daytime, ora::HmsDaytimePacked, ora::daytime::nex::get_hms_packed<Daytime>>);
 
   create_or_get_ufunc(np_module, "add", 2, 1)->add_loop_2(
     dtype->type_num, NPY_FLOAT64, dtype->type_num,
-    ufunc_loop_2<Daytime, double, Daytime, add>);
+    (PyUFuncGenericFunction) ufunc_loop_2<Daytime, double, Daytime, add>);
   create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
     dtype->type_num, NPY_FLOAT64, dtype->type_num,
-    ufunc_loop_2<Daytime, double, Daytime, subtract_before>);
+    (PyUFuncGenericFunction) ufunc_loop_2<Daytime, double, Daytime, subtract_before>);
   create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
     dtype->type_num, dtype->type_num, NPY_FLOAT64,
-    ufunc_loop_2<Daytime, Daytime, double, subtract_between>);
+    (PyUFuncGenericFunction) ufunc_loop_2<Daytime, Daytime, double, subtract_between>);
 
   static_assert(IntType<Offset>::type_num >= 0, "no type num for offset type");
   create_or_get_ufunc(module, "to_offset", 1, 1)->add_loop_1(
     dtype->type_num, IntType<Offset>::type_num,
-    ufunc_loop_1<Daytime, Offset, ora::daytime::nex::get_offset<Daytime>>);
+    (PyUFuncGenericFunction) ufunc_loop_1<Daytime, Offset, ora::daytime::nex::get_offset<Daytime>>);
 
   create_or_get_ufunc(module, "is_valid", 1, 1)->add_loop_1(
     dtype->type_num, NPY_BOOL,
-    ufunc_loop_1<Daytime, bool, ora::daytime::nex::is_valid>);
+    (PyUFuncGenericFunction) ufunc_loop_1<Daytime, bool, ora::daytime::nex::is_valid>);
 }
 
 

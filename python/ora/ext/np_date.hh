@@ -258,31 +258,31 @@ DateDtype<PYDATE>::add(
     module, "get_day", 1, 1, docstring::np_date::get_day
     )->add_loop_1(
       dtype->type_num, NPY_UINT8, 
-      ufunc_loop_1<Date, npy_bool, ora::date::nex::get_day<Date>>);
+      (PyUFuncGenericFunction) ufunc_loop_1<Date, Day, ora::date::nex::get_day<Date>>);
   create_or_get_ufunc(module, "get_month", 1, 1)->add_loop_1(
     dtype->type_num, NPY_UINT8, 
-    ufunc_loop_1<Date, npy_bool, ora::date::nex::get_month<Date>>);
+    (PyUFuncGenericFunction) ufunc_loop_1<Date, Month, ora::date::nex::get_month<Date>>);
   create_or_get_ufunc(module, "get_ordinal_date", 1, 1)->add_loop_1(
     dtype, get_ordinal_date_dtype(),
-    ufunc_loop_1<Date, ora::OrdinalDate, ora::date::nex::get_ordinal_date<Date>>);
+    (PyUFuncGenericFunction) ufunc_loop_1<Date, ora::OrdinalDate, ora::date::nex::get_ordinal_date<Date>>);
   create_or_get_ufunc(module, "get_week_date", 1, 1)->add_loop_1(
     dtype, get_week_date_dtype(),
-    ufunc_loop_1<Date, ora::WeekDate, ora::date::nex::get_week_date<Date>>);
+    (PyUFuncGenericFunction) ufunc_loop_1<Date, ora::WeekDate, ora::date::nex::get_week_date<Date>>);
   create_or_get_ufunc(module, "get_weekday", 1, 1)->add_loop_1(
     dtype->type_num, NPY_UINT8,
-    ufunc_loop_1<Date, npy_bool, ora::date::nex::get_weekday<Date>>);
+    (PyUFuncGenericFunction) ufunc_loop_1<Date, npy_bool, ora::date::nex::get_weekday<Date>>);
   create_or_get_ufunc(module, "get_year", 1, 1)->add_loop_1(
     dtype->type_num, NPY_INT16, 
-    ufunc_loop_1<Date, int16_t, ora::date::nex::get_year<Date>>);
+    (PyUFuncGenericFunction) ufunc_loop_1<Date, int16_t, ora::date::nex::get_year<Date>>);
   create_or_get_ufunc(module, "get_ymd", 1, 1)->add_loop_1(
     dtype, get_ymd_dtype(),
-    ufunc_loop_1<Date, ora::YmdDate, ora::date::nex::get_ymd<Date>>);
+    (PyUFuncGenericFunction) ufunc_loop_1<Date, ora::YmdDate, ora::date::nex::get_ymd<Date>>);
   create_or_get_ufunc(module, "get_ymdi", 1, 1)->add_loop_1(
     dtype->type_num, NPY_INT32, 
-    ufunc_loop_1<Date, int32_t, ora::date::nex::get_ymdi<Date>>);
+    (PyUFuncGenericFunction) ufunc_loop_1<Date, int32_t, ora::date::nex::get_ymdi<Date>>);
   create_or_get_ufunc(module, "is_valid", 1, 1)->add_loop_1(
     dtype->type_num, NPY_BOOL,
-    ufunc_loop_1<Date, npy_bool, is_valid>);
+    (PyUFuncGenericFunction) ufunc_loop_1<Date, npy_bool, is_valid>);
 
   Comparisons<Date, ora::date::nex::equal, ora::date::nex::before>
     ::register_loops(dtype->type_num);
@@ -290,22 +290,22 @@ DateDtype<PYDATE>::add(
   // Add ufunc loops.
   create_or_get_ufunc(np_module, "add", 2, 1)->add_loop_2(
     dtype->type_num, NPY_INT64, dtype->type_num,
-    ufunc_loop_2<Date, int64_t, Date, add>);
+    (PyUFuncGenericFunction) ufunc_loop_2<Date, int64_t, Date, add>);
   create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
     dtype->type_num, NPY_INT64, dtype->type_num,
-    ufunc_loop_2<Date, int64_t, Date, subtract_before>);
+    (PyUFuncGenericFunction) ufunc_loop_2<Date, int64_t, Date, subtract_before>);
   create_or_get_ufunc(np_module, "subtract", 2, 1)->add_loop_2(
     dtype->type_num, dtype->type_num, NPY_INT32,
-    ufunc_loop_2<Date, Date, int32_t, subtract_between>);
+    (PyUFuncGenericFunction) ufunc_loop_2<Date, Date, int32_t, subtract_between>);
 
   static_assert(IntType<Offset>::type_num >= 0, "no type num for offset type");
   create_or_get_ufunc(module, "to_offset", 1, 1)->add_loop_1(
     dtype->type_num, IntType<Offset>::type_num,
-    ufunc_loop_1<Date, Offset, ora::date::nex::get_offset<Date>>);
+    (PyUFuncGenericFunction) ufunc_loop_1<Date, Offset, ora::date::nex::get_offset<Date>>);
 
   create_or_get_ufunc(module, "is_valid", 1, 1)->add_loop_1(
     dtype->type_num, NPY_BOOL,
-    ufunc_loop_1<Date, bool, ora::date::nex::is_valid>);
+    (PyUFuncGenericFunction) ufunc_loop_1<Date, bool, ora::date::nex::is_valid>);
 }
 
 
