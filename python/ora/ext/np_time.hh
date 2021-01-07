@@ -341,6 +341,37 @@ TimeDtype<PYTIME>::cast_from_object(
 }
 
 
+template<>
+inline void
+TimeDtype<PyTime<Time128>>::cast_from_datetime(
+  int64_t const* from,
+  Time128* to,
+  npy_intp num,
+  Array* from_arr,
+  Array* /* unused */)
+{
+  if (PRINT_ARR_FUNCS)
+    std::cerr << "cast_from_datetime\n";
+  int64_t const den = get_datetime64_denominator(from_arr->descr());
+  if (den < 0) {
+    // FIXME: Raising here dumps core; not sure why.
+    // PyErr_SetString(PyExc_TypeError, "can't cast from datetime");
+    // Maybe a warning instead?
+    for (; num > 0; --num, ++to)
+      *to = Time128::INVALID;
+    return;
+  }
+
+  for (; num > 0; --num, ++from, ++to)
+    if (*from == DATETIME64_NAT)
+      *to = Time128::INVALID;
+    else
+      *to = ora::time::nex::from_offset<Time>(
+          (int128_t(*from) * int128_t(Time128::DENOMINATOR) / den)
+        + int128_t(Time128::DENOMINATOR * DATENUM_UNIX_EPOCH * SECS_PER_DAY));
+}
+
+
 template<class PYTIME>
 void
 TimeDtype<PYTIME>::cast_from_datetime(

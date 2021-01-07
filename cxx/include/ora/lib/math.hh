@@ -154,7 +154,15 @@ rescale_int(
   T0 const old_den,
   T1 const new_den)
 {
-  if (old_den % new_den == 0)
+  if (val == 0)
+    return 0;
+  else if (old_den == (T0) new_den)
+    return val;
+  else if (old_den == 1)
+    return val * new_den;
+  else if (new_den == 1)
+    return round_div(val, old_den);
+  else if (old_den % new_den == 0)
     return round_div(val, old_den / (T0) new_den);
   else if (new_den % old_den == 0)
     return val * (new_den / old_den);
