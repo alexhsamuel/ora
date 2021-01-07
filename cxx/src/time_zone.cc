@@ -46,8 +46,7 @@ TimeZone::Entry::Entry(
   parts.is_dst = type.is_dst_;
   // FIXME: This is not future-proof.  Truncate with a warning?
   assert(type.abbreviation_.length() < sizeof(TimeZoneParts::abbreviation));
-  strncpy(parts.abbreviation, type.abbreviation_.c_str(), sizeof(TimeZoneParts::abbreviation));
-  parts.abbreviation[sizeof(TimeZoneParts::abbreviation) - 1] = '\0';
+  strncpy(parts.abbreviation, type.abbreviation_.c_str(), sizeof(TimeZoneParts::abbreviation) - 1);
 }
 
 

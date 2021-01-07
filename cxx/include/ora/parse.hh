@@ -4,6 +4,7 @@
 
 #include "ora/date_functions.hh"
 #include "ora/date_type.hh"
+#include "ora/lib/math.hh"
 #include "ora/localization.hh"
 
 namespace ora {
@@ -89,7 +90,38 @@ template<class TIME>
 TIME
 parse_time_iso(
   char const* string,
-  bool const compact=false)
+  bool const compact=false);
+
+template<>
+inline Time128
+parse_time_iso<Time128>(
+  char const* string,
+  bool const compact)
+{
+  YmdDate ymd;
+  HmsDaytime hms;
+  TimeZoneOffset tz_offset;
+  if (parse_iso_time(string, ymd, hms, tz_offset) && *string == 0) {
+    auto const datenum = ymd_to_datenum(ymd.year, ymd.month, ymd.day);
+    auto const offset = make_uint128(
+          ((uint64_t) datenum) * SECS_PER_DAY
+        + hms.hour * SECS_PER_HOUR
+        + hms.minute * SECS_PER_MIN
+        + (unsigned) hms.second
+        - tz_offset
+      , (uint128_t) ((hms.second - (unsigned) hms.second) * (((uint128_t) 1) << 64))
+    );
+    return Time128::from_offset(offset);
+  }
+  else
+    throw TimeParseError(string);
+}
+
+template<class TIME>
+TIME
+parse_time_iso(
+  char const* string,
+  bool const compact)
 {
   YmdDate ymd;
   HmsDaytime hms;
