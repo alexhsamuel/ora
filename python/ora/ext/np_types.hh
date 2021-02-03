@@ -26,6 +26,7 @@ int constexpr WEEKDAY_TYPE          = NPY_UINT8;
 int constexpr DAYTICK_TYPE          = NPY_UINT64;
 int constexpr DATENUM_TYPE          = NPY_UINT32;
 int constexpr YMDI_TYPE             = NPY_INT32;
+int constexpr HMSF_TYPE             = NPY_FLOAT64;
 int constexpr SSM_TYPE              = NPY_FLOAT64;
 int constexpr TIME_ZONE_OFFSET_TYPE = NPY_INT32;
 int constexpr TIME_OFFSET_TYPE      = NPY_INT64;
