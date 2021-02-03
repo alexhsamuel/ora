@@ -86,6 +86,16 @@ May also be called with a three-element sequence.
 
 """
 
+from_hmsf = """
+Constructs a daytime from a _HMSF_ (HHMMSS.xxx-encoded value).
+
+  >>> Daytime.from_hmsf(123456.78)
+  Daytime(12, 34, 56.7800000000000000)
+
+@signature
+  from_hmsf(hmsf)
+"""
+
 from_ssm = """
 Constructs a daytime from _seconds since midnight_ (SSM).
 

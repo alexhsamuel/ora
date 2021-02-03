@@ -205,6 +205,7 @@ private:
   static ref<Object> method___format__          (PyDaytime*, Tuple*, Dict*);
   static ref<Object> method_from_daytick        (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_hms            (PyTypeObject* type, Tuple* args, Dict* kw_args);
+  static ref<Object> method_from_hmsf           (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static ref<Object> method_from_ssm            (PyTypeObject* type, Tuple* args, Dict* kw_args);
   static Methods<PyDaytime> tp_methods_;
 
@@ -566,6 +567,21 @@ PyDaytime<DAYTIME>::method_from_hms(
 
 template<class DAYTIME>
 ref<Object>
+PyDaytime<DAYTIME>::method_from_hmsf(
+  PyTypeObject* const type,
+  Tuple* const args,
+  Dict* const kw_args)
+{
+  static char const* const arg_names[] = {"hmsf", nullptr};
+  double hmsf;
+  Arg::ParseTupleAndKeywords(args, kw_args, "d", arg_names, &hmsf);
+
+  return create(ora::daytime::from_hmsf<Daytime>(hmsf), type);
+}
+
+
+template<class DAYTIME>
+ref<Object>
 PyDaytime<DAYTIME>::method_from_ssm(
   PyTypeObject* const type,
   Tuple* const args,
@@ -586,6 +602,7 @@ PyDaytime<DAYTIME>::tp_methods_
     .template add<method___format__>                ("__format__")
     .template add_class<method_from_daytick>        ("from_daytick",    docstring::pydaytime::from_daytick)
     .template add_class<method_from_hms>            ("from_hms",        docstring::pydaytime::from_hms)
+    .template add_class<method_from_hmsf>           ("from_hmsf",       docstring::pydaytime::from_hmsf)
     .template add_class<method_from_ssm>            ("from_ssm",        docstring::pydaytime::from_ssm)
   ;
 

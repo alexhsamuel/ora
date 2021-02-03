@@ -83,6 +83,20 @@ from_hms(
 }
 
 
+template<class DAYTIME=Daytime>
+inline DAYTIME
+from_hmsf(
+  double const hmsf)
+  noexcept
+{
+  Hour const hour = hmsf / 10000;
+  auto ms = fmod(hmsf, 10000);
+  Minute const minute = ms / 100;
+  Second const second = fmod(ms, 100);
+  return from_hms(hour, minute, second);
+}
+
+
 template<class DAYTIME=Daytime> inline DAYTIME from_hms(HmsDaytime const& hms) noexcept
   { return nex::from_hms<DAYTIME>(hms.hour, hms.minute, hms.second); }
 

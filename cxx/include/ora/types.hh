@@ -152,6 +152,14 @@ int constexpr       YMDI_MAX            = 99999999;
 int constexpr       YMDI_END            = YMDI_MAX + 1;
 int constexpr       YMDI_INVALID        = std::numeric_limits<int>::min();
 
+/*
+ * HMSF, a hours-minutes-seonds floating-point value. 
+ */
+double constexpr    HMSF_MIN            =      0.0;
+double constexpr    HMSF_END            = 240000.0;
+double constexpr    HMSF_MAX            = 235959.9999999999999;  // FIXME
+double constexpr    HMSF_INVALID        = std::numeric_limits<double>::quiet_NaN();
+
 /**
  * Seconds since midnight.
  *

@@ -61,6 +61,7 @@ public:
   virtual Daytick       get_daytick(void*) const = 0;
 
   virtual ref<Object>   function_daytime_from_hms(Array*, Array*, Array*) = 0;
+  virtual ref<Object>   function_daytime_from_hmsf(Array*) = 0;
   virtual ref<Object>   function_daytime_from_offset(Array*) = 0;
   virtual ref<Object>   function_daytime_from_ssm(Array*) = 0;
 
@@ -136,6 +137,7 @@ private:
     }
 
     virtual ref<Object> function_daytime_from_hms(Array*, Array*, Array*) override;
+    virtual ref<Object> function_daytime_from_hmsf(Array*) override;
     virtual ref<Object> function_daytime_from_offset(Array*) override;
     virtual ref<Object> function_daytime_from_ssm(Array*) override;
 
@@ -408,6 +410,25 @@ DaytimeDtype<PYDAYTIME>::API::function_daytime_from_hms(
   auto const r = daytime_arr->get_ptr<Daytime>();
   for (; *mit; mit->next())
     r[mit->index()] = ora::daytime::nex::from_hms<Daytime>(*hi, *mi, *si);
+
+  return daytime_arr;
+}
+
+
+template<class PYDAYTIME>
+ref<Object>
+DaytimeDtype<PYDAYTIME>::API::function_daytime_from_hmsf(
+  Array* const hmsf_arr)
+{
+  // Create the output array.
+  auto daytime_arr = Array::NewLikeArray(hmsf_arr, NPY_CORDER, descr_);
+
+  // Fill it.
+  auto const size = hmsf_arr->size();
+  auto const h = hmsf_arr->get_const_ptr<float64_t>();
+  auto const r = daytime_arr->get_ptr<Daytime>();
+  for (npy_intp i = 0; i < size; ++i)
+    r[i] = ora::daytime::nex::from_hmsf<Daytime>(h[i]);
 
   return daytime_arr;
 }
