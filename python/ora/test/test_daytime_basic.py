@@ -434,3 +434,14 @@ def test_from_offset(Daytime):
         assert Daytime.from_offset(y.offset) == y
 
 
+@pytest.mark.parametrize("Daytime", ora.DAYTIME_TYPES)
+def test_from_hmsf(Daytime):
+    assert Daytime.from_hmsf(0) == Daytime(0, 0, 0)
+    assert pytest.approx(Daytime.from_hmsf(123456.789).ssm, Daytime(12, 34, 56.789).ssm, 0.001)
+    assert pytest.approx(Daytime.from_hmsf(235959.999).ssm, Daytime(23, 59, 59.999).ssm, 0.001)
+    with pytest.raises(ValueError):
+        Daytime.from_hmsf(-0.01)
+    with pytest.raises(ValueError):
+        Daytime.from_hmsf(240000)
+
+
