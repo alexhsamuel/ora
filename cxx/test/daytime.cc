@@ -104,7 +104,7 @@ TEST(Daytime, ostream) {
   {
     std::stringstream ss;
     ss << daytime;
-    EXPECT_EQ("15:32:00", ss.str());
+    EXPECT_EQ("15:32:00.750000000000000", ss.str());
   }
 
   {
@@ -116,9 +116,46 @@ TEST(Daytime, ostream) {
 
 TEST(Daytime, to_string) {
   auto const daytime = from_hms(15, 32, 0.75);
-  EXPECT_EQ("15:32:00", to_string(daytime));
+  EXPECT_EQ("15:32:00.750000000000000", to_string(daytime));
   EXPECT_EQ("3:32:00.75000 pm", to_string(DaytimeFormat("%0I:%M:%.5S %_p")(daytime)));
   EXPECT_EQ("3:32:00.75000 pm", (std::string) DaytimeFormat("%0I:%M:%.5S %_p")(daytime));
+}
+
+TEST(Daytime, from_hmsf) {
+  EXPECT_NEAR(get_ssm(from_hms( 0,  0,  0.00)), get_ssm(from_hmsf(     0.00)), 0.001);
+  EXPECT_NEAR(get_ssm(from_hms( 0,  0,  0.01)), get_ssm(from_hmsf(     0.01)), 0.001);
+  EXPECT_NEAR(get_ssm(from_hms( 0,  0,  0.12)), get_ssm(from_hmsf(     0.12)), 0.001);
+  EXPECT_NEAR(get_ssm(from_hms( 0,  0,  1.23)), get_ssm(from_hmsf(     1.23)), 0.001);
+  EXPECT_NEAR(get_ssm(from_hms( 0,  0, 12.34)), get_ssm(from_hmsf(    12.34)), 0.001);
+  EXPECT_NEAR(get_ssm(from_hms( 0,  1, 23.45)), get_ssm(from_hmsf(   123.45)), 0.001);
+  EXPECT_NEAR(get_ssm(from_hms( 0, 12, 34.56)), get_ssm(from_hmsf(  1234.56)), 0.001);
+  EXPECT_NEAR(get_ssm(from_hms( 1, 23, 45.67)), get_ssm(from_hmsf( 12345.67)), 0.001);
+  EXPECT_NEAR(get_ssm(from_hms(12, 34, 56.78)), get_ssm(from_hmsf(123456.78)), 0.001);
+  EXPECT_NEAR(get_ssm(from_hms(23, 59, 59.99)), get_ssm(from_hmsf(235959.99)), 0.001);
+
+  EXPECT_NEAR(get_ssm(from_hms(0, 0, 1e-9)), get_ssm(from_hmsf(1e-9)), 0.001);
+  EXPECT_NEAR(get_ssm(from_hms(23, 59, 59.999)), get_ssm(from_hmsf(235959.999)), 0.001);
+
+  EXPECT_THROW(from_hmsf(   -1e-8), InvalidDaytimeError);
+  EXPECT_THROW(from_hmsf(    60.0), InvalidDaytimeError);
+  EXPECT_THROW(from_hmsf(  6000.0), InvalidDaytimeError);
+  EXPECT_THROW(from_hmsf(240000.0), InvalidDaytimeError);
+}
+
+TEST(Daytime, from_hmsf_int) {
+  EXPECT_EQ(from_hms( 0,  0,  0), from_hmsf(     0));
+  EXPECT_EQ(from_hms( 0,  0,  1), from_hmsf(     1));
+  EXPECT_EQ(from_hms( 0,  0, 12), from_hmsf(    12));
+  EXPECT_EQ(from_hms( 0,  1, 23), from_hmsf(   123));
+  EXPECT_EQ(from_hms( 0, 12, 34), from_hmsf(  1234));
+  EXPECT_EQ(from_hms( 1, 23, 45), from_hmsf( 12345));
+  EXPECT_EQ(from_hms(12, 34, 56), from_hmsf(123456));
+  EXPECT_EQ(from_hms(23, 59, 59), from_hmsf(235959));
+
+  EXPECT_THROW(from_hmsf(    -1), InvalidDaytimeError);
+  EXPECT_THROW(from_hmsf(    60), InvalidDaytimeError);
+  EXPECT_THROW(from_hmsf(  6000), InvalidDaytimeError);
+  EXPECT_THROW(from_hmsf(240000), InvalidDaytimeError);
 }
 
 //------------------------------------------------------------------------------

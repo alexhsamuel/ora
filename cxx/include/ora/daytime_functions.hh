@@ -56,6 +56,31 @@ template<class DAYTIME=Daytime> inline DAYTIME from_hms(HmsDaytime const& hms)
   { return from_hms<DAYTIME>(hms.hour, hms.minute, hms.second); }
 
 /*
+ * Creates a daytime from an HHMMSS-encoded number.
+ */
+template<class DAYTIME=Daytime>
+inline DAYTIME
+from_hmsf(
+  double const hmsf)
+{
+  Hour const hour = hmsf / 10000;
+  auto ms = fmod(hmsf, 10000);
+  Minute const minute = ms / 100;
+  Second const second = fmod(ms, 100);
+  return from_hms(hour, minute, second);
+}
+
+template<class DAYTIME=Daytime>
+inline DAYTIME
+from_hmsf(
+  int const hmsf)
+{
+  auto const h = div(hmsf, 10000);
+  auto const m = div(h.rem, 100);
+  return from_hms(h.quot, m.quot, m.rem);
+}
+
+/*
  * Creates a daytime from SSM (seconds since midnight).
  */
 template<class DAYTIME=Daytime>

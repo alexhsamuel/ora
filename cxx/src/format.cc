@@ -450,7 +450,7 @@ DateFormat const DateFormat::ISO_WEEK_EXTENDED     = "%G-W%V-%w";
 
 namespace daytime {
 
-DaytimeFormat const DaytimeFormat::DEFAULT("%H:%M:%S", "INVALID", "DEFAULT");
+DaytimeFormat const DaytimeFormat::DEFAULT("%H:%M:%.15S", "INVALID", "DEFAULT");
 DaytimeFormat const DaytimeFormat::ISO_BASIC("%H%M%S", "INVALD", "MISSNG");
 DaytimeFormat const DaytimeFormat::ISO_EXTENDED         = "%H:%M:%S";
 DaytimeFormat const DaytimeFormat::ISO_BASIC_MSEC       = "%H%M%.3S";
