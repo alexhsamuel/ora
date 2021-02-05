@@ -5,7 +5,6 @@ from   ora import *
 from   datetime import *
 import math
 import numpy as np
-import pytz
 import sys
 
 try:
@@ -20,7 +19,6 @@ z = TimeZone("America/New_York")
 bd = 1973/Dec/3
 t = now()
 d, y = t @ z
-dt = pytz.UTC.localize(datetime(1973, 12, 3, 12, 30))
 z = TimeZone("US/Eastern")
 c = ora.get_calendar("usa-federal-holidays")
 
