@@ -13,7 +13,7 @@ from   .ext import *
 from   .weekday import *
 from   .util import Range
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 
 __all__ = (
     "Calendar",
