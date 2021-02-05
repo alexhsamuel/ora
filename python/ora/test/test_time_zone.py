@@ -1,5 +1,6 @@
 import datetime
 import dateutil.tz
+import dateutil.zoneinfo
 import pytest
 
 import ora
@@ -179,6 +180,15 @@ def test_convert_dateutil_timezone(tz_name):
     du_tz = dateutil.tz.gettz(tz_name)
     tz = TimeZone(du_tz)
     assert tz.name == tz_name
+
+
+@pytest.mark.parametrize("tz_name", ["UTC", "America/New_York", "US/Eastern", "Etc/GMT-4"])
+def test_convert_dateutil_zonefile_timezone(tz_name):
+    du_tz = dateutil.zoneinfo.get_zonefile_instance().get(tz_name)
+    assert du_tz is not None
+    tz = TimeZone(du_tz)
+    time = now()
+    assert du_tz.utcoffset(time.std).total_seconds() == tz(time).offset
 
 
 def test_convert_datetime_utc():

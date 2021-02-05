@@ -78,10 +78,18 @@ maybe_time_zone(
   // FIXME: Hack.  dateutil time zone objects have a _filename attribute.
   auto filename_attr = obj->GetAttrString("_filename", false);
   if (filename_attr != nullptr) {
+    auto const filename = filename_attr->Str()->as_utf8_string();
+
+    // It might be a bare time zone name.
+    try {
+      return ora::get_time_zone(filename);
+    }
+    catch (ora::lib::ValueError const&) {
+    }
+
     // Try to guess the time zone name from the path.
     // FIXME: It would be better just to load the file.  But we don't know the
     // time zone name for sure.
-    auto const filename = filename_attr->Str()->as_utf8_string();
 
     // First try the last path component.
     auto const p1 = filename.rfind('/');
