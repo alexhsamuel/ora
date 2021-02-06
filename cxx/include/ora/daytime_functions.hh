@@ -63,11 +63,10 @@ inline DAYTIME
 from_hmsf(
   double const hmsf)
 {
-  Hour const hour = hmsf / 10000;
-  auto ms = fmod(hmsf, 10000);
-  Minute const minute = ms / 100;
-  Second const second = fmod(ms, 100);
-  return from_hms(hour, minute, second);
+  int const hm = hmsf / 100;
+  double const s = fmod(hmsf, 100);
+  auto const h = div(hm, 100);
+  return from_hms(h.quot, h.rem, s);
 }
 
 template<class DAYTIME=Daytime>
