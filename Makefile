@@ -52,7 +52,7 @@ endif
 
 # Python and tools
 PYTHON	    	= python3
-PYTEST	    	= py.test
+PYTEST	    	= pytest
 PYTHON_CONFIG	= python3-config
 
 # Directories
