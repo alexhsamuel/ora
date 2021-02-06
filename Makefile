@@ -205,7 +205,7 @@ depclean:
 	rm -f $(DEPS)
 
 .PHONY: cxx
-cxx:	    	    	$(CXX_LIB)
+cxx:	    	    	$(CXX_LIB) $(CXX_BINS)
 
 .PHONY: clean-cxx
 clean-cxx:
