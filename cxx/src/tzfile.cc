@@ -213,10 +213,24 @@ TzFile::TzFile(
     else
       future_ += c;
   }
-  
+
   // Should be nothing left.
   if (! scanner.is_empty())
     throw FormatError("unexpected additional data");
+}
+
+
+std::ostream&
+operator<<(
+  std::ostream& os,
+  TzFile::Type const& type)
+{
+  os << "'" << type.abbreviation_
+     << "' offset:" << type.gmt_offset_
+     << " sec DST:" << (type.is_dst_ ? "Y" : "N")
+     << " std:" << (type.is_std_ ? "Y" : "N")
+     << " GMT:" << (type.is_gmt_ ? "Y" : "N");
+  return os;
 }
 
 
@@ -226,8 +240,10 @@ operator<<(
   TzFile const& tz_file)
 {
   os << "Time zone file:\n"
-     << "  types (" << tz_file.types_.size() << ")\n"
-     << "  transitions:\n";
+     << "  types (" << tz_file.types_.size() << ")\n";
+  for (size_t i = 0; i < tz_file.types_.size(); ++i)
+    os << "    " << i << ": " << tz_file.types_[i] << "\n";
+  os << "  transitions:\n";
   for (auto const& trans : tz_file.transitions_) {
     TzFile::Type const& type = tz_file.types_[trans.type_index_];
     os << "    time:";
@@ -237,11 +253,8 @@ operator<<(
       os << std::setw(12) << trans.time_;
     os
        << " = " << to_asctime((time_t) trans.time_)
-       << " to '" << type.abbreviation_
-       << "' offset:" << type.gmt_offset_
-       << " sec DST:" << (type.is_dst_ ? "Y" : "N")
-       << " std:" << (type.is_std_ ? "Y" : "N")
-       << " GMT:" << (type.is_gmt_ ? "Y" : "N")
+       << " to type:" << (int) trans.type_index_
+       << " " << type
        << "\n";
   }
   os << "  leap seconds (" << tz_file.leap_seconds_.size() << "):\n";
