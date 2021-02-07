@@ -139,14 +139,14 @@ parse_posix_time_zone(
   auto p = str;
   try {
     tz.std.abbreviation = parse_alpha_str(p);
-    tz.std.offset = parse_signed_int(p);
+    tz.std.offset = -3600 * parse_signed_int(p);
     if (*p != 0) {
       tz.dst.abbreviation = parse_alpha_str(p);
       tz.dst.offset =
         // No offset; assume one east of standard time.
-        *p == ',' ? tz.std.offset - 1
+        *p == ',' ? tz.std.offset + 3600
         // Explicit offset;
-        : parse_int(p);
+        : -3600 * parse_int(p);
       if (*p != ',')
         throw FormatError("expected , before start");
       ++p;
