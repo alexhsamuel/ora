@@ -30,10 +30,10 @@ public:
 
   TimeZoneParts get_parts(int64_t epoch_time) const;
 
-  template<class TIME> 
-  TimeZoneParts 
+  template<class TIME>
+  TimeZoneParts
   get_parts(
-    TIME time) 
+    TIME time)
     const
   {
     return get_parts(get_epoch_time(time));
@@ -43,13 +43,13 @@ public:
 
   // FIXME: Take a DatenumDaytick instead?
   TimeZoneParts get_parts_local(
-    Datenum datenum, 
-    Daytick daytick, 
-    bool first=true) 
+    Datenum datenum,
+    Daytick daytick,
+    bool first=true)
     const
    {
      return get_parts_local(
-       ((long) datenum - DATENUM_UNIX_EPOCH) * SECS_PER_DAY 
+       ((long) datenum - DATENUM_UNIX_EPOCH) * SECS_PER_DAY
          + (int64_t) (daytick / DAYTICK_PER_SEC),
        first);
    }
@@ -130,7 +130,7 @@ extern TimeZone_ptr     get_system_time_zone();
 extern TimeZone_ptr     get_display_time_zone();
 extern void             set_display_time_zone(TimeZone_ptr tz);
 
-extern inline void 
+extern inline void
 set_display_time_zone(
   std::string const& name)
 {
@@ -149,10 +149,11 @@ class _DisplayTimeZoneTag
 /*
  * Tag value to indicate the display time zone.
  */
-extern _DisplayTimeZoneTag 
+extern _DisplayTimeZoneTag
 DTZ;
 
 //------------------------------------------------------------------------------
 
 }  // namespace ora
+
 
