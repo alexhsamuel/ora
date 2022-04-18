@@ -57,8 +57,16 @@ public:
 
 private:
 
+  void extend_future(int64_t time) const;
+
   struct Entry
   {
+    Entry(
+      int64_t transition,
+      TimeZoneOffset offset,
+      std::string const& abbrev,
+      bool is_dst);
+
     Entry(int64_t transition, TzFile::Type const& type);
 
     int64_t transition;
@@ -66,7 +74,14 @@ private:
   };
 
   std::string name_;
-  std::vector<Entry> entries_;
+
+  // Transitions from STD to/from DST.
+  mutable std::vector<Entry> entries_;
+
+  // The last epoch sec for which entries are valid.
+  mutable int64_t stop_;
+
+  // Rule for generating further entries.
   PosixTz future_;
 
 };

@@ -6,6 +6,7 @@
 #include <map>
 #include <memory>
 
+#include "ora/date_math.hh"
 #include "ora/lib/file.hh"
 #include "ora/lib/filename.hh"
 #include "ora/posixtz.hh"
@@ -39,6 +40,21 @@ display_time_zone = nullptr;
 //------------------------------------------------------------------------------
 
 TimeZone::Entry::Entry(
+  int64_t _transition,
+  TimeZoneOffset offset,
+  std::string const& abbrev,
+  bool is_dst)
+  : transition(_transition)
+{
+  parts.offset = offset;
+  strncpy(
+    parts.abbreviation,
+    abbrev.c_str(),
+    std::min(sizeof(TimeZoneParts::abbreviation), abbrev.length()));
+  parts.is_dst = is_dst;
+}
+
+TimeZone::Entry::Entry(
   int64_t const transition_time,
   TzFile::Type const& type)
   : transition(transition_time)
@@ -52,7 +68,8 @@ TimeZone::Entry::Entry(
 
 
 TimeZone::TimeZone()
-  : name_("UTC")
+  : name_("UTC"),
+    stop_(std::numeric_limits<int64_t>::max())
 {
   entries_.emplace_back(
     time::Unix64Time::MIN.get_offset(),
@@ -92,8 +109,10 @@ TimeZone::TimeZone(
     std::cerr << "last entry: " << entries_.front().transition << "\n";
     std::cerr << "future transitions: " << tz_file.future_ << "\n";
     future_ = parse_posix_time_zone(tz_file.future_.c_str());
-    std::cerr << "future transitions:\n" << future_ << "\n";
+    std::cerr << future_ << "\n";
   }
+
+  stop_ = entries_.front().transition + 1;
 }
 
 
@@ -102,7 +121,9 @@ TimeZone::get_parts(
   int64_t const time)
   const
 {
-  auto iter = std::lower_bound(
+  TimeZone::extend_future(time);
+
+  auto const iter = std::lower_bound(
     entries_.cbegin(), entries_.cend(),
     time,
     [] (Entry const& entry, int64_t const time) { return entry.transition > time; });
@@ -116,6 +137,8 @@ TimeZone::get_parts_local(
   bool const first)
   const
 {
+  TimeZone::extend_future(time);
+
   // First, find the most recent transition, pretending the time is UTC.
   auto const iter = std::lower_bound(
     entries_.cbegin(), entries_.cend(),
@@ -191,6 +214,79 @@ TimeZone::get_parts_local(
   else
     // The local time does not exist.
     throw NonexistentDateDaytime();
+}
+
+
+void
+TimeZone::extend_future(
+  int64_t const until)
+  const
+{
+  if (future_.dst.abbreviation.empty())
+    // No future DST.
+    return;
+
+  if (until < stop_)
+    // Already caught up.
+    return;
+
+  if (   future_.start.type != PosixTz::Transition::GREGORIAN
+      || future_.end  .type != PosixTz::Transition::GREGORIAN)
+    // FIXME: Julian time zone transitions not implemented.  Sorry, Iran.
+    return;
+  auto const& start = future_.start.spec.gregorian;
+  auto const& end   = future_.end  .spec.gregorian;
+
+  // While we're at it, compute a decade of transitions.
+  int64_t constexpr DECADE = 10 * 365 * 86400;
+  auto stop = (until + DECADE) / DECADE * DECADE;
+
+  std::vector<Entry> entries;
+  Datenum const datenum = stop_ / SECS_PER_DAY + DATENUM_UNIX_EPOCH;
+  auto year = datenum_to_ordinal_date(datenum).year;
+  for (; true; ++year) {
+    // Add the DST start transition.
+    auto d = weekday_of_month(
+      year, start.month,
+      start.week == 5 ? -1 : start.week,
+      weekday::ENCODING_CLIB::decode(start.weekday));
+    auto t =
+      (d - DATENUM_UNIX_EPOCH) * SECS_PER_DAY
+      + future_.start.ssm
+      - future_.std.offset;
+    if (stop_ < t)
+      entries.emplace_back(t, future_.dst.offset, future_.dst.abbreviation, true);
+
+    // Add the DST stop transition.
+    d = weekday_of_month(
+      year, end.month,
+      end.week == 5 ? -1 : end.week,
+      weekday::ENCODING_CLIB::decode(end.weekday));
+    t =
+      (d - DATENUM_UNIX_EPOCH) * SECS_PER_DAY
+      + future_.end.ssm
+      - future_.dst.offset;
+    if (stop_ < t)
+      entries.emplace_back(t, future_.std.offset, future_.std.abbreviation, false);
+
+    if (stop < t)
+      break;
+  }
+
+  // Append (to front) the new entries.
+  std::reverse(entries.begin(), entries.end());
+  entries_.insert(entries_.begin(), entries.begin(), entries.end());
+
+  // Note how far we got.
+  stop_ = (jan1_datenum(year) - DATENUM_UNIX_EPOCH) * SECS_PER_DAY;
+  assert(until <= stop_);
+
+  std::cerr << "\nENTRIES:\n";
+  for (auto e : entries_)
+    std::cerr << "  " << e.transition << " "
+              << e.parts.offset << " "
+              << e.parts.abbreviation << " "
+              << (e.parts.is_dst ? "DST" : "STD") << "\n";
 }
 
 
