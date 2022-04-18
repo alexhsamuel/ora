@@ -115,6 +115,7 @@ parse_transition(
 
   // Optional offset.
   if (*p == '/') {
+    ++p;
     auto const hms = parse_daytime(p);
     trans.ssm = hms.hour * 3600 + hms.minute * 60 + hms.second;
   }

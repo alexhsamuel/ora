@@ -8,6 +8,7 @@
 
 #include "ora/lib/file.hh"
 #include "ora/lib/filename.hh"
+#include "ora/posixtz.hh"
 #include "ora/time_type.hh"
 #include "ora/time_zone.hh"
 #include "ora/tzfile.hh"
@@ -86,6 +87,13 @@ TimeZone::TimeZone(
       tz_file.types_[transition.type_index_]);
   assert(entries_.size() == tz_file.transitions_.size() + 1);
   std::reverse(begin(entries_), end(entries_));
+
+  if (tz_file.future_ != "") {
+    std::cerr << "future transitions: " << tz_file.future_ << "\n";
+    auto const future = parse_posix_time_zone(tz_file.future_.c_str());
+    std::cerr << "future transitions:\n" << future << "\n";
+    std::cerr << "last transition: " << entries_.front().transition << "\n";
+  }
 }
 
 
