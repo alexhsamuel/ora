@@ -5,9 +5,9 @@ import re
 import warnings
 
 from   .calendar import (
-    load_calendar_file, load_business_calendar, CalendarDir, 
+    load_calendar_file, load_business_calendar, CalendarDir,
     format_calendar, dump_calendar_file,
-    get_calendar_dir, set_calendar_dir, get_calendar, 
+    get_calendar_dir, set_calendar_dir, get_calendar,
 )
 from   .ext import *
 from   .weekday import *
@@ -83,7 +83,7 @@ __all__ = (
 
     "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun",
 
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 
     "display_time_zone",
@@ -101,20 +101,20 @@ TIME_TYPES = frozenset((
     Unix32Time,
     Unix64Time,
 ))
-    
+
 DATE_TYPES = frozenset((
     Date,
     Date16,
 ))
-    
+
 DAYTIME_TYPES = frozenset((
-    Daytime, 
-    Daytime32, 
+    Daytime,
+    Daytime32,
     UsecDaytime,
 ))
-    
 
-# Set the location of the time zone database.  If ZONEINFO is set in the 
+
+# Set the location of the time zone database.  If ZONEINFO is set in the
 # environment, use it; otherwise, use our own copy of the database.
 _INTERNAL_ZONEINFO_DIR = Path(__file__).parent / "zoneinfo"
 try:
@@ -293,9 +293,7 @@ def list_zoneinfo_dir(path=None):
     for dir, _, names in os.walk(root):
         parts = Path(dir).relative_to(root).parts
         for name in names:
-            if "." in name or "+" in name:
+            if "." in name or name in ("leapseconds", "+VERSION"):
                 # These are other data files, not zoneinfo entries.
                 continue
             yield "/".join((*parts, name))
-
-
