@@ -53,6 +53,7 @@ __all__ = (
     "get_system_time_zone",
     "get_zoneinfo_dir",
     "is_leap_year",
+    "list_zoneinfo_dir",
     "make_const_calendar",
     "make_weekday_calendar",
     "now",
@@ -277,5 +278,24 @@ def get_zoneinfo_version():
         raise RuntimeError("unexpected zoneinfo version: {}".format(version))
     else:
         return version
+
+
+def list_zoneinfo_dir(path=None):
+    """
+    Lists time zones in a zoneinfo directory.
+
+    :param path:
+      Zoneinfo directory.  If none, uses `get_zoneinfo_dir()`.
+    :return:
+      Iterable of time zone names.
+    """
+    root = Path(get_zoneinfo_dir() if path is None else path)
+    for dir, _, names in os.walk(root):
+        parts = Path(dir).relative_to(root).parts
+        for name in names:
+            if "." in name or "+" in name:
+                # These are other data files, not zoneinfo entries.
+                continue
+            yield "/".join((*parts, name))
 
 
