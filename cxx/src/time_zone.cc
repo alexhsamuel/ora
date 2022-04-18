@@ -55,7 +55,7 @@ TimeZone::TimeZone()
   : name_("UTC")
 {
   entries_.emplace_back(
-    time::Unix64Time::MIN.get_offset(), 
+    time::Unix64Time::MIN.get_offset(),
     TzFile::Type{0, false, "UTC", true, true});
 }
 
@@ -76,14 +76,14 @@ TimeZone::TimeZone(
       break;
     }
   // If we didn't find a non-DST type, use the first type unconditionally.
-  if (default_type == nullptr) 
+  if (default_type == nullptr)
     default_type = &tz_file.types_.front();
   // Add a sentry entry.
   entries_.emplace_back(time::Unix64Time::MIN.get_offset(), *default_type);
 
   for (auto const& transition : tz_file.transitions_)
     entries_.emplace_back(
-      transition.time_, 
+      transition.time_,
       tz_file.types_[transition.type_index_]);
   assert(entries_.size() == tz_file.transitions_.size() + 1);
   std::reverse(begin(entries_), end(entries_));
@@ -103,7 +103,7 @@ TimeZone::get_parts(
   const
 {
   auto iter = std::lower_bound(
-    entries_.cbegin(), entries_.cend(), 
+    entries_.cbegin(), entries_.cend(),
     time,
     [] (Entry const& entry, int64_t const time) { return entry.transition > time; });
   return iter->parts;
@@ -118,7 +118,7 @@ TimeZone::get_parts_local(
 {
   // First, find the most recent transition, pretending the time is UTC.
   auto const iter = std::lower_bound(
-    entries_.cbegin(), entries_.cend(), 
+    entries_.cbegin(), entries_.cend(),
     time,
     [] (Entry const& entry, int64_t const time) { return entry.transition > time; });
   // The sentry protects from no result.
@@ -155,20 +155,20 @@ TimeZone::get_parts_local(
   // FIXME: For debugging.
   if (false) {
     std::cerr << "offset for local " << time << '\n';
-    std::cerr 
-      << "prev? " << (iter + 1)->transition 
+    std::cerr
+      << "prev? " << (iter + 1)->transition
       << "/" << (iter + 1)->parts.offset
       << " = " << (iter + 1)->transition + (iter + 1)->parts.offset
       << "-" << (iter + 0)->transition + (iter + 1)->parts.offset
       << " -> " << (in_prev ? "true" : "false") << '\n';
-    std::cerr 
-      << "this? " << (iter + 0)->transition 
+    std::cerr
+      << "this? " << (iter + 0)->transition
       << "/" << (iter + 0)->parts.offset
       << " = " << (iter + 0)->transition + (iter + 0)->parts.offset
       << "-" << (iter - 1)->transition + (iter + 0)->parts.offset
       << " -> " << (in_this ? "true" : "false") << '\n';
-    std::cerr 
-      << "next? " << (iter - 1)->transition 
+    std::cerr
+      << "next? " << (iter - 1)->transition
       << "/" << (iter - 1)->parts.offset
       << " = " << (iter - 1)->transition + (iter - 1)->parts.offset
       << "-" << (iter - 2)->transition + (iter - 1)->parts.offset
@@ -178,7 +178,7 @@ TimeZone::get_parts_local(
   if (in_this)
     // The local time is part of the transition interval we found, but if it
     // occurred in the previous or next as well, we need to disambiguate.
-    return 
+    return
         in_prev ? (first ? (iter + 1)->parts : iter->parts)
       : in_next ? (first ? iter->parts : (iter - 1)->parts)
       : iter->parts;
@@ -190,7 +190,7 @@ TimeZone::get_parts_local(
     return (iter - 1)->parts;
   else
     // The local time does not exist.
-    throw NonexistentDateDaytime(); 
+    throw NonexistentDateDaytime();
 }
 
 
@@ -226,12 +226,12 @@ zoneinfo_dir_initialized
   = false;
 
 fs::Filename
-zoneinfo_dir 
+zoneinfo_dir
   {""};
 
-// Cache of loaded time zone objects.  
+// Cache of loaded time zone objects.
 //
-// Pointers in this cache should not be 
+// Pointers in this cache should not be
 std::map<string, TimeZone_ptr>
 time_zones;
 
@@ -296,7 +296,7 @@ get_time_zone(
     return find->second;
   else {
     auto const filename = find_time_zone_file(name);
-    return time_zones[name] 
+    return time_zones[name]
       = make_shared<TimeZone const>(TzFile::load(filename), name);
   }
 }
@@ -330,9 +330,9 @@ get_system_time_zone_name_()
   }
   else if (fs::check(SYSTEM_TIME_ZONE_LINK, fs::EXISTS, fs::SYMBOLIC_LINK)) {
     char buf[PATH_MAX];
-    int const result = 
+    int const result =
       readlink(SYSTEM_TIME_ZONE_LINK, buf, sizeof(buf));
-    if (result == -1) 
+    if (result == -1)
       throw RuntimeError(string("can't read link: ") + SYSTEM_TIME_ZONE_LINK);
     else {
       // Nul-terminate.
@@ -352,7 +352,7 @@ get_system_time_zone_name_()
         throw RuntimeError(string("not time zone link: ") + SYSTEM_TIME_ZONE_LINK);
     }
   }
-  else 
+  else
     throw RuntimeError("no system time zone found");
 }
 
