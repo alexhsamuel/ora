@@ -192,7 +192,7 @@ TimeDtype<PYTIME>::set_up(
   arr_funcs->getitem    = (PyArray_GetItemFunc*) getitem;
   arr_funcs->setitem    = (PyArray_SetItemFunc*) setitem;
   arr_funcs->compare    = (PyArray_CompareFunc*) compare;
-  // FIMXE: Additional methods.
+  // FIXME: Additional methods.
 
   descr_ = (Descr*) PyObject_New(PyArray_Descr, &PyArrayDescr_Type);
   descr_->typeobj       = incref(&PYTIME::type_);
