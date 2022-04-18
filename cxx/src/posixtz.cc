@@ -156,17 +156,14 @@ parse_posix_time_zone(
   auto p = str;
   try {
     tz.std.abbreviation = parse_abbr(p);
-    std::cerr << "std abbrev: '" << tz.std.abbreviation << "'\n";
     tz.std.offset = -parse_offset(p);
     if (*p != 0) {
       tz.dst.abbreviation = parse_abbr(p);
-      std::cerr << "dst abbrev: '" << tz.dst.abbreviation << "'\n";
       tz.dst.offset =
         // No offset; assume one east of standard time.
         *p == ',' ? tz.std.offset + 3600
         // Explicit offset;
         : -parse_offset(p);
-      std::cerr << "dst offset: " << tz.dst.offset << "\n";
       if (*p != ',')
         throw FormatError("expected , before start");
       ++p;
