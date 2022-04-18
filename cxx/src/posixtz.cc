@@ -11,14 +11,14 @@ using std::string;
 namespace {
 
 string
-parse_alpha_str(
+parse_abbr(
   char const*& p)
 {
   char const* const start = p;
-  while (isalpha(*p))
+  while (*p != 0 && *p != ',' && *p != '-' && !isdigit(*p))
     p++;
   if (p == start)
-    throw FormatError("expected str");
+    throw FormatError("expected abbr");
   return string(start, p - start);
 }
 
@@ -139,10 +139,10 @@ parse_posix_time_zone(
   PosixTz tz;
   auto p = str;
   try {
-    tz.std.abbreviation = parse_alpha_str(p);
+    tz.std.abbreviation = parse_abbr(p);
     tz.std.offset = -3600 * parse_signed_int(p);
     if (*p != 0) {
-      tz.dst.abbreviation = parse_alpha_str(p);
+      tz.dst.abbreviation = parse_abbr(p);
       tz.dst.offset =
         // No offset; assume one east of standard time.
         *p == ',' ? tz.std.offset + 3600
