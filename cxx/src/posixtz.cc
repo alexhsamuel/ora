@@ -1,3 +1,5 @@
+// See: https://data.iana.org/time-zones/theory.html
+
 #include <string>
 
 #include "ora/posixtz.hh"
@@ -15,11 +17,23 @@ parse_abbr(
   char const*& p)
 {
   char const* const start = p;
-  while (*p != 0 && *p != ',' && *p != '-' && !isdigit(*p))
-    p++;
-  if (p == start)
-    throw FormatError("expected abbr");
-  return string(start, p - start);
+
+  if (*p == '<') {
+    // An angle-bracketed abbrev.
+    while (*p != '>')
+      if (*++p == 0)
+        throw FormatError("unclosed <");
+    // Skip the brackets.
+    return string(start + 1, ++p - start - 2);
+  }
+
+  else {
+    while (*p != 0 && *p != ',' && *p != '-' && !isdigit(*p))
+      p++;
+    if (p == start)
+      throw FormatError("expected abbr");
+    return string(start, p - start);
+  }
 }
 
 int
@@ -34,38 +48,41 @@ parse_int(
   return std::atoi(string(start, p - start).c_str());
 }
 
-int parse_signed_int(
+int
+parse_sign(
   char const*& p)
 {
-  bool neg = false;
+  int sign = 1;
   if (*p == '+')
     ++p;
   else if (*p == '-') {
-    neg = true;
+    sign = -1;
     ++p;
   }
-  int val = parse_int(p);
-  return neg ? -val : val;
+  return sign;
 }
 
-ora::HmsDaytime
-parse_daytime(
+int
+parse_offset(
   char const*& p)
 {
-  ora::HmsDaytime daytime{(ora::Hour) parse_signed_int(p), 0, 0};
-  if (daytime.hour < -24 || 24 < daytime.hour)
-    throw FormatError("invalid hour");
+  int const sign = parse_sign(p);
+  unsigned const hours = parse_int(p);
+  unsigned mins = 0;
+  unsigned secs = 0;
   if (*p == ':') {
-    daytime.minute = parse_int(p);
-    if (daytime.minute > 59)
-      throw FormatError("invalid minute");
+    ++p;
+    mins = parse_int(p);
+    if (60 <= mins)
+      throw FormatError("invalid mins");
     if (*p == ':') {
-      daytime.second = parse_int(p);
-      if (daytime.second > 59)
-        throw FormatError("invalid second");
+      ++p;
+      secs = parse_int(p);
+      if (60 <= secs)
+        throw FormatError("invalid secs");
     }
   }
-  return daytime;
+  return sign * (hours * 3600 + mins * 60 + secs);
 }
 
 ora::PosixTz::Transition
@@ -115,9 +132,8 @@ parse_transition(
 
   // Optional offset.
   if (*p == '/') {
-    ++p;
-    auto const hms = parse_daytime(p);
-    trans.ssm = hms.hour * 3600 + hms.minute * 60 + hms.second;
+    p++;
+    trans.ssm = parse_offset(p);
   }
   else
     // Default is 02:00:00.
@@ -140,14 +156,17 @@ parse_posix_time_zone(
   auto p = str;
   try {
     tz.std.abbreviation = parse_abbr(p);
-    tz.std.offset = -3600 * parse_signed_int(p);
+    std::cerr << "std abbrev: '" << tz.std.abbreviation << "'\n";
+    tz.std.offset = -parse_offset(p);
     if (*p != 0) {
       tz.dst.abbreviation = parse_abbr(p);
+      std::cerr << "dst abbrev: '" << tz.dst.abbreviation << "'\n";
       tz.dst.offset =
         // No offset; assume one east of standard time.
         *p == ',' ? tz.std.offset + 3600
         // Explicit offset;
-        : -3600 * parse_int(p);
+        : -parse_offset(p);
+      std::cerr << "dst offset: " << tz.dst.offset << "\n";
       if (*p != ',')
         throw FormatError("expected , before start");
       ++p;
