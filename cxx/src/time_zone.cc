@@ -89,10 +89,10 @@ TimeZone::TimeZone(
   std::reverse(begin(entries_), end(entries_));
 
   if (tz_file.future_ != "") {
+    std::cerr << "last entry: " << entries_.front().transition << "\n";
     std::cerr << "future transitions: " << tz_file.future_ << "\n";
-    auto const future = parse_posix_time_zone(tz_file.future_.c_str());
-    std::cerr << "future transitions:\n" << future << "\n";
-    std::cerr << "last transition: " << entries_.front().transition << "\n";
+    future_ = parse_posix_time_zone(tz_file.future_.c_str());
+    std::cerr << "future transitions:\n" << future_ << "\n";
   }
 }
 

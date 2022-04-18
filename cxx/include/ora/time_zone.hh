@@ -6,6 +6,7 @@
 
 #include "ora/lib/string.hh"
 #include "ora/exceptions.hh"
+#include "ora/posixtz.hh"
 #include "ora/types.hh"
 #include "ora/tzfile.hh"
 
@@ -66,6 +67,7 @@ private:
 
   std::string name_;
   std::vector<Entry> entries_;
+  PosixTz future_;
 
 };
 
