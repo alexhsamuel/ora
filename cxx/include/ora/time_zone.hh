@@ -6,6 +6,7 @@
 
 #include "ora/lib/string.hh"
 #include "ora/exceptions.hh"
+#include "ora/posixtz.hh"
 #include "ora/types.hh"
 #include "ora/tzfile.hh"
 
@@ -30,10 +31,10 @@ public:
 
   TimeZoneParts get_parts(int64_t epoch_time) const;
 
-  template<class TIME> 
-  TimeZoneParts 
+  template<class TIME>
+  TimeZoneParts
   get_parts(
-    TIME time) 
+    TIME time)
     const
   {
     return get_parts(get_epoch_time(time));
@@ -43,21 +44,29 @@ public:
 
   // FIXME: Take a DatenumDaytick instead?
   TimeZoneParts get_parts_local(
-    Datenum datenum, 
-    Daytick daytick, 
-    bool first=true) 
+    Datenum datenum,
+    Daytick daytick,
+    bool first=true)
     const
    {
      return get_parts_local(
-       ((long) datenum - DATENUM_UNIX_EPOCH) * SECS_PER_DAY 
+       ((long) datenum - DATENUM_UNIX_EPOCH) * SECS_PER_DAY
          + (int64_t) (daytick / DAYTICK_PER_SEC),
        first);
    }
 
 private:
 
+  void extend_future(int64_t time) const;
+
   struct Entry
   {
+    Entry(
+      int64_t transition,
+      TimeZoneOffset offset,
+      std::string const& abbrev,
+      bool is_dst);
+
     Entry(int64_t transition, TzFile::Type const& type);
 
     int64_t transition;
@@ -65,7 +74,15 @@ private:
   };
 
   std::string name_;
-  std::vector<Entry> entries_;
+
+  // Transitions from STD to/from DST.
+  mutable std::vector<Entry> entries_;
+
+  // The last epoch sec for which entries are valid.
+  mutable int64_t stop_;
+
+  // Rule for generating further entries.
+  PosixTz future_;
 
 };
 
@@ -130,7 +147,7 @@ extern TimeZone_ptr     get_system_time_zone();
 extern TimeZone_ptr     get_display_time_zone();
 extern void             set_display_time_zone(TimeZone_ptr tz);
 
-extern inline void 
+extern inline void
 set_display_time_zone(
   std::string const& name)
 {
@@ -149,10 +166,11 @@ class _DisplayTimeZoneTag
 /*
  * Tag value to indicate the display time zone.
  */
-extern _DisplayTimeZoneTag 
+extern _DisplayTimeZoneTag
 DTZ;
 
 //------------------------------------------------------------------------------
 
 }  // namespace ora
+
 

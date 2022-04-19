@@ -55,3 +55,54 @@ TEST(weekday, encoding_clib) {
   EXPECT_EQ(SATURDAY , weekday::ENCODING_CLIB::decode(6));
 }
 
+TEST(first_of_month, basic) {
+  EXPECT_EQ(ymd_to_datenum(2022,  1,  1), first_of_month(2022,  1));
+  EXPECT_EQ(ymd_to_datenum(2022,  2,  1), first_of_month(2022,  2));
+  EXPECT_EQ(ymd_to_datenum(2022,  3,  1), first_of_month(2022,  3));
+  EXPECT_EQ(ymd_to_datenum(2022,  4,  1), first_of_month(2022,  4));
+  EXPECT_EQ(ymd_to_datenum(2022,  5,  1), first_of_month(2022,  5));
+  EXPECT_EQ(ymd_to_datenum(2022,  6,  1), first_of_month(2022,  6));
+  EXPECT_EQ(ymd_to_datenum(2022,  7,  1), first_of_month(2022,  7));
+  EXPECT_EQ(ymd_to_datenum(2022,  8,  1), first_of_month(2022,  8));
+  EXPECT_EQ(ymd_to_datenum(2022,  9,  1), first_of_month(2022,  9));
+  EXPECT_EQ(ymd_to_datenum(2022, 10,  1), first_of_month(2022, 10));
+  EXPECT_EQ(ymd_to_datenum(2022, 11,  1), first_of_month(2022, 11));
+  EXPECT_EQ(ymd_to_datenum(2022, 12,  1), first_of_month(2022, 12));
+}
+
+TEST(last_of_month, basic) {
+  EXPECT_EQ(ymd_to_datenum(2022,  1, 31), last_of_month(2022,  1));
+  EXPECT_EQ(ymd_to_datenum(2022,  2, 28), last_of_month(2022,  2));
+  EXPECT_EQ(ymd_to_datenum(2022,  3, 31), last_of_month(2022,  3));
+  EXPECT_EQ(ymd_to_datenum(2022,  4, 30), last_of_month(2022,  4));
+  EXPECT_EQ(ymd_to_datenum(2022,  5, 31), last_of_month(2022,  5));
+  EXPECT_EQ(ymd_to_datenum(2022,  6, 30), last_of_month(2022,  6));
+  EXPECT_EQ(ymd_to_datenum(2022,  7, 31), last_of_month(2022,  7));
+  EXPECT_EQ(ymd_to_datenum(2022,  8, 31), last_of_month(2022,  8));
+  EXPECT_EQ(ymd_to_datenum(2022,  9, 30), last_of_month(2022,  9));
+  EXPECT_EQ(ymd_to_datenum(2022, 10, 31), last_of_month(2022, 10));
+  EXPECT_EQ(ymd_to_datenum(2022, 11, 30), last_of_month(2022, 11));
+  EXPECT_EQ(ymd_to_datenum(2022, 12, 31), last_of_month(2022, 12));
+
+  EXPECT_EQ(ymd_to_datenum(2022,  2, 28), last_of_month(2022,  2));
+  EXPECT_EQ(ymd_to_datenum(2023,  2, 28), last_of_month(2023,  2));
+  EXPECT_EQ(ymd_to_datenum(2024,  2, 29), last_of_month(2024,  2));
+  EXPECT_EQ(ymd_to_datenum(2025,  2, 28), last_of_month(2025,  2));
+}
+
+TEST(weekday_of_month, basic) {
+  EXPECT_EQ(ymd_to_datenum(2022,  4,  1), weekday_of_month(2022, 4, 1, FRIDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  4,  2), weekday_of_month(2022, 4, 1, SATURDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  4,  3), weekday_of_month(2022, 4, 1, SUNDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  4,  4), weekday_of_month(2022, 4, 1, MONDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  4,  5), weekday_of_month(2022, 4, 1, TUESDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  4, 12), weekday_of_month(2022, 4, 2, TUESDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  4, 19), weekday_of_month(2022, 4, 3, TUESDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  4, 26), weekday_of_month(2022, 4, 4, TUESDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  4,  5), weekday_of_month(2022, 4,-4, TUESDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  4, 12), weekday_of_month(2022, 4,-3, TUESDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  4, 19), weekday_of_month(2022, 4,-2, TUESDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  4, 26), weekday_of_month(2022, 4,-1, TUESDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  4, 29), weekday_of_month(2022, 4, 5, FRIDAY));
+}
+

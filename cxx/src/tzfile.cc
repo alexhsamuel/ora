@@ -1,3 +1,5 @@
+// See the tzfile(5) man page for description of the format.
+
 // FIXME
 #if 0
 #include <endian.h>
@@ -93,8 +95,17 @@ check_header(
       || scanner.next<char>() != 'i'
       || scanner.next<char>() != 'f')
     throw FormatError("not a tz file");
-  if (scanner.next<char>() != '2')
-    throw FormatError("not a tz file version 2");
+  auto const version = scanner.next<char>();
+  switch (version) {
+  case '1':
+    throw FormatError("deprecated tz file version 1");
+  case '2':
+  case '3':
+  case '4':
+    break;
+  default:
+    throw FormatError("unknown tz file version");
+  }
   for (size_t i = 0; i < 15; ++i)
     if (scanner.next<char>() != 0)
       throw FormatError("tz file wrong padding");

@@ -6,8 +6,10 @@
 #include <map>
 #include <memory>
 
+#include "ora/date_math.hh"
 #include "ora/lib/file.hh"
 #include "ora/lib/filename.hh"
+#include "ora/posixtz.hh"
 #include "ora/time_type.hh"
 #include "ora/time_zone.hh"
 #include "ora/tzfile.hh"
@@ -38,6 +40,21 @@ display_time_zone = nullptr;
 //------------------------------------------------------------------------------
 
 TimeZone::Entry::Entry(
+  int64_t _transition,
+  TimeZoneOffset offset,
+  std::string const& abbrev,
+  bool is_dst)
+  : transition(_transition)
+{
+  parts.offset = offset;
+  strncpy(
+    parts.abbreviation,
+    abbrev.c_str(),
+    std::min(sizeof(TimeZoneParts::abbreviation), abbrev.length()));
+  parts.is_dst = is_dst;
+}
+
+TimeZone::Entry::Entry(
   int64_t const transition_time,
   TzFile::Type const& type)
   : transition(transition_time)
@@ -51,10 +68,11 @@ TimeZone::Entry::Entry(
 
 
 TimeZone::TimeZone()
-  : name_("UTC")
+  : name_("UTC"),
+    stop_(std::numeric_limits<int64_t>::max())
 {
   entries_.emplace_back(
-    time::Unix64Time::MIN.get_offset(), 
+    time::Unix64Time::MIN.get_offset(),
     TzFile::Type{0, false, "UTC", true, true});
 }
 
@@ -75,17 +93,27 @@ TimeZone::TimeZone(
       break;
     }
   // If we didn't find a non-DST type, use the first type unconditionally.
-  if (default_type == nullptr) 
+  if (default_type == nullptr)
     default_type = &tz_file.types_.front();
   // Add a sentry entry.
   entries_.emplace_back(time::Unix64Time::MIN.get_offset(), *default_type);
 
   for (auto const& transition : tz_file.transitions_)
     entries_.emplace_back(
-      transition.time_, 
+      transition.time_,
       tz_file.types_[transition.type_index_]);
   assert(entries_.size() == tz_file.transitions_.size() + 1);
   std::reverse(begin(entries_), end(entries_));
+
+  // FIXME: For debugging.
+  if (false && tz_file.future_ != "") {
+    std::cerr << "last entry: " << entries_.front().transition << "\n";
+    std::cerr << "future transitions: " << tz_file.future_ << "\n";
+    future_ = parse_posix_time_zone(tz_file.future_.c_str());
+    std::cerr << future_ << "\n";
+  }
+
+  stop_ = entries_.front().transition + 1;
 }
 
 
@@ -94,8 +122,10 @@ TimeZone::get_parts(
   int64_t const time)
   const
 {
-  auto iter = std::lower_bound(
-    entries_.cbegin(), entries_.cend(), 
+  TimeZone::extend_future(time);
+
+  auto const iter = std::lower_bound(
+    entries_.cbegin(), entries_.cend(),
     time,
     [] (Entry const& entry, int64_t const time) { return entry.transition > time; });
   return iter->parts;
@@ -108,9 +138,11 @@ TimeZone::get_parts_local(
   bool const first)
   const
 {
+  TimeZone::extend_future(time);
+
   // First, find the most recent transition, pretending the time is UTC.
   auto const iter = std::lower_bound(
-    entries_.cbegin(), entries_.cend(), 
+    entries_.cbegin(), entries_.cend(),
     time,
     [] (Entry const& entry, int64_t const time) { return entry.transition > time; });
   // The sentry protects from no result.
@@ -147,20 +179,20 @@ TimeZone::get_parts_local(
   // FIXME: For debugging.
   if (false) {
     std::cerr << "offset for local " << time << '\n';
-    std::cerr 
-      << "prev? " << (iter + 1)->transition 
+    std::cerr
+      << "prev? " << (iter + 1)->transition
       << "/" << (iter + 1)->parts.offset
       << " = " << (iter + 1)->transition + (iter + 1)->parts.offset
       << "-" << (iter + 0)->transition + (iter + 1)->parts.offset
       << " -> " << (in_prev ? "true" : "false") << '\n';
-    std::cerr 
-      << "this? " << (iter + 0)->transition 
+    std::cerr
+      << "this? " << (iter + 0)->transition
       << "/" << (iter + 0)->parts.offset
       << " = " << (iter + 0)->transition + (iter + 0)->parts.offset
       << "-" << (iter - 1)->transition + (iter + 0)->parts.offset
       << " -> " << (in_this ? "true" : "false") << '\n';
-    std::cerr 
-      << "next? " << (iter - 1)->transition 
+    std::cerr
+      << "next? " << (iter - 1)->transition
       << "/" << (iter - 1)->parts.offset
       << " = " << (iter - 1)->transition + (iter - 1)->parts.offset
       << "-" << (iter - 2)->transition + (iter - 1)->parts.offset
@@ -170,7 +202,7 @@ TimeZone::get_parts_local(
   if (in_this)
     // The local time is part of the transition interval we found, but if it
     // occurred in the previous or next as well, we need to disambiguate.
-    return 
+    return
         in_prev ? (first ? (iter + 1)->parts : iter->parts)
       : in_next ? (first ? iter->parts : (iter - 1)->parts)
       : iter->parts;
@@ -182,7 +214,73 @@ TimeZone::get_parts_local(
     return (iter - 1)->parts;
   else
     // The local time does not exist.
-    throw NonexistentDateDaytime(); 
+    throw NonexistentDateDaytime();
+}
+
+
+void
+TimeZone::extend_future(
+  int64_t const until)
+  const
+{
+  if (future_.dst.abbreviation.empty())
+    // No future DST.
+    return;
+
+  if (until < stop_)
+    // Already caught up.
+    return;
+
+  if (   future_.start.type != PosixTz::Transition::GREGORIAN
+      || future_.end  .type != PosixTz::Transition::GREGORIAN)
+    // FIXME: Julian time zone transitions not implemented.  Sorry, Iran.
+    return;
+  auto const& start = future_.start.spec.gregorian;
+  auto const& end   = future_.end  .spec.gregorian;
+
+  // While we're at it, compute a decade of transitions.
+  int64_t constexpr DECADE = 10 * 365 * 86400;
+  auto stop = (until + DECADE) / DECADE * DECADE;
+
+  std::vector<Entry> entries;
+  Datenum const datenum = stop_ / SECS_PER_DAY + DATENUM_UNIX_EPOCH;
+  auto year = datenum_to_ordinal_date(datenum).year;
+  for (; true; ++year) {
+    // Add the DST start transition.
+    auto d = weekday_of_month(
+      year, start.month,
+      start.week == 5 ? -1 : start.week,
+      weekday::ENCODING_CLIB::decode(start.weekday));
+    auto t =
+      (d - DATENUM_UNIX_EPOCH) * SECS_PER_DAY
+      + future_.start.ssm
+      - future_.std.offset;
+    if (stop_ < t)
+      entries.emplace_back(t, future_.dst.offset, future_.dst.abbreviation, true);
+
+    // Add the DST stop transition.
+    d = weekday_of_month(
+      year, end.month,
+      end.week == 5 ? -1 : end.week,
+      weekday::ENCODING_CLIB::decode(end.weekday));
+    t =
+      (d - DATENUM_UNIX_EPOCH) * SECS_PER_DAY
+      + future_.end.ssm
+      - future_.dst.offset;
+    if (stop_ < t)
+      entries.emplace_back(t, future_.std.offset, future_.std.abbreviation, false);
+
+    if (stop < t)
+      break;
+  }
+
+  // Append (to front) the new entries.
+  std::reverse(entries.begin(), entries.end());
+  entries_.insert(entries_.begin(), entries.begin(), entries.end());
+
+  // Note how far we got.
+  stop_ = (jan1_datenum(year) - DATENUM_UNIX_EPOCH) * SECS_PER_DAY;
+  assert(until <= stop_);
 }
 
 
@@ -218,12 +316,12 @@ zoneinfo_dir_initialized
   = false;
 
 fs::Filename
-zoneinfo_dir 
+zoneinfo_dir
   {""};
 
-// Cache of loaded time zone objects.  
+// Cache of loaded time zone objects.
 //
-// Pointers in this cache should not be 
+// Pointers in this cache should not be
 std::map<string, TimeZone_ptr>
 time_zones;
 
@@ -288,7 +386,7 @@ get_time_zone(
     return find->second;
   else {
     auto const filename = find_time_zone_file(name);
-    return time_zones[name] 
+    return time_zones[name]
       = make_shared<TimeZone const>(TzFile::load(filename), name);
   }
 }
@@ -322,9 +420,9 @@ get_system_time_zone_name_()
   }
   else if (fs::check(SYSTEM_TIME_ZONE_LINK, fs::EXISTS, fs::SYMBOLIC_LINK)) {
     char buf[PATH_MAX];
-    int const result = 
+    int const result =
       readlink(SYSTEM_TIME_ZONE_LINK, buf, sizeof(buf));
-    if (result == -1) 
+    if (result == -1)
       throw RuntimeError(string("can't read link: ") + SYSTEM_TIME_ZONE_LINK);
     else {
       // Nul-terminate.
@@ -344,7 +442,7 @@ get_system_time_zone_name_()
         throw RuntimeError(string("not time zone link: ") + SYSTEM_TIME_ZONE_LINK);
     }
   }
-  else 
+  else
     throw RuntimeError("no system time zone found");
 }
 

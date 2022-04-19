@@ -201,6 +201,32 @@ get_month_offset(
 }
 
 
+inline Datenum
+first_of_month(
+  Year const year,
+  Month const month)
+{
+  return jan1_datenum(year) + get_month_offset(year, month);
+}
+
+
+inline Datenum
+last_of_month(
+  Year year,
+  Month month)
+{
+  // Find the first of the next month and go back a day.
+  if (month == MONTH_MAX) {
+    ++year;
+    month = MONTH_MIN;
+  }
+  else
+    ++month;
+  // Go back a day.
+  return first_of_month(year, month) - 1;
+}
+
+
 inline Datenum constexpr 
 ymd_to_datenum(
   Year const year,
@@ -362,6 +388,26 @@ parts_to_datenum(
     return ordinal_date_to_datenum(
       parts.ordinal_date.year, parts.ordinal_date.ordinal);
 
+  else
+    return DATENUM_INVALID;
+}
+
+
+inline Datenum
+weekday_of_month(
+  Year year,
+  Month month,
+  int const n,
+  Weekday const weekday)
+{
+  if (n > 0) {
+    auto const first = first_of_month(year, month);
+    return first + ((weekday - get_weekday(first)) % 7 + 7) % 7 + (n - 1) * 7;
+  }
+  else if (n < 0) {
+    auto const last = last_of_month(year, month);
+    return last - (get_weekday(last) - last) % 7 + (n + 1) * 7;
+  }
   else
     return DATENUM_INVALID;
 }

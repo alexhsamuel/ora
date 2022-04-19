@@ -4,6 +4,7 @@ Other libraries that provide date and time functionality.
 
 - [libc](https://en.wikipedia.org/wiki/C_date_and_time_functions)
 - [std::chrono](http://en.cppreference.com/w/cpp/chrono)
+- [date](https://howardhinnant.github.io/date/date.html)
 
 ## Python
 
