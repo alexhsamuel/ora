@@ -15,7 +15,7 @@ jobs:
     - uses: actions/checkout@v3
     
     - name: Install Python headers
-      run: apt update && apt install -y python-dev
+      run: sudo apt install -y python-dev
 
     - name: Install Python dependencies
       run: pip install numpy python-dateutil pytz pytest
