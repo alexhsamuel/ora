@@ -106,10 +106,11 @@ TimeZone::TimeZone(
   std::reverse(begin(entries_), end(entries_));
 
   // FIXME: For debugging.
-  if (false && tz_file.future_ != "") {
-    std::cerr << "last entry: " << entries_.front().transition << "\n";
-    std::cerr << "future transitions: " << tz_file.future_ << "\n";
+  if (tz_file.future_ != "")
     future_ = parse_posix_time_zone(tz_file.future_.c_str());
+  if (false && tz_file.future_ != "") {
+    std::cerr << "last transition entry: " << entries_.front().transition << "\n";
+    std::cerr << "future transitions: " << tz_file.future_ << "\n";
     std::cerr << future_ << "\n";
   }
 
