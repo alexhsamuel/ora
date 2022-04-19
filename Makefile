@@ -55,7 +55,7 @@ PYTHON	    	= python3
 PYTHON_EXE  	= $(shell $(PYTHON) -c 'import sys; print(sys.executable)')
 PYTEST	    	= pytest
 # Read through symlink to the executable, in case we're in a venv.
-PYTHON_CONFIG	= $(dir $(shell readlink -f $(PYTHON_EXE)))/python-config
+PYTHON_CONFIG	= $(dir $(shell readlink -f $(PYTHON_EXE)))/python3-config
 
 # Directories
 PY_DIR	    	= $(TOP)/python

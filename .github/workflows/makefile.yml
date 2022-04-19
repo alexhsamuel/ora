@@ -13,16 +13,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Install Python headers
-      run: sudo apt install -y python-dev
+      run: sudo apt install -y python3-dev
 
     - name: Install Python dependencies
-      run: pip install numpy python-dateutil pytz pytest
-      
+      run: pip3 install numpy python-dateutil pytz pytest
+
     - name: Build
       run: make
-      
+
     - name: Run tests
       run: make test
-      
+
