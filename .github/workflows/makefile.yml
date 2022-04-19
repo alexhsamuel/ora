@@ -14,7 +14,10 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Install dependencies
+    - name: Install Python headers
+      run: apt update && apt install -y python-dev
+
+    - name: Install Python dependencies
       run: pip install numpy python-dateutil pytz pytest
       
     - name: Build
