@@ -105,7 +105,8 @@ TimeZone::TimeZone(
   assert(entries_.size() == tz_file.transitions_.size() + 1);
   std::reverse(begin(entries_), end(entries_));
 
-  if (tz_file.future_ != "") {
+  // FIXME: For debugging.
+  if (false && tz_file.future_ != "") {
     std::cerr << "last entry: " << entries_.front().transition << "\n";
     std::cerr << "future transitions: " << tz_file.future_ << "\n";
     future_ = parse_posix_time_zone(tz_file.future_.c_str());
@@ -280,13 +281,6 @@ TimeZone::extend_future(
   // Note how far we got.
   stop_ = (jan1_datenum(year) - DATENUM_UNIX_EPOCH) * SECS_PER_DAY;
   assert(until <= stop_);
-
-  std::cerr << "\nENTRIES:\n";
-  for (auto e : entries_)
-    std::cerr << "  " << e.transition << " "
-              << e.parts.offset << " "
-              << e.parts.abbreviation << " "
-              << (e.parts.is_dst ? "DST" : "STD") << "\n";
 }
 
 
