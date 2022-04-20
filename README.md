@@ -1,4 +1,3 @@
-[![Build Status](https://travis-ci.org/alexhsamuel/ora.svg?branch=master)](https://travis-ci.org/alexhsamuel/ora)
 [![Documentation Status](https://readthedocs.org/projects/ora/badge/?version=latest)](http://ora.readthedocs.io/en/latest/?badge=latest)
 
 Ora is a freestanding time and date implementation for C++ and Python.
