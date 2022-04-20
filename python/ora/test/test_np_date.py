@@ -6,6 +6,8 @@ import pytest
 import ora
 from   ora import DATE_TYPES, Date, Date16
 
+NP_VERSION = tuple(map(int, np.__version__.split(".")))
+
 DATE_TYPE_PAIRS = tuple(itertools.product(DATE_TYPES, DATE_TYPES))
 
 #-------------------------------------------------------------------------------
@@ -406,6 +408,10 @@ def test_date_from_week_date(Date, dtype):
     )
 
 
+@pytest.mark.xfail(
+    (1, 21, 0) <= NP_VERSION,
+    reason="https://github.com/numpy/numpy/issues/21365"
+)
 @pytest.mark.parametrize("Date", DATE_TYPES)
 def test_cast_datetime64D(Date):
     dtype = np.dtype("datetime64[D]")

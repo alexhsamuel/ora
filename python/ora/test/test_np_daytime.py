@@ -8,6 +8,7 @@ import ora
 from   ora import DAYTIME_TYPES
 
 DAYTIME_TYPE_PAIRS = tuple(itertools.product(DAYTIME_TYPES, DAYTIME_TYPES))
+NP_VERSION = tuple(map(int, np.__version__.split(".")))
 
 #-------------------------------------------------------------------------------
 
@@ -28,19 +29,29 @@ def test_is_valid(Daytime):
     assert (ora.np.is_valid(arr).astype(int) == [1, 1, 0, 0]).all()
 
 
+@pytest.mark.skipif(
+    NP_VERSION < (1, 21, 0),
+    reason="no TypeError in conversions before NumPy 1.21"
+)
+def test_convert_typeerror():
+    with pytest.raises(TypeError):
+        np.array([ora.Date(2019, 4, 16)], dtype=ora.Daytime)
+    with pytest.raises(TypeError):
+        np.array([ora.now()], dtype=ora.Daytime)
+
+
 def test_convert_invalid():
-    assert (np.array([
+    a = np.array([
         "",
         None,
         "2019-04-16",
-        ora.Date(2019, 4, 16),
-        ora.now(),
         "2019-04-16T12:30:45+00:00",
         "12:3",
         "00:00:99",
         "0:61:00",
         "25:12:15",
-    ], dtype=ora.Daytime) == ora.Daytime.INVALID).all()
+    ], dtype=ora.Daytime)
+    assert (a == ora.Daytime.INVALID).all()
 
 
 @pytest.mark.parametrize("Daytime", DAYTIME_TYPES)

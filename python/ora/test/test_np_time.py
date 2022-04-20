@@ -7,6 +7,8 @@ from   ora import now, UTC, TIME_TYPES
 from   ora import Time, Unix32Time
 import ora.np
 
+NP_VERSION = tuple(map(int, np.__version__.split(".")))
+
 TIME_TYPE_PAIRS = tuple(itertools.product(TIME_TYPES, TIME_TYPES))
 
 OFFSETS = (
@@ -250,6 +252,10 @@ def test_cast_roundtrip(Time0, Time1):
     assert (arr2[arr0 == Time0.MISSING] == Time0.MISSING).all()
 
 
+@pytest.mark.xfail(
+    (1, 21, 0) <= NP_VERSION,
+    reason="https://github.com/numpy/numpy/issues/21365"
+)
 @pytest.mark.parametrize("Time", TIME_TYPES)
 @pytest.mark.parametrize("units", ["s", "ms", "us", "ns"])
 def test_cast_datetime64(Time, units):
