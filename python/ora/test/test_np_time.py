@@ -253,7 +253,7 @@ def test_cast_roundtrip(Time0, Time1):
 
 
 @pytest.mark.xfail(
-    (1, 21) <= NP_VERSION[: 2],
+    NP_VERSION[0] == 1 and 21 <= NP_VERSION[1] <= 22,
     reason="https://github.com/numpy/numpy/issues/21365"
 )
 @pytest.mark.parametrize("Time", TIME_TYPES)

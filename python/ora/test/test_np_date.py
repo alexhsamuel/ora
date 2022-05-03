@@ -409,7 +409,7 @@ def test_date_from_week_date(Date, dtype):
 
 
 @pytest.mark.xfail(
-    (1, 21) == NP_VERSION[: 2],
+    NP_VERSION[0] == 1 and 21 <= NP_VERSION[1] <= 22,
     reason="https://github.com/numpy/numpy/issues/21365"
 )
 @pytest.mark.parametrize("Date", DATE_TYPES)
