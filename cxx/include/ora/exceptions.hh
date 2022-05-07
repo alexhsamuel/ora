@@ -188,6 +188,17 @@ public:
 };
 
 
+class UnknownTimeZoneError
+  : public Error
+{
+public:
+
+  UnknownTimeZoneError(std::string const& name) : Error(std::string("unknown time zone: " + name)) {}
+  virtual ~UnknownTimeZoneError() = default;
+
+};
+
+
 //------------------------------------------------------------------------------
 
 }  // namespace ora

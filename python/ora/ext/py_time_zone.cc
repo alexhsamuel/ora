@@ -70,8 +70,8 @@ maybe_time_zone(
     try {
       return ora::get_time_zone(tz_name);
     }
-    catch (ora::lib::ValueError const&) {
-      throw py::ValueError(string("not a time zone: ") + tz_name);
+    catch (ora::UnknownTimeZoneError const& err) {
+      throw py::ValueError(string("not really a time zone: ") + tz_name);
     }
   }
 
@@ -84,7 +84,7 @@ maybe_time_zone(
     try {
       return ora::get_time_zone(filename);
     }
-    catch (ora::lib::ValueError const&) {
+    catch (ora::UnknownTimeZoneError const&) {
     }
 
     // Try to guess the time zone name from the path.
@@ -98,9 +98,9 @@ maybe_time_zone(
       try {
         return ora::get_time_zone(tz_name);
       }
-      catch (ora::lib::ValueError const&) {
+      catch (ora::UnknownTimeZoneError const&) {
       }
-      
+
       // Now try the last two path components.
       if (p1 > 0) {
         auto const p0 = filename.rfind('/', p1 - 1);
@@ -109,7 +109,7 @@ maybe_time_zone(
           try {
             return ora::get_time_zone(tz_name);
           }
-          catch (ora::lib::ValueError const&) {
+          catch (ora::UnknownTimeZoneError const&) {
           }
         }
       }

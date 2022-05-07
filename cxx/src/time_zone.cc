@@ -371,7 +371,7 @@ find_time_zone_file(
   if (check(filename, fs::READ, fs::FILE))
     return filename;
   else
-    throw ValueError(std::string("no time zone: ") + name);
+    throw UnknownTimeZoneError(name);
 }
 
 
