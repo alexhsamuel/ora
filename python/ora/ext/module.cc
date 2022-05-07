@@ -162,6 +162,7 @@ PyInit_ext(void)
     TranslateException<ora::lib::fs::FileNotFoundError>::to(PyExc_FileNotFoundError);
     TranslateException<ora::lib::RuntimeError>::to(PyExc_RuntimeError);
     TranslateException<FormatError>::to(PyExc_RuntimeError);
+    TranslateException<ora::UnknownTimeZoneError>::to(PyExc_ValueError);
 
     return mod.release();
   }
