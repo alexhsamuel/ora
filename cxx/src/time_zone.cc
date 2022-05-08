@@ -54,6 +54,7 @@ TimeZone::Entry::Entry(
   parts.is_dst = is_dst;
 }
 
+
 TimeZone::Entry::Entry(
   int64_t const transition_time,
   TzFile::Type const& type)

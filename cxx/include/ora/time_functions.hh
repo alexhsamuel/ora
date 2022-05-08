@@ -54,7 +54,7 @@ get_epoch_time(
 {
   return convert_offset(
     time.get_offset(), TIME::DENOMINATOR, TIME::BASE,
-    1, DATENUM_UNIX_EPOCH);
+    1l, DATENUM_UNIX_EPOCH);
 }
 
 
