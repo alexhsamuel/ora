@@ -222,12 +222,14 @@ TimeZone::get_parts_local(
 
 void
 TimeZone::extend_future(
-  int64_t const until)
+  int64_t until)
   const
 {
   if (future_.dst.abbreviation.empty())
     // No future DST.
     return;
+
+  until = std::min(until, EPOCH_TIME_MAX);
 
   if (until < stop_)
     // Already caught up.
@@ -247,14 +249,14 @@ TimeZone::extend_future(
   std::vector<Entry> entries;
   Datenum const datenum = stop_ / SECS_PER_DAY + DATENUM_UNIX_EPOCH;
   auto year = datenum_to_ordinal_date(datenum).year;
-  for (; true; ++year) {
+  for (; year < YEAR_END; ++year) {
     // Add the DST start transition.
     auto const ddst = weekday_of_month(
       year, start.month,
       start.week == 5 ? -1 : start.week,
       weekday::ENCODING_CLIB::decode(start.weekday));
     auto const tdst =
-      (ddst - DATENUM_UNIX_EPOCH) * SECS_PER_DAY
+      (int64_t) (ddst - DATENUM_UNIX_EPOCH) * SECS_PER_DAY
       + future_.start.ssm
       - future_.std.offset;
 
@@ -264,7 +266,7 @@ TimeZone::extend_future(
       end.week == 5 ? -1 : end.week,
       weekday::ENCODING_CLIB::decode(end.weekday));
     auto const tstd =
-      (dstd - DATENUM_UNIX_EPOCH) * SECS_PER_DAY
+      (int64_t) (dstd - DATENUM_UNIX_EPOCH) * SECS_PER_DAY
       + future_.end.ssm
       - future_.dst.offset;
 
@@ -287,7 +289,6 @@ TimeZone::extend_future(
 
   // Note how far we got.
   stop_ = (jan1_datenum(year) - DATENUM_UNIX_EPOCH) * SECS_PER_DAY;
-  assert(until <= stop_);
 }
 
 

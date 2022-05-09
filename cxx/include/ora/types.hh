@@ -139,6 +139,9 @@ inline bool constexpr datenum_is_valid(Datenum datenum) { return in_interval(DAT
  */
 using EpochTime = int64_t;
 EpochTime constexpr EPOCH_TIME_INVALID  = std::numeric_limits<EpochTime>::min();
+EpochTime constexpr EPOCH_TIME_MIN      = -62135596800;  // 0001-01-01T00:00:00+00:00
+EpochTime constexpr EPOCH_TIME_MAX      = 253402300799;  // 9999-12-31T23:59:59+00:00
+EpochTime constexpr EPOCH_TIME_END      = EPOCH_TIME_MAX + 1;
 
 /*
  * YMDI, a year-month-day integer.
