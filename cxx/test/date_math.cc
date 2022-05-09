@@ -95,14 +95,46 @@ TEST(weekday_of_month, basic) {
   EXPECT_EQ(ymd_to_datenum(2022,  4,  2), weekday_of_month(2022, 4, 1, SATURDAY));
   EXPECT_EQ(ymd_to_datenum(2022,  4,  3), weekday_of_month(2022, 4, 1, SUNDAY));
   EXPECT_EQ(ymd_to_datenum(2022,  4,  4), weekday_of_month(2022, 4, 1, MONDAY));
+
   EXPECT_EQ(ymd_to_datenum(2022,  4,  5), weekday_of_month(2022, 4, 1, TUESDAY));
   EXPECT_EQ(ymd_to_datenum(2022,  4, 12), weekday_of_month(2022, 4, 2, TUESDAY));
   EXPECT_EQ(ymd_to_datenum(2022,  4, 19), weekday_of_month(2022, 4, 3, TUESDAY));
   EXPECT_EQ(ymd_to_datenum(2022,  4, 26), weekday_of_month(2022, 4, 4, TUESDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  4, 29), weekday_of_month(2022, 4, 5, FRIDAY));
+
   EXPECT_EQ(ymd_to_datenum(2022,  4,  5), weekday_of_month(2022, 4,-4, TUESDAY));
   EXPECT_EQ(ymd_to_datenum(2022,  4, 12), weekday_of_month(2022, 4,-3, TUESDAY));
   EXPECT_EQ(ymd_to_datenum(2022,  4, 19), weekday_of_month(2022, 4,-2, TUESDAY));
   EXPECT_EQ(ymd_to_datenum(2022,  4, 26), weekday_of_month(2022, 4,-1, TUESDAY));
-  EXPECT_EQ(ymd_to_datenum(2022,  4, 29), weekday_of_month(2022, 4, 5, FRIDAY));
+
+  EXPECT_EQ(ymd_to_datenum(2022,  4,  7), weekday_of_month(2022, 4,-4, THURSDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  4, 14), weekday_of_month(2022, 4,-3, THURSDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  4, 21), weekday_of_month(2022, 4,-2, THURSDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  4, 28), weekday_of_month(2022, 4,-1, THURSDAY));
+
+  EXPECT_EQ(ymd_to_datenum(2022,  4,  2), weekday_of_month(2022, 4,-5, SATURDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  4,  9), weekday_of_month(2022, 4,-4, SATURDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  4, 16), weekday_of_month(2022, 4,-3, SATURDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  4, 23), weekday_of_month(2022, 4,-2, SATURDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  4, 30), weekday_of_month(2022, 4,-1, SATURDAY));
+}
+
+TEST(weekday_of_month, leap) {
+  EXPECT_EQ(ymd_to_datenum(2022,  2, 28), weekday_of_month(2022, 2,-1, MONDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  2, 22), weekday_of_month(2022, 2,-1, TUESDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  2, 23), weekday_of_month(2022, 2,-1, WEDNESDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  2, 24), weekday_of_month(2022, 2,-1, THURSDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  2, 25), weekday_of_month(2022, 2,-1, FRIDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  2, 26), weekday_of_month(2022, 2,-1, SATURDAY));
+  EXPECT_EQ(ymd_to_datenum(2022,  2, 27), weekday_of_month(2022, 2,-1, SUNDAY));
+
+  // Last Thursday in Feb 2024 is Feb 29.
+  EXPECT_EQ(ymd_to_datenum(2024,  2, 26), weekday_of_month(2024, 2,-1, MONDAY));
+  EXPECT_EQ(ymd_to_datenum(2024,  2, 27), weekday_of_month(2024, 2,-1, TUESDAY));
+  EXPECT_EQ(ymd_to_datenum(2024,  2, 28), weekday_of_month(2024, 2,-1, WEDNESDAY));
+  EXPECT_EQ(ymd_to_datenum(2024,  2, 29), weekday_of_month(2024, 2,-1, THURSDAY));
+  EXPECT_EQ(ymd_to_datenum(2024,  2, 23), weekday_of_month(2024, 2,-1, FRIDAY));
+  EXPECT_EQ(ymd_to_datenum(2024,  2, 24), weekday_of_month(2024, 2,-1, SATURDAY));
+  EXPECT_EQ(ymd_to_datenum(2024,  2, 25), weekday_of_month(2024, 2,-1, SUNDAY));
 }
 

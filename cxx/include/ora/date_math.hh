@@ -405,8 +405,8 @@ weekday_of_month(
     return first + ((weekday - get_weekday(first)) % 7 + 7) % 7 + (n - 1) * 7;
   }
   else if (n < 0) {
-    auto const last = last_of_month(year, month);
-    return last - (get_weekday(last) - last) % 7 + (n + 1) * 7;
+    auto const first = month == 12 ? first_of_month(year + 1, 1) : first_of_month(year, month + 1);
+    return first + ((weekday - get_weekday(first)) % 7 + 7) % 7 + n * 7;
   }
   else
     return DATENUM_INVALID;
