@@ -249,30 +249,35 @@ TimeZone::extend_future(
   auto year = datenum_to_ordinal_date(datenum).year;
   for (; true; ++year) {
     // Add the DST start transition.
-    auto d = weekday_of_month(
+    auto const ddst = weekday_of_month(
       year, start.month,
       start.week == 5 ? -1 : start.week,
       weekday::ENCODING_CLIB::decode(start.weekday));
-    auto t =
-      (d - DATENUM_UNIX_EPOCH) * SECS_PER_DAY
+    auto const tdst =
+      (ddst - DATENUM_UNIX_EPOCH) * SECS_PER_DAY
       + future_.start.ssm
       - future_.std.offset;
-    if (stop_ < t)
-      entries.emplace_back(t, future_.dst.offset, future_.dst.abbreviation, true);
 
     // Add the DST stop transition.
-    d = weekday_of_month(
+    auto const dstd = weekday_of_month(
       year, end.month,
       end.week == 5 ? -1 : end.week,
       weekday::ENCODING_CLIB::decode(end.weekday));
-    t =
-      (d - DATENUM_UNIX_EPOCH) * SECS_PER_DAY
+    auto const tstd =
+      (dstd - DATENUM_UNIX_EPOCH) * SECS_PER_DAY
       + future_.end.ssm
       - future_.dst.offset;
-    if (stop_ < t)
-      entries.emplace_back(t, future_.std.offset, future_.std.abbreviation, false);
 
-    if (stop < t)
+    if (stop_ < tdst)
+      entries.emplace_back(tdst, future_.dst.offset, future_.dst.abbreviation, true);
+    if (stop_ < tstd) {
+      entries.emplace_back(tstd, future_.std.offset, future_.std.abbreviation, false);
+      // Occasionally, STD start before DST start; in that case, swap them.
+      if (tstd < tdst)
+        std::swap(entries[entries.size() - 1], entries[entries.size() - 2]);
+    }
+
+    if (stop < tstd || stop < tdst)
       break;
   }
 
