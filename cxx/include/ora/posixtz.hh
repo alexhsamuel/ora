@@ -34,7 +34,7 @@ struct PosixTz
       Julian julian;
       Gregorian gregorian;
     } spec;
-    unsigned int ssm;
+    int ssm;
   };
 
   struct Type
