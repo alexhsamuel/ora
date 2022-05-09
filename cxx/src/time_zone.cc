@@ -270,17 +270,19 @@ TimeZone::extend_future(
       + future_.end.ssm
       - future_.dst.offset;
 
-    if (stop_ < tdst)
+    if (stop_ <= tdst)
       entries.emplace_back(tdst, future_.dst.offset, future_.dst.abbreviation, true);
-    if (stop_ < tstd) {
+    if (stop_ <= tstd) {
       entries.emplace_back(tstd, future_.std.offset, future_.std.abbreviation, false);
       // Occasionally, STD start before DST start; in that case, swap them.
-      if (tstd < tdst)
+      if (tstd < tdst && stop_ <= tdst)
         std::swap(entries[entries.size() - 1], entries[entries.size() - 2]);
     }
 
-    if (stop < tstd || stop < tdst)
+    if (stop < tstd || stop < tdst) {
+      ++year;
       break;
+    }
   }
 
   // Append (to front) the new entries.
