@@ -120,7 +120,8 @@ overflows(
     std::numeric_limits<FROM>::is_integer,
     "overflows() for integer types only");
   static_assert(
-    std::numeric_limits<TO>::is_integer,
+    // With some compilers, std::numeric_limits<__int128>::is_integer is false.
+    std::numeric_limits<TO>::is_integer || sizeof(TO) == 16,
     "overflows() for integer types only");
 
   return
