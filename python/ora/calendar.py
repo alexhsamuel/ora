@@ -15,7 +15,7 @@ def load_calendar_file(path, *, name=None):
     The file has the following format::
 
         START date
-        END date
+        STOP date
         date
         date
         ...
