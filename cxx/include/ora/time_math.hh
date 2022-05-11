@@ -43,10 +43,10 @@ datenum_daytick_to_offset(
   TimeZoneOffset const tz_offset)
 {
   using Offset = typename TRAITS::Offset;
-  static auto constexpr denominator = TRAITS::denominator;
+  static Offset constexpr denominator = TRAITS::denominator;
   static auto constexpr base = TRAITS::base;
   // The datenum of the day containing the minimum time.
-  static auto constexpr min_datenum 
+  static auto constexpr min_datenum
     = (Datenum) (TRAITS::base + TRAITS::min / (Offset) SECS_PER_DAY);
 
   // To obtain the final offset, we need to add these three terms:
@@ -68,7 +68,7 @@ datenum_daytick_to_offset(
   int64_t const date_secs = ((int64_t) datenum - base) * SECS_PER_DAY;
   int64_t date_tz_secs = date_secs - tz_offset;
 
-  auto daytime_offset = rescale_int(daytick, DAYTICK_PER_SEC, denominator);
+  Offset daytime_offset = rescale_int(daytick, DAYTICK_PER_SEC, denominator);
 
   // Special case: if the time occurs on the first representable date, but
   // midnight of that date is not representable, we'd overflow if we computed
@@ -81,9 +81,10 @@ datenum_daytick_to_offset(
     date_tz_secs += SECS_PER_DAY;
     daytime_offset -= SECS_PER_DAY * denominator;
   }
-    
+
   Offset offset;
-  if (   mul_overflow(denominator, (Offset) date_tz_secs, offset)
+  if (   overflows<Offset, int64_t>(date_tz_secs)
+      || mul_overflow(denominator, (Offset) date_tz_secs, offset)
       || add_overflow(offset, daytime_offset, offset))
     throw TimeRangeError();
   return offset;
