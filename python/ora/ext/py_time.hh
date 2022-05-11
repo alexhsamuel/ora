@@ -338,7 +338,7 @@ PyTime<TIME>::tp_init(
   Tuple* const args,
   Dict* const kw_args)
 {
-  if (kw_args != nullptr)
+  if (kw_args != nullptr && kw_args->Size() > 0)
     throw TypeError("function takes no keyword arguments");
   auto const num_args = args->Length();
   TIME time;
