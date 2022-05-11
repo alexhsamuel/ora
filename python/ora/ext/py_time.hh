@@ -341,17 +341,17 @@ PyTime<TIME>::tp_init(
   if (kw_args != nullptr)
     throw TypeError("function takes no keyword arguments");
   auto const num_args = args->Length();
-  Time time;
+  TIME time;
   if (num_args == 0)
     ;
   else if (num_args == 1)
-    time = convert_to_time<Time>(args->GetItem(0));
+    time = convert_to_time<TIME>(args->GetItem(0));
   else if (num_args == 2)
-    time = localtime_to_time<Time>(args);
+    time = localtime_to_time<TIME>(args);
   else if (num_args == 3)
-    time = date_daytime_to_time<Time>(args);
+    time = date_daytime_to_time<TIME>(args);
   else if (num_args == 7 || num_args == 8)
-    time = parts_to_time<Time>(args);
+    time = parts_to_time<TIME>(args);
   else
     throw TypeError("function takes 0, 1, 2, 3, 7, or 8 arguments");
 
