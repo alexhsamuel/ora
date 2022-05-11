@@ -338,7 +338,7 @@ def test_add_overfow(Time):
     with pytest.raises(OverflowError):  # FIXME: Wrong exception?
         t0 + float("nan")
 
-    
+
 @pytest.mark.parametrize("Time0, Time1", TIME_TYPE_PAIRS)
 def test_time_convert(Time0, Time1):
     assert Time1(Time0.INVALID).invalid
@@ -366,4 +366,34 @@ def test_string_convert():
     assert Time("2020-01-28 23:13:25Z") == t
     assert Time("2020-01-28 18:13:25R") == t
 
+
+def test_out_of_range():
+    with pytest.raises(ora.TimeRangeError):
+        Unix32Time(2038,  1, 19,  3, 14,  6, UTC)
+    with pytest.raises(ora.TimeRangeError):
+        Unix32Time(2039,  1,  1,  0,  0,  0, UTC)
+    with pytest.raises(ora.TimeRangeError):
+        Unix32Time(9999, 12, 31, 23, 59, 59, UTC)
+
+    with pytest.raises(ora.TimeRangeError):
+        Unix32Time(1901, 12, 13, 20, 45, 51, UTC)
+    with pytest.raises(ora.TimeRangeError):
+        Unix32Time(1901,  1,  1,  0,  0,  0, UTC)
+    with pytest.raises(ora.TimeRangeError):
+        Unix32Time(   1,  1,  1,  0,  0,  0, UTC)
+
+    with pytest.raises(ora.TimeRangeError):
+        HiTime(1969, 12, 31, 23, 59, 59, UTC)
+    with pytest.raises(ora.TimeRangeError):
+        HiTime(2106,  2,  7,  6, 28, 17, UTC)
+
+    with pytest.raises(ora.TimeRangeError):
+        NsTime(1677,  9, 21,  0, 12, 43.145224191, UTC)
+    with pytest.raises(ora.TimeRangeError):
+        NsTime(2262,  4, 11, 23, 47, 16.854775806, UTC)
+
+    with pytest.raises(ora.TimeRangeError):
+        SmallTime(1969, 12, 31, 23, 59, 59, UTC)
+    with pytest.raises(ora.TimeRangeError):
+        SmallTime(2106,  2,  7,  6, 28, 14, UTC)
 
