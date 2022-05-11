@@ -108,30 +108,35 @@ in_interval(
 }
 
 
-// FIXME: Not used. (?)  And probably doesn't work for __int128.
 /*
  * True if `val` overflows when conveted from integer types `FROM` to `TO`.
  */
 template<class TO, class FROM>
 inline bool constexpr
 overflows(
-  FROM val) 
+  FROM val)
 {
   static_assert(
-    std::numeric_limits<FROM>::is_integer, 
+    std::numeric_limits<FROM>::is_integer,
     "overflows() for integer types only");
   static_assert(
-    std::numeric_limits<TO>::is_integer, 
+    // With some compilers, std::numeric_limits<__int128>::is_integer is false.
+    std::numeric_limits<TO>::is_integer || sizeof(TO) == 16,
     "overflows() for integer types only");
 
   return
-    std::numeric_limits<TO>::is_signed
-    ? 
-       (   !std::numeric_limits<FROM>::is_signed 
-        && (uintmax_t) val > (uintmax_t) INTMAX_MAX) 
-    || (intmax_t) val < (intmax_t) std::numeric_limits<TO>::min() 
+    // Won't overflow if converting to int128.
+      sizeof(TO) == 16
+    ? false
+    // Signed case.
+    : std::numeric_limits<TO>::is_signed
+    ?
+       (   !std::numeric_limits<FROM>::is_signed
+        && (uintmax_t) val > (uintmax_t) INTMAX_MAX)
+    || (intmax_t) val < (intmax_t) std::numeric_limits<TO>::min()
     || (intmax_t) val > (intmax_t) std::numeric_limits<TO>::max()
-    : 
+    // Unsigned case.
+    :
        val < 0
     || (uintmax_t) val > (uintmax_t) std::numeric_limits<TO>::max();
 }
