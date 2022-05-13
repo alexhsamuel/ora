@@ -15,19 +15,24 @@ def test_zones(name):
     z0 = zoneinfo.ZoneInfo(name)
     z1 = ora.TimeZone(name)
 
-    for year in range(1950, 2050):
-        for month in range(1, 13):
-            for days_off in (-10, 0, 10):
-                t0 = datetime.datetime(year, month, 1, 0, 0, 0) + datetime.timedelta(days_off)
-                o0 = z0.utcoffset(t0).total_seconds()
+    local_times = (
+        (ora.Date(year, month, 1) + day_off, ora.MIDNIGHT + sec_off)
+        for year in range(1950, 2050)
+        for month in range(1, 13)
+        for day_off in (-10, 0, 10)
+        for sec_off in (-14400, 0, 7200, 9000, 43200)
+    )
 
-                t1 = ora.Date(year, month, 1) + days_off, ora.MIDNIGHT
-                try:
-                    o1 = z1.at_local(t1).offset
-                except ValueError:
-                    # This local time doesn't exist.
-                    continue
+    for local_time in local_times:
+        t0 = (local_time @ ora.UTC).std.replace(tzinfo=None)
+        o0 = z0.utcoffset(t0).total_seconds()
 
-                assert o1 == o0, f"mismatch: {name} {t1}: {o0} {o1}"
+        try:
+            o1 = z1.at_local(local_time).offset
+        except ValueError:
+            # This local time doesn't exist.
+            continue
+
+        assert o1 == o0, f"mismatch: {name} {t1}: {o0} {o1}"
 
 
