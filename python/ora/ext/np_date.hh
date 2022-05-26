@@ -280,9 +280,6 @@ DateDtype<PYDATE>::add(
   create_or_get_ufunc(module, "get_ymdi", 1, 1)->add_loop_1(
     dtype->type_num, NPY_INT32, 
     (PyUFuncGenericFunction) ufunc_loop_1<Date, int32_t, ora::date::nex::get_ymdi<Date>>);
-  create_or_get_ufunc(module, "is_valid", 1, 1)->add_loop_1(
-    dtype->type_num, NPY_BOOL,
-    (PyUFuncGenericFunction) ufunc_loop_1<Date, npy_bool, is_valid>);
 
   Comparisons<Date, ora::date::nex::equal, ora::date::nex::before>
     ::register_loops(dtype->type_num);
