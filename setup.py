@@ -85,7 +85,7 @@ setup(
         Extension(
             "ora.ext",
             extra_compile_args=[
-                "-std=c++14",
+                "-std=c++17",
                 "-fdiagnostics-color=always",
                 "-Wno-dangling-else",
             ],
