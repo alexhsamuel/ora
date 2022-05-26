@@ -52,10 +52,10 @@ endif
 
 # Python and tools
 PYTHON	    	= python3
-PYTHON_EXE  	= $(shell $(PYTHON) -c 'import sys; print(sys.executable)')
-PYTEST	    	= pytest
 # Read through symlink to the executable, in case we're in a venv.
-PYTHON_CONFIG	= $(dir $(shell readlink -f $(PYTHON_EXE)))/python3-config
+PYTHON_EXE  	= $(shell $(PYTHON) -c 'import os, sys; print(os.path.realpath(sys.executable))')
+PYTEST	    	= pytest
+PYTHON_CONFIG	= $(dir $(PYTHON_EXE))/python3-config
 
 # Directories
 PY_DIR	    	= $(TOP)/python
