@@ -34,7 +34,7 @@ GTEST_INCDIR    = $(GTEST_DIR)/include
 GTEST_LIB       = $(GTEST_DIR)/gtest_main.a
 
 # Compiler and linker
-CXX            += -std=c++14
+CXX            += -std=c++17
 CPPFLAGS        = -I$(CXX_INCDIR)
 CXXFLAGS    	= -g -Wall -Wno-dangling-else -fdiagnostics-color=always -O3
 override CXXFLAGS += -fpic

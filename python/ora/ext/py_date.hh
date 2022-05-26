@@ -3,8 +3,8 @@
 
 #include <cstring>
 #undef _LIBCPP_WARN_ON_DEPRECATED_EXPERIMENTAL_HEADER
-#include <experimental/optional>
 #include <iostream>
+#include <optional>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -23,8 +23,8 @@ namespace py {
 
 using namespace std::literals;
 
-using std::experimental::optional;
 using std::make_unique;
+using std::optional;
 using std::string;
 using std::unique_ptr;
 

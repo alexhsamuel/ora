@@ -2,8 +2,8 @@
 #pragma GCC diagnostic ignored "-Wparentheses"
 
 #include <cmath>
-#include <experimental/optional>
 #include <iostream>
+#include <optional>
 #include <unordered_map>
 
 #include <Python.h>
@@ -20,8 +20,8 @@ namespace py {
 
 using namespace std::literals;
 
-using std::experimental::optional;
 using std::make_unique;
+using std::optional;
 using std::string;
 using std::unique_ptr;
 

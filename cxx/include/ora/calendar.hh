@@ -184,7 +184,7 @@ public:
       : calendar_(calendar), days_(days) {}
 
     Day(Day const&) = default;
-    Day& operator=(Day&) = default;
+    Day& operator=(Day&) = delete;
 
     constexpr Calendar const& get_calendar() const { return calendar_; }
     constexpr ssize_t get_days() const { return days_; }
