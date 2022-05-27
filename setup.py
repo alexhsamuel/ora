@@ -70,6 +70,9 @@ setup(
     ],
 
     python_requires='>=3.6',
+    setup_requires=[
+        "numpy",
+    ],
     install_requires=[
         "numpy",  # Required to install, but not to use.
     ],
