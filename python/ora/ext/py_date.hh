@@ -1127,7 +1127,7 @@ maybe_date(
     return ora::date::from_datenum<DATE>(datenum->long_value());
 
   // No type match.
-  return {};
+  return std::nullopt;
 }
 
 
