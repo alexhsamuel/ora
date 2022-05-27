@@ -297,25 +297,71 @@ seconds_between(
 // Addition and subtraction
 //------------------------------------------------------------------------------
 
-template<class DAYTIME> inline DAYTIME operator+(DAYTIME const d, double const secs)
-  { return seconds_after(d, secs); }
-template<class DAYTIME> inline DAYTIME operator-(DAYTIME const d, double const secs)
-  { return seconds_before(d, secs); }
-template<class DAYTIME> inline int operator-(DAYTIME const d1, DAYTIME const d0)
-  { return seconds_between(d0, d1); } 
+template<class T>
+inline DaytimeTemplate<T>
+operator+(DaytimeTemplate<T> const d, double const secs)
+{
+  return seconds_after(d, secs);
+}
 
-template<class DAYTIME> inline DAYTIME operator+=(DAYTIME& d, int const secs) 
-  { return d = d + secs; }
-template<class DAYTIME> inline DAYTIME operator++(DAYTIME& d) 
-  { return d = d + 1; }
-template<class DAYTIME> inline DAYTIME operator++(DAYTIME& d, int /* tag */) 
-  { auto old = d; d = d + 1; return old; }
-template<class DAYTIME> inline DAYTIME operator-=(DAYTIME& d, int const secs) 
-  { return d = d - secs; }
-template<class DAYTIME> inline DAYTIME operator--(DAYTIME& d) 
-  { return d = d - 1; }
-template<class DAYTIME> inline DAYTIME operator--(DAYTIME& d, int /* tag */) 
-  { auto old = d; d = d - 1; return old; }
+template<class T>
+inline DaytimeTemplate<T>
+operator-(DaytimeTemplate<T> const d, double const secs)
+{
+  return seconds_before(d, secs);
+}
+
+template<class T>
+inline int operator-(DaytimeTemplate<T> const d1, DaytimeTemplate<T> const d0)
+{
+  return seconds_between(d0, d1);
+}
+
+template<class T>
+inline DaytimeTemplate<T>
+operator+=(DaytimeTemplate<T>& d, int const secs)
+{
+  return d = d + secs;
+}
+
+template<class T>
+inline DaytimeTemplate<T>
+operator++(DaytimeTemplate<T>& d)
+{
+  return d = d + 1;
+}
+
+template<class T>
+inline DaytimeTemplate<T>
+operator++(DaytimeTemplate<T>& d, int /* tag */)
+{
+  auto const old = d;
+  d = d + 1;
+  return old;
+}
+
+template<class T>
+inline DaytimeTemplate<T>
+operator-=(DaytimeTemplate<T>& d, int const secs)
+{
+  return d = d - secs;
+}
+
+template<class T>
+inline DaytimeTemplate<T>
+operator--(DaytimeTemplate<T>& d)
+{
+  return d = d - 1;
+}
+
+template<class T>
+inline DaytimeTemplate<T>
+operator--(DaytimeTemplate<T>& d, int /* tag */)
+{
+  auto const old = d;
+  d = d - 1;
+  return old;
+}
 
 //------------------------------------------------------------------------------
 
