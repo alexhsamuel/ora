@@ -191,25 +191,72 @@ seconds_between(
 // Addition and subtraction
 //------------------------------------------------------------------------------
 
-template<class TRAITS> inline TimeType<TRAITS> operator+(TimeType<TRAITS> const t, double const secs)
-  { return seconds_after(t, secs); }
-template<class TRAITS> inline TimeType<TRAITS> operator-(TimeType<TRAITS> const t, double const secs)
-  { return seconds_before(t, secs); }
-template<class TRAITS> inline double operator-(TimeType<TRAITS> const t1, TimeType<TRAITS> const t0)
-  { return seconds_between(t0, t1); } 
+template<class T>
+inline TimeType<T>
+operator+(TimeType<T> const t, double const secs)
+{
+  return seconds_after(t, secs);
+}
 
-template<class TRAITS> inline TimeType<TRAITS> operator+=(TimeType<TRAITS>& t, int const secs) 
-  { return t = t + secs; }
-template<class TRAITS> inline TimeType<TRAITS> operator++(TimeType<TRAITS>& t) 
-  { return t = t + 1; }
-template<class TRAITS> inline TimeType<TRAITS> operator++(TimeType<TRAITS>& t, int /* tag */) 
-  { auto old = t; t = t + 1; return old; }
-template<class TRAITS> inline TimeType<TRAITS> operator-=(TimeType<TRAITS>& t, int const secs) 
-  { return t = t - secs; }
-template<class TRAITS> inline TimeType<TRAITS> operator--(TimeType<TRAITS>& t) 
-  { return t = t - 1; }
-template<class TRAITS> inline TimeType<TRAITS> operator--(TimeType<TRAITS>& t, int /* tag */) 
-  { auto old = t; t = t - 1; return old; }
+template<class T>
+inline TimeType<T>
+operator-(TimeType<T> const t, double const secs)
+{
+  return seconds_before(t, secs);
+}
+
+template<class T>
+inline double
+operator-(TimeType<T> const t1, TimeType<T> const t0)
+{
+  return seconds_between(t0, t1);
+}
+
+template<class T>
+inline TimeType<T>
+operator+=(TimeType<T>& t, int const secs)
+{
+  return t = t + secs;
+}
+
+template<class T>
+inline TimeType<T>
+operator++(TimeType<T>& t)
+{
+  return t = t + 1;
+}
+
+template<class T>
+inline TimeType<T>
+operator++(TimeType<T>& t, int /* tag */)
+{
+  auto const old = t;
+  t = t + 1;
+  return old;
+}
+
+template<class T>
+inline TimeType<T>
+operator-=(TimeType<T>& t, int const secs)
+{
+  return t = t - secs;
+}
+
+template<class T>
+inline TimeType<T>
+operator--(TimeType<T>& t)
+{
+  return t = t - 1;
+}
+
+template<class T>
+inline TimeType<T>
+operator--(TimeType<T>& t, int /* tag */) 
+{
+  auto const old = t;
+  t = t - 1;
+  return old;
+}
 
 //------------------------------------------------------------------------------
 
