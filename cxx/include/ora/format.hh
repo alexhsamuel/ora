@@ -63,7 +63,8 @@ format_second(
   Second const second,
   int const precision=-1,
   int const width=2,
-  char const pad='0')
+  char const pad='0',
+  bool const trim=false)
 {
   // FIXME: Improve this logic.  See fixfmt, or convert to a power-of-10
   // denominator.  
@@ -77,6 +78,10 @@ format_second(
     // Fractional part.
     if (precision > 0) 
       sb.format(digits.rem, prec, '0');
+    if (trim) {
+      sb.rstrip('0');
+      sb.rstrip('.');
+    }
   }
 }
 
@@ -258,7 +263,8 @@ format_iso_daytime(
   StringBuilder& sb,
   HmsDaytime const& daytime,
   int const precision,
-  bool const compact=false)
+  bool const compact=false,
+  bool const trim=false)
 {
   sb.format(daytime.hour, 2, '0');
   if (!compact)
@@ -266,7 +272,7 @@ format_iso_daytime(
   sb.format(daytime.minute, 2, '0');
   if (!compact)
     sb << ':';
-  format_second(sb, daytime.second, precision);
+  format_second(sb, daytime.second, precision, 2, '0', trim);
 }
 
 
@@ -349,7 +355,8 @@ format_iso_time(
   int const precision,
   bool const compact=false,
   bool const capital=true,
-  bool const military=false)
+  bool const military=false,
+  bool const trim=false)
 {
   sb.format(date.year, 4, '0');
   if (!compact)
@@ -359,7 +366,7 @@ format_iso_time(
     sb << '-';
   sb.format(date.day, 2, '0');
   sb << (capital ? 'T' : 't');
-  daytime::format_iso_daytime(sb, daytime, precision, compact);
+  daytime::format_iso_daytime(sb, daytime, precision, compact, trim);
   if (military)
     sb << get_time_zone_offset_letter(time_zone.offset);
   else

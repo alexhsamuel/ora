@@ -405,7 +405,7 @@ PyTime<TIME>::tp_str(
     StringBuilder sb;
     time::format_iso_time(
       sb, datenum_to_ymd(ldd.datenum), daytick_to_hms(ldd.daytick),
-      ldd.time_zone, precision_);
+      ldd.time_zone, precision_, false, true, false, true);
     return Unicode::FromStringAndSize((char const*) sb, sb.length());
   }
 }
