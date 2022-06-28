@@ -355,7 +355,8 @@ format_iso_time(
   int const precision,
   bool const compact=false,
   bool const capital=true,
-  bool const military=false)
+  bool const military=false,
+  bool const trim=false)
 {
   sb.format(date.year, 4, '0');
   if (!compact)
@@ -365,7 +366,7 @@ format_iso_time(
     sb << '-';
   sb.format(date.day, 2, '0');
   sb << (capital ? 'T' : 't');
-  daytime::format_iso_daytime(sb, daytime, precision, compact);
+  daytime::format_iso_daytime(sb, daytime, precision, compact, trim);
   if (military)
     sb << get_time_zone_offset_letter(time_zone.offset);
   else

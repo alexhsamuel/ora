@@ -11,8 +11,7 @@ from   ora import *
 
 def test_utc0():
     t = from_local((1973/Dec/3, 7200.125), UTC)
-    # FIXME
-    assert(str(t) == "1973-12-03T02:00:00.12500000+00:00")
+    assert(str(t) == "1973-12-03T02:00:00.125+00:00")
 
 
 @pytest.mark.xfail
