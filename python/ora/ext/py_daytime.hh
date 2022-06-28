@@ -375,7 +375,7 @@ PyDaytime<DAYTIME>::tp_str(
   else {
     auto const hms = daytime::get_hms(self->daytime_);
     StringBuilder sb;
-    daytime::format_iso_daytime(sb, hms, precision_);
+    daytime::format_iso_daytime(sb, hms, precision_, false, true);
     return Unicode::FromStringAndSize((char const*) sb, sb.length());
   }
 }

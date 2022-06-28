@@ -96,6 +96,15 @@ public:
     return *this;
   }
 
+  StringBuilder&
+  rstrip(
+    char const c)
+  {
+    while (length_ > 0 && buffer_[length_ - 1] == c)
+      --length_;
+    return *this;
+  }
+
 private:
 
   void

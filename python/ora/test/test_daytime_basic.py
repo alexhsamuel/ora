@@ -390,8 +390,8 @@ def test_std():
 
 def test_str():
     # Don't test for number of trailing zeros.
-    assert str(Daytime(0, 0, 0)).rstrip("0") == "00:00:00."
-    assert str(Daytime(23, 59, 59.99999)).rstrip("0") == "23:59:59.99999"
+    assert str(Daytime(0, 0, 0)) == "00:00:00"
+    assert str(Daytime(23, 59, 59.99999)) == "23:59:59.99999"
 
 
 def test_format_basic():
