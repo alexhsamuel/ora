@@ -53,7 +53,7 @@ def enumerate_data_files(dir):
 
 setup(
     name            ="ora",
-    version         ="0.6.5",
+    version         ="0.6.6",
     description     ="Alternative time and date library",
     long_description=__doc__,
     url             ="https://github.com/alexhsamuel/ora",
