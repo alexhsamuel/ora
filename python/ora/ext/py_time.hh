@@ -61,7 +61,7 @@ template<class TIME> inline std::pair<bool, TIME> maybe_time(Object*);
  *
  * If the argument cannot be converted, raises a Python exception.
  */
-template<class TIME> inline TIME convert_to_time(Object*);
+template<class TIME=Time> inline TIME convert_to_time(Object*);
 
 /**
  * Additional parsing patterns to try when converting strings.
