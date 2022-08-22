@@ -24,20 +24,27 @@ PyDateFmt::add_to(
 
 namespace {
 
-int tp_init(PyDateFmt* self, PyObject* args, PyObject* kw_args)
+int tp_init(PyDateFmt* self, Tuple* args, Dict* kw_args)
 {
-  static char const* arg_names[] = { nullptr };
-  if (!PyArg_ParseTupleAndKeywords(args, kw_args, "", (char**) arg_names))
-    return -1;
+  static char const* arg_names[] = { "invalid", "missing", nullptr };
+  char const* invalid = "INVALID";
+  char const* missing = "MISSING";
+  Arg::ParseTupleAndKeywords(
+    args, kw_args, "|$etet", (char**) arg_names,
+    "utf-8", &invalid, "utf-8", &missing);
 
-  new(self) PyDateFmt();
+  new(self) PyDateFmt(invalid, missing);
   return 0;
 }
 
 
 ref<Unicode> tp_repr(PyDateFmt* self)
 {
-  return Unicode::from("DateFmt()");
+  std::stringstream ss;
+  ss << "DateFmt(invalid=\"" << self->invalid_
+     << "\", missing=\"" << self->missing_
+     << "\")";
+  return Unicode::from(ss.str());
 }
 
 
@@ -48,11 +55,26 @@ ref<Object> tp_call(PyDateFmt* self, Tuple* args, Dict* kw_args)
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &arg);
 
   auto const date = convert_to_date(arg);
-  return Unicode::from(DateFormat::DEFAULT(date));
+  return
+      date.is_invalid() ? Unicode::from(self->invalid_)
+    : date.is_missing() ? Unicode::from(self->missing_)
+    : Unicode::from(DateFormat::DEFAULT(date));
 }
 
 
 auto methods = Methods<PyDateFmt>();
+
+
+ref<Object> get_invalid(PyDateFmt* const self, void* /* closure */)
+{
+  return Unicode::from(self->invalid_);
+}
+
+
+ref<Object> get_missing(PyDateFmt* const self, void* /* closure */)
+{
+  return Unicode::from(self->missing_);
+}
 
 
 ref<Object> get_width(PyDateFmt* const self, void* /* closure */)
@@ -62,6 +84,8 @@ ref<Object> get_width(PyDateFmt* const self, void* /* closure */)
 
 
 auto getsets = GetSets<PyDateFmt>()
+  .add_get<get_invalid>     ("invalid")
+  .add_get<get_missing>     ("missing")
   .add_get<get_width>       ("width")
   ;
 
