@@ -206,6 +206,11 @@ def test_convert_datetime64(Date):
     assert Date(d64("2149-06-04")) == Date(2149,  6,  4)
 
 
+@pytest.mark.parametrize("Date", DATE_TYPES)
+def test_convert_datetime64_nat(Date):
+    assert Date(np.datetime64("NaT", "D")).invalid
+
+
 def test_convert_datetime64_range():
     with pytest.raises(OverflowError):
         Date16(np.datetime64("1969-12-31", "D"))

@@ -1195,7 +1195,9 @@ convert_to_date(
     // Get the epoch tick value.
     int64_t val;
     PyArray_ScalarAsCtype(obj, &val);
-    return ora::date::from_datenum<DATE>(val + DATENUM_UNIX_EPOCH);
+    return
+      val == np::DATETIME64_NAT ? DATE::INVALID
+      : ora::date::from_datenum<DATE>(val + DATENUM_UNIX_EPOCH);
   }
 
   throw py::TypeError("can't convert to a date: "s + *obj->Repr());
