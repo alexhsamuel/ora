@@ -208,6 +208,7 @@ def test_convert_datetime64(Date):
 
 @pytest.mark.parametrize("Date", DATE_TYPES)
 def test_convert_datetime64_nat(Date):
+    assert Date(np.datetime64("NaT")).invalid
     assert Date(np.datetime64("NaT", "D")).invalid
 
 
