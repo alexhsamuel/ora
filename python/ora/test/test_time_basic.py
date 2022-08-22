@@ -399,7 +399,6 @@ def test_out_of_range():
         SmallTime(2106,  2,  7,  6, 28, 14, UTC)
 
 
-# FIXME: Time128, HiTime FP comparison problems.
 @pytest.mark.parametrize("Time", (Time, NsTime, Unix32Time, Unix64Time, SmallTime))
 def test_convert_datetime64(Time):
     dt64 = np.datetime64
@@ -411,6 +410,13 @@ def test_convert_datetime64(Time):
     assert Time(dt64("2037-12-31T23:59:59.123456"   , "us")) == Time(2037, 12, 31, 23, 59, 59.123456   , UTC)
     assert Time(dt64("1970-01-01T00:00:00"          , "ns")) == Time(1970,  1,  1,  0,  0,  0          , UTC)
     assert Time(dt64("2037-12-31T23:59:59.123456789", "ns")) == Time(2037, 12, 31, 23, 59, 59.123456789, UTC)
+
+
+@pytest.mark.parametrize("Time", TIME_TYPES)
+def test_convert_datetime64_nat(Time):
+    assert Time(np.datetime64("NaT")).invalid
+    assert Time(np.datetime64("NaT", "ns")).invalid
+    assert Time(np.datetime64("NaT", "fs")).invalid
 
 
 def test_convert_datetime64_range():
