@@ -20,16 +20,19 @@ public:
 
   PyTimeFmt(
     int     const  precision=-1,
-    string  const& nat      ="NaT")
+    string  const& invalid  ="INVALID",
+    string  const& missing  ="MISSING")
   : precision_(precision),
-    nat_(palide(nat, get_width(), "", " ", 1, PAD_POS_LEFT_JUSTIFY))
+    invalid_(palide(invalid, get_width(), "", " ", 1, PAD_POS_LEFT_JUSTIFY)),
+    missing_(palide(missing, get_width(), "", " ", 1, PAD_POS_LEFT_JUSTIFY))
   {
   }
 
   long          get_width() const { return 26 + precision_; }
 
   int const     precision_;
-  string const  nat_;
+  string const  invalid_;
+  string const  missing_;
 
 };
 

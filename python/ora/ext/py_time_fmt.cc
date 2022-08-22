@@ -28,17 +28,19 @@ namespace {
 int tp_init(PyTimeFmt* self, Tuple* args, Dict* kw_args)
 {
   static char const* arg_names[] = {
-    "precision", "nat", nullptr };
+    "precision", "invalid", "missing", nullptr };
   Object*       precision_arg   = (Object*) Py_None;
-  char const*   nat             = "NaT";
+  char const*   invalid         = "INVALID";
+  char const*   missing         = "MISSING";
   Arg::ParseTupleAndKeywords(
-    args, kw_args, "|O$et", arg_names, &precision_arg, "utf-8", &nat);
+    args, kw_args, "|O$etet", arg_names,
+    &precision_arg, "utf-8", &invalid, "utf-8", &missing);
 
   auto const precision
     = precision_arg == Py_None ? -1
       : std::max(precision_arg->long_value(), -1l);
 
-  new(self) PyTimeFmt(precision, nat);
+  new(self) PyTimeFmt(precision, invalid, missing);
   return 0;
 }
 
@@ -46,7 +48,10 @@ int tp_init(PyTimeFmt* self, Tuple* args, Dict* kw_args)
 ref<Unicode> tp_repr(PyTimeFmt* self)
 {
   std::stringstream ss;
-  ss << "TickTime(" << self->precision_ << ", \"" << self->nat_ << "\")";
+  ss << "TimeFmt(" << self->precision_
+     << ", invalid=\"" << self->invalid_
+     << "\", missing=\"" << self->missing_
+     << "\")";
   return Unicode::from(ss.str());
 }
 
@@ -60,7 +65,11 @@ ref<Object> tp_call(PyTimeFmt* self, Tuple* args, Dict* kw_args)
   // Use exact ns resolution here to avoid FP approximation issues with Python's
   // µs times or NumPy's and Pandas's ns times.
   auto const time = convert_to_time<NsTime>(arg);
-  if (time.is_valid()) {
+  if (time.is_invalid())
+    return Unicode::from(self->invalid_);
+  else if (time.is_missing())
+    return Unicode::from(self->missing_);
+  else {
     auto const ldd = to_local_datenum_daytick(time, *UTC);
     StringBuilder sb;
     time::format_iso_time(
@@ -68,17 +77,21 @@ ref<Object> tp_call(PyTimeFmt* self, Tuple* args, Dict* kw_args)
       ldd.time_zone, self->precision_);
     return Unicode::FromStringAndSize((char const*) sb, sb.length());
   }
-  else
-    return Unicode::from(self->nat_);
 }
 
 
 auto methods = Methods<PyTimeFmt>();
 
 
-ref<Object> get_nat(PyTimeFmt* const self, void* /* closure */)
+ref<Object> get_invalid(PyTimeFmt* const self, void* /* closure */)
 {
-  return Unicode::from(self->nat_);
+  return Unicode::from(self->invalid_);
+}
+
+
+ref<Object> get_missing(PyTimeFmt* const self, void* /* closure */)
+{
+  return Unicode::from(self->missing_);
 }
 
 
@@ -95,7 +108,8 @@ ref<Object> get_width(PyTimeFmt* const self, void* /* closure */)
 
 
 auto getsets = GetSets<PyTimeFmt>()
-  .add_get<get_nat>         ("nat")
+  .add_get<get_invalid>     ("invalid")
+  .add_get<get_missing>     ("missing")
   .add_get<get_precision>   ("precision")
   .add_get<get_width>       ("width")
   ;
