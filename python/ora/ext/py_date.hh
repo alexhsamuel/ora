@@ -1188,6 +1188,16 @@ convert_to_date(
       }
   }
 
+  // Convert datetime64[D].
+  if (
+    obj->IsInstance(np::Descr::from(NPY_DATETIME)->typeobj)
+    && np::get_datetime64_meta(PyArray_DescrFromScalar(obj)).base == NPY_FR_D) {
+    // Get the epoch tick value.
+    int64_t val;
+    PyArray_ScalarAsCtype(obj, &val);
+    return ora::date::from_datenum<DATE>(val + DATENUM_UNIX_EPOCH);
+  }
+
   throw py::TypeError("can't convert to a date: "s + *obj->Repr());
 }
 

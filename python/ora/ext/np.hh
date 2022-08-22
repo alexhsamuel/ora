@@ -527,12 +527,19 @@ generic_copyswapn(
 }
 
 
+inline auto&
+get_datetime64_meta(
+  PyArray_Descr const* descr)
+{
+  return reinterpret_cast<PyArray_DatetimeDTypeMetaData*>(descr->c_metadata)->meta;
+}
+
+
 inline int64_t
 get_datetime64_denominator(
   PyArray_Descr const* descr)
 {
-  auto const& daytime_meta
-    = reinterpret_cast<PyArray_DatetimeDTypeMetaData*>(descr->c_metadata)->meta;
+  auto const& daytime_meta = get_datetime64_meta(descr);
   switch (daytime_meta.base) {
   case NPY_FR_s : return                   1l;
   case NPY_FR_ms: return                1000l;
