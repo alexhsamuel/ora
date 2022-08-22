@@ -60,6 +60,7 @@ representations to the date type.  These include,
 
 - Instances of other Ora date classes.
 - Python `datetime.date` instances.
+- NumPy `datetime64[D]` instances.
 - An integer between 10000000 and 99999999  is interpreted as a YMDI date.
 - A three-element sequence is interpreted as a (year, month, day) triplet.
 - A two-element sequence is interpreted as a (year, ordinal) pair.
@@ -69,6 +70,8 @@ For example,
     >>> Date(Date16(2016, Mar, 15))
     Date(2016, Mar, 15)
     >>> Date(datetime.date(2016, 3, 15))
+    Date(2016, Mar, 15)
+    >>> Date(np.datetime64("2016-03-15", "D"))
     Date(2016, Mar, 15)
     >>> Date(20160315)
     Date(2016, Mar, 15)

@@ -34,11 +34,12 @@ Time conversion
 
 You can create a `Time` object from a variety of arguments.  Remember that an
 instance represents a physical time, so if you specify a date and daytime
-representation, you must specify the time zone as well.  
+representation, you must specify the time zone as well.
 
 - Year, month, day, hour, minute, second, time zone of a local time.
 - A date, daytime, and time zone.
 - Another time instance, or an *aware* `datetime.datetime` instance.
+- A NumPy `datetime64[s]`, `[ms]`, `[us]`, or `[ns]` instance, assumed UTC.
 - An ISO 8601 string, or `"MIN"` or `"MAX"`.
 
 The `std` attribute returns the time represented as closely as possible by a
@@ -55,9 +56,9 @@ Special times
 A time class is equipped with special invalid and missing values.
 
     >>> Time.INVALID
-    Time.INVALID                        
+    Time.INVALID
     >>> Time.MISSING
-    Time.MISSING      
+    Time.MISSING
 
 The `valid` property is tre for any time that is not invalid or missing.
 
