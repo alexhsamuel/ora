@@ -22,6 +22,7 @@
 #include <datetime.h>
 
 #include "py_calendar.hh"
+#include "py_date_fmt.hh"
 #include "py_local.hh"
 #include "py_time_zone.hh"
 #include "types.hh"
@@ -113,6 +114,7 @@ PyInit_ext(void)
     PyTimeZone  ::add_to(mod, "TimeZone");
     PyLocal     ::add_to(mod, "LocalTime");
     PyCalendar  ::add_to(mod);
+    PyDateFmt   ::add_to(mod);
 
     StructSequenceType* const ymd_date_type = get_ymd_date_type();
     mod->AddObject(ymd_date_type->tp_name, (PyObject*) ymd_date_type);
