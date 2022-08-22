@@ -7,6 +7,7 @@
 #include <Python.h>
 #include <datetime.h>
 
+#include "np.hh"
 #include "ora/lib/math.hh"
 #include "ora.hh"
 #include "py.hh"
@@ -931,7 +932,7 @@ convert_to_time(
       return TIME::MIN;
     else if (str == "MAX")
       return TIME::MAX;
-    
+
     try {
       return ora::time::parse_time_iso<TIME>(str.c_str());
     }
@@ -955,7 +956,7 @@ convert_to_time(
           hms_to_daytick(hms.hour, hms.minute, hms.second),
           tz_info.offset);
     }
-      
+
     throw py::ValueError("can't parse as time: '"s + str + "'");
   }
 
@@ -970,6 +971,29 @@ convert_to_time(
       return parts_to_time<TIME>(parts);
     else if (length == -1)
       Exception::Clear();
+  }
+
+  if (obj->IsInstance(np::Descr::from(NPY_DATETIME)->typeobj)) {
+    // Get the exact dtype and its tick denominator.
+    auto descr = PyArray_DescrFromScalar(obj);
+    auto const den = np::get_datetime64_denominator(descr);
+    // Get the epoch tick value.
+    int64_t val;
+    PyArray_ScalarAsCtype(obj, &val);
+    // Convert to an offset.
+    auto const offset
+      = round_div<int128_t>((int128_t) val * TIME::DENOMINATOR, den)
+        + (long(DATENUM_UNIX_EPOCH) - TIME::BASE)
+          * SECS_PER_DAY * TIME::DENOMINATOR;
+
+    // Check bounds before (possibly) narrowing to offset.
+    if (
+            offset < TIME::Traits::min
+         || offset > TIME::Traits::max)
+      throw py::OverflowError(
+        "time out of range: '"s + obj->Repr()->as_utf8() + "'");
+
+    return ora::time::nex::from_offset<TIME>(offset);
   }
 
   throw py::TypeError("can't convert to a time: "s + *obj->Repr());

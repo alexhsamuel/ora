@@ -1,6 +1,7 @@
 import datetime
 import dateutil.tz
 import itertools
+import numpy as np
 import pytest
 
 import ora
@@ -396,4 +397,30 @@ def test_out_of_range():
         SmallTime(1969, 12, 31, 23, 59, 59, UTC)
     with pytest.raises(ora.TimeRangeError):
         SmallTime(2106,  2,  7,  6, 28, 14, UTC)
+
+
+# FIXME: Time128, HiTime FP comparison problems.
+@pytest.mark.parametrize("Time", (Time, NsTime, Unix32Time, Unix64Time, SmallTime))
+def test_convert_datetime64(Time):
+    dt64 = np.datetime64
+    assert Time(dt64("1970-01-01T00:00:00"          ,  "s")) == Time(1970,  1,  1,  0,  0,  0          , UTC)
+    assert Time(dt64("2037-12-31T23:59:59"          ,  "s")) == Time(2037, 12, 31, 23, 59, 59          , UTC)
+    assert Time(dt64("1970-01-01T00:00:00"          , "ms")) == Time(1970,  1,  1,  0,  0,  0          , UTC)
+    assert Time(dt64("2037-12-31T23:59:59.123"      , "ms")) == Time(2037, 12, 31, 23, 59, 59.123      , UTC)
+    assert Time(dt64("1970-01-01T00:00:00"          , "us")) == Time(1970,  1,  1,  0,  0,  0          , UTC)
+    assert Time(dt64("2037-12-31T23:59:59.123456"   , "us")) == Time(2037, 12, 31, 23, 59, 59.123456   , UTC)
+    assert Time(dt64("1970-01-01T00:00:00"          , "ns")) == Time(1970,  1,  1,  0,  0,  0          , UTC)
+    assert Time(dt64("2037-12-31T23:59:59.123456789", "ns")) == Time(2037, 12, 31, 23, 59, 59.123456789, UTC)
+
+
+def test_convert_datetime64_range():
+    with pytest.raises(OverflowError):
+        SmallTime(np.datetime64("1960-01-01T00:00:00"))
+    with pytest.raises(OverflowError):
+        Unix32Time(np.datetime64("2038-01-19T03:14:06"))
+    with pytest.raises(OverflowError):
+        SmallTime(np.datetime64("1960-01-01T00:00:00", "ns"))
+    with pytest.raises(OverflowError):
+        Unix32Time(np.datetime64("2038-01-19T03:14:06", "ns"))
+
 
