@@ -21,17 +21,13 @@ public:
   PyTimeFmt(
     int     const  precision=-1,
     string  const& nat      ="NaT")
-  : precision_(precision),
-    bad_result_(get_width(), '#'),  // FIXME
-    nat_(palide(nat, get_width(), "", " ", 1, PAD_POS_LEFT_JUSTIFY))
+  : precision_(precision)
   {
   }
 
   long get_width() const { return 26 + precision_; }
 
-  int       const precision_;
-  string    const bad_result_;
-  string    const nat_;
+  int const precision_;
 
 };
 

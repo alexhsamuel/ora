@@ -46,7 +46,7 @@ int tp_init(PyTimeFmt* self, Tuple* args, Dict* kw_args)
 ref<Unicode> tp_repr(PyTimeFmt* self)
 {
   std::stringstream ss;
-  ss << "TickTime(" << self->precision_ << ", \"" << self->nat_ << "\")";
+  ss << "TickTime(" << self->precision_ << ")";
   return Unicode::from(ss.str());
 }
 
@@ -82,16 +82,9 @@ ref<Object> get_width(PyTimeFmt* const self, void* /* closure */)
 }
 
 
-ref<Object> get_nat(PyTimeFmt* const self, void* /* closure */)
-{
-  return Unicode::from(self->nat_);
-}
-
-
 auto getsets = GetSets<PyTimeFmt>()
   .add_get<get_precision>   ("precision")
   .add_get<get_width>       ("width")
-  .add_get<get_nat>         ("nat")
   ;
 
 
