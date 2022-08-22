@@ -980,6 +980,8 @@ convert_to_time(
     // Get the epoch tick value.
     int64_t val;
     PyArray_ScalarAsCtype(obj, &val);
+    if (val == np::DATETIME64_NAT)
+      return TIME::INVALID;
     // Convert to an offset.
     auto const offset
       = round_div<int128_t>((int128_t) val * TIME::DENOMINATOR, den)
