@@ -46,7 +46,7 @@ public:
 
   static Descr* from(int const typenum)
     { return (Descr*) PyArray_DescrFromType(typenum); }
-  
+
 };
 
 
@@ -523,6 +523,25 @@ generic_copyswapn(
         s += src_stride;
         d += dst_stride;
       }
+  }
+}
+
+
+inline int64_t
+get_datetime64_denominator(
+  PyArray_Descr const* descr)
+{
+  auto const& daytime_meta
+    = reinterpret_cast<PyArray_DatetimeDTypeMetaData*>(descr->c_metadata)->meta;
+  switch (daytime_meta.base) {
+  case NPY_FR_s : return                   1l;
+  case NPY_FR_ms: return                1000l;
+  case NPY_FR_us: return             1000000l;
+  case NPY_FR_ns: return          1000000000l;
+  case NPY_FR_ps: return       1000000000000l;
+  case NPY_FR_fs: return    1000000000000000l;
+  case NPY_FR_as: return 1000000000000000000l;
+  default:        return                  -1l;
   }
 }
 

@@ -23,31 +23,6 @@ template<class TIME> inline TIME convert_to_time(Object*);
 
 //------------------------------------------------------------------------------
 
-namespace {
-
-inline int64_t
-get_datetime64_denominator(
-  PyArray_Descr const* descr)
-{
-  auto const& daytime_meta
-    = reinterpret_cast<PyArray_DatetimeDTypeMetaData*>(descr->c_metadata)->meta;
-  switch (daytime_meta.base) {
-  case NPY_FR_s : return                   1l;
-  case NPY_FR_ms: return                1000l;
-  case NPY_FR_us: return             1000000l;
-  case NPY_FR_ns: return          1000000000l;
-  case NPY_FR_ps: return       1000000000000l;
-  case NPY_FR_fs: return    1000000000000000l;
-  case NPY_FR_as: return 1000000000000000000l;
-  default:        return                  -1l;
-  }
-}
-
-
-}  // anonymous namespace
-
-//------------------------------------------------------------------------------
-
 /*
  * Dispatch for non-ufunc functions to time type-specific implementation.
  */
