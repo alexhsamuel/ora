@@ -46,7 +46,7 @@ int tp_init(PyTimeFmt* self, Tuple* args, Dict* kw_args)
 ref<Unicode> tp_repr(PyTimeFmt* self)
 {
   std::stringstream ss;
-  ss << "TickTime(" << self->precision_ << ")";
+  ss << "TickTime(" << self->precision_ << ", \"" << self->nat_ << "\")";
   return Unicode::from(ss.str());
 }
 
@@ -57,17 +57,29 @@ ref<Object> tp_call(PyTimeFmt* self, Tuple* args, Dict* kw_args)
   Object* arg;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &arg);
 
-  auto const time = convert_to_time(arg);
-  auto const ldd = to_local_datenum_daytick(time, *UTC);
-  StringBuilder sb;
-  time::format_iso_time(
-    sb, datenum_to_ymd(ldd.datenum), daytick_to_hms(ldd.daytick),
-    ldd.time_zone, self->precision_, false, true, false, true);
-  return Unicode::FromStringAndSize((char const*) sb, sb.length());
+  // Use exact ns resolution here to avoid FP approximation issues with Python's
+  // µs times or NumPy's and Pandas's ns times.
+  auto const time = convert_to_time<NsTime>(arg);
+  if (time.is_valid()) {
+    auto const ldd = to_local_datenum_daytick(time, *UTC);
+    StringBuilder sb;
+    time::format_iso_time(
+      sb, datenum_to_ymd(ldd.datenum), daytick_to_hms(ldd.daytick),
+      ldd.time_zone, self->precision_);
+    return Unicode::FromStringAndSize((char const*) sb, sb.length());
+  }
+  else
+    return Unicode::from(self->nat_);
 }
 
 
 auto methods = Methods<PyTimeFmt>();
+
+
+ref<Object> get_nat(PyTimeFmt* const self, void* /* closure */)
+{
+  return Unicode::from(self->nat_);
+}
 
 
 ref<Object> get_precision(PyTimeFmt* const self, void* /* closure */)
@@ -83,6 +95,7 @@ ref<Object> get_width(PyTimeFmt* const self, void* /* closure */)
 
 
 auto getsets = GetSets<PyTimeFmt>()
+  .add_get<get_nat>         ("nat")
   .add_get<get_precision>   ("precision")
   .add_get<get_width>       ("width")
   ;
