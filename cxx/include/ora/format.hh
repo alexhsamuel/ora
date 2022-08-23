@@ -70,7 +70,7 @@ format_second(
   // denominator.
   unsigned const prec = std::max(0, precision);
   long long const prec10 = pow10(prec);
-  auto const digits = std::div((long long) (second * prec10), prec10);
+  auto const digits = std::div((long long) (second * prec10 + 0.5), prec10);
   // Integer part.
   sb.format(digits.quot, width, pad);
   if (precision >= 0) {
