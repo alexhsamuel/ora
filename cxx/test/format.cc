@@ -51,7 +51,7 @@ TEST(TimeFormat, all) {
 
   // One Time tick is a bit less than 30 nsec.
   auto const time1 = time::from_offset(time.get_offset() + 1);
-  EXPECT_EQ("38.000000029",     TimeFormat("%.9S")(time1));
+  EXPECT_EQ("38.000000030",     TimeFormat("%.9S")(time1));
   EXPECT_EQ("38.000000",        TimeFormat("%S.%f")(time1));
 }
 
@@ -95,8 +95,8 @@ TEST(TimeFormat, precision) {
   EXPECT_EQ("06:07:08.",        TimeFormat("%H:%M:%.0S")(time, *tz));
   EXPECT_EQ("06:07:08.01",      TimeFormat("%H:%M:%.2S")(time, *tz));
   EXPECT_EQ("06:07:08.0123",    TimeFormat("%H:%M:%.4S")(time, *tz));
-  EXPECT_EQ("06:07:08.012345",  TimeFormat("%H:%M:%.6S")(time, *tz));
-  EXPECT_EQ("06:07:08.0123456", TimeFormat("%H:%M:%.7S")(time, *tz));
+  EXPECT_EQ("06:07:08.012346",  TimeFormat("%H:%M:%.6S")(time, *tz));
+  EXPECT_EQ("06:07:08.0123457", TimeFormat("%H:%M:%.7S")(time, *tz));
   EXPECT_EQ("8.0123",           TimeFormat("%1.4S")(time, *tz));
   EXPECT_EQ("08.0123",          TimeFormat("%2.4S")(time, *tz));
   EXPECT_EQ("0008.0123",        TimeFormat("%4.4S")(time, *tz));
@@ -185,11 +185,11 @@ TEST(TimeFormat, iso_D) {
 TEST(TimeFormat, iso_i) {
   auto const time = from_local(2018/JAN/28, from_hms(20, 20, 8.762939453125), *UTC);
   
-  EXPECT_EQ("2018-01-28T20:20:08+00:00",        TimeFormat("%i")(time));
-  EXPECT_EQ("20180128T202008+0000",             TimeFormat("%~i")(time));
-  EXPECT_EQ("2018-01-28t20:20:08+00:00",        TimeFormat("%_i")(time));
-  EXPECT_EQ("2018-01-28T20:20:08.+00:00",       TimeFormat("%.0i")(time));
-  EXPECT_EQ("2018-01-28T20:20:08.762+00:00",    TimeFormat("%.3i")(time));
+  EXPECT_EQ("2018-01-28T20:20:09+00:00",        TimeFormat("%i")(time));
+  EXPECT_EQ("20180128T202009+0000",             TimeFormat("%~i")(time));
+  EXPECT_EQ("2018-01-28t20:20:09+00:00",        TimeFormat("%_i")(time));
+  EXPECT_EQ("2018-01-28T20:20:09.+00:00",       TimeFormat("%.0i")(time));
+  EXPECT_EQ("2018-01-28T20:20:08.763+00:00",    TimeFormat("%.3i")(time));
   EXPECT_EQ("2018-01-28T20:20:08.762939453125+00:00", TimeFormat("%.12i")(time));
 }
 
@@ -199,22 +199,22 @@ TEST(TimeFormat, iso_i_tz) {
   auto const tz1 = get_time_zone("Asia/Tokyo");
   auto const tz2 = get_time_zone("Asia/Kolkata");
   
-  EXPECT_EQ("2018-01-28T15:20:08-05:00",        TimeFormat("%i")(time, *tz0));
-  EXPECT_EQ("20180129T052008+0900",             TimeFormat("%~i")(time, *tz1));
-  EXPECT_EQ("2018-01-29t01:50:08+05:30",        TimeFormat("%_i")(time, *tz2));
-  EXPECT_EQ("2018-01-28T15:20:08.-05:00",       TimeFormat("%.0i")(time, *tz0));
-  EXPECT_EQ("2018-01-29T01:50:08.762+05:30",    TimeFormat("%.3i")(time, *tz2));
+  EXPECT_EQ("2018-01-28T15:20:09-05:00",        TimeFormat("%i")(time, *tz0));
+  EXPECT_EQ("20180129T052009+0900",             TimeFormat("%~i")(time, *tz1));
+  EXPECT_EQ("2018-01-29t01:50:09+05:30",        TimeFormat("%_i")(time, *tz2));
+  EXPECT_EQ("2018-01-28T15:20:09.-05:00",       TimeFormat("%.0i")(time, *tz0));
+  EXPECT_EQ("2018-01-29T01:50:08.763+05:30",    TimeFormat("%.3i")(time, *tz2));
   EXPECT_EQ("2018-01-28T20:20:08.762939453125+00:00", TimeFormat("%.12i")(time, *UTC));
 }
 
 TEST(TimeFormat, iso_T) {
   auto const time = from_local(2018/JAN/28, from_hms(20, 20, 8.762939453125), *UTC);
   
-  EXPECT_EQ("2018-01-28T20:20:08Z",             TimeFormat("%T")(time));
-  EXPECT_EQ("20180128T202008Z",                 TimeFormat("%~T")(time));
-  EXPECT_EQ("2018-01-28t20:20:08Z",             TimeFormat("%_T")(time));
-  EXPECT_EQ("2018-01-28T20:20:08.Z",            TimeFormat("%.0T")(time));
-  EXPECT_EQ("2018-01-28T20:20:08.762Z",         TimeFormat("%.3T")(time));
+  EXPECT_EQ("2018-01-28T20:20:09Z",             TimeFormat("%T")(time));
+  EXPECT_EQ("20180128T202009Z",                 TimeFormat("%~T")(time));
+  EXPECT_EQ("2018-01-28t20:20:09Z",             TimeFormat("%_T")(time));
+  EXPECT_EQ("2018-01-28T20:20:09.Z",            TimeFormat("%.0T")(time));
+  EXPECT_EQ("2018-01-28T20:20:08.763Z",         TimeFormat("%.3T")(time));
   EXPECT_EQ("2018-01-28T20:20:08.762939453125Z", TimeFormat("%.12T")(time));
 }
 
@@ -224,11 +224,11 @@ TEST(TimeFormat, iso_T_tz) {
   auto const tz1 = get_time_zone("Asia/Tokyo");
   auto const tz2 = get_time_zone("Asia/Kolkata");
   
-  EXPECT_EQ("2018-01-28T15:20:08R",             TimeFormat("%T")(time, *tz0));
-  EXPECT_EQ("20180129T052008I",                 TimeFormat("%~T")(time, *tz1));
-  EXPECT_EQ("2018-01-29t01:50:08?",             TimeFormat("%_T")(time, *tz2));
-  EXPECT_EQ("2018-01-28T15:20:08.R",            TimeFormat("%.0T")(time, *tz0));
-  EXPECT_EQ("2018-01-29T01:50:08.762?",         TimeFormat("%.3T")(time, *tz2));
+  EXPECT_EQ("2018-01-28T15:20:09R",             TimeFormat("%T")(time, *tz0));
+  EXPECT_EQ("20180129T052009I",                 TimeFormat("%~T")(time, *tz1));
+  EXPECT_EQ("2018-01-29t01:50:09?",             TimeFormat("%_T")(time, *tz2));
+  EXPECT_EQ("2018-01-28T15:20:09.R",            TimeFormat("%.0T")(time, *tz0));
+  EXPECT_EQ("2018-01-29T01:50:08.763?",         TimeFormat("%.3T")(time, *tz2));
   EXPECT_EQ("2018-01-28T20:20:08.762939453125Z", TimeFormat("%.12T")(time, *UTC));
 }
 
@@ -247,14 +247,14 @@ TEST(TimeFormat, iso_invalid) {
 
 TEST(DaytimeFormat, iso) {
   auto const daytime = from_hms(14, 5, 17.7890123456);
-  EXPECT_EQ("140517",               DaytimeFormat::ISO_BASIC(daytime));
-  EXPECT_EQ("14:05:17",             DaytimeFormat::ISO_EXTENDED(daytime));
+  EXPECT_EQ("140518",               DaytimeFormat::ISO_BASIC(daytime));
+  EXPECT_EQ("14:05:18",             DaytimeFormat::ISO_EXTENDED(daytime));
   EXPECT_EQ("140517.789",           DaytimeFormat::ISO_BASIC_MSEC(daytime));
   EXPECT_EQ("14:05:17.789",         DaytimeFormat::ISO_EXTENDED_MSEC(daytime));
   EXPECT_EQ("140517.789012",        DaytimeFormat::ISO_BASIC_USEC(daytime));
   EXPECT_EQ("14:05:17.789012",      DaytimeFormat::ISO_EXTENDED_USEC(daytime));
-  EXPECT_EQ("140517.789012345",     DaytimeFormat::ISO_BASIC_NSEC(daytime));
-  EXPECT_EQ("14:05:17.789012345",   DaytimeFormat::ISO_EXTENDED_NSEC(daytime));
+  EXPECT_EQ("140517.789012346",     DaytimeFormat::ISO_BASIC_NSEC(daytime));
+  EXPECT_EQ("14:05:17.789012346",   DaytimeFormat::ISO_EXTENDED_NSEC(daytime));
 }
 
 TEST(DaytimeFormat, iso_invalid) {
