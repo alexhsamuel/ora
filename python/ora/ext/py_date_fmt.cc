@@ -24,7 +24,7 @@ PyDateFmt::add_to(
 
 namespace {
 
-int tp_init(PyDateFmt* self, Tuple* args, Dict* kw_args)
+void tp_init(PyDateFmt* self, Tuple* args, Dict* kw_args)
 {
   static char const* arg_names[] = { "invalid", "missing", nullptr };
   char const* invalid = "INVALID";
@@ -34,7 +34,6 @@ int tp_init(PyDateFmt* self, Tuple* args, Dict* kw_args)
     "utf-8", &invalid, "utf-8", &missing);
 
   new(self) PyDateFmt(invalid, missing);
-  return 0;
 }
 
 
@@ -130,7 +129,7 @@ Type PyDateFmt::type_ = PyTypeObject{
   (descrgetfunc)        nullptr,                            // tp_descr_get
   (descrsetfunc)        nullptr,                            // tp_descr_set
   (Py_ssize_t)          0,                                  // tp_dictoffset
-  (initproc)            tp_init,                            // tp_init
+  (initproc)            wrap<PyDateFmt, tp_init>,           // tp_init
   (allocfunc)           nullptr,                            // tp_alloc
   (newfunc)             PyType_GenericNew,                  // tp_new
   (freefunc)            nullptr,                            // tp_free

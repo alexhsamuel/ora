@@ -25,7 +25,7 @@ PyTimeFmt::add_to(
 
 namespace {
 
-int tp_init(PyTimeFmt* self, Tuple* args, Dict* kw_args)
+void tp_init(PyTimeFmt* self, Tuple* args, Dict* kw_args)
 {
   static char const* arg_names[] = {
     "precision", "invalid", "missing", nullptr };
@@ -41,7 +41,6 @@ int tp_init(PyTimeFmt* self, Tuple* args, Dict* kw_args)
       : std::max(precision_arg->long_value(), -1l);
 
   new(self) PyTimeFmt(precision, invalid, missing);
-  return 0;
 }
 
 
@@ -155,7 +154,7 @@ Type PyTimeFmt::type_ = PyTypeObject{
   (descrgetfunc)        nullptr,                            // tp_descr_get
   (descrsetfunc)        nullptr,                            // tp_descr_set
   (Py_ssize_t)          0,                                  // tp_dictoffset
-  (initproc)            tp_init,                            // tp_init
+  (initproc)            wrap<PyTimeFmt, tp_init>,           // tp_init
   (allocfunc)           nullptr,                            // tp_alloc
   (newfunc)             PyType_GenericNew,                  // tp_new
   (freefunc)            nullptr,                            // tp_free
