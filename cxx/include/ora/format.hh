@@ -67,7 +67,7 @@ format_second(
   bool const trim=false)
 {
   // FIXME: Improve this logic.  See fixfmt, or convert to a power-of-10
-  // denominator.  
+  // denominator.
   unsigned const prec = std::max(0, precision);
   long long const prec10 = pow10(prec);
   auto const digits = std::div((long long) (second * prec10), prec10);
@@ -76,7 +76,7 @@ format_second(
   if (precision >= 0) {
     sb << '.';
     // Fractional part.
-    if (precision > 0) 
+    if (precision > 0)
       sb.format(digits.rem, prec, '0');
     if (trim) {
       sb.rstrip('0');
@@ -121,7 +121,7 @@ struct Modifiers
    * Returns the numeric width, or a default value if it's not set.
    */
   int get_width(int def) const { return width == -1 ? def : width; }
-  
+
   /**
    * Returns the pad character, or a default value if it's not set.
    */
@@ -143,10 +143,10 @@ public:
 
   Format(
     std::string const& pattern,
-    std::string const& invalid="INVALID", 
+    std::string const& invalid="INVALID",
     std::string const& missing="MISSING")
-  : pattern_(pattern), 
-    invalid_(invalid), 
+  : pattern_(pattern),
+    invalid_(invalid),
     missing_(missing)
   {
   }
@@ -186,7 +186,7 @@ protected:
     bool          have_time_zone  = false;
   };
 
-  std::string 
+  std::string
   format(
     Parts const& parts)
     const
@@ -196,7 +196,7 @@ protected:
     return sb.str();
   }
 
-  std::string const& 
+  std::string const&
   get_invalid_pad()
     const
   {
@@ -204,7 +204,7 @@ protected:
     return invalid_pad_;
   }
 
-  std::string const& 
+  std::string const&
   get_missing_pad()
     const
   {
@@ -222,11 +222,11 @@ private:
       // Find the length of a formatted string.
       auto const parts = Parts{
         .date = FullDate{
-          {YEAR_MIN, ORDINAL_MIN}, 
-          {YEAR_MIN, MONTH_MIN, DAY_MIN}, 
-          {YEAR_MIN, WEEK_MIN, WEEKDAY_MIN}}, 
+          {YEAR_MIN, ORDINAL_MIN},
+          {YEAR_MIN, MONTH_MIN, DAY_MIN},
+          {YEAR_MIN, WEEK_MIN, WEEKDAY_MIN}},
         .have_date = true,
-        .daytime = HmsDaytime{0, 0, 0}, 
+        .daytime = HmsDaytime{0, 0, 0},
         .have_daytime = true,
         .time_zone = TimeZoneParts{0, "", false},
         .have_time_zone = true,
@@ -280,7 +280,7 @@ class DaytimeFormat
   : public _impl::Format
 {
 public:
-  
+
   static DaytimeFormat const DEFAULT;
   static DaytimeFormat const ISO_BASIC;
   static DaytimeFormat const ISO_EXTENDED;
@@ -293,24 +293,24 @@ public:
 
   using Format::Format;
 
-  std::string 
+  std::string
   operator()(
-    HmsDaytime const& hms) 
-    const 
-  { 
+    HmsDaytime const& hms)
+    const
+  {
     return format(Parts{
       .date = {}, .have_date = false,
       .daytime = hms, .have_daytime = true
     });
   }
 
-  template<class TRAITS> 
+  template<class TRAITS>
   std::string
   operator()(
     DaytimeTemplate<TRAITS> const daytime,
     bool const fixed=true)
-    const 
-  { 
+    const
+  {
     return
         daytime.is_invalid() ? (fixed ? get_invalid_pad() : get_invalid())
       : daytime.is_missing() ? (fixed ? get_missing_pad() : get_missing())
@@ -395,11 +395,11 @@ public:
     const
   {
     return format(Parts{
-      .date           = datenum_to_full_date(ldd.datenum), 
+      .date           = datenum_to_full_date(ldd.datenum),
       .have_date      = true,
-      .daytime        = daytick_to_hms(ldd.daytick), 
+      .daytime        = daytick_to_hms(ldd.daytick),
       .have_daytime   = true,
-      .time_zone      = ldd.time_zone, 
+      .time_zone      = ldd.time_zone,
       .have_time_zone = true,
     });
   }
@@ -410,11 +410,11 @@ public:
   template<class TIME>
   std::string
   operator()(
-    TIME const time, 
+    TIME const time,
     TimeZone const& time_zone=*UTC,
-    bool const fixed=true) 
-    const 
-  { 
+    bool const fixed=true)
+    const
+  {
     if (time.is_invalid())
       return fixed ? get_invalid_pad() : get_invalid();
     else if (time.is_missing())
@@ -424,20 +424,20 @@ public:
       return operator()(to_local_datenum_daytick(time, time_zone));
   }
 
-  template<class TIME> 
+  template<class TIME>
   std::string
   operator()(
-    TIME const time, 
+    TIME const time,
     std::string const& tz_name,
-    bool const fixed=true) 
-    const 
-  { 
+    bool const fixed=true)
+    const
+  {
     return operator()(time, get_time_zone(tz_name), fixed);
   }
 
   template<class TIME>
   std::string operator()(
-    TIME const time, 
+    TIME const time,
     _DisplayTimeZoneTag,
     bool const fixed=true)
     const
@@ -479,7 +479,7 @@ operator<<(
 }
 
 
-class LocalTimeFormat 
+class LocalTimeFormat
 {
 public:
 
@@ -496,7 +496,7 @@ public:
     std::string const& pattern)
   {
     if (pattern.length() == 0)
-      // Empty pattern.  
+      // Empty pattern.
       return {TimeFormat::DEFAULT.get_pattern(), UTC};
     // Look for a time zone in the format pattern.
     auto const at = pattern.rfind('@');
@@ -525,16 +525,16 @@ public:
         return {TimeFormat::DEFAULT.get_pattern(), tz};
       else
         return {pattern.substr(0, at), tz};
-   } 
+   }
   }
 
-  template<class TIME> 
+  template<class TIME>
   std::string
   operator()(
     TIME const time)
-    const 
-  { 
-    return fmt_(time, *tz_); 
+    const
+  {
+    return fmt_(time, *tz_);
   }
 
 private:
@@ -566,13 +566,13 @@ public:
 
   using Format::Format;
 
-  template<class DATE> 
+  template<class DATE>
   std::string
   operator()(
     DATE const date,
     bool const fixed=true)
-    const 
-  { 
+    const
+  {
     return
         date.is_invalid() ? (fixed ? get_invalid_pad() : get_invalid())
       : date.is_missing() ? (fixed ? get_missing_pad() : get_missing())
@@ -622,5 +622,3 @@ using daytime::DaytimeFormat;
 using time::TimeFormat;
 
 }  // namespace ora
-
-
