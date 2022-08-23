@@ -363,7 +363,7 @@ def test_hash():
 def test_format():
     daytime = Daytime(9, 34, 15.625)
     assert format(daytime, "%H%M")                  == "0934"
-    assert format(daytime, "%H::%M::%S")            == "09::34::15"
+    assert format(daytime, "%H::%M::%S")            == "09::34::16"
     assert format(daytime, "%H%M%.5S")              == "093415.62500"
     assert format(daytime, "%1H%_p")                == "9am"
 
@@ -401,16 +401,16 @@ def test_format_basic():
 
 def test_format_C():
     daytime = Daytime(9, 34, 15.625)
-    assert format(daytime, "%C"  ) == "09:34:15"
-    assert format(daytime, "%.0C") == "09:34:15."
+    assert format(daytime, "%C"  ) == "09:34:16"
+    assert format(daytime, "%.0C") == "09:34:16."
     assert format(daytime, "%.3C") == "09:34:15.625"
     assert format(daytime, "%.6C") == "09:34:15.625000"
     
 
 def test_format_iso():
     daytime = Daytime(9, 34, 05.625)
-    assert ora.format_daytime_iso(daytime    ) == "09:34:05"
-    assert ora.format_daytime_iso(daytime,  0) == "09:34:05."
+    assert ora.format_daytime_iso(daytime    ) == "09:34:06"
+    assert ora.format_daytime_iso(daytime,  0) == "09:34:06."
     assert ora.format_daytime_iso(daytime,  3) == "09:34:05.625"
     assert ora.format_daytime_iso(daytime, 12) == "09:34:05.625000000000"
 

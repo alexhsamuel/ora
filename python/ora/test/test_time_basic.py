@@ -102,7 +102,7 @@ def test_hash():
 
 def test_format():
     time = (2016/Jul/11, Daytime(9, 34, 15.625)) @ UTC
-    assert format(time, "%Y,%m,%d,%H,%M,%S")            == "2016,07,11,09,34,15"
+    assert format(time, "%Y,%m,%d,%H,%M,%S")            == "2016,07,11,09,34,16"
     assert format(time, "%1H%M %^p")                    == "934 AM"
     assert format(time, "%%%%%H%M%.5S%%%%")             == "%%093415.62500%%"
     assert format(time, "%~_A!")                        == "mon!"
