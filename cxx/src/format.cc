@@ -344,24 +344,58 @@ format_time(
 
 namespace _impl {
 
-inline bool
+inline size_t
 find_next_escape(
   std::string const& pattern,
-  size_t& pos,
+  size_t pos,
   StringBuilder& sb)
 {
-  size_t const next = pattern.find('%', pos);
-  if (next == std::string::npos) {
-    // No next escape.  Copy the rest of the pattern, and we're done.
-    sb << pattern.substr(pos);
-    return false;
+  while (true) {
+    size_t const next = pattern.find('%', pos);
+    if (next == std::string::npos) {
+      // No next escape.  Copy the rest of the pattern, and we're done.
+      sb << pattern.substr(pos);
+      return std::string::npos;
+    }
+    else if (next > pos)
+      // Copy from the pattern until the next escape.
+      sb << pattern.substr(pos, next - pos);
+    // Skip over the escape character.
+    pos = next + 1;
+    // Literal %?
+    if (pos == pattern.length())
+      throw ValueError("unterminated escape in pattern");
+    else if (pattern[pos] == '%') {
+      sb << '%';
+      pos++;
+      continue;
+    }
+    else
+      return pos;
   }
-  else if (next > pos)
-    // Copy from the pattern until the next escape.
-    sb << pattern.substr(pos, next - pos);
-  // Skip over the escape character.
-  pos = next + 1;
-  return true;
+}
+
+
+std::string
+Format::format(
+  Datenum datenum)
+  const
+{
+  auto const date = datenum_to_full_date(datenum);
+  StringBuilder sb;
+  for (size_t pos = find_next_escape(pattern_, 0, sb);
+       pos != std::string::npos;
+       pos = find_next_escape(pattern_, pos, sb)) {
+    // Set up state for the escape sequence.
+    Modifiers mods;
+    // Scan characters in the escape sequence.
+    while (parse_modifiers(pattern_, pos, mods))
+      ;
+    if (!format_date(pattern_, pos, sb, mods, date))
+      throw TimeFormatError(
+        std::string("unknown date escape '") + pattern_[pos] + "'");
+  }
+  return sb.str();
 }
 
 
@@ -371,22 +405,13 @@ Format::format(
   Parts const& parts)
   const
 {
-  size_t pos = 0;
-  while (find_next_escape(pattern_, pos, sb)) {
+  for (size_t pos = find_next_escape(pattern_, 0, sb);
+       pos != std::string::npos;
+       pos = find_next_escape(pattern_, pos, sb)) {
     // Set up state for the escape sequence.
     Modifiers mods;
     // Scan characters in the escape sequence.
     for (bool done = false; ! done; ) {
-      if (pos == pattern_.length())
-        throw ValueError("unterminated escape in pattern");
-
-      // Literal '%' escape.
-      if (pattern_[pos] == '%') {
-        sb << '%';
-        pos++;
-        break;
-      }
-
       // Handle modifiers.
       if (parse_modifiers(pattern_, pos, mods))
         continue;
