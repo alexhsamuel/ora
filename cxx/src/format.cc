@@ -344,6 +344,27 @@ format_time(
 
 namespace _impl {
 
+inline bool
+find_next_escape(
+  std::string const& pattern,
+  size_t& pos,
+  StringBuilder& sb)
+{
+  size_t const next = pattern.find('%', pos);
+  if (next == std::string::npos) {
+    // No next escape.  Copy the rest of the pattern, and we're done.
+    sb << pattern.substr(pos);
+    return false;
+  }
+  else if (next > pos)
+    // Copy from the pattern until the next escape.
+    sb << pattern.substr(pos, next - pos);
+  // Skip over the escape character.
+  pos = next + 1;
+  return true;
+}
+
+
 void
 Format::format(
   StringBuilder& sb,
@@ -351,23 +372,9 @@ Format::format(
   const
 {
   size_t pos = 0;
-  while (true) {
-    // Find the next escape character.
-    size_t const next = pattern_.find('%', pos);
-    if (next == std::string::npos) {
-      // No next escape.  Copy the rest of the pattern, and we're done.
-      sb << pattern_.substr(pos);
-      break;
-    }
-    else if (next > pos)
-      // Copy from the pattern until the next escape.
-      sb << pattern_.substr(pos, next - pos);
-    // Skip over the escape character.
-    pos = next + 1;
-
+  while (find_next_escape(pattern_, pos, sb)) {
     // Set up state for the escape sequence.
     Modifiers mods;
-
     // Scan characters in the escape sequence.
     for (bool done = false; ! done; ) {
       if (pos == pattern_.length())
