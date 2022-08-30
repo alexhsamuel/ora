@@ -88,7 +88,7 @@ format_string(
   int const pad_length = mods.width - str.length();
   if (pad_length > 0)
     sb.pad(pad_length, mods.get_pad(' '));
-  
+
   if (mods.str_case == '^' || mods.str_case == '_') {
     std::string formatted = str;
     std::transform(begin(formatted), end(formatted), begin(formatted), mods.str_case == '^' ? toupper : tolower);
@@ -110,8 +110,8 @@ format_date(
   switch (pattern[pos]) {
   case 'A':
     format_string(
-      sb, mods, 
-      mods.abbreviate ? get_weekday_abbr(date.week_date.weekday) 
+      sb, mods,
+      mods.abbreviate ? get_weekday_abbr(date.week_date.weekday)
         : get_weekday_name(date.week_date.weekday));
     break;
 
@@ -121,8 +121,8 @@ format_date(
 
   case 'B':
     format_string(
-      sb, mods, 
-      mods.abbreviate ? get_month_abbr(date.ymd_date.month) 
+      sb, mods,
+      mods.abbreviate ? get_month_abbr(date.ymd_date.month)
         : get_month_name(date.ymd_date.month));
     break;
 
@@ -321,7 +321,7 @@ format_time(
   case 'i':
   case 'T':
     time::format_iso_time(
-      sb, date.ymd_date, daytime, time_zone, mods.precision, mods.abbreviate, 
+      sb, date.ymd_date, daytime, time_zone, mods.precision, mods.abbreviate,
       mods.str_case != '_', pattern[pos] == 'T');
     break;
 
@@ -344,7 +344,7 @@ format_time(
 
 namespace _impl {
 
-void 
+void
 Format::format(
   StringBuilder& sb,
   Parts const& parts)
@@ -385,7 +385,7 @@ Format::format(
         continue;
 
       // Handle escape codes for date components.
-      if (   parts.have_date 
+      if (   parts.have_date
           && format_date(pattern_, pos, sb, mods, parts.date))
         break;
       if (   parts.have_daytime
@@ -398,7 +398,7 @@ Format::format(
           && parts.have_daytime
           && parts.have_time_zone
           && format_time(
-            pattern_, pos, sb, mods, 
+            pattern_, pos, sb, mods,
             parts.date, parts.daytime, parts.time_zone))
         break;
 
@@ -487,7 +487,7 @@ month_names[] = {
 
 string const
 month_abbrs[] = {
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
 
@@ -552,7 +552,7 @@ weekday_abbrs[] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 }  // anonymous
 
 
-string const& 
+string const&
 get_month_name(
   Month const month)
 {
@@ -562,7 +562,7 @@ get_month_name(
 }
 
 
-Month 
+Month
 parse_month_name(
   string const& str)
 {
@@ -590,7 +590,7 @@ parse_month_name(
 }
 
 
-string const& 
+string const&
 get_month_abbr(
   Month const month)
 {
@@ -600,7 +600,7 @@ get_month_abbr(
 }
 
 
-Month 
+Month
 parse_month_abbr(
   string const& str)
 {
@@ -646,7 +646,7 @@ get_time_zone_offset_letter(
 }
 
 
-string const& 
+string const&
 get_weekday_name(
   Weekday weekday)
 {
@@ -663,7 +663,7 @@ parse_time_zone_offset_letter(
   char const letter)
 {
   return
-      'A' <= letter && letter <= 'Z' 
+      'A' <= letter && letter <= 'Z'
     ? time_zone_letter_offsets[letter - 'A']
     : TIME_ZONE_OFFSET_INVALID;
 }
@@ -686,7 +686,7 @@ parse_weekday_name(
 }
 
 
-Weekday 
+Weekday
 parse_weekday_name(
   string const& str)
 {
@@ -699,7 +699,7 @@ parse_weekday_name(
 }
 
 
-string const& 
+string const&
 get_weekday_abbr(
   Weekday weekday)
 {
@@ -726,7 +726,7 @@ parse_weekday_abbr(
 }
 
 
-Weekday 
+Weekday
 parse_weekday_abbr(
   string const& str)
 {
@@ -742,5 +742,3 @@ parse_weekday_abbr(
 //------------------------------------------------------------------------------
 
 }  // namespace ora
-
-
