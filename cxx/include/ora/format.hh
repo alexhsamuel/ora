@@ -197,6 +197,7 @@ protected:
   }
 
   std::string format(Datenum) const;
+  std::string format(HmsDaytime const&) const;
 
   std::string const&
   get_invalid_pad()
@@ -242,7 +243,6 @@ private:
   }
 
   void format(StringBuilder&, Parts const&) const;
-  void format(Daytick, StringBuilder&) const;
   void format(LocalDatenumDaytick const&, StringBuilder&) const;
 
   std::string const pattern_;
@@ -302,10 +302,7 @@ public:
     HmsDaytime const& hms)
     const
   {
-    return format(Parts{
-      .date = {}, .have_date = false,
-      .daytime = hms, .have_daytime = true
-    });
+    return format(hms);
   }
 
   template<class TRAITS>
@@ -318,7 +315,7 @@ public:
     return
         daytime.is_invalid() ? (fixed ? get_invalid_pad() : get_invalid())
       : daytime.is_missing() ? (fixed ? get_missing_pad() : get_missing())
-      : operator()(get_hms(daytime));
+      : format(get_hms(daytime));
   }
 
 };

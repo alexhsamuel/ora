@@ -399,6 +399,28 @@ Format::format(
 }
 
 
+std::string
+Format::format(
+  HmsDaytime const& hms)
+  const
+{
+  StringBuilder sb;
+  for (size_t pos = find_next_escape(pattern_, 0, sb);
+       pos != std::string::npos;
+       pos = find_next_escape(pattern_, pos, sb)) {
+    // Set up state for the escape sequence.
+    Modifiers mods;
+    // Scan characters in the escape sequence.
+    while (parse_modifiers(pattern_, pos, mods))
+      ;
+    if (!format_daytime(pattern_, pos, sb, mods, hms))
+      throw TimeFormatError(
+        std::string("unknown daytime escape '") + pattern_[pos] + "'");
+  }
+  return sb.str();
+}
+
+
 void
 Format::format(
   StringBuilder& sb,
