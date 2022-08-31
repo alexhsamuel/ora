@@ -382,6 +382,7 @@ Format::format(
   const
 {
   auto const date = datenum_to_full_date(datenum);
+
   StringBuilder sb;
   for (size_t pos = find_next_escape(pattern_, 0, sb);
        pos != std::string::npos;
@@ -421,46 +422,31 @@ Format::format(
 }
 
 
-void
+std::string
 Format::format(
-  StringBuilder& sb,
-  Parts const& parts)
+  LocalDatenumDaytick const& ldd)
   const
 {
+  auto const date = datenum_to_full_date(ldd.datenum);
+  auto const hms = daytick_to_hms(ldd.daytick);
+
+  StringBuilder sb;
   for (size_t pos = find_next_escape(pattern_, 0, sb);
        pos != std::string::npos;
        pos = find_next_escape(pattern_, pos, sb)) {
     // Set up state for the escape sequence.
     Modifiers mods;
     // Scan characters in the escape sequence.
-    for (bool done = false; ! done; ) {
-      // Handle modifiers.
-      if (parse_modifiers(pattern_, pos, mods))
-        continue;
-
-      // Handle escape codes for date components.
-      if (   parts.have_date
-          && format_date(pattern_, pos, sb, mods, parts.date))
-        break;
-      if (   parts.have_daytime
-          && format_daytime(pattern_, pos, sb, mods, parts.daytime))
-        break;
-      if (   parts.have_time_zone
-          && format_time_zone(pattern_, pos, sb, mods, parts.time_zone))
-        break;
-      if (   parts.have_date
-          && parts.have_daytime
-          && parts.have_time_zone
-          && format_time(
-            pattern_, pos, sb, mods,
-            parts.date, parts.daytime, parts.time_zone))
-        break;
-
-      // If we made it this far, it's not a valid character.
+    while (parse_modifiers(pattern_, pos, mods))
+      ;
+    if (   !format_time(pattern_, pos, sb, mods, date, hms, ldd.time_zone)
+        && !format_date(pattern_, pos, sb, mods, date)
+        && !format_daytime(pattern_, pos, sb, mods, hms)
+        && !format_time_zone(pattern_, pos, sb, mods, ldd.time_zone))
       throw TimeFormatError(
-        std::string("unknown escape '") + pattern_[pos] + "'");
-    }
+        std::string("unknown time escape '") + pattern_[pos] + "'");
   }
+  return sb.str();
 }
 
 
