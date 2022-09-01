@@ -19,6 +19,12 @@ To run C++ and Python tests, `make test`.
 You may also use `setup.py` to build, and `pytest` to run Python tests.
 
 
+# Testing
+
+Run exhaustive tests against `zoneinfo` with `pytest -m fulltz`.
+
+
+
 # Benchmarks
 
 Run [`benchmarks.py`](/benchmarks/benchmark.py) for some performace tests,

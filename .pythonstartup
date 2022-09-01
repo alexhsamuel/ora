@@ -19,7 +19,6 @@ z = TimeZone("America/New_York")
 bd = 1973/Dec/3
 t = now()
 d, y = t @ z
-z = TimeZone("US/Eastern")
 c = ora.get_calendar("usa-federal-holidays")
 
 try:

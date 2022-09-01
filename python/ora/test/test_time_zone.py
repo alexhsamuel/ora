@@ -173,7 +173,7 @@ def test_display():
 
     dtz = get_display_time_zone()
     assert dtz == SYSTEM_TIME_ZONE
-    
+
 
 @pytest.mark.parametrize("tz_name", ["UTC", "America/New_York", "Etc/GMT-4"])
 def test_convert_dateutil_timezone(tz_name):
