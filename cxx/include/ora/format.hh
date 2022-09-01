@@ -319,14 +319,15 @@ namespace time {
 inline void
 format_iso_time(
   StringBuilder& sb,
-  YmdDate const& date,
-  HmsDaytime const& daytime,
+  YmdDate date,
+  HmsDaytime daytime,
   TimeZoneParts const& time_zone,
   int const precision,
   bool const compact=false,
   bool const capital=true,
   bool const military=false,
-  bool const trim=false)
+  bool const trim=false,
+  bool const round=false)
 {
   sb.format(date.year, 4, '0');
   if (!compact)

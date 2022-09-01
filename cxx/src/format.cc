@@ -322,7 +322,7 @@ format_time(
   case 'T':
     time::format_iso_time(
       sb, date.ymd_date, daytime, time_zone, mods.precision, mods.abbreviate,
-      mods.str_case != '_', pattern[pos] == 'T');
+      mods.str_case != '_', pattern[pos] == 'T', false, true);
     break;
 
   default:
@@ -424,10 +424,12 @@ Format::format(
 
 std::string
 Format::format(
-  LocalDatenumDaytick const& ldd)
+  Datenum const datenum,
+  Fmttick const fmttick,
+  TimeZoneParts const& time_zone)
   const
 {
-  auto const date = datenum_to_full_date(ldd.datenum);
+  auto const date = datenum_to_full_date(datenum);
   auto const hms = daytick_to_hms(ldd.daytick);
 
   StringBuilder sb;
