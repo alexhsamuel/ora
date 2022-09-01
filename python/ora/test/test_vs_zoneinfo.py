@@ -5,6 +5,7 @@ import sys
 
 #-------------------------------------------------------------------------------
 
+@pytest.mark.fulltz
 @pytest.mark.skipif(sys.version_info < (3, 9), reason="no zoneinfo")
 @pytest.mark.parametrize(
     "name",
