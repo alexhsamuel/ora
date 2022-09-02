@@ -23,6 +23,3 @@ jobs:
     - name: Run tests
       run: make -k test
 
-    - name: Run time zone tests
-      run: pytest -m fulltz
-
