@@ -11,7 +11,7 @@ Docs at `readthedocs <http://ora.readthedocs.io/en/latest/>`_.
 #-------------------------------------------------------------------------------
 
 from   glob import glob
-from   numpy.distutils.misc_util import get_numpy_include_dirs
+import numpy as np
 import os
 from   setuptools import setup, Extension
 import setuptools.command.build_ext
@@ -95,7 +95,7 @@ setup(
             include_dirs      =[
                 "cxx/include",
                 "python/ora/ext",
-                *get_numpy_include_dirs(),
+                np.get_include(),
             ],
             sources           =glob("python/ora/ext/*.cc"),
             library_dirs      =["cxx/src", ],

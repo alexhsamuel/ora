@@ -159,7 +159,7 @@ PY_CXXFLAGS    += -DNDEBUG  # FIXME: Remove.
 PY_DOCSTR       = $(wildcard $(PY_PKGDIR)/ext/*.docstrings)
 
 # Building with NumPy support
-PY_INCDIRS     += $(shell $(PYTHON) -c 'from numpy.distutils.misc_util import get_numpy_include_dirs as g; print(" ".join(g()));')
+PY_INCDIRS     += $(shell $(PYTHON) -c 'import numpy; print(numpy.get_include());')
 
 # Outputs
 DEPS           += $(PY_SRCS:%.cc=%.cc.d)
