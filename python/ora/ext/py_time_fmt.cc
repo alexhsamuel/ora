@@ -61,15 +61,15 @@ ref<Object> tp_call(PyTimeFmt* self, Tuple* args, Dict* kw_args)
   Object* arg;
   Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &arg);
 
-  // Use exact ns resolution here to avoid FP approximation issues with Python's
-  // µs times or NumPy's and Pandas's ns times.
+  // Use high resolution time here so we can round correctly.
   auto const time = convert_to_time<NsTime>(arg);
   if (time.is_invalid())
     return Unicode::from(self->invalid_);
   else if (time.is_missing())
     return Unicode::from(self->missing_);
   else {
-    auto const ldd = to_local_datenum_daytick(time, *UTC);
+    // Round to nearest instead of truncate.
+    auto const ldd = to_local_datenum_daytick(time + self->round_step_, *UTC);
     StringBuilder sb;
     time::format_iso_time(
       sb, datenum_to_ymd(ldd.datenum), daytick_to_hms(ldd.daytick),

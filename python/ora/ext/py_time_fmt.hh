@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <Python.h>
 
 #include "py.hh"
@@ -23,6 +24,7 @@ public:
     string  const& invalid  ="INVALID",
     string  const& missing  ="MISSING")
   : precision_(precision),
+    round_step_(nextafter(pow(10, -std::max(precision, 0)) / 2, 0)),
     invalid_(palide(invalid, get_width(), "", " ", 1, PAD_POS_LEFT_JUSTIFY)),
     missing_(palide(missing, get_width(), "", " ", 1, PAD_POS_LEFT_JUSTIFY))
   {
@@ -31,6 +33,7 @@ public:
   long          get_width() const { return 26 + precision_; }
 
   int const     precision_;
+  double const  round_step_;
   string const  invalid_;
   string const  missing_;
 

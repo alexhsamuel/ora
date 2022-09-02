@@ -173,28 +173,9 @@ public:
 
 protected:
 
-  /*
-   * Includes all the various parts that can be used for formatting.
-   */
-  struct Parts
-  {
-    FullDate      date            = {};
-    bool          have_date       = false;
-    HmsDaytime    daytime         = {};
-    bool          have_daytime    = false;
-    TimeZoneParts time_zone       = {};
-    bool          have_time_zone  = false;
-  };
-
-  std::string
-  format(
-    Parts const& parts)
-    const
-  {
-    StringBuilder sb;
-    format(sb, parts);
-    return sb.str();
-  }
+  std::string format(Datenum) const;
+  std::string format(HmsDaytime const&) const;
+  std::string format(LocalDatenumDaytick const&) const;
 
   std::string const&
   get_invalid_pad()
@@ -220,26 +201,18 @@ private:
   {
     if (width_ == -1) {
       // Find the length of a formatted string.
-      auto const parts = Parts{
-        .date = FullDate{
-          {YEAR_MIN, ORDINAL_MIN},
-          {YEAR_MIN, MONTH_MIN, DAY_MIN},
-          {YEAR_MIN, WEEK_MIN, WEEKDAY_MIN}},
-        .have_date = true,
-        .daytime = HmsDaytime{0, 0, 0},
-        .have_daytime = true,
-        .time_zone = TimeZoneParts{0, "", false},
-        .have_time_zone = true,
+      static auto const MIN_TIME = LocalDatenumDaytick{
+        DATENUM_MIN,
+        DAYTICK_MIN,
+        TimeZoneParts{0, "", false},
       };
-      width_ = (int) format(parts).length();
+      width_ = (int) format(MIN_TIME).length();
 
       // Truncate or pad the invalid and missing strings.
       invalid_pad_ = pad_trunc(invalid_, width_, ' ');
       missing_pad_ = pad_trunc(missing_, width_, ' ');
     }
   }
-
-  void format(StringBuilder&, Parts const&) const;
 
   std::string const pattern_;
   std::string const invalid_;
@@ -298,10 +271,7 @@ public:
     HmsDaytime const& hms)
     const
   {
-    return format(Parts{
-      .date = {}, .have_date = false,
-      .daytime = hms, .have_daytime = true
-    });
+    return format(hms);
   }
 
   template<class TRAITS>
@@ -314,7 +284,7 @@ public:
     return
         daytime.is_invalid() ? (fixed ? get_invalid_pad() : get_invalid())
       : daytime.is_missing() ? (fixed ? get_missing_pad() : get_missing())
-      : operator()(get_hms(daytime));
+      : format(get_hms(daytime));
   }
 
 };
@@ -394,14 +364,7 @@ public:
     LocalDatenumDaytick const& ldd)
     const
   {
-    return format(Parts{
-      .date           = datenum_to_full_date(ldd.datenum),
-      .have_date      = true,
-      .daytime        = daytick_to_hms(ldd.daytick),
-      .have_daytime   = true,
-      .time_zone      = ldd.time_zone,
-      .have_time_zone = true,
-    });
+    return format(ldd);
   }
 
   /*
@@ -576,10 +539,7 @@ public:
     return
         date.is_invalid() ? (fixed ? get_invalid_pad() : get_invalid())
       : date.is_missing() ? (fixed ? get_missing_pad() : get_missing())
-      : format(Parts{
-          .date = datenum_to_full_date(date.get_datenum()),
-          .have_date = true,
-        });
+      : format(date.get_datenum());
   }
 
 };

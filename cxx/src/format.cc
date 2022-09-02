@@ -344,69 +344,109 @@ format_time(
 
 namespace _impl {
 
-void
-Format::format(
-  StringBuilder& sb,
-  Parts const& parts)
-  const
+inline size_t
+find_next_escape(
+  std::string const& pattern,
+  size_t pos,
+  StringBuilder& sb)
 {
-  size_t pos = 0;
   while (true) {
-    // Find the next escape character.
-    size_t const next = pattern_.find('%', pos);
+    size_t const next = pattern.find('%', pos);
     if (next == std::string::npos) {
       // No next escape.  Copy the rest of the pattern, and we're done.
-      sb << pattern_.substr(pos);
-      break;
+      sb << pattern.substr(pos);
+      return std::string::npos;
     }
     else if (next > pos)
       // Copy from the pattern until the next escape.
-      sb << pattern_.substr(pos, next - pos);
+      sb << pattern.substr(pos, next - pos);
     // Skip over the escape character.
     pos = next + 1;
+    // Literal %?
+    if (pos == pattern.length())
+      throw ValueError("unterminated escape in pattern");
+    else if (pattern[pos] == '%') {
+      sb << '%';
+      pos++;
+      continue;
+    }
+    else
+      return pos;
+  }
+}
 
+
+std::string
+Format::format(
+  Datenum datenum)
+  const
+{
+  auto const date = datenum_to_full_date(datenum);
+
+  StringBuilder sb;
+  for (size_t pos = find_next_escape(pattern_, 0, sb);
+       pos != std::string::npos;
+       pos = find_next_escape(pattern_, pos, sb)) {
     // Set up state for the escape sequence.
     Modifiers mods;
-
     // Scan characters in the escape sequence.
-    for (bool done = false; ! done; ) {
-      if (pos == pattern_.length())
-        throw ValueError("unterminated escape in pattern");
-
-      // Literal '%' escape.
-      if (pattern_[pos] == '%') {
-        sb << '%';
-        pos++;
-        break;
-      }
-
-      // Handle modifiers.
-      if (parse_modifiers(pattern_, pos, mods))
-        continue;
-
-      // Handle escape codes for date components.
-      if (   parts.have_date
-          && format_date(pattern_, pos, sb, mods, parts.date))
-        break;
-      if (   parts.have_daytime
-          && format_daytime(pattern_, pos, sb, mods, parts.daytime))
-        break;
-      if (   parts.have_time_zone
-          && format_time_zone(pattern_, pos, sb, mods, parts.time_zone))
-        break;
-      if (   parts.have_date
-          && parts.have_daytime
-          && parts.have_time_zone
-          && format_time(
-            pattern_, pos, sb, mods,
-            parts.date, parts.daytime, parts.time_zone))
-        break;
-
-      // If we made it this far, it's not a valid character.
+    while (parse_modifiers(pattern_, pos, mods))
+      ;
+    if (!format_date(pattern_, pos, sb, mods, date))
       throw TimeFormatError(
-        std::string("unknown escape '") + pattern_[pos] + "'");
-    }
+        std::string("unknown date escape '") + pattern_[pos] + "'");
   }
+  return sb.str();
+}
+
+
+std::string
+Format::format(
+  HmsDaytime const& hms)
+  const
+{
+  StringBuilder sb;
+  for (size_t pos = find_next_escape(pattern_, 0, sb);
+       pos != std::string::npos;
+       pos = find_next_escape(pattern_, pos, sb)) {
+    // Set up state for the escape sequence.
+    Modifiers mods;
+    // Scan characters in the escape sequence.
+    while (parse_modifiers(pattern_, pos, mods))
+      ;
+    if (!format_daytime(pattern_, pos, sb, mods, hms))
+      throw TimeFormatError(
+        std::string("unknown daytime escape '") + pattern_[pos] + "'");
+  }
+  return sb.str();
+}
+
+
+std::string
+Format::format(
+  LocalDatenumDaytick const& ldd)
+  const
+{
+  auto const date = datenum_to_full_date(ldd.datenum);
+  auto const hms = daytick_to_hms(ldd.daytick);
+
+  StringBuilder sb;
+  for (size_t pos = find_next_escape(pattern_, 0, sb);
+       pos != std::string::npos;
+       pos = find_next_escape(pattern_, pos, sb)) {
+    // Set up state for the escape sequence.
+    Modifiers mods;
+    // Scan characters in the escape sequence.
+    while (parse_modifiers(pattern_, pos, mods))
+      ;
+    if (   !format_time(pattern_, pos, sb, mods, date, hms, ldd.time_zone)
+        && !format_date(pattern_, pos, sb, mods, date)
+        && !format_daytime(pattern_, pos, sb, mods, hms)
+        && !format_time_zone(pattern_, pos, sb, mods, ldd.time_zone))
+      throw TimeFormatError(
+        std::string("unknown time escape '") + pattern_[pos] + "'");
+  }
+  return sb.str();
 }
 
 
