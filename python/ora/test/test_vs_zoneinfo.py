@@ -1,18 +1,38 @@
 import datetime
+import logging
 import ora
 import pytest
 import sys
 
 #-------------------------------------------------------------------------------
 
+# FIXME: Get rid of this once ora uses tzdata zones.
+def get_tzdata_version():
+    try:
+        import tzdata
+    except ImportError:
+        return None
+    else:
+        return tzdata.IANA_VERSION
+
+
 @pytest.mark.fulltz
 @pytest.mark.skipif(sys.version_info < (3, 9), reason="no zoneinfo")
-@pytest.mark.parametrize(
-    "name",
-    sorted(ora.list_zoneinfo_dir())
+@pytest.mark.skipif(
+    get_tzdata_version() != ora.get_zoneinfo_version(),
+    reason="zoneinfo version mismatch"
 )
+@pytest.mark.parametrize("name", sorted(ora.list_zoneinfo_dir()))
 def test_zones(name):
     import zoneinfo
+    import tzdata
+
+    # Tell zoneinfo to ignore the system zoneinfo in preference for tzdata.
+    # Make sure tzdata an
+    zoneinfo.reset_tzpath(())
+    # Make sure tzdata's version of the zoneinfo database matches ours.
+    assert zoneinfo
+
     z0 = zoneinfo.ZoneInfo(name)
     z1 = ora.TimeZone(name)
 
