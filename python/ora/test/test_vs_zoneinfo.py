@@ -34,6 +34,6 @@ def test_zones(name):
             # This local time doesn't exist.
             continue
 
-        assert o1 == o0, f"mismatch: {name} {t1}: {o0} {o1}"
+        assert o1 == o0, f"mismatch: {name} {t0}: {o0} {o1}"
 
 
