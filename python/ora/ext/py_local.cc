@@ -45,6 +45,7 @@ void
 tp_dealloc(
   PyLocal* const self)
 {
+  self->~PyLocal();
   self->ob_type->tp_free(self);
 }
 
