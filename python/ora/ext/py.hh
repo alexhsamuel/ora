@@ -781,8 +781,8 @@ public:
   static bool Check(PyObject* obj)
     { return PySequence_Check(obj); }
 
-  Object* GetItem(Py_ssize_t index)
-    { return check_not_null(PySequence_GetItem(this, index)); }
+  ref<Object> GetItem(Py_ssize_t index)
+    { return take_not_null<Object>(PySequence_GetItem(this, index)); }
 
   Py_ssize_t Length()
     { return PySequence_Length(this); }
