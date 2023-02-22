@@ -114,14 +114,47 @@ DAYTIME_TYPES = frozenset((
 ))
 
 
-# Set the location of the time zone database.  If ZONEINFO is set in the
-# environment, use it; otherwise, use our own copy of the database.
-_INTERNAL_ZONEINFO_DIR = Path(__file__).parent / "zoneinfo"
+_INTERNAL_ZONEINFO_DIR = Path(__file__).parent / "tzdata"
+
+def _get_default_zoneinfo_dir() -> Path:
+    """
+    Returns the default directory path of the time zone database.
+
+    Chooses the time zone database using the following precedence:
+    - The first item in `zoneinfo.TZPATH` that is an absolute path and is a directory.
+    - If the `tzdata` module is importable, its zoneinfo.
+    - Otherwise, Ora's own copy of the database.
+
+    Ora's resolution of individual time zones differs slightly from that of
+    `zoneinfo`.  The `zoneinfo` checks each `TZPATH` directory individually for
+    each time zone, while Ora chooses one zoneinfo directory and uses it for all
+    lookups.
+
+    The `PYTHONTZPATH` environment variable initializes `zoneinfo.TZPATH`. See
+    [zoneinfo](https://docs.python.org/3/library/zoneinfo.html).
+    """
+    import zoneinfo
+    for path in zoneinfo.TZPATH:
+        path = Path(path)
+        if path.is_absolute() and path.is_dir():
+            return path
+
+    import importlib.resources
+    try:
+        import tzdata
+    except ImportError:
+        pass
+    else:
+        # The tzdata module is present.
+        return importlib.resources.files(tzdata) / "zoneinfo"
+
+    return _INTERNAL_ZONEINFO_DIR
+
+
 try:
-    set_zoneinfo_dir(os.environ.get("ZONEINFO", str(_INTERNAL_ZONEINFO_DIR)))
+    set_zoneinfo_dir(_get_default_zoneinfo_dir())
 except FileNotFoundError as err:
-    warnings.warn(
-        "missing zoneinfo; check installation or $ZONEINFO: {}".format(err))
+    warnings.warn(f"missing zoneinfo; check installation or $ZONEINFO: {err}")
 
 #-------------------------------------------------------------------------------
 
@@ -258,26 +291,49 @@ def display_time_zone(time_zone):
         set_display_time_zone(old)
 
 
-def get_zoneinfo_version():
+def get_zoneinfo_version(path=None):
     """
     Returns the version of the zoneinfo database, if available.
 
-    The version may be stored in a file `+VERSION` in the zoneinfo directory.
+    The version may be stored in a file `tzdata.zi` or `+VERSION` in the
+    zoneinfo directory.
 
+    :param path:
+      The path to the zoneinfo directory, or none for the default path.
     :return:
       The zoneinfo database version, if available, otherwise `None`.
     """
+    path = Path(get_zoneinfo_dir() if path is None else path)
+
+    # Many distributions ship a tzdata.zi file, which includes the zoneinfo
+    # version on the first line.  Note that this isn't documented API.
+    zi_path = path / "tzdata.zi"
+    try:
+        with open(zi_path, "r") as file:
+            line = next(file)
+    except OSError:
+        pass
+    else:
+        if line:
+            match = re.match("# version (.*)$", line.strip())
+            if match is not None:
+                return match.group(1)
+
+    # Ora's convention is an explicit +VERSION file.
     path = Path(get_zoneinfo_dir()) / "+VERSION"
     try:
         with path.open("rt") as file:
             version = file.readline().strip()
     except FileNotFoundError:
-        return None
-
-    if re.match(r"20\d\d[a-z]$", version) is None:
-        raise RuntimeError("unexpected zoneinfo version: {}".format(version))
+        pass
     else:
-        return version
+        if re.match(r"20\d\d[a-z]$", version) is None:
+            raise RuntimeError("unexpected zoneinfo version: {}".format(version))
+        else:
+            return version
+
+    # No version available.
+    return None
 
 
 def list_zoneinfo_dir(path=None):
@@ -297,3 +353,4 @@ def list_zoneinfo_dir(path=None):
                 # These are other data files, not zoneinfo entries.
                 continue
             yield "/".join((*parts, name))
+
