@@ -117,7 +117,12 @@ To avoid using the system zoneinfo, set `PYTHONTZPATH` to an empty string.  Ora
 will use zoneinfo from the `tzdata` package, if installed, else its own copy.
 
 To instruct Ora to use a specific zoneinfo directory, set the `PYTHONTZPATH`
-environment variable to the absolute path, or call `set_zoneinfo_dir()`.  Ora
-caches loaded time zone objects; any already loaded will not be reloaded if the
-zoneinfo directory is changed by `set_zoneinfo_dir()`.
+environment variable to the absolute path, or call `set_zoneinfo_dir(path)`.
+Ora caches loaded time zone objects; any already loaded will not be reloaded if
+the zoneinfo directory is changed by `set_zoneinfo_dir()`.
+
+Use `get_zoneinfo_dir()` to determine the zoneinfo version of the current
+zoneinfo directory, or another directory by passing a path.  Note that there is
+no standard for storing the version of a zoneinfo directory; Ora makes an effort
+to infer this from conventional metadata, but this is not always possible.
 
