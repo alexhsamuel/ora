@@ -8,10 +8,6 @@ Time Zones
 <https://data.iana.org/time-zones/theory.html>`_ for information about the tz
 database and its limitations.
 
-Ora includes and uses a recent copy of the zoneinfo files, distinct from those
-typically installed on UNIX-like systems or those installed with `dateutil` or
-`pytz`.
-
 
 Time zone objects
 -----------------
@@ -94,4 +90,39 @@ time zone*) instead, use `at_local()`.
 
     >>> tz.at_local(2016/Mar/18, MIDNIGHT)
     TimeZoneParts(offset=-14400, abbreviation='EDT', is_dst=True)
+
+
+Time zone data
+--------------
+
+Ora uses a method similar to the standard library's `zoneinfo` module to choose
+an available zoneinfo database, according to these rules:
+
+1. The first entry of `zoneinfo.TZPATH
+   <https://docs.python.org/3/library/zoneinfo.html#zoneinfo.TZPATH>`_ that is
+   an absolute path to a directory, if any.  By default, `TZPATH` is initialized
+   from the `PYTHONTZPATH` environment variable, if set.  Otherwise, it is
+   initialized to a Python distribution-specific list of typical paths at which
+   system zoneinfo directories are typically located.  On UNIX-like systems,
+   this is most commonly `/usr/share/zoneinfo`.
+
+2. Or, the zoneinfo directory installed with the PyPI `tzdata
+   <https://tzdata.readthedocs.io/en/latest/>`_ package, if `tzdata` is
+   installed.
+
+3. Or, a copy of the zoneinfo database packaged with Ora itself.
+
+In most Python installations, Ora uses the system-installed zoneinfo by default.
+To avoid using the system zoneinfo, set `PYTHONTZPATH` to an empty string.  Ora
+will use zoneinfo from the `tzdata` package, if installed, else its own copy.
+
+To instruct Ora to use a specific zoneinfo directory, set the `PYTHONTZPATH`
+environment variable to the absolute path, or call `set_zoneinfo_dir(path)`.
+Ora caches loaded time zone objects; any already loaded will not be reloaded if
+the zoneinfo directory is changed by `set_zoneinfo_dir()`.
+
+Use `get_zoneinfo_dir()` to determine the zoneinfo version of the current
+zoneinfo directory, or another directory by passing a path.  Note that there is
+no standard for storing the version of a zoneinfo directory; Ora makes an effort
+to infer this from conventional metadata, but this is not always possible.
 

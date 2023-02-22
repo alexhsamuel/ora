@@ -457,10 +457,10 @@ set_zoneinfo_dir(
   Dict* const kw_args)
 {
   static char const* arg_names[] = {"path", nullptr};
-  char* path;
-  Arg::ParseTupleAndKeywords(args, kw_args, "s", arg_names, &path);
+  Object* path_obj;
+  Arg::ParseTupleAndKeywords(args, kw_args, "O", arg_names, &path_obj);
 
-  ora::set_zoneinfo_dir(path);
+  ora::set_zoneinfo_dir(fspath(path_obj));
   return none_ref();
 }
 

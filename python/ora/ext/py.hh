@@ -990,6 +990,21 @@ public:
 
 //------------------------------------------------------------------------------
 
+class Bytes
+  : public Object
+{
+public:
+
+  static bool Check(PyObject* obj)
+    { return PyBytes_Check(obj); }
+
+  char* as_string()
+    { return PyBytes_AS_STRING(this); }
+
+};
+
+//------------------------------------------------------------------------------
+
 class Unicode
   : public Object
 {
@@ -2010,6 +2025,20 @@ new_exception(
   check_not_null(exc);
   assert(Type::Check(exc));
   return ref<Object>::take(exc);
+}
+
+
+inline char const*
+fspath(
+  PyObject* obj)
+{
+  ref<Object> path = take_not_null<Object>(PyOS_FSPath(obj));
+  if (Unicode::Check(path))
+    return cast<Unicode>(path)->as_utf8();
+  else if (Bytes::Check(path))
+    return cast<Bytes>(path)->as_string();
+  else
+    throw TypeError("unknown path type");
 }
 
 
