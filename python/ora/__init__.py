@@ -114,7 +114,7 @@ DAYTIME_TYPES = frozenset((
 ))
 
 
-_INTERNAL_ZONEINFO_DIR = Path(__file__).parent / "tzdata"
+_INTERNAL_ZONEINFO_DIR = Path(__file__).parent / "zoneinfo"
 
 def _get_default_zoneinfo_dir() -> Path:
     """
