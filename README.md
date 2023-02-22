@@ -38,7 +38,7 @@ or smaller is supported.
 
 ### Platform
 
-- Requires C++14 and Python 3.6+.
+- Requires C++17 and Python 3.6+.
 - Tested on Linux and MacOS.  Currently no Windows support.
 - Tested on x86-64 only.
 
