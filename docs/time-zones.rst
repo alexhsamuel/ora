@@ -101,10 +101,16 @@ an available zoneinfo database, according to these rules:
 1. The first entry of `zoneinfo.TZPATH
    <https://docs.python.org/3/library/zoneinfo.html#zoneinfo.TZPATH>`_ that is
    an absolute path to a directory, if any.  By default, `TZPATH` is initialized
-   from the `PYTHONTZPATH` environment variable, if set.  Otherwise, it is
-   initialized to a Python distribution-specific list of typical paths at which
-   system zoneinfo directories are typically located.  On UNIX-like systems,
-   this is most commonly `/usr/share/zoneinfo`.
+   from the `PYTHONTZPATH` environment variable, if set.
+
+   If `PYTHONTZPATH` is unset, the path defaults to locations determined by the
+   Python build.  If you are using Python distributed with your system, this
+   probably points to your system-supplied zoneinfo directory (often
+   `/usr/share/zoneinfo` on UNIX-like systems); use your system's package
+   management tools to update it.  If you are using Anaconda Python, this
+   probably points to the installed location of the Conda package `tzdata`
+   (which is distinct from the PyPI package of the same name); use `conda
+   update` to update it.
 
 2. Or, the zoneinfo directory installed with the PyPI `tzdata
    <https://tzdata.readthedocs.io/en/latest/>`_ package, if `tzdata` is
