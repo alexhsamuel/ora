@@ -152,6 +152,8 @@ def get_calendar(name):
     - "all" or "none"
     - A weekday expression; see `parse_weekdays`.
     - The name of a calendar in the global calendar directory.
+
+    Calendars are not cached.
     """
     name = str(name)
     try:
