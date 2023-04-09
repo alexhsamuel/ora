@@ -27,6 +27,12 @@ public:
   operator char const*() const { return buffer_; }
   std::string str() const { return std::string(buffer_, length_); }
 
+  ~StringBuilder()
+  {
+    if (buffer_ != nullptr)
+      free(buffer_);
+  }
+
   StringBuilder&
   operator<<(
     char c)
