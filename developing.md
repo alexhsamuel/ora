@@ -105,20 +105,18 @@ anaconda upload ...
 
 ### Linux binary wheel
 
-Builds a manylinux-2014 binary wheel.
+To build and upload a binary wheel (requires Podman):
+```
+$ ./build-manylinux-wheel
+$ twine upload ora-*-manylinux*.whl
+```
 
-```
-docker run -ti --rm quay.io/pypa/manylinux2014_x86_64 bash
-git clone https://github.com/alexhsamuel/ora
-export PATH=/opt/python/cp37-cp37m/bin:$PATH
-pip install numpy twine
-pip wheel ./ora -w wheels
-auditwheel repair ./wheels/ora-0.3.7-cp37-cp37m-linux_x86_64.whl -w wheels
-twine upload wheels/ora-0.3.7-cp37-cp37m-manylinux2014_x86_64.whl 
-```
+See the script to change the build image or target Python version.
 
 
 # Talks
 
 Talks and other media are on the `gh-pages` branch and available at 
 http://alexhsamuel.github.io.
+
+

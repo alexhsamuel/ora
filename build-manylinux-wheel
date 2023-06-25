@@ -1,0 +1,29 @@
+#!/usr/bin/bash -ex
+
+# Builds a manylinux binary wheel of the latest PyPI version of ora.
+
+# Build a linux2014 wheel on on CentOS7 image, for compatibility.
+IMAGE=quay.io/pypa/manylinux2014_x86_64
+
+# Build for CPython 3.10.
+VER=cp310-cp310
+
+tmpdir=$(mktemp -d)
+cat > $tmpdir/build.sh <<EOF
+PATH=/opt/python/$VER/bin:\$PATH
+pip -vvv wheel ora -w /wheel
+auditwheel repair -w /wheel /wheel/ora-*
+EOF
+
+podman run -t \
+       --volume $tmpdir:/wheel \
+       $IMAGE \
+       bash -ex /wheel/build.sh
+
+path=$(ls $tmpdir/ora-*-manylinux*.whl)
+name=$(basename $path)
+cp $path ./$name
+echo $name
+
+rm -rf $tmpdir
+
