@@ -43,6 +43,7 @@
 
 1. Rounding functions.
 1. matplotlib axis integration
+1. Examine https://blog.reverberate.org/2020/05/12/optimizing-date-algorithms.html.
 1. Use [ryu](https://github.com/ulfjack/ryu/tree/master/ryu) for `format_seconds()`.
 1. Fixfmt-style formatter objects.
 1. Date, time, daytime range functions.
