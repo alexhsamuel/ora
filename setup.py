@@ -71,10 +71,10 @@ setup(
 
     python_requires='>=3.6',
     setup_requires=[
-        "numpy",
+        "numpy<2",
     ],
     install_requires=[
-        "numpy",  # Required to install, but not to use.
+        "numpy<2",  # Required to install, but not to use.
     ],
 
     package_dir     ={"": "python"},
