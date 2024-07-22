@@ -4,3 +4,22 @@ requires = [
          "numpy",
 ]
 build-backend = "setuptools.build_meta"
+
+[tool.bumpversion]
+current_version = 0.8.3
+commit = True
+tag = True
+tag_name = v{new_version}
+
+[tool.bumpversion.files]
+filename = "python/ora/__init__.py"
+
+[tool.bumpversion.files]
+filename = "setup.py"
+
+[tool.bumpversion.files]
+filename = "conda-recipe/meta.yaml"
+
+[tool.bumpversion.files]
+filename = "docs/conf.py"
+
