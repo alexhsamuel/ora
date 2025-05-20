@@ -11,7 +11,6 @@ Docs at `readthedocs <http://ora.readthedocs.io/en/latest/>`_.
 #-------------------------------------------------------------------------------
 
 from   glob import glob
-import numpy as np
 import os
 from   setuptools import setup, Extension
 import setuptools.command.build_ext
@@ -28,12 +27,27 @@ if sys.platform == "darwin":
 
 #-------------------------------------------------------------------------------
 
+def np_get_include():
+    try:
+        import numpy
+        return [numpy.get_include()]
+    except ImportError:
+        return []
+
+
 # Convince setuptools to call our C++ build.
 
 class BuildExt(setuptools.command.build_ext.build_ext):
 
     def run(self):
-        subprocess.check_call(["make", "cxx", "docstrings"])
+        try:
+            import numpy
+        except ImportError:
+            py_np = False
+        else:
+            py_np = True
+        env = os.environ | {"PY_NP": "yes" if py_np else "no"}
+        subprocess.check_call(["make", "cxx", "docstrings"], env=env)
         setuptools.command.build_ext.build_ext.run(self)
 
 
@@ -53,19 +67,14 @@ setup(
     classifiers     =[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: BSD License",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
     ],
 
     python_requires='>=3.6',
-    setup_requires=[
-        "numpy<2",
-    ],
-    install_requires=[
-        "numpy<2",  # Required to install, but not to use.
-    ],
-
+    extras_require={
+        "numpy": ["numpy<2"],
+    },
     package_dir     ={"": "python"},
     packages        =["ora", "ora.np"],
     package_data    ={
@@ -84,7 +93,7 @@ setup(
             include_dirs      =[
                 "cxx/include",
                 "python/ora/ext",
-                np.get_include(),
+                *np_get_include(),
             ],
             sources           =glob("python/ora/ext/*.cc"),
             library_dirs      =["cxx/src", ],
