@@ -40,17 +40,6 @@ class BuildExt(setuptools.command.build_ext.build_ext):
 
 #-------------------------------------------------------------------------------
 
-def enumerate_data_files(dir):
-    """
-    Enumerates files suitable for setuptools's `data_files` option.
-
-    Generates (dir_path, file_paths) pairs for each directory under `dir`,
-    where `file_paths` is a list of paths to files in that directory.
-    """
-    for dir, _, files in os.walk(dir):
-        yield dir, [ os.path.join(dir, f) for f in files ]
-
-
 setup(
     name            ="ora",
     version         ="0.8.4",
