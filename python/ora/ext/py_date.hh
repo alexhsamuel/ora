@@ -12,11 +12,14 @@
 #include <Python.h>
 #include <datetime.h>
 
-#include "np.hh"
 #include "ora.hh"
 #include "py.hh"
 #include "py_local.hh"
 #include "types.hh"
+
+#ifdef ORA_NP
+#  include "np/np.hh"
+#endif
 
 namespace ora {
 namespace py {
@@ -302,8 +305,10 @@ PyDate<DATE>::add_to(
 {
   // Construct the type struct.
   type_ = build_type(string{module.GetName()} + "." + name);
+#ifdef ORA_NP
   // FIXME: Make the conditional on successfully importing numpy.
   type_.tp_base = &PyGenericArrType_Type;
+#endif
   // Hand it to Python.
   type_.Ready();
 
@@ -1188,6 +1193,7 @@ convert_to_date(
       }
   }
 
+#ifdef ORA_NP
   // Is it a datetime64?
   if (obj->IsInstance(np::Descr::from(NPY_DATETIME)->typeobj)) {
     // Get the epoch tick value.
@@ -1201,6 +1207,7 @@ convert_to_date(
       return ora::date::from_datenum<DATE>(val + DATENUM_UNIX_EPOCH);
     // Other unit?  Fall through.
   }
+#endif
 
   throw py::TypeError("can't convert to a date: "s + *obj->Repr());
 }

@@ -149,17 +149,24 @@ $(CXX_TST_OKS): export ZONEINFO = $(ABSTOP)/$(ZONEINFO_DIR)
 #-------------------------------------------------------------------------------
 # Python building extension code
 
+# Enable NumPy features.
+PY_NP	    	= yes
+
 # Sources
 PY_INCDIRS      = $(PY_PKGDIR)/ext 
 PY_SRCS         = $(wildcard $(PY_PKGDIR)/ext/*.cc) 
-PY_CPPFLAGS    += $(PY_INCDIRS:%=-I%)
 PY_CPPFLAGS    += $(shell $(PYTHON_CONFIG) --includes)
 PY_CXXFLAGS    += -fno-strict-aliasing -fwrapv
 PY_CXXFLAGS    += -DNDEBUG  # FIXME: Remove.
 PY_DOCSTR       = $(wildcard $(PY_PKGDIR)/ext/*.docstrings)
 
 # Building with NumPy support
-PY_INCDIRS     += $(shell $(PYTHON) -c 'import numpy; print(numpy.get_include());')
+ifeq ($(PY_NP), yes)
+  PY_CPPFLAGS  += -DORA_NP $(PY_INCDIRS:%=-I%)
+  PY_SRCS      += $(wildcard $(PY_PKGDIR)/ext/np/*.cc)
+  PY_INCDIRS   += $(shell $(PYTHON) -c 'import numpy; print(numpy.get_include());')
+  PY_DOCSTR    += $(wildcard $(PY_PKGDIR)/ext/np/*.docstrings)
+endif
 
 # Outputs
 DEPS           += $(PY_SRCS:%.cc=%.cc.d)
@@ -203,7 +210,7 @@ test:			test-cxx test-python
 clean:			clean-cxx clean-python
 
 .PHONY: depclean
-depclean:   	    	
+depclean:
 	rm -f $(DEPS)
 
 .PHONY: cxx

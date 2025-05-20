@@ -7,7 +7,6 @@
 #include <Python.h>
 #include <datetime.h>
 
-#include "np.hh"
 #include "ora/lib/math.hh"
 #include "ora.hh"
 #include "py.hh"
@@ -17,6 +16,10 @@
 #include "py_time.hh"
 #include "py_time_zone.hh"
 #include "util.hh"
+
+#ifdef ORA_NP
+# include "np/np.hh"
+#endif
 
 namespace ora {
 namespace py {
@@ -926,6 +929,7 @@ convert_to_time(
   if (time.first)
     return time.second;
 
+#ifdef ORA_NP
   if (obj->IsInstance(np::Descr::from(NPY_DATETIME)->typeobj)) {
     // Get the exact dtype and its tick denominator.
     auto descr = PyArray_DescrFromScalar(obj);
@@ -950,6 +954,7 @@ convert_to_time(
 
     return ora::time::nex::from_offset<TIME>(offset);
   }
+#endif
 
   if (Unicode::Check(obj)) {
     auto const str = static_cast<Unicode*>(obj)->as_utf8_string();

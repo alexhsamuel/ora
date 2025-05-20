@@ -3,7 +3,10 @@
 #include "py.hh"
 #include "py_calendar.hh"
 #include "py_date.hh"
-#include "np_date.hh"
+
+#ifdef ORA_NP
+# include "np/np_date.hh"
+#endif
 
 namespace ora {
 namespace py {
@@ -322,6 +325,8 @@ tp_methods_
 // Getsets
 //------------------------------------------------------------------------------
 
+#ifdef ORA_NP
+
 ref<Object>
 get_dates_array(
   PyCalendar* const self,
@@ -341,6 +346,8 @@ get_dates_array(
 
   return std::move(arr);
 }
+
+#endif
 
 
 ref<Object>
@@ -383,7 +390,9 @@ get_range(
 GetSets<PyCalendar>
 tp_getsets_ 
   = GetSets<PyCalendar>()
+#ifdef ORA_NP
      .template add_get<get_dates_array>         ("dates_array")
+#endif
      .template add_getset<get_name, set_name>   ("name")
      .template add_get<get_range>               ("range")
  ;
