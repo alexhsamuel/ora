@@ -1,3 +1,5 @@
+#ifdef ORA_NP
+
 // In this, and only this, compilation unit, we need to #include the numpy
 // headers without NO_IMPORT_ARRAY #defined.  In all other compilation units,
 // this macro is defined, to make sure a single shared copy of the API is used.
@@ -14,7 +16,11 @@
 #include <numpy/ufuncobject.h>
 #include <numpy/npy_3kcompat.h>
 
-#include "np.hh"
+#ifdef ORA_BP
+# include "np/np.hh"
+#endif
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -92,6 +98,7 @@ PyInit_ext(void)
   try {
     auto mod = Module::Create(&module_def);
 
+#ifdef ORA_NP
     // Import numpy.
     // FIXME: Handle if numpy is missing.
     if (_import_array() < 0) 
@@ -99,16 +106,19 @@ PyInit_ext(void)
     if (_import_umath() < 0) 
       throw ImportError("failed to import numpy.core.umath");
     bool const np = true;
+#endif
 
     set_up_dates(mod, nullptr);
     set_up_daytimes(mod, nullptr);
 
-    // FIXME: Move this up, once build_np_module() doesn't require types.
     ref<Module> np_mod;
+#ifdef ORA_NP
+    // FIXME: Move this up, once build_np_module() doesn't require types.
     if (np) {
       np_mod = build_np_module();
       mod->AddObject("np", np_mod);
     }
+#endif
 
     set_up_times(mod, np_mod);
 

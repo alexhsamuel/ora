@@ -20,7 +20,7 @@ using namespace np;
 namespace docstring {
 namespace np_date {
 
-#include "np_date.docstrings.hh.inc"
+#include "np/np_date.docstrings.hh.inc"
 
 }  // namespace docstring
 }  // namespace pydate

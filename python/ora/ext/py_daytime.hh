@@ -9,11 +9,14 @@
 #include <Python.h>
 #include <datetime.h>
 
-#include "np.hh"
 #include "ora.hh"
 #include "py.hh"
 #include "py_local.hh"
 #include "types.hh"
+
+#ifdef ORA_NP
+# include "np/np.hh"
+#endif
 
 namespace ora {
 namespace py {
@@ -240,8 +243,10 @@ PyDaytime<DAYTIME>::add_to(
 {
   // Construct the type struct.
   type_ = build_type(string{module.GetName()} + "." + name);
+#ifdef ORA_NP
   // FIXME: Make the conditional on successfully importing numpy.
   type_.tp_base = &PyGenericArrType_Type;
+#endif
   // Hand it to Python.
   type_.Ready();
 
