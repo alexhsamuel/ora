@@ -56,7 +56,7 @@ class BuildExt(setuptools.command.build_ext.build_ext):
 
 setup(
     name            ="ora",
-    version         ="0.9.0",
+    version         ="0.9.1",
     description     ="Alternative time and date library",
     long_description=__doc__,
     url             ="https://github.com/alexhsamuel/ora",
