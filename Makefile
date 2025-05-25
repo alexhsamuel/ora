@@ -150,11 +150,11 @@ $(CXX_TST_OKS): export ZONEINFO = $(ABSTOP)/$(ZONEINFO_DIR)
 # Python building extension code
 
 # Enable NumPy features.
-PY_NP	    	= yes
+PY_NP	    	= no
 
 # Sources
-PY_INCDIRS      = $(PY_PKGDIR)/ext 
-PY_SRCS         = $(wildcard $(PY_PKGDIR)/ext/*.cc) 
+PY_INCDIRS      = $(PY_PKGDIR)/ext
+PY_SRCS         = $(wildcard $(PY_PKGDIR)/ext/*.cc)
 PY_CPPFLAGS    += $(shell $(PYTHON_CONFIG) --includes)
 PY_CXXFLAGS    += -fno-strict-aliasing -fwrapv
 PY_CXXFLAGS    += -DNDEBUG  # FIXME: Remove.
