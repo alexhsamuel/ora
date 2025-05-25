@@ -19,7 +19,7 @@ podman run -t \
 
 path=$(ls $tmpdir/ora-*-manylinux*.whl)
 name=$(basename $path)
-cp $path ./$name
+cp $path ./dist/$name
 echo $name
 
 rm -rf $tmpdir
