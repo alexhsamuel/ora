@@ -1,6 +1,8 @@
 import numpy as np
 import pytest
 
+pytest.importorskip("ora.np")
+
 import ora.np
 from   ora import Time, Date, Daytime, UTC
 

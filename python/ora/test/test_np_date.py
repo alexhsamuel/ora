@@ -3,6 +3,8 @@ import itertools
 import numpy as np
 import pytest
 
+pytest.importorskip("ora.np")
+
 import ora
 from   ora import DATE_TYPES, Date, Date16
 

@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from   ora import Date, Date16, Time128, DateFmt, TimeFmt, TIME_TYPES
+from   ora.test.tools import ifnp
 
 #-------------------------------------------------------------------------------
 
@@ -44,6 +45,7 @@ def test_time_fmt():
     assert fmt("2022-08-23T00:07:52.123456789Z") == "2022-08-23T00:07:52.123456789+00:00"
 
 
+@ifnp
 def test_time_fmt_datetime64():
     t = np.datetime64("2022-09-01T01:23:45.345678901", "ns")
     assert TimeFmt(-1)(t) == "2022-09-01T01:23:45+00:00"

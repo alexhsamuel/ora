@@ -2,6 +2,8 @@ import itertools
 import numpy as np
 import pytest
 
+pytest.importorskip("ora.np")
+
 import ora
 from   ora import now, UTC, TIME_TYPES
 from   ora import Time, Unix32Time
