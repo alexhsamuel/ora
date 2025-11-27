@@ -18,10 +18,10 @@ jobs:
         uses: astral-sh/setup-uv@v7
 
       - name: Install Python 
-        run: uv python install 3.13 --default; PATH=$HOME/.local/bin:$PATH
+        run: uv python install 3.13 --default
 
       - name: Install dependencies
-        run: uv pip install --system numpy python-dateutil pytz pytest
+        run: PATH=$HOME/.local/bin:$PATH uv pip install --system numpy python-dateutil pytz pytest
 
       - name: Build
         run: make -j
