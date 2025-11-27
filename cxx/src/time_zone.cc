@@ -97,7 +97,8 @@ TimeZone::TimeZone(
   if (default_type == nullptr)
     default_type = &tz_file.types_.front();
   // Add a sentry entry.
-  entries_.emplace_back(time::Unix64Time::MIN.get_offset(), *default_type);
+  Entry sentry{time::Unix64Time::MIN.get_offset(), *default_type};
+  entries_.emplace_back(std::move(sentry));
 
   for (auto const& transition : tz_file.transitions_)
     entries_.emplace_back(
