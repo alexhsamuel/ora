@@ -30,7 +30,7 @@ jobs:
         run: make -j
 
       - name: Run Python tests
-        run: echo $PATH; ls -l $HOME/.local/bin/; pytest -v python/ora/test/
+        run: source .venv/bin/activate; pytest -v python/ora/test/
 
       - name: Run C++ tests
         run: make -k test-cxx
