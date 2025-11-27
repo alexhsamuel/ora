@@ -71,7 +71,8 @@ as an egg.
 ### Source:
 
 ```
-bumpversion patch  # or minor, major
+uv pip install bump-my-version
+bump-my-version bump patch  # or minor, major
 git push --tags
 git push
 python setup.py sdist
