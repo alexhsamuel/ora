@@ -9,7 +9,7 @@ from   ora import Time, Time128, HiTime, NsTime, SmallTime, Unix32Time, Unix64Ti
 from   ora import TIME_TYPES, Date, Daytime, UTC, MIDNIGHT, TimeZone
 from   ora import Jan, Jul, Nov, Dec
 from   ora import to_local, from_local, now, display_time_zone, format_time
-from   tools import xeq
+from   ora.test.tools import xeq, ifnp
 
 TIME_TYPE_PAIRS = tuple(itertools.product(TIME_TYPES, TIME_TYPES))
 
@@ -400,6 +400,7 @@ def test_out_of_range():
 
 
 @pytest.mark.parametrize("Time", (Time, NsTime, Unix32Time, Unix64Time, SmallTime))
+@ifnp
 def test_convert_datetime64(Time):
     dt64 = np.datetime64
     assert Time(dt64("1970-01-01T00:00:00"          ,  "s")) == Time(1970,  1,  1,  0,  0,  0          , UTC)
@@ -413,12 +414,14 @@ def test_convert_datetime64(Time):
 
 
 @pytest.mark.parametrize("Time", TIME_TYPES)
+@ifnp
 def test_convert_datetime64_nat(Time):
     assert Time(np.datetime64("NaT")).invalid
     assert Time(np.datetime64("NaT", "ns")).invalid
     assert Time(np.datetime64("NaT", "fs")).invalid
 
 
+@ifnp
 def test_convert_datetime64_range():
     with pytest.raises(OverflowError):
         SmallTime(np.datetime64("1960-01-01T00:00:00"))

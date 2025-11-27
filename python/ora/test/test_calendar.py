@@ -4,6 +4,7 @@ import pytest
 
 import ora
 from   ora import Date, Jan, Feb, Jun, Jul, Mon, Tue, Fri
+from   ora.test.tools import ifnp
 
 #-------------------------------------------------------------------------------
 
@@ -199,6 +200,7 @@ def test_get_calendar():
     assert stop  > Date(2019, 1, 1)
 
 
+@ifnp
 def test_dates_array_const():
     rng = Date(2018, 7, 1), Date(2018, 8, 1)
     cal = ora.make_const_calendar(rng, False)
@@ -213,6 +215,7 @@ def test_dates_array_const():
     assert list(arr) == [ rng[0] + i for i in range(31) ]
 
 
+@ifnp
 def test_dates_array_holidays():
     cal = ora.get_calendar("usa-federal-holidays")
     arr = cal.dates_array
@@ -221,6 +224,7 @@ def test_dates_array_holidays():
     assert list(arr) == dates
 
 
+@ifnp
 def test_special():
     cal = ora.get_calendar("all")
     cal = ora.get_calendar("none")

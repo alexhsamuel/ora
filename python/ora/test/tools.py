@@ -1,3 +1,20 @@
+import pytest
+
+try:
+    import ora.np
+except ImportError:
+    ORA_NP = False
+else:
+    ORA_NP = True
+
+
+def ifnp(test_fn):
+    return (
+        test_fn if ORA_NP
+        else pytest.mark.skip(reason="no NumPy support in Ora")(test_fn)
+    )
+
+
 def assert_float_equal(val0, val1):
     assert abs(val0 - val1) < max(abs(val0), abs(val1)) * 1e-12
 

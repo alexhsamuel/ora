@@ -4,6 +4,7 @@ import pytest
 
 from   ora import DATE_TYPES, Date, Date16, TimeZone, now, today, UTC
 from   ora import Apr, Jun, Jul, Dec
+from   ora.test.tools import ifnp
 
 import data
 
@@ -198,6 +199,7 @@ def test_add_overflow(Date, width):
     assert d - (d.offset + 1) == Date.INVALID
 
 
+@ifnp
 @pytest.mark.parametrize("Date", DATE_TYPES)
 def test_convert_datetime64(Date):
     d64 = lambda n: np.datetime64(n, "D")
@@ -206,12 +208,14 @@ def test_convert_datetime64(Date):
     assert Date(d64("2149-06-04")) == Date(2149,  6,  4)
 
 
+@ifnp
 @pytest.mark.parametrize("Date", DATE_TYPES)
 def test_convert_datetime64_nat(Date):
     assert Date(np.datetime64("NaT")).invalid
     assert Date(np.datetime64("NaT", "D")).invalid
 
 
+@ifnp
 def test_convert_datetime64_range():
     with pytest.raises(OverflowError):
         Date16(np.datetime64("1969-12-31", "D"))
