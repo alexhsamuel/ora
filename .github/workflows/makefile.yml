@@ -19,6 +19,7 @@ jobs:
 
       - name: Install Python 
         run: uv python install 3.13 --default
+        run: uv python dir --bin
 
       - name: Install dependencies
         run: uv pip install --system numpy python-dateutil pytz pytest
