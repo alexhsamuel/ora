@@ -20,12 +20,8 @@ jobs:
       - name: Install Python 
         run: uv python install 3.13
 
-      - name: Set up venv
-        run: uv venv
-        run: source .venv/bin/activate
-
       - name: Install dependencies
-        run: uv pip install numpy python-dateutil pytz pytest
+        run: uv pip install --system numpy python-dateutil pytz pytest
 
       - name: Build
         run: make -j
