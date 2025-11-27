@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-pytest.importorskip("ora.np")
+pytest.importorskip("ora.np", exc_type=ImportError)
 
 import ora.np
 from   ora import Time, Date, Daytime, UTC

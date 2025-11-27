@@ -3,7 +3,7 @@ import ora
 from   ora import *
 import pytest
 
-pytest.importorskip("ora.np")
+pytest.importorskip("ora.np", exc_type=ImportError)
 
 #-------------------------------------------------------------------------------
 

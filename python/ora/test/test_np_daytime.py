@@ -4,7 +4,7 @@ import numpy as np
 from   numpy.testing import assert_array_equal
 import pytest
 
-pytest.importorskip("ora.np")
+pytest.importorskip("ora.np", exc_type=ImportError)
 
 import ora
 from   ora import DAYTIME_TYPES
