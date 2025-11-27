@@ -27,7 +27,7 @@ jobs:
         run: uv pip install numpy python-dateutil pytz pytest
 
       - name: Build
-        run: make -j
+        run: make -j && uv pip install -e .
 
       - name: Run Python tests
         run: source .venv/bin/activate; pytest -v python/ora/test/
