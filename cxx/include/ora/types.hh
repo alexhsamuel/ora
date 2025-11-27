@@ -278,7 +278,7 @@ hms_is_valid(
 struct TimeZoneParts
 {
   TimeZoneOffset    offset              = TIME_ZONE_OFFSET_INVALID;
-  char              abbreviation[7]     = "?TZ";  // FIXME: ?!
+  char              abbreviation[15]    = "?TZ";  // FIXME: ?!
   bool              is_dst              = false;
 };
 
