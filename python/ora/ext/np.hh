@@ -5,10 +5,12 @@
 #define NO_IMPORT
 #define NO_IMPORT_ARRAY
 #define NO_IMPORT_UFUNC
+#define NPY_TARGET_VERSION NPY_2_0_API_VERSION
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 
 #include <Python.h>
 #include <numpy/arrayobject.h>
+#include <numpy/dtype_api.h>
 #include <numpy/npy_math.h>
 #include <numpy/ufuncobject.h>
 #include <numpy/npy_3kcompat.h>
@@ -46,6 +48,11 @@ public:
 
   static Descr* from(int const typenum)
     { return (Descr*) PyArray_DescrFromType(typenum); }
+
+  // PyObject* MetaGetItem(char const* const name)
+  //   { return check_not_null(PyArrayDTypeMeta_GetItem(this, name)); }
+  // int MetaSetItem(char const* const name, PyObject* value)
+  //   { return check_zero(PyArrayDTypeMeta_SetItem(this, value, name)); }
 
 };
 
@@ -527,11 +534,16 @@ generic_copyswapn(
 }
 
 
+char const* const
+METADATA_NAME = "__ora_api__";
+
+
 inline auto&
 get_datetime64_meta(
   PyArray_Descr const* descr)
 {
-  return reinterpret_cast<PyArray_DatetimeDTypeMetaData*>(descr->c_metadata)->meta;
+  // auto capsule = cast<Capsule>(descr->MetaGetItem(METADATA_NAME));
+  return reinterpret_cast<PyArray_DatetimeDTypeMetaData*>(descr->metadata)->meta;
 }
 
 

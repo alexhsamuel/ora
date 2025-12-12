@@ -698,7 +698,7 @@ Long::operator __int128()
 {
   __int128 val = 0;
   check_not_minus_one(_PyLong_AsByteArray(
-    (PyLongObject*) this, (unsigned char*) &val, sizeof(val), 1, 1));
+    (PyLongObject*) this, (unsigned char*) &val, sizeof(val), 1, 1, 0));
   return val;
 }
 
@@ -708,7 +708,7 @@ Long::operator unsigned __int128()
 {
   unsigned __int128 val;
   check_not_minus_one(_PyLong_AsByteArray(
-    (PyLongObject*) this, (unsigned char*) &val, sizeof(val), 1, 0));
+    (PyLongObject*) this, (unsigned char*) &val, sizeof(val), 1, 0, 0));
   return val;
 }
 
@@ -1055,6 +1055,22 @@ operator+(
 {
   return str0 + str1.as_utf8_string();
 }
+
+
+//------------------------------------------------------------------------------
+
+class Capsule
+  : public Object
+{
+public:
+
+  // static bool Check(PyObject* obj)
+  //   { return PyCapsule_Check(obj); }
+
+  // void GetPointer(char const* name=nullptr)
+  //   { return check_not_null(PyCapsule_GetPointer(this, name)); }
+
+};
 
 
 //------------------------------------------------------------------------------

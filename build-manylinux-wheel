@@ -2,11 +2,11 @@
 
 # Builds a manylinux binary wheel of the latest PyPI version of ora.
 
-# Build a linux2014 wheel on on CentOS7 image, for compatibility.
-IMAGE=quay.io/pypa/manylinux2014_x86_64
+# Build a manylinux wheel in a container, for compatibility.
+IMAGE=quay.io/pypa/manylinux_2_28_x86_64
 
 # Build for CPython 3.10.
-VER=cp310-cp310
+VER=cp313-cp313
 
 tmpdir=$(mktemp -d)
 cat > $tmpdir/build.sh <<EOF
