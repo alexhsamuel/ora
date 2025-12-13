@@ -2,8 +2,8 @@
 
 To build and test Ora, you'll require:
 - A C++14 compiler, such as GCC >= 6
-- Python 3.6
-- NumPy
+- Python 3.13
+- NumPy (optional)
 - pytz (for testing)
 - pytest (for testing)
 
