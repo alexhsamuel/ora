@@ -88,7 +88,7 @@ TimeZone::TimeZone(
   // Find the first non-DST time type.
   assert(tz_file.types_.size() > 0);
   TzFile::Type const* default_type = nullptr;
-  for (auto type : tz_file.types_)
+  for (auto const& type : tz_file.types_)
     if (! type.is_dst_) {
       default_type = &type;
       break;
