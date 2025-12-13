@@ -1,6 +1,6 @@
 package:
   name: ora
-  version: 0.10.1
+  version: 0.10.2
 
 about:
   home: https://github.com/alexhsamuel/ora
@@ -8,7 +8,7 @@ about:
   license_file: LICENSE
 
 source:
-  git_rev: v0.10.1
+  git_rev: v0.10.2
   git_url: https://github.com/alexhsamuel/ora.git
 
 requirements:
