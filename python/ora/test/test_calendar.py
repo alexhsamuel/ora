@@ -148,6 +148,14 @@ def test_load_calendar_file():
         assert (d in cal) == (d in CAL_DATES)
 
 
+def test_load_calendar_file_with_name():
+    cal = ora.load_calendar_file(
+        Path(__file__).parent / "june18.cal",
+        name="custom/path/june18"
+    )
+    assert cal.name == "custom/path/june18"
+
+
 def test_load_business_calendar():
     cal = ora.load_business_calendar(Path(__file__).parent / "june18.cal")
     assert cal.range == (2018/Jun/1, 2018/Jul/1)
