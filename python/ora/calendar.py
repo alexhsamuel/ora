@@ -97,7 +97,7 @@ class CalendarDir:
         """
         path = (self.__path / name).with_suffix(self.SUFFIX)
         try:
-            return load_calendar_file(path)
+            return load_calendar_file(path, name=name)
         except FileNotFoundError:
             raise KeyError(name)
 
