@@ -698,7 +698,11 @@ Long::operator __int128()
 {
   __int128 val = 0;
   check_not_minus_one(_PyLong_AsByteArray(
-    (PyLongObject*) this, (unsigned char*) &val, sizeof(val), 1, 1, 1));
+    (PyLongObject*) this, (unsigned char*) &val, sizeof(val), 1, 1
+#if PY_VERSION_HEX >= 0x030D0000
+    , 1  // with_exceptions parameter added in Python 3.13
+#endif
+  ));
   return val;
 }
 
@@ -708,7 +712,11 @@ Long::operator unsigned __int128()
 {
   unsigned __int128 val;
   check_not_minus_one(_PyLong_AsByteArray(
-    (PyLongObject*) this, (unsigned char*) &val, sizeof(val), 1, 0, 1));
+    (PyLongObject*) this, (unsigned char*) &val, sizeof(val), 1, 0
+#if PY_VERSION_HEX >= 0x030D0000
+    , 1  // with_exceptions parameter added in Python 3.13
+#endif
+  ));
   return val;
 }
 
