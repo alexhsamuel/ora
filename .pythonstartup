@@ -4,7 +4,6 @@ import ora
 from   ora import *
 from   datetime import *
 import math
-import numpy as np
 import sys
 
 try:
@@ -22,6 +21,7 @@ d, y = t @ z
 c = ora.get_calendar("usa-federal-holidays")
 
 try:
+    import numpy as np
     import ora.np
 except ImportError:
     print("No Ora NumPy support.", file=sys.stderr)
