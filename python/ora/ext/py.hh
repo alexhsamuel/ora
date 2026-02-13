@@ -697,8 +697,14 @@ inline
 Long::operator __int128()
 {
   __int128 val = 0;
+#if PY_VERSION_HEX < 0x030D0000
   check_not_minus_one(_PyLong_AsByteArray(
-    (PyLongObject*) this, (unsigned char*) &val, sizeof(val), 1, 1, 1));
+    (PyLongObject*) this, (unsigned char*) &val, sizeof(val), 1, 1));
+#else
+  check_not_minus_one(PyLong_AsNativeBytes(
+    (PyObject*) this, &val, sizeof(val),
+    Py_ASNATIVEBYTES_NATIVE_ENDIAN));
+#endif
   return val;
 }
 
@@ -707,8 +713,16 @@ inline
 Long::operator unsigned __int128()
 {
   unsigned __int128 val;
+#if PY_VERSION_HEX < 0x030D0000
   check_not_minus_one(_PyLong_AsByteArray(
-    (PyLongObject*) this, (unsigned char*) &val, sizeof(val), 1, 0, 1));
+    (PyLongObject*) this, (unsigned char*) &val, sizeof(val), 1, 0));
+#else
+  check_not_minus_one(PyLong_AsNativeBytes(
+    (PyObject*) this, &val, sizeof(val),
+      Py_ASNATIVEBYTES_NATIVE_ENDIAN
+    | Py_ASNATIVEBYTES_UNSIGNED_BUFFER
+    | Py_ASNATIVEBYTES_REJECT_NEGATIVE));
+#endif
   return val;
 }
 
