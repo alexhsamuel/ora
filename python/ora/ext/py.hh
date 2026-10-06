@@ -1379,6 +1379,12 @@ private:
     catch (EXCEPTION const& exc) {
       throw Exception(exception_, exc.what());
     }
+    catch (const std::exception& exc) {
+      if (next_ == nullptr)
+        throw Exception(PyExc_RuntimeError, std::string("untranslated C++ exception: ") + exc.what());
+      else
+        next_->translate1();
+    }
     catch (...) {
       if (next_ == nullptr)
         throw Exception(PyExc_RuntimeError, "untranslated C++ exception");
