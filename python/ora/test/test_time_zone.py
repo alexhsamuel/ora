@@ -197,3 +197,8 @@ def test_convert_datetime_utc():
     assert tz == ora.UTC
 
 
+def test_nonexistent_date_daytime():
+    with pytest.raises(ora.NonexistentDateDaytime):
+        ("2026-03-08", "02:30:00") @ ora.TimeZone("America/New_York")
+
+
