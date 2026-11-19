@@ -27,12 +27,16 @@ if sys.platform == "darwin":
 
 #-------------------------------------------------------------------------------
 
+try:
+    import numpy
+    _has_numpy = True
+except ImportError:
+    _has_numpy = False
+
 def np_get_include():
-    try:
-        import numpy
+    if _has_numpy:
         return [numpy.get_include()]
-    except ImportError:
-        return []
+    return []
 
 
 # Convince setuptools to call our C++ build.
@@ -89,13 +93,15 @@ setup(
                 "-std=c++17",
                 "-fdiagnostics-color=always",
                 "-Wno-dangling-else",
+                *([ "-DORA_NP" ] if _has_numpy else []),
             ],
             include_dirs      =[
                 "cxx/include",
                 "python/ora/ext",
                 *np_get_include(),
             ],
-            sources           =glob("python/ora/ext/*.cc"),
+            sources           =glob("python/ora/ext/*.cc")
+                              + (glob("python/ora/ext/np/*.cc") if _has_numpy else []),
             library_dirs      =["cxx/src", ],
             libraries         =["ora", ],
             depends           =[

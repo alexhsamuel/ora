@@ -150,7 +150,7 @@ $(CXX_TST_OKS): export ZONEINFO = $(ABSTOP)/$(ZONEINFO_DIR)
 # Python building extension code
 
 # Enable NumPy features.
-PY_NP	    	= no
+PY_NP	       ?= no
 
 # Sources
 PY_INCDIRS      = $(PY_PKGDIR)/ext
